@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the getGeneric method from the ResolvableType class, for the Dart programming language.">
+  <title>getGeneric method - ResolvableType class - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf.dart</a></li>
+    <li><a href="../../jetleaf/ResolvableType-class.html">ResolvableType</a></li>
+    <li class="self-crumb">getGeneric method</li>
+  </ol>
+  <div class="self-name">getGeneric</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="jetleaf&#47;ResolvableType-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">getGeneric</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+<span class="returntype"><a href="../../jetleaf/ResolvableType-class.html">ResolvableType</a></span>
+<span class="name ">getGeneric</span>(<wbr>[<ol class="parameter-list single-line"> <li><span class="parameter" id="getGeneric-param-indexes"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>&gt;</span>?</span> <span class="parameter-name">indexes</span></span></li>
+</ol>])
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Returns a ResolvableType representing the generic parameter for the given indexes.</p>
+<p>This method retrieves specific generic type parameters from this ResolvableType.
+For simple cases, it returns the first generic parameter. For complex nested
+generics, it can navigate through multiple levels using the indexes array.</p>
+<p>Parameters:</p>
+<ul>
+<li><code>indexes</code>: Optional list of indexes to navigate nested generics. If null or empty, returns the first generic parameter.</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li>ResolvableType representing the specified generic parameter</li>
+<li>ResolvableType.NONE if the indexes are invalid or no generics exist</li>
+</ul>
+<p>Example:</p>
+<pre class="language-dart"><code class="language-dart">final listType = ResolvableType.forClass(List&lt;String&gt;);
+final mapType = ResolvableType.forClass(Map&lt;String, int&gt;);
+final nestedType = ResolvableType.forClass(Map&lt;String, List&lt;int&gt;&gt;);
+
+// Simple generic access
+final listGeneric = listType.getGeneric(); // String
+print(listGeneric.resolve()?.getType()); // String
+
+// Multiple generics
+final mapKey = mapType.getGeneric([0]); // String (first parameter)
+final mapValue = mapType.getGeneric([1]); // int (second parameter)
+print(mapKey.resolve()?.getType()); // String
+print(mapValue.resolve()?.getType()); // int
+
+// Nested generics
+final nestedValue = nestedType.getGeneric([1]); // List&lt;int&gt;
+final nestedElement = nestedValue.getGeneric([0]); // int
+print(nestedValue.resolve()?.getType()); // List&lt;int&gt;
+print(nestedElement.resolve()?.getType()); // int
+
+// Invalid access
+final invalid = listType.getGeneric([5]); // ResolvableType.NONE
+print(invalid == ResolvableType.NONE); // true
+</code></pre>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">ResolvableType getGeneric([List&lt;int&gt;? indexes]) {
+  final generics = getGenerics();
+  if (indexes == null || indexes.isEmpty) {
+    return generics.isEmpty ? NONE : generics[0];
+  }
+
+  ResolvableType generic = this;
+  for (final index in indexes) {
+    final currentGenerics = generic.getGenerics();
+    if (index &lt; 0 || index &gt;= currentGenerics.length) {
+      return NONE;
+    }
+    generic = currentGenerics[index];
+  }
+  return generic;
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf</a></li>
+    <li><a href="../../jetleaf/ResolvableType-class.html">ResolvableType</a></li>
+    <li class="self-crumb">getGeneric method</li>
+</ol>
+
+    <h5>ResolvableType class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

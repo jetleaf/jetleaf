@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the Uuid.timeBasedUuid constructor from Class Uuid from the jetleaf library, for the Dart programming language.">
+  <title>Uuid.timeBasedUuid constructor - Uuid - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf.dart</a></li>
+    <li><a href="../../jetleaf/Uuid-class.html">Uuid</a></li>
+    <li class="self-crumb">Uuid.timeBasedUuid factory constructor</li>
+  </ol>
+  <div class="self-name">Uuid.timeBasedUuid</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="jetleaf&#47;Uuid-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-constructor">Uuid.timeBasedUuid</span> constructor 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+      <span class="name ">Uuid.timeBasedUuid</span>(<wbr>)
+    </section>
+    
+<section class="desc markdown">
+  <p>Generates a time-based UUID (version 1).</p>
+<p>Returns:</p>
+<ul>
+<li>A new time-based UUID with version 1 and variant 2 (RFC 4122)</li>
+</ul>
+<h2 id="time-based-properties">Time-Based Properties</h2>
+<ul>
+<li>Incorporates current timestamp with 100-nanosecond precision</li>
+<li>Includes clock sequence to handle clock adjustments</li>
+<li>Uses random node identifier (no MAC address exposure)</li>
+<li>Sortable by generation time</li>
+</ul>
+<h2 id="privacy-considerations">Privacy Considerations</h2>
+<p>This implementation uses a random node identifier instead of the actual
+MAC address to protect privacy while maintaining UUID uniqueness.</p>
+<h2 id="example">Example</h2>
+<pre class="language-dart"><code class="language-dart">final uuid1 = Uuid.timeBasedUuid();
+await Future.delayed(Duration(milliseconds: 1));
+final uuid2 = Uuid.timeBasedUuid();
+print(uuid1.compareTo(uuid2) &lt; 0); // true (uuid1 generated first)
+print(uuid1.version); // 1
+</code></pre>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">factory Uuid.timeBasedUuid() {
+  &#47;&#47; Get current time in 100-nanosecond intervals since UUID epoch
+  final now = DateTime.now().millisecondsSinceEpoch;
+  final uuidEpoch = DateTime(1582, 10, 15).millisecondsSinceEpoch;
+  final timestamp = BigInteger.fromInt(now - uuidEpoch) * BigInteger.fromInt(10000); &#47;&#47; 100ns intervals
+
+  &#47;&#47; Generate 14-bit clock sequence
+  final clockSeq = BigInteger.fromInt(_secureRandom.nextInt(0x4000));
+
+  &#47;&#47; Generate 48-bit node ID from secure random bytes
+  BigInteger node = BigInteger.ZERO;
+  for (var i = 0; i &lt; 6; i++) {
+    node = (node &lt;&lt; 8) | BigInteger.fromInt(_secureRandom.nextInt(256));
+  }
+
+  &#47;&#47; Build UUID components
+  final timeLow = timestamp &amp; BigInteger.fromInt(0xFFFFFFFF);
+  final timeMid = (timestamp &gt;&gt; 32) &amp; BigInteger.fromInt(0xFFFF);
+  final timeHiAndVersion = ((timestamp &gt;&gt; 48) &amp; BigInteger.fromInt(0x0FFF)) | BigInteger.fromInt(0x1000); &#47;&#47; v1
+  final clockSeqHiAndReserved = ((clockSeq &gt;&gt; 8) | BigInteger.fromInt(0x80)) &amp; BigInteger.fromInt(0xFF); &#47;&#47; variant 2
+  final clockSeqLow = clockSeq &amp; BigInteger.fromInt(0xFF);
+
+  final mostSigBits = (timeLow &lt;&lt; 32) | (timeMid &lt;&lt; 16) | timeHiAndVersion;
+  final leastSigBits = (clockSeqHiAndReserved &lt;&lt; 56) | (clockSeqLow &lt;&lt; 48) | node;
+
+  return Uuid._(mostSigBits, leastSigBits);
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf</a></li>
+    <li><a href="../../jetleaf/Uuid-class.html">Uuid</a></li>
+    <li class="self-crumb">Uuid.timeBasedUuid factory constructor</li>
+</ol>
+
+    <h5>Uuid class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-left-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

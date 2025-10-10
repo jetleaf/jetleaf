@@ -1,0 +1,11 @@
+name: example
+version: 1.0.0
+description: A new Jetleaf project.
+publish_to: 'none'
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  jetleaf:
+    path: ../../jetleaf

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the flush method from the DefaultClassLoader class, for the Dart programming language.">
+  <title>flush method - DefaultClassLoader class - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf.dart</a></li>
+    <li><a href="../../jetleaf/DefaultClassLoader-class.html">DefaultClassLoader</a></li>
+    <li class="self-crumb">flush method</li>
+  </ol>
+  <div class="self-name">flush</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="jetleaf&#47;DefaultClassLoader-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">flush</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+  <div>
+    <ol class="annotation-list">
+        <li>@<a href="https://api.dart.dev/stable/3.9.2/dart-core/override-constant.html">override</a></li>
+    </ol>
+  </div>
+<span class="returntype"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+<span class="name ">flush</span>(<wbr>)
+
+      <div class="features"><span class="feature">override</span></div>
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Flushes all caches, clearing cached class data while keeping the loader active.</p>
+<p>This operation:</p>
+<ul>
+<li>Clears all cached class instances</li>
+<li>Removes subclass relationship caches</li>
+<li>Clears interface and mixin caches</li>
+<li>Resets cache statistics</li>
+<li>Keeps the loader ready for new operations</li>
+</ul>
+<h2 id="when-to-flush">When to Flush</h2>
+<ul>
+<li>Memory pressure situations</li>
+<li>After dynamic class modifications</li>
+<li>Periodic maintenance in long-running applications</li>
+<li>Before major application phase transitions</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="language-dart"><code class="language-dart">// Clear caches but keep loader active
+await loader.flush();
+
+// Loader is still usable after flush
+final newClass = await loader.loadClass&lt;String&gt;('dart:core/string.dart.String');
+</code></pre>
+<h2 id="performance-impact">Performance Impact</h2>
+<ul>
+<li>Immediate: Frees cached memory</li>
+<li>Short-term: Increased loading times until cache rebuilds</li>
+<li>Long-term: Improved memory efficiency</li>
+</ul>
+<p>Throws <a href="../../jetleaf/IOException-class.html">IOException</a> if cache cleanup encounters I/O errors.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">@override
+Future&lt;void&gt; flush() async {
+  if (_closed) return;
+
+  &#47;&#47; Clear all caches
+  _classCache.clear();
+  _classComponentCache.clear();
+  _classKeyCache.clear();
+  _subclassCache.clear();
+  _interfaceCache.clear();
+  _mixinCache.clear();
+  _interfaceArgumentCache.clear();
+  _mixinArgumentCache.clear();
+  _superClassArgumentCache.clear();
+  _superClassCache.clear();
+  _typeParameterCache.clear();
+  _constraintCache.clear();
+  _constraintArgumentCache.clear();
+
+  &#47;&#47; Reset statistics
+  _hitCount = 0;
+  _missCount = 0;
+  _successfulLoads = 0;
+  _failedLoads = 0;
+  _loadTimes.clear();
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf</a></li>
+    <li><a href="../../jetleaf/DefaultClassLoader-class.html">DefaultClassLoader</a></li>
+    <li class="self-crumb">flush method</li>
+</ol>
+
+    <h5>DefaultClassLoader class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

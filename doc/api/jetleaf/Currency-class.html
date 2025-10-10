@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the Currency class from the jetleaf library, for the Dart programming language.">
+  <title>Currency class - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li><a href="../jetleaf/">jetleaf.dart</a></li>
+    <li class="self-crumb">Currency class</li>
+  </ol>
+  <div class="self-name">Currency</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="jetleaf&#47;jetleaf-library-sidebar.html"
+    data-below-sidebar="jetleaf&#47;Currency-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">Currency</span> class 
+    <a href="https://dart.dev/language/class-modifiers#abstract" class="feature feature-abstract" title="This type can not be directly constructed.">abstract</a>
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>Abstract base class for currency operations following ISO 4217 standards.</p>
+<p>This class provides a common interface for all currency types and
+includes static methods to manage and retrieve currency instances
+according to ISO 4217 codes or locale information.</p>
+<p>Use this class to:</p>
+<ul>
+<li>Retrieve currency instances by code or locale.</li>
+<li>Access currency metadata such as symbol, numeric code, or display name.</li>
+<li>Work with all available currencies in a consistent manner.</li>
+</ul>
+<p>Example usage:</p>
+<pre class="language-dart"><code class="language-dart">// Get a currency by ISO code
+final usd = Currency.getInstance('USD');
+
+// Get a currency by locale
+final eur = Currency.getInstanceFromLocale(Locale('de', 'DE'));
+
+// List all available currencies
+final allCurrencies = Currency.getAllCurrencies();
+
+// Access currency properties
+print(usd.symbol); // $
+print(eur.displayName); // Euro
+</code></pre>
+</section>
+
+
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+    <dl class="constructor-summary-list">
+        <dt id="Currency.new" class="callable">
+          <span class="name"><a href="../jetleaf/Currency/Currency.html">Currency.new</a></span><span class="signature">()</span>
+        </dt>
+        <dd>
+          
+        </dd>
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="currencyCode" class="property">
+  <span class="name"><a href="../jetleaf/Currency/currencyCode.html">currencyCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  
+
+</dt>
+<dd>
+  The ISO 4217 currency code (e.g., "USD", "EUR", "GBP").
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="defaultFractionDigits" class="property">
+  <span class="name"><a href="../jetleaf/Currency/defaultFractionDigits.html">defaultFractionDigits</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  The default number of fraction digits for this currency.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="displayName" class="property">
+  <span class="name"><a href="../jetleaf/Currency/displayName.html">displayName</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  
+
+</dt>
+<dd>
+  The display name of this currency in English.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="hashCode" class="property">
+  <span class="name"><a href="../jetleaf/Currency/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  Returns a hash code based on the currency code.
+  <div class="features"><span class="feature">no setter</span><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="numericCode" class="property">
+  <span class="name"><a href="../jetleaf/Currency/numericCode.html">numericCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  The numeric code for this currency as defined by ISO 4217.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Type-class.html">Type</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="symbol" class="property">
+  <span class="name"><a href="../jetleaf/Currency/symbol.html">symbol</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  
+
+</dt>
+<dd>
+  The currency symbol (e.g., "$", "€", "£").
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="compareTo" class="callable">
+  <span class="name"><a href="../jetleaf/Currency/compareTo.html">compareTo</a></span><span class="signature">(<wbr><span class="parameter" id="compareTo-param-other"><span class="type-annotation"><a href="../jetleaf/Currency-class.html">Currency</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Compares this currency to another by currency code.
+  
+
+</dd>
+
+        <dt id="copyWith" class="callable">
+  <span class="name"><a href="../jetleaf/Currency/copyWith.html">copyWith</a></span><span class="signature">(<wbr>{<span class="parameter" id="copyWith-param-currencyCode"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">currencyCode</span>, </span><span class="parameter" id="copyWith-param-symbol"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">symbol</span>, </span><span class="parameter" id="copyWith-param-defaultFractionDigits"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">defaultFractionDigits</span>, </span><span class="parameter" id="copyWith-param-numericCode"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">numericCode</span>, </span><span class="parameter" id="copyWith-param-displayName"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">displayName</span></span>})
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Currency-class.html">Currency</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Creates a copy of this currency with optional overrides.
+  
+
+</dd>
+
+        <dt id="getDisplayName" class="callable">
+  <span class="name"><a href="../jetleaf/Currency/getDisplayName.html">getDisplayName</a></span><span class="signature">(<wbr>[<span class="parameter" id="getDisplayName-param-locale"><span class="type-annotation"><a href="../jetleaf/Locale-class.html">Locale</a>?</span> <span class="parameter-name">locale</span></span>])
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns the display name, optionally localized by <code>locale</code>.
+  
+
+</dd>
+
+        <dt id="getSymbol" class="callable">
+  <span class="name"><a href="../jetleaf/Currency/getSymbol.html">getSymbol</a></span><span class="signature">(<wbr>[<span class="parameter" id="getSymbol-param-locale"><span class="type-annotation"><a href="../jetleaf/Locale-class.html">Locale</a>?</span> <span class="parameter-name">locale</span></span>])
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns the currency symbol, optionally localized by <code>locale</code>.
+  
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="toDetailedString" class="callable">
+  <span class="name"><a href="../jetleaf/Currency/toDetailedString.html">toDetailedString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a detailed string representation including all currency properties.
+  
+
+</dd>
+
+        <dt id="toString" class="callable">
+  <span class="name"><a href="../jetleaf/Currency/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns the currency code as the string representation.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable">
+  <span class="name"><a href="../jetleaf/Currency/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Compares this currency to another for equality based on currency code.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+  <section class="summary offset-anchor" id="static-methods">
+    <h2>Static Methods</h2>
+    <dl class="callables">
+        <dt id="getAllCurrencies" class="callable">
+  <span class="name"><a href="../jetleaf/Currency/getAllCurrencies.html">getAllCurrencies</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Currency-class.html">Currency</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a list of all available <a href="../jetleaf/Currency-class.html">Currency</a> instances.
+  
+
+</dd>
+
+        <dt id="getAvailableCurrencies" class="callable">
+  <span class="name"><a href="../jetleaf/Currency/getAvailableCurrencies.html">getAvailableCurrencies</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Set-class.html">Set</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a set of all available ISO 4217 currency codes.
+  
+
+</dd>
+
+        <dt id="getInstance" class="callable">
+  <span class="name"><a href="../jetleaf/Currency/getInstance.html">getInstance</a></span><span class="signature">(<wbr><span class="parameter" id="getInstance-param-currencyCode"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">currencyCode</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Currency-class.html">Currency</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Abstract base class for currency operations following ISO 4217 standards.
+  
+
+</dd>
+
+        <dt id="getInstanceFromLocale" class="callable">
+  <span class="name"><a href="../jetleaf/Currency/getInstanceFromLocale.html">getInstanceFromLocale</a></span><span class="signature">(<wbr><span class="parameter" id="getInstanceFromLocale-param-locale"><span class="type-annotation"><a href="../jetleaf/Locale-class.html">Locale</a></span> <span class="parameter-name">locale</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Currency-class.html">Currency</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Abstract base class for currency operations following ISO 4217 standards.
+  
+
+</dd>
+
+        <dt id="isSupported" class="callable">
+  <span class="name"><a href="../jetleaf/Currency/isSupported.html">isSupported</a></span><span class="signature">(<wbr><span class="parameter" id="isSupported-param-currencyCode"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">currencyCode</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns true if the given currency code is supported.
+  
+
+</dd>
+
+    </dl>
+  </section>
+    
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li><a href="../jetleaf/">jetleaf</a></li>
+    <li class="self-crumb">Currency class</li>
+</ol>
+
+    <h5>jetleaf library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

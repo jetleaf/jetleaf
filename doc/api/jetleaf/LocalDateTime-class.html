@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the LocalDateTime class from the jetleaf library, for the Dart programming language.">
+  <title>LocalDateTime class - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li><a href="../jetleaf/">jetleaf.dart</a></li>
+    <li class="self-crumb">LocalDateTime class</li>
+  </ol>
+  <div class="self-name">LocalDateTime</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="jetleaf&#47;jetleaf-library-sidebar.html"
+    data-below-sidebar="jetleaf&#47;LocalDateTime-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">LocalDateTime</span> class 
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>A date-time object without a timezone, composed of a <a href="../jetleaf/LocalDate-class.html">LocalDate</a> and <a href="../jetleaf/LocalTime-class.html">LocalTime</a>.</p>
+<p>This class represents a specific moment on a calendar, combining a date and time without referencing any timezone.
+It is immutable and supports arithmetic and comparison operations.</p>
+<h3 id="example">Example:</h3>
+<pre class="language-dart"><code class="language-dart">final dateTime = LocalDateTime.of(2024, 12, 31, 23, 59);
+print(dateTime); // 2024-12-31T23:59:00
+</code></pre>
+</section>
+
+
+    <section>
+      <dl class="dl-horizontal">
+        
+
+        
+  <dt>Implemented types</dt>
+  <dd>
+    <ul class="comma-separated clazz-relationships">
+        <li><a href="https://api.dart.dev/stable/3.9.2/dart-core/Comparable-class.html">Comparable</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span>&gt;</span></li>
+    </ul>
+  </dd>
+        
+
+
+        
+        
+
+
+      </dl>
+    </section>
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+    <dl class="constructor-summary-list">
+        <dt id="LocalDateTime.new" class="callable">
+          <span class="name"><a href="../jetleaf/LocalDateTime/LocalDateTime.html">LocalDateTime.new</a></span><span class="signature">(<span class="parameter" id="-param-date"><span class="type-annotation"><a href="../jetleaf/LocalDate-class.html">LocalDate</a></span> <span class="parameter-name">date</span>, </span><span class="parameter" id="-param-time"><span class="type-annotation"><a href="../jetleaf/LocalTime-class.html">LocalTime</a></span> <span class="parameter-name">time</span></span>)</span>
+        </dt>
+        <dd>
+          A date-time object without a timezone, composed of a <a href="../jetleaf/LocalDate-class.html">LocalDate</a> and <a href="../jetleaf/LocalTime-class.html">LocalTime</a>.
+        </dd>
+        <dt id="LocalDateTime.fromDateTime" class="callable">
+          <span class="name"><a href="../jetleaf/LocalDateTime/LocalDateTime.fromDateTime.html">LocalDateTime.fromDateTime</a></span><span class="signature">(<span class="parameter" id="fromDateTime-param-dateTime"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/DateTime-class.html">DateTime</a></span> <span class="parameter-name">dateTime</span></span>)</span>
+        </dt>
+        <dd>
+          Creates a <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a> from a Dart <a href="https://api.dart.dev/stable/3.9.2/dart-core/DateTime-class.html">DateTime</a> instance.
+            <div class="constructor-modifier features">factory</div>
+        </dd>
+        <dt id="LocalDateTime.now" class="callable">
+          <span class="name"><a href="../jetleaf/LocalDateTime/LocalDateTime.now.html">LocalDateTime.now</a></span><span class="signature">()</span>
+        </dt>
+        <dd>
+          Returns the current local date and time.
+            <div class="constructor-modifier features">factory</div>
+        </dd>
+        <dt id="LocalDateTime.of" class="callable">
+          <span class="name"><a href="../jetleaf/LocalDateTime/LocalDateTime.of.html">LocalDateTime.of</a></span><span class="signature">(<span class="parameter" id="of-param-year"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">year</span>, </span><span class="parameter" id="of-param-month"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">month</span>, </span><span class="parameter" id="of-param-day"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">day</span>, </span><span class="parameter" id="of-param-hour"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">hour</span>, </span><span class="parameter" id="of-param-minute"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">minute</span>, [</span><span class="parameter" id="of-param-second"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">second</span> = <span class="default-value">0</span>, </span><span class="parameter" id="of-param-millisecond"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">millisecond</span> = <span class="default-value">0</span></span>])</span>
+        </dt>
+        <dd>
+          Creates a <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a> from individual components.
+        </dd>
+        <dt id="LocalDateTime.parse" class="callable">
+          <span class="name"><a href="../jetleaf/LocalDateTime/LocalDateTime.parse.html">LocalDateTime.parse</a></span><span class="signature">(<span class="parameter" id="parse-param-dateTimeString"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">dateTimeString</span></span>)</span>
+        </dt>
+        <dd>
+          Parses a string in ISO 8601 format: <code>YYYY-MM-DDTHH:mm[:ss[.SSS]]</code>
+            <div class="constructor-modifier features">factory</div>
+        </dd>
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="date" class="property">
+  <span class="name"><a href="../jetleaf/LocalDateTime/date.html">date</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/LocalDate-class.html">LocalDate</a></span>
+  
+
+</dt>
+<dd>
+  The date component.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="day" class="property">
+  <span class="name"><a href="../jetleaf/LocalDateTime/day.html">day</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  The day component of the date.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="dayOfWeek" class="property">
+  <span class="name"><a href="../jetleaf/LocalDateTime/dayOfWeek.html">dayOfWeek</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  The ISO weekday number, where Monday = 1 and Sunday = 7.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="dayOfYear" class="property">
+  <span class="name"><a href="../jetleaf/LocalDateTime/dayOfYear.html">dayOfYear</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  The day of the year (1–365 or 366).
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="hashCode" class="property">
+  <span class="name"><a href="../jetleaf/LocalDateTime/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  Generates a hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="hour" class="property">
+  <span class="name"><a href="../jetleaf/LocalDateTime/hour.html">hour</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  The hour component of the time (0–23).
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="millisecond" class="property">
+  <span class="name"><a href="../jetleaf/LocalDateTime/millisecond.html">millisecond</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  The millisecond component of the time (0–999).
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="minute" class="property">
+  <span class="name"><a href="../jetleaf/LocalDateTime/minute.html">minute</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  The minute component of the time (0–59).
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="month" class="property">
+  <span class="name"><a href="../jetleaf/LocalDateTime/month.html">month</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  The month component of the date (1–12).
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Type-class.html">Type</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="second" class="property">
+  <span class="name"><a href="../jetleaf/LocalDateTime/second.html">second</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  The second component of the time (0–59).
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="time" class="property">
+  <span class="name"><a href="../jetleaf/LocalDateTime/time.html">time</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/LocalTime-class.html">LocalTime</a></span>
+  
+
+</dt>
+<dd>
+  The time component.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="year" class="property">
+  <span class="name"><a href="../jetleaf/LocalDateTime/year.html">year</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  The year component of the date.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="compareTo" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/compareTo.html">compareTo</a></span><span class="signature">(<wbr><span class="parameter" id="compareTo-param-other"><span class="type-annotation"><a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Compares two <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a> instances chronologically.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="isAfter" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/isAfter.html">isAfter</a></span><span class="signature">(<wbr><span class="parameter" id="isAfter-param-other"><span class="type-annotation"><a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns true if this instance is later than <code>other</code>.
+  
+
+</dd>
+
+        <dt id="isBefore" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/isBefore.html">isBefore</a></span><span class="signature">(<wbr><span class="parameter" id="isBefore-param-other"><span class="type-annotation"><a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns true if this instance is earlier than <code>other</code>.
+  
+
+</dd>
+
+        <dt id="isEqual" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/isEqual.html">isEqual</a></span><span class="signature">(<wbr><span class="parameter" id="isEqual-param-other"><span class="type-annotation"><a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns true if this instance represents the same date and time as <code>other</code>.
+  
+
+</dd>
+
+        <dt id="minus" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/minus.html">minus</a></span><span class="signature">(<wbr><span class="parameter" id="minus-param-duration"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Duration-class.html">Duration</a></span> <span class="parameter-name">duration</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Subtracts a <a href="https://api.dart.dev/stable/3.9.2/dart-core/Duration-class.html">Duration</a> from this <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a>.
+  
+
+</dd>
+
+        <dt id="minusDays" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/minusDays.html">minusDays</a></span><span class="signature">(<wbr><span class="parameter" id="minusDays-param-days"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">days</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Subtracts days from the date component.
+  
+
+</dd>
+
+        <dt id="minusHours" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/minusHours.html">minusHours</a></span><span class="signature">(<wbr><span class="parameter" id="minusHours-param-hours"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">hours</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Subtracts hours from the time component.
+  
+
+</dd>
+
+        <dt id="minusMilliseconds" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/minusMilliseconds.html">minusMilliseconds</a></span><span class="signature">(<wbr><span class="parameter" id="minusMilliseconds-param-milliseconds"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">milliseconds</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Subtracts milliseconds from the time component.
+  
+
+</dd>
+
+        <dt id="minusMinutes" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/minusMinutes.html">minusMinutes</a></span><span class="signature">(<wbr><span class="parameter" id="minusMinutes-param-minutes"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">minutes</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Subtracts minutes from the time component.
+  
+
+</dd>
+
+        <dt id="minusMonths" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/minusMonths.html">minusMonths</a></span><span class="signature">(<wbr><span class="parameter" id="minusMonths-param-months"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">months</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Subtracts months from the date component.
+  
+
+</dd>
+
+        <dt id="minusSeconds" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/minusSeconds.html">minusSeconds</a></span><span class="signature">(<wbr><span class="parameter" id="minusSeconds-param-seconds"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">seconds</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Subtracts seconds from the time component.
+  
+
+</dd>
+
+        <dt id="minusWeeks" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/minusWeeks.html">minusWeeks</a></span><span class="signature">(<wbr><span class="parameter" id="minusWeeks-param-weeks"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">weeks</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Subtracts weeks from the date component.
+  
+
+</dd>
+
+        <dt id="minusYears" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/minusYears.html">minusYears</a></span><span class="signature">(<wbr><span class="parameter" id="minusYears-param-years"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">years</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Subtracts years from the date component.
+  
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="plus" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/plus.html">plus</a></span><span class="signature">(<wbr><span class="parameter" id="plus-param-duration"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Duration-class.html">Duration</a></span> <span class="parameter-name">duration</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Adds a <a href="https://api.dart.dev/stable/3.9.2/dart-core/Duration-class.html">Duration</a> to this <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a>.
+  
+
+</dd>
+
+        <dt id="plusDays" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/plusDays.html">plusDays</a></span><span class="signature">(<wbr><span class="parameter" id="plusDays-param-days"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">days</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Adds a number of days to the date component.
+  
+
+</dd>
+
+        <dt id="plusHours" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/plusHours.html">plusHours</a></span><span class="signature">(<wbr><span class="parameter" id="plusHours-param-hours"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">hours</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Adds hours to the time component.
+  
+
+</dd>
+
+        <dt id="plusMilliseconds" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/plusMilliseconds.html">plusMilliseconds</a></span><span class="signature">(<wbr><span class="parameter" id="plusMilliseconds-param-milliseconds"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">milliseconds</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Adds milliseconds to the time component.
+  
+
+</dd>
+
+        <dt id="plusMinutes" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/plusMinutes.html">plusMinutes</a></span><span class="signature">(<wbr><span class="parameter" id="plusMinutes-param-minutes"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">minutes</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Adds minutes to the time component.
+  
+
+</dd>
+
+        <dt id="plusMonths" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/plusMonths.html">plusMonths</a></span><span class="signature">(<wbr><span class="parameter" id="plusMonths-param-months"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">months</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Adds months to the date component.
+  
+
+</dd>
+
+        <dt id="plusSeconds" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/plusSeconds.html">plusSeconds</a></span><span class="signature">(<wbr><span class="parameter" id="plusSeconds-param-seconds"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">seconds</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Adds seconds to the time component.
+  
+
+</dd>
+
+        <dt id="plusWeeks" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/plusWeeks.html">plusWeeks</a></span><span class="signature">(<wbr><span class="parameter" id="plusWeeks-param-weeks"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">weeks</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Adds weeks to the date component.
+  
+
+</dd>
+
+        <dt id="plusYears" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/plusYears.html">plusYears</a></span><span class="signature">(<wbr><span class="parameter" id="plusYears-param-years"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">years</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Adds years to the date component.
+  
+
+</dd>
+
+        <dt id="toDateTime" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/toDateTime.html">toDateTime</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/DateTime-class.html">DateTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Converts this instance to a standard <a href="https://api.dart.dev/stable/3.9.2/dart-core/DateTime-class.html">DateTime</a>.
+  
+
+</dd>
+
+        <dt id="toLocalDate" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/toLocalDate.html">toLocalDate</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalDate-class.html">LocalDate</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns the date component only.
+  
+
+</dd>
+
+        <dt id="toLocalTime" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/toLocalTime.html">toLocalTime</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalTime-class.html">LocalTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns the time component only.
+  
+
+</dd>
+
+        <dt id="toString" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  ISO 8601 formatted string: <code>YYYY-MM-DDTHH:mm:ss[.SSS]</code>
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable">
+  <span class="name"><a href="../jetleaf/LocalDateTime/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Compares this <a href="../jetleaf/LocalDateTime-class.html">LocalDateTime</a> to another for equality.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+    
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li><a href="../jetleaf/">jetleaf</a></li>
+    <li class="self-crumb">LocalDateTime class</li>
+</ol>
+
+    <h5>jetleaf library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

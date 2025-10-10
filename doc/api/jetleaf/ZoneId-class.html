@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the ZoneId class from the jetleaf library, for the Dart programming language.">
+  <title>ZoneId class - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li><a href="../jetleaf/">jetleaf.dart</a></li>
+    <li class="self-crumb">ZoneId class</li>
+  </ol>
+  <div class="self-name">ZoneId</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="jetleaf&#47;jetleaf-library-sidebar.html"
+    data-below-sidebar="jetleaf&#47;ZoneId-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">ZoneId</span> class 
+    <a href="https://dart.dev/language/class-modifiers#final" class="feature feature-final" title="This class can neither be extended, implemented, nor mixed in.">final</a>
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>Represents a time zone identifier, abstracting the concept of region-based
+or offset-based zone IDs (e.g., 'UTC', 'America/New_York').</p>
+<p>The <code>ZoneId</code> class allows specifying or retrieving time zone information
+in a controlled and type-safe manner.</p>
+<p>Example:</p>
+<pre class="language-dart"><code class="language-dart">ZoneId utc = ZoneId.of('UTC');
+print(utc.id); // Output: UTC
+
+ZoneId systemZone = ZoneId.systemDefault();
+print(systemZone); // Output: e.g., "PDT", "CET", depending on system
+</code></pre>
+</section>
+
+
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+    <dl class="constructor-summary-list">
+        <dt id="ZoneId.of" class="callable">
+          <span class="name"><a href="../jetleaf/ZoneId/ZoneId.of.html">ZoneId.of</a></span><span class="signature">(<span class="parameter" id="of-param-zoneId"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">zoneId</span></span>)</span>
+        </dt>
+        <dd>
+          Factory constructor to create a <a href="../jetleaf/ZoneId-class.html">ZoneId</a> from a string-based zone ID.
+            <div class="constructor-modifier features">factory</div>
+        </dd>
+        <dt id="ZoneId.systemDefault" class="callable">
+          <span class="name"><a href="../jetleaf/ZoneId/ZoneId.systemDefault.html">ZoneId.systemDefault</a></span><span class="signature">()</span>
+        </dt>
+        <dd>
+          Returns a <a href="../jetleaf/ZoneId-class.html">ZoneId</a> representing the system's current default time zone.
+            <div class="constructor-modifier features">factory</div>
+        </dd>
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="hashCode" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  Returns a hash code based on the zone ID string.
+  <div class="features"><span class="feature">no setter</span><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="id" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/id.html">id</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  
+
+</dt>
+<dd>
+  Returns the timezone ID string.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Type-class.html">Type</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="normalized" class="callable">
+  <span class="name"><a href="../jetleaf/ZoneId/normalized.html">normalized</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a normalized version of the zone ID.
+  
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="toString" class="callable">
+  <span class="name"><a href="../jetleaf/ZoneId/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns the human-readable string representation of this ZoneId.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable">
+  <span class="name"><a href="../jetleaf/ZoneId/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Checks equality between two <a href="../jetleaf/ZoneId-class.html">ZoneId</a> instances.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section class="summary offset-anchor" id="static-properties">
+    <h2>Static Properties</h2>
+    <dl class="properties">
+        <dt id="AFRICA_ACCRA" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AFRICA_ACCRA.html">AFRICA_ACCRA</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Accra timezone (Africa/Accra) - GMT (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AFRICA_ADDIS_ABABA" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AFRICA_ADDIS_ABABA.html">AFRICA_ADDIS_ABABA</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Addis Ababa timezone (Africa/Addis_Ababa) - EAT (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AFRICA_ALGIERS" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AFRICA_ALGIERS.html">AFRICA_ALGIERS</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Algiers timezone (Africa/Algiers) - CET (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AFRICA_CAIRO" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AFRICA_CAIRO.html">AFRICA_CAIRO</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Cairo timezone (Africa/Cairo) - EET (no DST currently).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AFRICA_CASABLANCA" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AFRICA_CASABLANCA.html">AFRICA_CASABLANCA</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Casablanca timezone (Africa/Casablanca) - WET/WEST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AFRICA_JOHANNESBURG" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AFRICA_JOHANNESBURG.html">AFRICA_JOHANNESBURG</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Johannesburg timezone (Africa/Johannesburg) - SAST (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AFRICA_KINSHASA" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AFRICA_KINSHASA.html">AFRICA_KINSHASA</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Kinshasa timezone (Africa/Kinshasa) - WAT (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AFRICA_LAGOS" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AFRICA_LAGOS.html">AFRICA_LAGOS</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Lagos timezone (Africa/Lagos) - WAT (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AFRICA_NAIROBI" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AFRICA_NAIROBI.html">AFRICA_NAIROBI</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Nairobi timezone (Africa/Nairobi) - EAT (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AFRICA_TUNIS" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AFRICA_TUNIS.html">AFRICA_TUNIS</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Tunis timezone (Africa/Tunis) - CET (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_ANCHORAGE" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_ANCHORAGE.html">AMERICA_ANCHORAGE</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Anchorage timezone (America/Anchorage) - AKST/AKDT.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_ARGENTINA_BUENOS_AIRES" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_ARGENTINA_BUENOS_AIRES.html">AMERICA_ARGENTINA_BUENOS_AIRES</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Buenos Aires timezone (America/Argentina/Buenos_Aires) - ART.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_BELIZE" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_BELIZE.html">AMERICA_BELIZE</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Belize timezone (America/Belize) - CST (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_BOGOTA" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_BOGOTA.html">AMERICA_BOGOTA</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Bogota timezone (America/Bogota) - COT (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_CARACAS" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_CARACAS.html">AMERICA_CARACAS</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Caracas timezone (America/Caracas) - VET (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_CHICAGO" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_CHICAGO.html">AMERICA_CHICAGO</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Chicago timezone (America/Chicago) - CST/CDT.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_COSTA_RICA" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_COSTA_RICA.html">AMERICA_COSTA_RICA</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Costa Rica timezone (America/Costa_Rica) - CST (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_DENVER" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_DENVER.html">AMERICA_DENVER</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Denver timezone (America/Denver) - MST/MDT.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_GUATEMALA" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_GUATEMALA.html">AMERICA_GUATEMALA</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Guatemala timezone (America/Guatemala) - CST (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_HAVANA" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_HAVANA.html">AMERICA_HAVANA</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Havana timezone (America/Havana) - CST/CDT.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_JAMAICA" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_JAMAICA.html">AMERICA_JAMAICA</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Jamaica timezone (America/Jamaica) - EST (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_LA_PAZ" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_LA_PAZ.html">AMERICA_LA_PAZ</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  La Paz timezone (America/La_Paz) - BOT (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_LIMA" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_LIMA.html">AMERICA_LIMA</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Lima timezone (America/Lima) - PET (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_LOS_ANGELES" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_LOS_ANGELES.html">AMERICA_LOS_ANGELES</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Los Angeles timezone (America/Los_Angeles) - PST/PDT.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_MEXICO_CITY" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_MEXICO_CITY.html">AMERICA_MEXICO_CITY</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Mexico City timezone (America/Mexico_City) - CST/CDT.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_MONTREAL" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_MONTREAL.html">AMERICA_MONTREAL</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Montreal timezone (America/Montreal) - EST/EDT.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_NEW_YORK" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_NEW_YORK.html">AMERICA_NEW_YORK</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  New York timezone (America/New_York) - EST/EDT.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_PANAMA" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_PANAMA.html">AMERICA_PANAMA</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Panama timezone (America/Panama) - EST (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_PHOENIX" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_PHOENIX.html">AMERICA_PHOENIX</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Phoenix timezone (America/Phoenix) - MST (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_PUERTO_RICO" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_PUERTO_RICO.html">AMERICA_PUERTO_RICO</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Puerto Rico timezone (America/Puerto_Rico) - AST (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_SANTIAGO" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_SANTIAGO.html">AMERICA_SANTIAGO</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Santiago timezone (America/Santiago) - CLT/CLST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_SAO_PAULO" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_SAO_PAULO.html">AMERICA_SAO_PAULO</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Sao Paulo timezone (America/Sao_Paulo) - BRT/BRST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_TORONTO" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_TORONTO.html">AMERICA_TORONTO</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Toronto timezone (America/Toronto) - EST/EDT.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AMERICA_VANCOUVER" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AMERICA_VANCOUVER.html">AMERICA_VANCOUVER</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Vancouver timezone (America/Vancouver) - PST/PDT.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ANTARCTICA_MCMURDO" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ANTARCTICA_MCMURDO.html">ANTARCTICA_MCMURDO</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  McMurdo timezone (Antarctica/McMurdo) - NZST/NZDT.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ANTARCTICA_PALMER" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ANTARCTICA_PALMER.html">ANTARCTICA_PALMER</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Palmer timezone (Antarctica/Palmer) - CLST/CLT.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_ALMATY" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_ALMATY.html">ASIA_ALMATY</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Almaty timezone (Asia/Almaty) - ALMT (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_BAGHDAD" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_BAGHDAD.html">ASIA_BAGHDAD</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Baghdad timezone (Asia/Baghdad) - AST Arabia (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_BANGKOK" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_BANGKOK.html">ASIA_BANGKOK</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Bangkok timezone (Asia/Bangkok) - ICT (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_COLOMBO" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_COLOMBO.html">ASIA_COLOMBO</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Colombo timezone (Asia/Colombo) - IST Sri Lanka (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_DHAKA" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_DHAKA.html">ASIA_DHAKA</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Dhaka timezone (Asia/Dhaka) - BST Bangladesh (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_DUBAI" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_DUBAI.html">ASIA_DUBAI</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Dubai timezone (Asia/Dubai) - GST (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_HO_CHI_MINH" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_HO_CHI_MINH.html">ASIA_HO_CHI_MINH</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Ho Chi Minh timezone (Asia/Ho_Chi_Minh) - ICT (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_HONG_KONG" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_HONG_KONG.html">ASIA_HONG_KONG</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Hong Kong timezone (Asia/Hong_Kong) - HKT (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_JAKARTA" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_JAKARTA.html">ASIA_JAKARTA</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Jakarta timezone (Asia/Jakarta) - WIB (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_JERUSALEM" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_JERUSALEM.html">ASIA_JERUSALEM</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Jerusalem timezone (Asia/Jerusalem) - IST/IDT Israel.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_KARACHI" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_KARACHI.html">ASIA_KARACHI</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Karachi timezone (Asia/Karachi) - PKT (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_KATHMANDU" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_KATHMANDU.html">ASIA_KATHMANDU</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Kathmandu timezone (Asia/Kathmandu) - NPT +05:45 (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_KOLKATA" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_KOLKATA.html">ASIA_KOLKATA</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Kolkata timezone (Asia/Kolkata) - IST +05:30 (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_KUALA_LUMPUR" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_KUALA_LUMPUR.html">ASIA_KUALA_LUMPUR</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Kuala Lumpur timezone (Asia/Kuala_Lumpur) - MYT (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_MANILA" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_MANILA.html">ASIA_MANILA</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Manila timezone (Asia/Manila) - PHT (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_RIYADH" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_RIYADH.html">ASIA_RIYADH</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Riyadh timezone (Asia/Riyadh) - AST Arabia (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_SEOUL" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_SEOUL.html">ASIA_SEOUL</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Seoul timezone (Asia/Seoul) - KST (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_SHANGHAI" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_SHANGHAI.html">ASIA_SHANGHAI</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Shanghai timezone (Asia/Shanghai) - CST China (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_SINGAPORE" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_SINGAPORE.html">ASIA_SINGAPORE</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Singapore timezone (Asia/Singapore) - SGT (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_TAIPEI" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_TAIPEI.html">ASIA_TAIPEI</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Taipei timezone (Asia/Taipei) - CST Taiwan (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_TASHKENT" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_TASHKENT.html">ASIA_TASHKENT</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Tashkent timezone (Asia/Tashkent) - UZT (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_TEHRAN" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_TEHRAN.html">ASIA_TEHRAN</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Tehran timezone (Asia/Tehran) - IRST/IRDT +03:30/+04:30.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_TOKYO" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_TOKYO.html">ASIA_TOKYO</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Tokyo timezone (Asia/Tokyo) - JST (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="ASIA_YEKATERINBURG" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/ASIA_YEKATERINBURG.html">ASIA_YEKATERINBURG</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Yekaterinburg timezone (Asia/Yekaterinburg) - YEKT (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AUSTRALIA_ADELAIDE" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AUSTRALIA_ADELAIDE.html">AUSTRALIA_ADELAIDE</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Adelaide timezone (Australia/Adelaide) - ACST/ACDT +09:30/+10:30.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AUSTRALIA_BRISBANE" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AUSTRALIA_BRISBANE.html">AUSTRALIA_BRISBANE</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Brisbane timezone (Australia/Brisbane) - AEST (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AUSTRALIA_DARWIN" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AUSTRALIA_DARWIN.html">AUSTRALIA_DARWIN</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Darwin timezone (Australia/Darwin) - ACST +09:30 (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AUSTRALIA_MELBOURNE" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AUSTRALIA_MELBOURNE.html">AUSTRALIA_MELBOURNE</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Melbourne timezone (Australia/Melbourne) - AEST/AEDT.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AUSTRALIA_PERTH" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AUSTRALIA_PERTH.html">AUSTRALIA_PERTH</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Perth timezone (Australia/Perth) - AWST (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="AUSTRALIA_SYDNEY" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/AUSTRALIA_SYDNEY.html">AUSTRALIA_SYDNEY</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Sydney timezone (Australia/Sydney) - AEST/AEDT.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="BST" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/BST.html">BST</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  British Summer Time (BST) - UTC+1.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="CDT" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/CDT.html">CDT</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Central Daylight Time (CDT) - UTC-5.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="CEST" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/CEST.html">CEST</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Central European Summer Time (CEST) - UTC+2.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="CET" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/CET.html">CET</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Central European Time (CET) - UTC+1.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="CST" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/CST.html">CST</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Central Standard Time (CST) - UTC-6.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EDT" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EDT.html">EDT</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Eastern Daylight Time (EDT) - UTC-4.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EEST" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EEST.html">EEST</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Eastern European Summer Time (EEST) - UTC+3.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EET" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EET.html">EET</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Eastern European Time (EET) - UTC+2.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EST" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EST.html">EST</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Eastern Standard Time (EST) - UTC-5.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_AMSTERDAM" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_AMSTERDAM.html">EUROPE_AMSTERDAM</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Amsterdam timezone (Europe/Amsterdam) - CET/CEST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_ATHENS" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_ATHENS.html">EUROPE_ATHENS</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Athens timezone (Europe/Athens) - EET/EEST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_BERLIN" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_BERLIN.html">EUROPE_BERLIN</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Berlin timezone (Europe/Berlin) - CET/CEST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_BRUSSELS" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_BRUSSELS.html">EUROPE_BRUSSELS</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Brussels timezone (Europe/Brussels) - CET/CEST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_BUCHAREST" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_BUCHAREST.html">EUROPE_BUCHAREST</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Bucharest timezone (Europe/Bucharest) - EET/EEST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_COPENHAGEN" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_COPENHAGEN.html">EUROPE_COPENHAGEN</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Copenhagen timezone (Europe/Copenhagen) - CET/CEST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_DUBLIN" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_DUBLIN.html">EUROPE_DUBLIN</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Dublin timezone (Europe/Dublin) - GMT/IST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_HELSINKI" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_HELSINKI.html">EUROPE_HELSINKI</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Helsinki timezone (Europe/Helsinki) - EET/EEST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_ISTANBUL" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_ISTANBUL.html">EUROPE_ISTANBUL</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Istanbul timezone (Europe/Istanbul) - TRT (no DST since 2016).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_KIEV" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_KIEV.html">EUROPE_KIEV</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Kiev timezone (Europe/Kiev) - EET/EEST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_LISBON" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_LISBON.html">EUROPE_LISBON</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Lisbon timezone (Europe/Lisbon) - WET/WEST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_LONDON" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_LONDON.html">EUROPE_LONDON</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  London timezone (Europe/London) - GMT/BST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_MADRID" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_MADRID.html">EUROPE_MADRID</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Madrid timezone (Europe/Madrid) - CET/CEST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_MOSCOW" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_MOSCOW.html">EUROPE_MOSCOW</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Moscow timezone (Europe/Moscow) - MSK (no DST since 2014).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_OSLO" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_OSLO.html">EUROPE_OSLO</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Oslo timezone (Europe/Oslo) - CET/CEST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_PARIS" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_PARIS.html">EUROPE_PARIS</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Paris timezone (Europe/Paris) - CET/CEST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_PRAGUE" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_PRAGUE.html">EUROPE_PRAGUE</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Prague timezone (Europe/Prague) - CET/CEST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_REYKJAVIK" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_REYKJAVIK.html">EUROPE_REYKJAVIK</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Reykjavik timezone (Europe/Reykjavik) - GMT (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_ROME" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_ROME.html">EUROPE_ROME</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Rome timezone (Europe/Rome) - CET/CEST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_STOCKHOLM" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_STOCKHOLM.html">EUROPE_STOCKHOLM</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Stockholm timezone (Europe/Stockholm) - CET/CEST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_VIENNA" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_VIENNA.html">EUROPE_VIENNA</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Vienna timezone (Europe/Vienna) - CET/CEST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_WARSAW" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_WARSAW.html">EUROPE_WARSAW</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Warsaw timezone (Europe/Warsaw) - CET/CEST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="EUROPE_ZURICH" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/EUROPE_ZURICH.html">EUROPE_ZURICH</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Zurich timezone (Europe/Zurich) - CET/CEST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="GMT" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/GMT.html">GMT</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Greenwich Mean Time (GMT) - equivalent to UTC.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="MDT" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/MDT.html">MDT</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Mountain Daylight Time (MDT) - UTC-6.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="MST" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/MST.html">MST</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Mountain Standard Time (MST) - UTC-7.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="PACIFIC_AUCKLAND" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/PACIFIC_AUCKLAND.html">PACIFIC_AUCKLAND</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Auckland timezone (Pacific/Auckland) - NZST/NZDT.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="PACIFIC_CHATHAM" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/PACIFIC_CHATHAM.html">PACIFIC_CHATHAM</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Chatham timezone (Pacific/Chatham) - CHAST/CHADT +12:45/+13:45.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="PACIFIC_FIJI" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/PACIFIC_FIJI.html">PACIFIC_FIJI</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Fiji timezone (Pacific/Fiji) - FJT/FJST.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="PACIFIC_GUAM" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/PACIFIC_GUAM.html">PACIFIC_GUAM</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Guam timezone (Pacific/Guam) - ChST (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="PACIFIC_HONOLULU" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/PACIFIC_HONOLULU.html">PACIFIC_HONOLULU</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Honolulu timezone (Pacific/Honolulu) - HST (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="PACIFIC_TAHITI" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/PACIFIC_TAHITI.html">PACIFIC_TAHITI</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Tahiti timezone (Pacific/Tahiti) - TAHT (no DST).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="PDT" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/PDT.html">PDT</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Pacific Daylight Time (PDT) - UTC-7.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="PST" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/PST.html">PST</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Pacific Standard Time (PST) - UTC-8.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="UTC" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/UTC.html">UTC</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  Coordinated Universal Time (UTC) - the primary time standard.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="Z" class="property">
+  <span class="name"><a href="../jetleaf/ZoneId/Z.html">Z</a></span>
+  <span class="signature">&#8594; <a href="../jetleaf/ZoneId-class.html">ZoneId</a></span>
+  
+
+</dt>
+<dd>
+  UTC timezone represented as 'Z' (Zulu time).
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section class="summary offset-anchor" id="static-methods">
+    <h2>Static Methods</h2>
+    <dl class="callables">
+        <dt id="getAvailableZoneIds" class="callable">
+  <span class="name"><a href="../jetleaf/ZoneId/getAvailableZoneIds.html">getAvailableZoneIds</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Set-class.html">Set</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a comprehensive set of all supported timezone IDs.
+  
+
+</dd>
+
+    </dl>
+  </section>
+    
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li><a href="../jetleaf/">jetleaf</a></li>
+    <li class="self-crumb">ZoneId class</li>
+</ol>
+
+    <h5>jetleaf library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

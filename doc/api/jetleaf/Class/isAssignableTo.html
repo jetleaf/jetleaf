@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the isAssignableTo method from the Class class, for the Dart programming language.">
+  <title>isAssignableTo method - Class class - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf.dart</a></li>
+    <li><a href="../../jetleaf/Class-class.html">Class<span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></a></li>
+    <li class="self-crumb">isAssignableTo abstract method</li>
+  </ol>
+  <div class="self-name">isAssignableTo</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="jetleaf&#47;Class-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">isAssignableTo</span> abstract method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+<span class="returntype"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+<span class="name ">isAssignableTo</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="isAssignableTo-param-other"><span class="type-annotation"><a href="../../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">other</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Checks if this type is assignable to another type.</p>
+<p>Parameters:</p>
+<ul>
+<li><code>other</code>: The target type to check assignability to</li>
+</ul>
+<p>Returns:</p>
+<ul>
+<li><code>true</code> if this type can be assigned to <code>other</code></li>
+<li><code>false</code> otherwise</li>
+</ul>
+<h2 id="assignability-rules">Assignability Rules</h2>
+<p>This method implements Dart's type assignability rules:</p>
+<ul>
+<li>Subclass to superclass: ✅ Allowed</li>
+<li>Superclass to subclass: ❌ Not allowed</li>
+<li>Class to implemented interface: ✅ Allowed</li>
+<li>Interface to implementing class: ❌ Not allowed</li>
+<li>Identical types: ✅ Allowed</li>
+<li>Unrelated types: ❌ Not allowed</li>
+</ul>
+<h4 id="type-assignability-table">Type Assignability Table:</h4>
+<pre class="language-sql"><code class="language-sql">DART TYPE ASSIGNABILITY TABLE
+────────────────────────────────────────────────────────────────────────────
+From (A) → To (B)                   A.isAssignableTo(B)   Valid?   Notes
+────────────────────────────────────────────────────────────────────────────
+String    → Object                 ✅ true               ✅      String extends Object
+Object    → String                 ❌ false              ❌      Superclass to subclass not allowed
+int       → num                    ✅ true               ✅      int is a subtype of num
+num       → int                    ❌ false              ❌      Can't assign broader to narrower
+List&lt;int&gt; → List&lt;int&gt;              ✅ true               ✅      Identical type
+List&lt;S&gt;   → List&lt;T&gt;                ❌ false              ❌      Dart generics are invariant
+List&lt;int&gt; → List&lt;dynamic&gt;          ❌ false              ❌      Invariant generics
+B         → A (B extends A)        ✅ true               ✅      Subclass to superclass: OK
+C         → A (no relation)        ❌ false              ❌      Unrelated types
+Class     → Interface (implements) ✅ true               ✅      Implements interface
+Class     → Mixin (with mixin)     ✅ true               ✅      Class includes mixin
+anything  → dynamic                ✅ true               ✅      Everything is assignable to dynamic
+dynamic   → anything               ✅ true (unchecked)   ✅      Allowed but unsafe
+anything  → Never                  ❌ false              ❌      Can't assign anything to Never
+Never     → anything               ✅ true               ✅      Never fits anywhere
+────────────────────────────────────────────────────────────────────────────
+
+RULE OF THUMB:
+A.isAssignableTo(B) → Can you do: B b = A();
+✓ Subclass → Superclass: OK
+✗ Superclass → Subclass: Not OK
+✓ Class → Interface it implements: OK
+✗ Interface → Class: Not OK
+✓ Identical types: OK
+✗ Unrelated types: Not OK
+</code></pre>
+<h2 id="example">Example</h2>
+<pre class="language-dart"><code class="language-dart">final stringClass = Class.forType&lt;String&gt;();
+final objectClass = Class.forType&lt;Object&gt;();
+
+print(stringClass.isAssignableTo(objectClass)); // true - String → Object
+print(objectClass.isAssignableTo(stringClass)); // false - Object → String
+</code></pre>
+<h2 id="relationship-to-isassignablefrom">Relationship to isAssignableFrom</h2>
+<p>This is the inverse of <a href="../../jetleaf/Class/isAssignableFrom.html">isAssignableFrom</a>:</p>
+<ul>
+<li><code>A.isAssignableTo(B)</code> ≡ <code>B.isAssignableFrom(A)</code></li>
+<li>Use <a href="../../jetleaf/Class/isAssignableTo.html">isAssignableTo</a> when asking "Can I assign this to that?"</li>
+<li>Use <a href="../../jetleaf/Class/isAssignableFrom.html">isAssignableFrom</a> when asking "Can that be assigned to this?"</li>
+</ul>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">bool isAssignableTo(Class other);</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf</a></li>
+    <li><a href="../../jetleaf/Class-class.html">Class<span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></a></li>
+    <li class="self-crumb">isAssignableTo abstract method</li>
+</ol>
+
+    <h5>Class class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

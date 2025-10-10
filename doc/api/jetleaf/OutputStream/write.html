@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the write method from the OutputStream class, for the Dart programming language.">
+  <title>write method - OutputStream class - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf.dart</a></li>
+    <li><a href="../../jetleaf/OutputStream-class.html">OutputStream</a></li>
+    <li class="self-crumb">write method</li>
+  </ol>
+  <div class="self-name">write</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="jetleaf&#47;OutputStream-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">write</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+<span class="returntype"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+<span class="name ">write</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="write-param-b"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>&gt;</span></span> <span class="parameter-name">b</span>, [</span></li>
+<li><span class="parameter" id="write-param-offset"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">offset</span> = <span class="default-value">0</span>, </span></li>
+<li><span class="parameter" id="write-param-length"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">length</span></span></li>
+</ol>])
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Writes <code>b.length</code> bytes from the specified byte array to this output stream.</p>
+<p>The general contract for <a href="../../jetleaf/OutputStream/write.html">write</a> is that it should have exactly the same
+effect as the call <code>write(b, 0, b.length)</code>.</p>
+<h2 id="parameters">Parameters</h2>
+<ul>
+<li><code>b</code>: The data to write</li>
+<li><code>offset</code>: The start offset in the data (default: 0)</li>
+<li><code>length</code>: The number of bytes to write (default: remaining bytes from offset)</li>
+</ul>
+<h2 id="example">Example</h2>
+<pre class="language-dart"><code class="language-dart">final output = FileOutputStream('output.txt');
+try {
+  // Write entire array
+  await output.write([72, 101, 108, 108, 111]); // "Hello"
+  
+  // Write part of array
+  final data = [32, 87, 111, 114, 108, 100, 33]; // " World!"
+  await output.write(data, 1, 5); // Write "World"
+  
+  await output.flush();
+} finally {
+  await output.close();
+}
+</code></pre>
+<p>Throws <a href="../../jetleaf/InvalidArgumentException-class.html">InvalidArgumentException</a> if <code>offset</code> or <code>length</code> is negative, or if
+<code>offset</code> + <code>length</code> is greater than the length of <code>b</code>.
+Throws <a href="../../jetleaf/IOException-class.html">IOException</a> if an I/O error occurs.
+Throws <a href="../../jetleaf/StreamClosedException-class.html">StreamClosedException</a> if the stream has been closed.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">Future&lt;void&gt; write(List&lt;int&gt; b, [int offset = 0, int? length]) async {
+  checkClosed();
+
+  length ??= b.length - offset;
+
+  if (offset &lt; 0 || length &lt; 0 || offset + length &gt; b.length) {
+    throw InvalidArgumentException(&#39;Invalid offset or length&#39;);
+  }
+
+  for (int i = 0; i &lt; length; i++) {
+    await writeByte(b[offset + i]);
+  }
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf</a></li>
+    <li><a href="../../jetleaf/OutputStream-class.html">OutputStream</a></li>
+    <li class="self-crumb">write method</li>
+</ol>
+
+    <h5>OutputStream class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

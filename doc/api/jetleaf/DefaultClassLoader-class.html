@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the DefaultClassLoader class from the jetleaf library, for the Dart programming language.">
+  <title>DefaultClassLoader class - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li><a href="../jetleaf/">jetleaf.dart</a></li>
+    <li class="self-crumb">DefaultClassLoader class</li>
+  </ol>
+  <div class="self-name">DefaultClassLoader</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="jetleaf&#47;jetleaf-library-sidebar.html"
+    data-below-sidebar="jetleaf&#47;DefaultClassLoader-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">DefaultClassLoader</span> class 
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>The default system implementation of <a href="../jetleaf/ClassLoader-class.html">ClassLoader</a> with comprehensive caching.</p>
+<p>Provides efficient class loading and caching for the JetLeaf reflection system.
+This implementation uses multiple specialized caches to optimize different
+types of reflection queries and maintains detailed statistics for monitoring.</p>
+<h2 id="cache-architecture">Cache Architecture</h2>
+<p>The DefaultClassLoader employs a multi-tier caching strategy:</p>
+<h3 id="primary-caches">Primary Caches</h3>
+<ul>
+<li><strong>Class Cache</strong>: Maps qualified names to <a href="../jetleaf/Class-class.html">Class</a> instances</li>
+<li><strong>Subclass Cache</strong>: Maps parent classes to their direct classes</li>
+<li><strong>Interface Cache</strong>: Maps classes to their implemented interfaces</li>
+<li><strong>Mixin Cache</strong>: Maps classes to their applied mixins</li>
+</ul>
+<h3 id="declared-caches-non-transitive">Declared Caches (Non-transitive)</h3>
+<ul>
+<li><strong>Declared Interface Cache</strong>: Direct interface implementations only</li>
+<li><strong>Declared Mixin Cache</strong>: Direct mixin applications only</li>
+</ul>
+<h2 id="performance-characteristics">Performance Characteristics</h2>
+<ul>
+<li><strong>Class Loading</strong>: O(1) for cached, O(log n) for new classes</li>
+<li><strong>Hierarchy Queries</strong>: O(1) for cached relationships</li>
+<li><strong>Memory Usage</strong>: Configurable with automatic cleanup</li>
+<li><strong>Thread Safety</strong>: Full concurrent access support</li>
+</ul>
+<h2 id="example-usage">Example Usage</h2>
+<pre class="language-dart"><code class="language-dart">// Create system class loader
+final loader = DefaultClassLoader();
+
+// Load classes with caching
+final stringClass = await loader.loadClass&lt;String&gt;('dart:core/string.dart.String');
+final listClass = await loader.loadClass&lt;List&gt;('dart:core/list.dart.List');
+
+// Query relationships (cached)
+final classes = await loader.findSubclasses(stringClass);
+final interfaces = await loader.findInterfaces(listClass);
+
+// Monitor performance
+final stats = loader.getCacheStats();
+print('Hit rate: ${stats.hitRate}');
+
+// Cleanup
+await loader.flush(); // Clear caches
+await loader.close(); // Release resources
+</code></pre>
+<h2 id="configuration-options">Configuration Options</h2>
+<p>The loader supports various configuration parameters:</p>
+<ul>
+<li><strong>Max Cache Size</strong>: Prevents unbounded memory growth</li>
+<li><strong>Auto-flush Threshold</strong>: Automatic cache cleanup triggers</li>
+<li><strong>Statistics Collection</strong>: Detailed performance monitoring</li>
+<li><strong>Security Domains</strong>: Fine-grained access control</li>
+</ul>
+<h2 id="thread-safety">Thread Safety</h2>
+<p>All operations are thread-safe and support concurrent access:</p>
+<ul>
+<li>Multiple threads can load classes simultaneously</li>
+<li>Cache updates are atomic and consistent</li>
+<li>Statistics are accurately maintained under concurrency</li>
+<li>Resource cleanup is coordinated across threads</li>
+</ul>
+</section>
+
+
+    <section>
+      <dl class="dl-horizontal">
+        
+  <dt>Inheritance</dt>
+  <dd>
+    <ul class="gt-separated dark clazz-relationships">
+      <li><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></li>
+        <li><a href="../jetleaf/ClassLoader-class.html">ClassLoader</a></li>
+      <li>DefaultClassLoader</li>
+    </ul>
+  </dd>
+
+        
+        
+
+
+        
+        
+
+
+      </dl>
+    </section>
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+    <dl class="constructor-summary-list">
+        <dt id="DefaultClassLoader.new" class="callable">
+          <span class="name"><a href="../jetleaf/DefaultClassLoader/DefaultClassLoader.html">DefaultClassLoader.new</a></span><span class="signature">()</span>
+        </dt>
+        <dd>
+          The default system implementation of <a href="../jetleaf/ClassLoader-class.html">ClassLoader</a> with comprehensive caching.
+        </dd>
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  The hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Type-class.html">Type</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="close" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/close.html">close</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Closes the class loader and releases all resources.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="extractComponentType" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/extractComponentType.html">extractComponentType</a></span><span class="signature">(<wbr><span class="parameter" id="extractComponentType-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Type-class.html">Type</a>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Extract component type for arrays/lists
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="extractKeyType" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/extractKeyType.html">extractKeyType</a></span><span class="signature">(<wbr><span class="parameter" id="extractKeyType-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Type-class.html">Type</a>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Extract key type for maps
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="findAllConstraintArguments" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/findAllConstraintArguments.html">findAllConstraintArguments</a></span><span class="signature">(<wbr><span class="parameter" id="findAllConstraintArguments-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span>, [</span><span class="parameter" id="findAllConstraintArguments-param-declared"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">declared</span> = <span class="default-value">true</span></span>])
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Class-class.html">Class</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Retrieves all type arguments from all constraints applied to a class.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="findAllConstraints" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/findAllConstraints.html">findAllConstraints</a></span><span class="signature">(<wbr><span class="parameter" id="findAllConstraints-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span>, [</span><span class="parameter" id="findAllConstraints-param-declared"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">declared</span> = <span class="default-value">true</span></span>])
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Class-class.html">Class</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Retrieves all constraints applied to a class.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="findAllInterfaceArguments" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/findAllInterfaceArguments.html">findAllInterfaceArguments</a></span><span class="signature">(<wbr><span class="parameter" id="findAllInterfaceArguments-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span>, [</span><span class="parameter" id="findAllInterfaceArguments-param-declared"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">declared</span> = <span class="default-value">true</span></span>])
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Class-class.html">Class</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Finds all interface arguments of the specified class with caching.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="findAllInterfaces" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/findAllInterfaces.html">findAllInterfaces</a></span><span class="signature">(<wbr><span class="parameter" id="findAllInterfaces-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span>, [</span><span class="parameter" id="findAllInterfaces-param-declared"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">declared</span> = <span class="default-value">true</span></span>])
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Class-class.html">Class</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Finds all interfaces implemented by the specified class with caching.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="findAllMixinArguments" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/findAllMixinArguments.html">findAllMixinArguments</a></span><span class="signature">(<wbr><span class="parameter" id="findAllMixinArguments-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span>, [</span><span class="parameter" id="findAllMixinArguments-param-declared"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">declared</span> = <span class="default-value">true</span></span>])
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Class-class.html">Class</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Retrieves all type arguments from all mixins applied to a class.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="findAllMixins" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/findAllMixins.html">findAllMixins</a></span><span class="signature">(<wbr><span class="parameter" id="findAllMixins-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span>, [</span><span class="parameter" id="findAllMixins-param-declared"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">declared</span> = <span class="default-value">true</span></span>])
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Class-class.html">Class</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Finds all mixins applied to the specified class with caching.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="findClass" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/findClass.html">findClass</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="findClass-param-className"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">className</span>, [</span><span class="parameter" id="findClass-param-domain"><span class="type-annotation"><a href="../jetleaf/ProtectionDomain-class.html">ProtectionDomain</a>?</span> <span class="parameter-name">domain</span></span>])
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Finds and loads a class without caching (used internally by <a href="../jetleaf/DefaultClassLoader/loadClass.html">loadClass</a>).
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="findComponentType" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/findComponentType.html">findComponentType</a></span><span class="signature">&lt;<wbr><span class="type-parameter">C</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="findComponentType-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span>, </span><span class="parameter" id="findComponentType-param-component"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Type-class.html">Type</a>?</span> <span class="parameter-name">component</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter">C</span>&gt;</span>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Finds the component type of a collection-like class.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="findConstraintArguments" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/findConstraintArguments.html">findConstraintArguments</a></span><span class="signature">&lt;<wbr><span class="type-parameter">I</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="findConstraintArguments-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span>, [</span><span class="parameter" id="findConstraintArguments-param-declared"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">declared</span> = <span class="default-value">true</span></span>])
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Class-class.html">Class</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Retrieves the type arguments for a specific constraint applied to a class.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="findConstraints" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/findConstraints.html">findConstraints</a></span><span class="signature">&lt;<wbr><span class="type-parameter">I</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="findConstraints-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span>, [</span><span class="parameter" id="findConstraints-param-declared"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">declared</span> = <span class="default-value">true</span></span>])
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter">I</span>&gt;</span></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Retrieves the constraints applied to a class.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="findInterfaceArguments" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/findInterfaceArguments.html">findInterfaceArguments</a></span><span class="signature">&lt;<wbr><span class="type-parameter">I</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="findInterfaceArguments-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span>, [</span><span class="parameter" id="findInterfaceArguments-param-declared"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">declared</span> = <span class="default-value">true</span></span>])
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Class-class.html">Class</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Finds all interface arguments of the specified class with caching.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="findInterfaces" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/findInterfaces.html">findInterfaces</a></span><span class="signature">&lt;<wbr><span class="type-parameter">I</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="findInterfaces-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span>, [</span><span class="parameter" id="findInterfaces-param-declared"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">declared</span> = <span class="default-value">true</span></span>])
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter">I</span>&gt;</span></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Finds all interfaces implemented by the specified class with caching.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="findKeyType" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/findKeyType.html">findKeyType</a></span><span class="signature">&lt;<wbr><span class="type-parameter">K</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="findKeyType-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span>, </span><span class="parameter" id="findKeyType-param-key"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Type-class.html">Type</a>?</span> <span class="parameter-name">key</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter">K</span>&gt;</span>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Finds the key type of a map-like class.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="findMixinArguments" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/findMixinArguments.html">findMixinArguments</a></span><span class="signature">&lt;<wbr><span class="type-parameter">I</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="findMixinArguments-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span>, [</span><span class="parameter" id="findMixinArguments-param-declared"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">declared</span> = <span class="default-value">true</span></span>])
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Class-class.html">Class</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Retrieves the type arguments for a specific mixin applied to a class.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="findMixins" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/findMixins.html">findMixins</a></span><span class="signature">&lt;<wbr><span class="type-parameter">I</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="findMixins-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span>, [</span><span class="parameter" id="findMixins-param-declared"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">declared</span> = <span class="default-value">true</span></span>])
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter">I</span>&gt;</span></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Finds mixins applied to a class, returning them as typed <a href="../jetleaf/Class-class.html">Class</a> instances.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="findSubclasses" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/findSubclasses.html">findSubclasses</a></span><span class="signature">(<wbr><span class="parameter" id="findSubclasses-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Class-class.html">Class</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Finds all direct subclasses of the specified class with caching.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="findSuperClass" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/findSuperClass.html">findSuperClass</a></span><span class="signature">(<wbr><span class="parameter" id="findSuperClass-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span>, [</span><span class="parameter" id="findSuperClass-param-declared"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">declared</span> = <span class="default-value">true</span></span>])
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Class-class.html">Class</a>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Finds the superclass of a given <code>parentClass</code>.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="findSuperClassArguments" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/findSuperClassArguments.html">findSuperClassArguments</a></span><span class="signature">(<wbr><span class="parameter" id="findSuperClassArguments-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span>, [</span><span class="parameter" id="findSuperClassArguments-param-declared"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">declared</span> = <span class="default-value">true</span></span>])
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Class-class.html">Class</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Finds the type arguments of the superclass of a given <code>parentClass</code>.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="findSuperClassAs" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/findSuperClassAs.html">findSuperClassAs</a></span><span class="signature">&lt;<wbr><span class="type-parameter">S</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="findSuperClassAs-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span>, [</span><span class="parameter" id="findSuperClassAs-param-declared"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">declared</span> = <span class="default-value">true</span></span>])
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter">S</span>&gt;</span>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Finds and casts the superclass of a given <code>parentClass</code> to a specific type.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="findTypeParameters" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/findTypeParameters.html">findTypeParameters</a></span><span class="signature">(<wbr><span class="parameter" id="findTypeParameters-param-parentClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">parentClass</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Class-class.html">Class</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Finds the type parameters of a generic class.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="flush" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/flush.html">flush</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Flushes all caches, clearing cached class data while keeping the loader active.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="getCacheStats" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/getCacheStats.html">getCacheStats</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/ClassLoaderStats-class.html">ClassLoaderStats</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets cache statistics for monitoring and optimization.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="isLoaded" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/isLoaded.html">isLoaded</a></span><span class="signature">(<wbr><span class="parameter" id="isLoaded-param-className"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">className</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Checks if a class is already loaded in the cache.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="loadClass" class="callable">
+  <span class="name"><a href="../jetleaf/DefaultClassLoader/loadClass.html">loadClass</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="loadClass-param-className"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">className</span>, [</span><span class="parameter" id="loadClass-param-domain"><span class="type-annotation"><a href="../jetleaf/ProtectionDomain-class.html">ProtectionDomain</a>?</span> <span class="parameter-name">domain</span></span>])
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Loads a class by its fully qualified name with caching support.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+    
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li><a href="../jetleaf/">jetleaf</a></li>
+    <li class="self-crumb">DefaultClassLoader class</li>
+</ol>
+
+    <h5>jetleaf library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

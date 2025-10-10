@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the ByteArrayOutputStream.new constructor from Class ByteArrayOutputStream from the jetleaf library, for the Dart programming language.">
+  <title>ByteArrayOutputStream.new constructor - ByteArrayOutputStream - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf.dart</a></li>
+    <li><a href="../../jetleaf/ByteArrayOutputStream-class.html">ByteArrayOutputStream</a></li>
+    <li class="self-crumb">ByteArrayOutputStream.new constructor</li>
+  </ol>
+  <div class="self-name">ByteArrayOutputStream.new</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="jetleaf&#47;ByteArrayOutputStream-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-constructor">ByteArrayOutputStream</span> constructor 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+      <span class="name ">ByteArrayOutputStream</span>(<wbr>[<ol class="parameter-list single-line"> <li><span class="parameter" id="-param-initialCapacity"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">initialCapacity</span> = <span class="default-value">_defaultInitialCapacity</span></span></li>
+</ol>])
+    </section>
+    
+<section class="desc markdown">
+  <p>An <a href="../../jetleaf/OutputStream-class.html">OutputStream</a> that writes to a growable internal byte buffer.</p>
+<p><code>ByteArrayOutputStream</code> provides an in-memory output sink similar to Java's
+<code>ByteArrayOutputStream</code>. It allows binary data to be written sequentially
+and later retrieved as a single <a href="https://api.dart.dev/stable/3.9.2/dart-typed_data/Uint8List-class.html">Uint8List</a> for processing, storage, or transmission.</p>
+<p>This stream grows automatically as more bytes are written, making it suitable
+for dynamic or unknown-length binary outputs.</p>
+<hr>
+<h3 id="-example">🔧 Example:</h3>
+<pre class="language-dart"><code class="language-dart">final stream = ByteArrayOutputStream();
+stream.writeByte(104); // h
+stream.writeByte(105); // i
+
+final result = stream.toBytes();
+print(String.fromCharCodes(result)); // hi
+</code></pre>
+<hr>
+<h3 id="-use-cases">✅ Use Cases:</h3>
+<ul>
+<li>Buffering binary content before sending to a file or network.</li>
+<li>Serializing data in memory.</li>
+<li>Mocking writable streams during testing.</li>
+</ul>
+<p>Creates a new <a href="../../jetleaf/ByteArrayOutputStream-class.html">ByteArrayOutputStream</a> with an optional <code>initialCapacity</code>.
+If not provided, defaults to <code>32</code> bytes.</p>
+<p>The internal buffer will automatically grow when needed.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">ByteArrayOutputStream([int initialCapacity = _defaultInitialCapacity])
+    : _buffer = Uint8List(initialCapacity);</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf</a></li>
+    <li><a href="../../jetleaf/ByteArrayOutputStream-class.html">ByteArrayOutputStream</a></li>
+    <li class="self-crumb">ByteArrayOutputStream.new constructor</li>
+</ol>
+
+    <h5>ByteArrayOutputStream class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-left-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

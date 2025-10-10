@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the JetApplication.new constructor from Class JetApplication from the jetleaf library, for the Dart programming language.">
+  <title>JetApplication.new constructor - JetApplication - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf.dart</a></li>
+    <li><a href="../../jetleaf/JetApplication-class.html">JetApplication</a></li>
+    <li class="self-crumb">JetApplication.new constructor</li>
+  </ol>
+  <div class="self-name">JetApplication.new</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="jetleaf&#47;JetApplication-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-constructor">JetApplication</span> constructor 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+      <span class="name ">JetApplication</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="-param-_primarySource"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">_primarySource</span></span></li>
+</ol>)
+    </section>
+    
+<section class="desc markdown">
+  <p>Main entry point for JetLeaf framework applications.</p>
+<p>The <a href="../../jetleaf/JetApplication-class.html">JetApplication</a> class provides a convenient way to bootstrap and launch
+JetLeaf applications from a main() method. It handles application context
+creation, environment setup, banner display, and application lifecycle management.</p>
+<h3 id="key-features">Key Features:</h3>
+<ul>
+<li><strong>Application Bootstrapping</strong>: Creates and configures the application context</li>
+<li><strong>Environment Setup</strong>: Configures property sources and profiles</li>
+<li><strong>Lifecycle Management</strong>: Handles startup, shutdown, and event publishing</li>
+<li><strong>Banner Display</strong>: Shows application banner during startup</li>
+<li><strong>Exception Handling</strong>: Comprehensive exception reporting and handling</li>
+<li><strong>Profile Management</strong>: Active profile detection and configuration</li>
+<li><strong>Command Line Support</strong>: Command line argument parsing and integration</li>
+</ul>
+<h3 id="basic-usage">Basic Usage:</h3>
+<pre class="language-dart"><code class="language-dart">void main(List&lt;String&gt; args) {
+  JetApplication.run(MyApplication, args);
+}
+
+@Configuration
+@ComponentScan
+class MyApplication {
+  // Application configuration
+}
+</code></pre>
+<h3 id="advanced-configuration">Advanced Configuration:</h3>
+<pre class="language-dart"><code class="language-dart">void main(List&lt;String&gt; args) async {
+  final app = JetApplication(MyApplication);
+  
+  // Custom configuration
+  app.setBannerMode(BannerMode.CONSOLE);
+  app.setAdditionalProfiles({'production'});
+  app.setAllowCircularReferences(true);
+  
+  // Add custom initializers
+  app.addInitializer((context) {
+    // Custom context initialization
+  });
+  
+  // Launch application
+  final context = await app.create(args, null);
+}
+</code></pre>
+<h3 id="application-lifecycle">Application Lifecycle:</h3>
+<ol>
+<li><strong>Detection</strong>: Detect runtime environment and application type</li>
+<li><strong>Bootstrap</strong>: Create bootstrap context and register components</li>
+<li><strong>Environment Setup</strong>: Configure property sources and profiles</li>
+<li><strong>Context Creation</strong>: Build and configure application context</li>
+<li><strong>Refresh</strong>: Initialize pods and publish application events</li>
+<li><strong>Runners</strong>: Execute application and command line runners</li>
+<li><strong>Ready</strong>: Application is fully operational</li>
+</ol>
+<h3 id="property-sources-in-order-of-precedence">Property Sources (in order of precedence):</h3>
+<ol>
+<li>Command line arguments (<code>--name=value</code>)</li>
+<li>JVM system properties (<code>System.getProperty()</code>)</li>
+<li>OS environment variables</li>
+<li>Application-specific property files</li>
+<li>Default properties</li>
+</ol>
+<p>See also:</p>
+<ul>
+<li><a href="../../jetleaf/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a> for the application context interface</li>
+<li><code>ApplicationRunner</code> for custom application initialization logic</li>
+<li><code>CommandLineRunner</code> for command line specific initialization</li>
+<li><a href="../../jetleaf/ApplicationEvent-class.html">ApplicationEvent</a> for application lifecycle events</li>
+</ul>
+<p>Creates a new JetApplication instance with the specified primary source.</p>
+<p><code>primarySource</code> the primary source object, typically the main application class
+<code>primarySources</code> additional primary sources for component scanning</p>
+<p>Example:</p>
+<pre class="language-dart"><code class="language-dart">final app = JetApplication(MyApp);
+// or with additional sources
+final app = JetApplication(MyApp, {Config1, Config2});
+</code></pre>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">JetApplication(this._primarySource) {
+  _applicationContextFactory = DefaultApplicationContextFactory();
+  _applicationStartup = DefaultApplicationStartup();
+  _applicationHook.set(DefaultApplicationHook([], _applicationStartup));
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf</a></li>
+    <li><a href="../../jetleaf/JetApplication-class.html">JetApplication</a></li>
+    <li class="self-crumb">JetApplication.new constructor</li>
+</ol>
+
+    <h5>JetApplication class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-left-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

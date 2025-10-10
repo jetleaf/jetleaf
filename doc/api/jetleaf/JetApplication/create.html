@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the create method from the JetApplication class, for the Dart programming language.">
+  <title>create method - JetApplication class - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf.dart</a></li>
+    <li><a href="../../jetleaf/JetApplication-class.html">JetApplication</a></li>
+    <li class="self-crumb">create method</li>
+  </ol>
+  <div class="self-name">create</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="jetleaf&#47;JetApplication-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">create</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+<span class="returntype"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../../jetleaf/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a>?</span>&gt;</span></span>
+<span class="name ">create</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="create-param-args"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>&gt;</span></span> <span class="parameter-name">args</span>, </span></li>
+<li><span class="parameter" id="create-param-provider"><span class="type-annotation"><a href="../../jetleaf/RuntimeProvider-class.html">RuntimeProvider</a>?</span> <span class="parameter-name">provider</span></span></li>
+</ol>)
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Creates and initializes the application context.</p>
+<p>This is the main entry point for application creation and initialization.
+It handles runtime detection, bootstrap context creation, and application
+context building.</p>
+<h3 id="process-flow">Process Flow:</h3>
+<ol>
+<li><strong>Runtime Detection</strong>: Detect AOT vs JIT compilation and validate runtime</li>
+<li><strong>Bootstrap</strong>: Create bootstrap context and register early components</li>
+<li><strong>Listeners</strong>: Collect and initialize application run listeners</li>
+<li><strong>Context Building</strong>: Create and configure the application context</li>
+<li><strong>Startup</strong>: Refresh context and execute application runners</li>
+</ol>
+<p><code>args</code> command line arguments passed to the application
+<code>provider</code> optional runtime provider for environment detection</p>
+<p>Returns a <a href="../../jetleaf/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a> representing the running application</p>
+<p>Throws:</p>
+<ul>
+<li><code>ApplicationContextException</code> if context creation fails</li>
+<li><a href="../../jetleaf/IllegalStateException-class.html">IllegalStateException</a> if runtime requirements are not met</li>
+</ul>
+<p>Example:</p>
+<pre class="language-dart"><code class="language-dart">final app = JetApplication(MyApp);
+final context = await app.create(args, null);
+</code></pre>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">Future&lt;ConfigurableApplicationContext?&gt; create(List&lt;String&gt; args, RuntimeProvider? provider) async {
+  final system = _detector.detect(args);
+  _runtimeProvider = provider;
+
+  &#47;&#47;&#47; As at v1.0.0, we have two different ways of running the `JetLeaf` application.
+  &#47;&#47;&#47;
+  &#47;&#47;&#47; 1. Running from a built application:
+  &#47;&#47;&#47;    Here, the application has been built and contains all that it needs to run.
+  &#47;&#47;&#47;    This is mostly seen when the developer is done building and wants to deploy the application.
+  &#47;&#47;&#47;    At this point, Jetleaf enforces the check of AOT and RuntimeProvider since it is crucial to
+  &#47;&#47;&#47;    providing the maximum experience the user needs.
+  &#47;&#47;&#47;
+  &#47;&#47;&#47; 2. Running on development or JIT:
+  &#47;&#47;&#47;    This does not require the RuntimeProvider to be present at the time of running the application,
+  &#47;&#47;&#47;    because Jetleaf since has its authority over the application, it can automatically build
+  &#47;&#47;&#47;    the application and run it.
+  &#47;&#47;&#47;
+  &#47;&#47;&#47; We provide these two different ways to make the developer&#39;s experience swift and better.
+  &#47;&#47;&#47; Since we cannot control how the run method executes from the user&#39;s IDE, we simulate such experience
+  &#47;&#47;&#47; by detecting where the application is running from, in order to decide what to level with.
+
+  if(system.isRunningAot() &amp;&amp; _runtimeProvider == null) {
+    &#47;&#47;&#47; Since the build pipeline failed, we can&#39;t proceed with the application startup.
+    &#47;&#47;&#47; At this point, nothing has been initialized, so we will exit the application gracefully with
+    &#47;&#47;&#47; just [System.out.println].
+    System.out.printErr(&#39;&#39;&#39;
+      Application failed to start. Did you forget to bootstrap or build the application?
+
+      For development, you need to use the `JetLeaf` cli command to run your application.
+        - `jl dev`
+          Bootstraps your application and runs it in development mode.
+
+      For production, you need to use the `JetLeaf` cli command to build your application. Then,
+      utilize the dart run command with the target file to run your application.
+        - `jl generate`
+          Builds the bootstrap file that contains all you source code offers.
+        - `jl build`
+          Compiles your application to fat .dill file.
+        - `jl serve`
+          Runs `generate` and `build` at the same time, simultaneously.
+        - `dart run build&#47;main.dill`
+          Runs your application in production mode.
+    &#39;&#39;&#39;);
+    System.exit(1);
+  }
+
+  &#47;&#47;&#47; At this point, the application is presumed to have been fully bootstrapped by the developer,
+  &#47;&#47;&#47; compiled and ready to execute fully functional .dill file, .dart file, .exe file.
+  &#47;&#47;&#47;
+  &#47;&#47;&#47; So, we will just go ahead to create the [ConfigurableApplicationContext] and start the application.
+  return _create(args);
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf</a></li>
+    <li><a href="../../jetleaf/JetApplication-class.html">JetApplication</a></li>
+    <li class="self-crumb">create method</li>
+</ol>
+
+    <h5>JetApplication class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

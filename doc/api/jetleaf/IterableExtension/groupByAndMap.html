@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the groupByAndMap method from the IterableExtension extension, for the Dart programming language.">
+  <title>groupByAndMap method - IterableExtension extension - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf.dart</a></li>
+    <li><a href="../../jetleaf/IterableExtension.html">IterableExtension<span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></a></li>
+    <li class="self-crumb">groupByAndMap&lt;<wbr><span class="type-parameter">K</span>, <span class="type-parameter">V</span>&gt; method</li>
+  </ol>
+  <div class="self-name">groupByAndMap</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="jetleaf&#47;IterableExtension-extension-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">groupByAndMap&lt;<wbr><span class="type-parameter">K</span>, <span class="type-parameter">V</span>&gt;</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+<span class="returntype"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter">K</span>, <span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">V</span>&gt;</span></span>&gt;</span></span>
+<span class="name ">groupByAndMap</span>&lt;<wbr><span class="type-parameter">K</span>, <span class="type-parameter">V</span>&gt;(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="groupByAndMap-param-keySelector"><span class="type-annotation">K</span> <span class="parameter-name">keySelector</span>(<ol class="parameter-list single-line"> <li><span class="parameter" id="param-item"><span class="type-annotation">T</span> <span class="parameter-name">item</span></span></li>
+</ol>), </span></li>
+<li><span class="parameter" id="groupByAndMap-param-valueSelector"><span class="type-annotation">V</span> <span class="parameter-name">valueSelector</span>(<ol class="parameter-list single-line"> <li><span class="parameter" id="param-item"><span class="type-annotation">T</span> <span class="parameter-name">item</span></span></li>
+</ol>)</span></li>
+</ol>)
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Groups elements of this iterable into a <a href="https://api.dart.dev/stable/3.9.2/dart-core/Map-class.html">Map</a> using <code>keySelector</code>,
+and applies <code>valueSelector</code> to each element before storing it.</p>
+<p>Similar to Java's <code>Collectors.groupingBy(..., Collectors.mapping(...))</code>.</p>
+<p>Example:</p>
+<pre class="language-dart"><code class="language-dart">class Interest {
+  final String name;
+  final String category;
+  Interest(this.name, this.category);
+}
+
+final interests = [
+  Interest('Football', 'Sports'),
+  Interest('Chess', 'Board Games'),
+  Interest('Basketball', 'Sports'),
+];
+
+final groupedNames = interests.groupByAndMap(
+  (i) =&gt; i.category,
+  (i) =&gt; i.name,
+);
+
+print(groupedNames['Sports']); // [Football, Basketball]
+</code></pre>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">Map&lt;K, List&lt;V&gt;&gt; groupByAndMap&lt;K, V&gt;(K Function(T item) keySelector, V Function(T item) valueSelector) {
+  final Map&lt;K, List&lt;V&gt;&gt; result = {};
+  for (final element in this) {
+    final key = keySelector(element);
+    result.putIfAbsent(key, () =&gt; []).add(valueSelector(element));
+  }
+
+  return result;
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf</a></li>
+    <li><a href="../../jetleaf/IterableExtension.html">IterableExtension<span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></a></li>
+    <li class="self-crumb">groupByAndMap&lt;<wbr><span class="type-parameter">K</span>, <span class="type-parameter">V</span>&gt; method</li>
+</ol>
+
+    <h5>IterableExtension extension on <a href="https://api.dart.dev/stable/3.9.2/dart-core/Iterable-class.html">Iterable</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

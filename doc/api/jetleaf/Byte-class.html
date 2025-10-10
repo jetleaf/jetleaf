@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the Byte class from the jetleaf library, for the Dart programming language.">
+  <title>Byte class - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li><a href="../jetleaf/">jetleaf.dart</a></li>
+    <li class="self-crumb">Byte class</li>
+  </ol>
+  <div class="self-name">Byte</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="jetleaf&#47;jetleaf-library-sidebar.html"
+    data-below-sidebar="jetleaf&#47;Byte-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">Byte</span> class 
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>A comprehensive wrapper class for byte operations, supporting both single bytes and byte collections.</p>
+<p>This class provides Java-like functionality for working with 8-bit signed integers (-128 to 127)
+and collections of bytes. It can represent a single byte value or work with byte arrays,
+similar to Java's Byte class and byte[] arrays.</p>
+<h2 id="key-features">Key Features:</h2>
+<ul>
+<li><strong>Single byte operations</strong>: Wrap and manipulate individual byte values</li>
+<li><strong>Byte array support</strong>: Work with collections of bytes (<code>List&lt;int&gt;</code>)</li>
+<li><strong>Type conversions</strong>: Convert between signed/unsigned, different radixes</li>
+<li><strong>Bitwise operations</strong>: Full support for bit manipulation</li>
+<li><strong>Java compatibility</strong>: Method signatures and behavior match Java's Byte class</li>
+</ul>
+<h2 id="usage-examples">Usage Examples:</h2>
+<h3 id="single-byte-operations">Single Byte Operations:</h3>
+<pre class="language-dart"><code class="language-dart">// Create single bytes
+final b1 = Byte(127);                    // Maximum positive value
+final b2 = Byte(-128);                   // Minimum negative value
+final b3 = Byte.parseByte('42');         // Parse from string
+final b4 = Byte.parseByte('FF', 16);     // Parse hex
+
+// Basic operations
+print(b1.value);                        // 127
+print(b1.toUnsigned());                 // 127
+print(b2.toUnsigned());                 // 128 (unsigned representation)
+print(b1 + b2);                         // Byte(-1)
+
+// Bitwise operations
+final result = b1 &amp; Byte(15);           // Bitwise AND
+print(result.toBinaryString());         // Binary representation
+</code></pre>
+<h3 id="byte-array-operations">Byte Array Operations:</h3>
+<pre class="language-dart"><code class="language-dart">// Create from byte arrays
+final bytes = Byte.fromList([65, 66, 67]);        // From List&lt;int&gt;
+final fromString = Byte.fromString('Hello');       // From string
+final fromHex = Byte.fromHexString('48656C6C6F');  // From hex string
+
+// Array operations
+print(bytes.toList());                   // [65, 66, 67]
+print(bytes.toString());                 // 'ABC'
+print(bytes.toHexString());              // '414243'
+
+// Manipulate arrays
+bytes.append(68);                        // Add byte
+bytes.appendAll([69, 70]);               // Add multiple bytes
+final subBytes = bytes.subBytes(1, 3);   // Get substring
+</code></pre>
+<h3 id="advanced-operations">Advanced Operations:</h3>
+<pre class="language-dart"><code class="language-dart">// Validation and ranges
+print(Byte.isValidByte(200));            // false (out of range)
+print(Byte.isValidByte(-100));           // true
+
+// Conversions
+final unsigned = Byte.toUnsignedByte(200);  // Convert unsigned to signed
+final signed = Byte.toSignedByte(200);      // Handle overflow
+
+// Utility operations
+final checksum = Byte.calculateChecksum([1, 2, 3, 4]);
+final reversed = Byte.reverseBytes([1, 2, 3, 4]);
+</code></pre>
+</section>
+
+
+    <section>
+      <dl class="dl-horizontal">
+        
+
+        
+  <dt>Implemented types</dt>
+  <dd>
+    <ul class="comma-separated clazz-relationships">
+        <li><a href="https://api.dart.dev/stable/3.9.2/dart-core/Comparable-class.html">Comparable</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Byte-class.html">Byte</a></span>&gt;</span></li>
+    </ul>
+  </dd>
+        
+
+
+        
+        
+
+
+      </dl>
+    </section>
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+    <dl class="constructor-summary-list">
+        <dt id="Byte.new" class="callable">
+          <span class="name"><a href="../jetleaf/Byte/Byte.html">Byte.new</a></span><span class="signature">(<span class="parameter" id="-param-value"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">value</span></span>)</span>
+        </dt>
+        <dd>
+          Creates a Byte representing a single byte value.
+        </dd>
+        <dt id="Byte.empty" class="callable">
+          <span class="name"><a href="../jetleaf/Byte/Byte.empty.html">Byte.empty</a></span><span class="signature">()</span>
+        </dt>
+        <dd>
+          Creates an empty Byte array.
+        </dd>
+        <dt id="Byte.fromHexString" class="callable">
+          <span class="name"><a href="../jetleaf/Byte/Byte.fromHexString.html">Byte.fromHexString</a></span><span class="signature">(<span class="parameter" id="fromHexString-param-hexString"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">hexString</span></span>)</span>
+        </dt>
+        <dd>
+          Creates a Byte from a hexadecimal string.
+        </dd>
+        <dt id="Byte.fromList" class="callable">
+          <span class="name"><a href="../jetleaf/Byte/Byte.fromList.html">Byte.fromList</a></span><span class="signature">(<span class="parameter" id="fromList-param-bytes"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>&gt;</span></span> <span class="parameter-name">bytes</span></span>)</span>
+        </dt>
+        <dd>
+          Creates a Byte from a list of byte values.
+        </dd>
+        <dt id="Byte.fromString" class="callable">
+          <span class="name"><a href="../jetleaf/Byte/Byte.fromString.html">Byte.fromString</a></span><span class="signature">(<span class="parameter" id="fromString-param-str"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">str</span></span>)</span>
+        </dt>
+        <dd>
+          Creates a Byte from a string, converting each character to its byte value.
+        </dd>
+        <dt id="Byte.fromUint8List" class="callable">
+          <span class="name"><a href="../jetleaf/Byte/Byte.fromUint8List.html">Byte.fromUint8List</a></span><span class="signature">(<span class="parameter" id="fromUint8List-param-data"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-typed_data/Uint8List-class.html">Uint8List</a></span> <span class="parameter-name">data</span></span>)</span>
+        </dt>
+        <dd>
+          Creates a Byte from a Uint8List.
+        </dd>
+        <dt id="Byte.fromUnsignedList" class="callable">
+          <span class="name"><a href="../jetleaf/Byte/Byte.fromUnsignedList.html">Byte.fromUnsignedList</a></span><span class="signature">(<span class="parameter" id="fromUnsignedList-param-bytes"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>&gt;</span></span> <span class="parameter-name">bytes</span></span>)</span>
+        </dt>
+        <dd>
+          Creates a Byte from an unsigned byte list (0-255 range).
+        </dd>
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="hashCode" class="property">
+  <span class="name"><a href="../jetleaf/Byte/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  Returns the hash code for this Byte.
+  <div class="features"><span class="feature">no setter</span><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="isEmpty" class="property">
+  <span class="name"><a href="../jetleaf/Byte/isEmpty.html">isEmpty</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  
+
+</dt>
+<dd>
+  Returns true if this Byte object contains no bytes.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="isNotEmpty" class="property">
+  <span class="name"><a href="../jetleaf/Byte/isNotEmpty.html">isNotEmpty</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  
+
+</dt>
+<dd>
+  Returns true if this Byte object contains at least one byte.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="isSingleByte" class="property">
+  <span class="name"><a href="../jetleaf/Byte/isSingleByte.html">isSingleByte</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  
+
+</dt>
+<dd>
+  Returns true if this represents a single byte value.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="length" class="property">
+  <span class="name"><a href="../jetleaf/Byte/length.html">length</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  Returns the number of bytes in this Byte object.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Type-class.html">Type</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="value" class="property">
+  <span class="name"><a href="../jetleaf/Byte/value.html">value</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  Returns the byte value if this represents a single byte.
+  <div class="features"><span class="feature">no setter</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="abs" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/abs.html">abs</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Byte-class.html">Byte</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns the absolute value of this Byte.
+  
+
+</dd>
+
+        <dt id="append" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/append.html">append</a></span><span class="signature">(<wbr><span class="parameter" id="append-param-byte"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">byte</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Appends a single byte to this byte array.
+  
+
+</dd>
+
+        <dt id="appendAll" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/appendAll.html">appendAll</a></span><span class="signature">(<wbr><span class="parameter" id="appendAll-param-bytes"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>&gt;</span></span> <span class="parameter-name">bytes</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Appends multiple bytes to this byte array.
+  
+
+</dd>
+
+        <dt id="clear" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/clear.html">clear</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Removes all bytes from this byte array.
+  
+
+</dd>
+
+        <dt id="compareTo" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/compareTo.html">compareTo</a></span><span class="signature">(<wbr><span class="parameter" id="compareTo-param-other"><span class="type-annotation"><a href="../jetleaf/Byte-class.html">Byte</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Compares this Byte with another Byte.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="insert" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/insert.html">insert</a></span><span class="signature">(<wbr><span class="parameter" id="insert-param-index"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">index</span>, </span><span class="parameter" id="insert-param-byte"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">byte</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Inserts a byte at the specified index.
+  
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="removeAt" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/removeAt.html">removeAt</a></span><span class="signature">(<wbr><span class="parameter" id="removeAt-param-index"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">index</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Removes the byte at the specified index.
+  
+
+</dd>
+
+        <dt id="subBytes" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/subBytes.html">subBytes</a></span><span class="signature">(<wbr><span class="parameter" id="subBytes-param-start"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">start</span>, [</span><span class="parameter" id="subBytes-param-end"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a>?</span> <span class="parameter-name">end</span></span>])
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Byte-class.html">Byte</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a sub-array of bytes from <code>start</code> to <code>end</code> (exclusive).
+  
+
+</dd>
+
+        <dt id="toBinaryString" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/toBinaryString.html">toBinaryString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a binary string representation of the bytes.
+  
+
+</dd>
+
+        <dt id="toHexString" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/toHexString.html">toHexString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a hexadecimal string representation of the bytes.
+  
+
+</dd>
+
+        <dt id="toList" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/toList.html">toList</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns the bytes as a <code>List&lt;int&gt;</code> with signed values (-128 to 127).
+  
+
+</dd>
+
+        <dt id="toRadixString" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/toRadixString.html">toRadixString</a></span><span class="signature">(<wbr><span class="parameter" id="toRadixString-param-radix"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">radix</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a string representation in the specified radix.
+  
+
+</dd>
+
+        <dt id="toString" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Converts bytes to a string by interpreting each byte as a character code.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="toUint8List" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/toUint8List.html">toUint8List</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-typed_data/Uint8List-class.html">Uint8List</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns the bytes as a Uint8List.
+  
+
+</dd>
+
+        <dt id="toUnsigned" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/toUnsigned.html">toUnsigned</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns the unsigned representation of this byte (0-255).
+  
+
+</dd>
+
+        <dt id="toUnsignedList" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/toUnsignedList.html">toUnsignedList</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns the bytes as a <code>List&lt;int&gt;</code> with unsigned values (0 to 255).
+  
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator %" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/operator_modulo.html">operator %</a></span><span class="signature">(<wbr><span class="parameter" id="%-param-other"><span class="type-annotation"><a href="../jetleaf/Byte-class.html">Byte</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Byte-class.html">Byte</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Modulo operation of two Byte values.
+  
+
+</dd>
+
+        <dt id="operator &amp;" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/operator_bitwise_and.html">operator &</a></span><span class="signature">(<wbr><span class="parameter" id="&-param-other"><span class="type-annotation"><a href="../jetleaf/Byte-class.html">Byte</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Byte-class.html">Byte</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Bitwise AND operation.
+  
+
+</dd>
+
+        <dt id="operator *" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/operator_multiply.html">operator *</a></span><span class="signature">(<wbr><span class="parameter" id="*-param-other"><span class="type-annotation"><a href="../jetleaf/Byte-class.html">Byte</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Byte-class.html">Byte</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Multiplies two Byte values.
+  
+
+</dd>
+
+        <dt id="operator +" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/operator_plus.html">operator +</a></span><span class="signature">(<wbr><span class="parameter" id="+-param-other"><span class="type-annotation"><a href="../jetleaf/Byte-class.html">Byte</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Byte-class.html">Byte</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Adds two Byte values.
+  
+
+</dd>
+
+        <dt id="operator -" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/operator_minus.html">operator -</a></span><span class="signature">(<wbr><span class="parameter" id="--param-other"><span class="type-annotation"><a href="../jetleaf/Byte-class.html">Byte</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Byte-class.html">Byte</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Subtracts two Byte values.
+  
+
+</dd>
+
+        <dt id="operator &lt;" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/operator_less.html">operator <</a></span><span class="signature">(<wbr><span class="parameter" id="<-param-other"><span class="type-annotation"><a href="../jetleaf/Byte-class.html">Byte</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Less than operator.
+  
+
+</dd>
+
+        <dt id="operator &lt;&lt;" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/operator_shift_left.html">operator <<</a></span><span class="signature">(<wbr><span class="parameter" id="<<-param-shiftAmount"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">shiftAmount</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Byte-class.html">Byte</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Left shift operation.
+  
+
+</dd>
+
+        <dt id="operator &lt;=" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/operator_less_equal.html">operator <=</a></span><span class="signature">(<wbr><span class="parameter" id="<=-param-other"><span class="type-annotation"><a href="../jetleaf/Byte-class.html">Byte</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Less than or equal operator.
+  
+
+</dd>
+
+        <dt id="operator ==" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns true if this Byte equals the specified object.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="operator &gt;" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/operator_greater.html">operator ></a></span><span class="signature">(<wbr><span class="parameter" id=">-param-other"><span class="type-annotation"><a href="../jetleaf/Byte-class.html">Byte</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Greater than operator.
+  
+
+</dd>
+
+        <dt id="operator &gt;=" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/operator_greater_equal.html">operator >=</a></span><span class="signature">(<wbr><span class="parameter" id=">=-param-other"><span class="type-annotation"><a href="../jetleaf/Byte-class.html">Byte</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Greater than or equal operator.
+  
+
+</dd>
+
+        <dt id="operator &gt;&gt;" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/operator_shift_right.html">operator >></a></span><span class="signature">(<wbr><span class="parameter" id=">>-param-shiftAmount"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">shiftAmount</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Byte-class.html">Byte</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Right shift operation.
+  
+
+</dd>
+
+        <dt id="operator []" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/operator_get.html">operator []</a></span><span class="signature">(<wbr><span class="parameter" id="[]-param-index"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">index</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns the byte at the specified index.
+  
+
+</dd>
+
+        <dt id="operator []=" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/operator_put.html">operator []=</a></span><span class="signature">(<wbr><span class="parameter" id="[]=-param-index"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">index</span>, </span><span class="parameter" id="[]=-param-value"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sets the byte at the specified index.
+  
+
+</dd>
+
+        <dt id="operator ^" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/operator_bitwise_exclusive_or.html">operator ^</a></span><span class="signature">(<wbr><span class="parameter" id="^-param-other"><span class="type-annotation"><a href="../jetleaf/Byte-class.html">Byte</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Byte-class.html">Byte</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Bitwise XOR operation.
+  
+
+</dd>
+
+        <dt id="operator unary-" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/operator_unary_minus.html">operator unary-</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Byte-class.html">Byte</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Unary minus operator.
+  
+
+</dd>
+
+        <dt id="operator |" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/operator_bitwise_or.html">operator |</a></span><span class="signature">(<wbr><span class="parameter" id="|-param-other"><span class="type-annotation"><a href="../jetleaf/Byte-class.html">Byte</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Byte-class.html">Byte</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Bitwise OR operation.
+  
+
+</dd>
+
+        <dt id="operator ~" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/operator_bitwise_negate.html">operator ~</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Byte-class.html">Byte</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Bitwise NOT operation.
+  
+
+</dd>
+
+        <dt id="operator ~&#47;" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/operator_truncate_divide.html">operator ~/</a></span><span class="signature">(<wbr><span class="parameter" id="~/-param-other"><span class="type-annotation"><a href="../jetleaf/Byte-class.html">Byte</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Byte-class.html">Byte</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Integer division of two Byte values.
+  
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+  <section class="summary offset-anchor" id="static-methods">
+    <h2>Static Methods</h2>
+    <dl class="callables">
+        <dt id="calculateChecksum" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/calculateChecksum.html">calculateChecksum</a></span><span class="signature">(<wbr><span class="parameter" id="calculateChecksum-param-bytes"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>&gt;</span></span> <span class="parameter-name">bytes</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Calculates a simple checksum of a byte array.
+  
+
+</dd>
+
+        <dt id="isValidByte" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/isValidByte.html">isValidByte</a></span><span class="signature">(<wbr><span class="parameter" id="isValidByte-param-value"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Checks if a value is within the valid signed byte range (-128 to 127).
+  
+
+</dd>
+
+        <dt id="isValidUnsignedByte" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/isValidUnsignedByte.html">isValidUnsignedByte</a></span><span class="signature">(<wbr><span class="parameter" id="isValidUnsignedByte-param-value"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Checks if a value is within the valid unsigned byte range (0 to 255).
+  
+
+</dd>
+
+        <dt id="parseByte" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/parseByte.html">parseByte</a></span><span class="signature">(<wbr><span class="parameter" id="parseByte-param-str"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">str</span>, [</span><span class="parameter" id="parseByte-param-radix"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">radix</span> = <span class="default-value">10</span></span>])
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Byte-class.html">Byte</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Parses a string to a Byte representing a single byte value.
+  
+
+</dd>
+
+        <dt id="reverseBytes" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/reverseBytes.html">reverseBytes</a></span><span class="signature">(<wbr><span class="parameter" id="reverseBytes-param-bytes"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>&gt;</span></span> <span class="parameter-name">bytes</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Reverses the order of bytes in a list.
+  
+
+</dd>
+
+        <dt id="toSignedByte" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/toSignedByte.html">toSignedByte</a></span><span class="signature">(<wbr><span class="parameter" id="toSignedByte-param-unsignedValue"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">unsignedValue</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Converts an unsigned byte value (0-255) to signed byte (-128-127).
+  
+
+</dd>
+
+        <dt id="toUnsignedByte" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/toUnsignedByte.html">toUnsignedByte</a></span><span class="signature">(<wbr><span class="parameter" id="toUnsignedByte-param-signedValue"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">signedValue</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Converts a signed byte value (-128-127) to unsigned byte (0-255).
+  
+
+</dd>
+
+        <dt id="valueOf" class="callable">
+  <span class="name"><a href="../jetleaf/Byte/valueOf.html">valueOf</a></span><span class="signature">(<wbr><span class="parameter" id="valueOf-param-value"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">value</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Byte-class.html">Byte</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a Byte instance representing the specified int value.
+  
+
+</dd>
+
+    </dl>
+  </section>
+    
+
+  <section class="summary offset-anchor" id="constants">
+    <h2>Constants</h2>
+    <dl class="properties">
+        <dt id="MAX_UNSIGNED_VALUE" class="constant">
+    <span class="name "><a href="../jetleaf/Byte/MAX_UNSIGNED_VALUE-constant.html">MAX_UNSIGNED_VALUE</a></span>
+  <span class="signature">&#8594; const <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  Maximum value for an unsigned byte (2^8 - 1)
+  
+
+</dd>
+
+        <dt id="MAX_VALUE" class="constant">
+    <span class="name "><a href="../jetleaf/Byte/MAX_VALUE-constant.html">MAX_VALUE</a></span>
+  <span class="signature">&#8594; const <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  Maximum value for a signed byte (2^7 - 1)
+  
+
+</dd>
+
+        <dt id="MIN_UNSIGNED_VALUE" class="constant">
+    <span class="name "><a href="../jetleaf/Byte/MIN_UNSIGNED_VALUE-constant.html">MIN_UNSIGNED_VALUE</a></span>
+  <span class="signature">&#8594; const <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  Minimum value for an unsigned byte
+  
+
+</dd>
+
+        <dt id="MIN_VALUE" class="constant">
+    <span class="name "><a href="../jetleaf/Byte/MIN_VALUE-constant.html">MIN_VALUE</a></span>
+  <span class="signature">&#8594; const <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  Minimum value for a signed byte (-2^7)
+  
+
+</dd>
+
+    </dl>
+  </section>
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li><a href="../jetleaf/">jetleaf</a></li>
+    <li class="self-crumb">Byte class</li>
+</ol>
+
+    <h5>jetleaf library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

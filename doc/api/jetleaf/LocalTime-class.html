@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the LocalTime class from the jetleaf library, for the Dart programming language.">
+  <title>LocalTime class - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li><a href="../jetleaf/">jetleaf.dart</a></li>
+    <li class="self-crumb">LocalTime class</li>
+  </ol>
+  <div class="self-name">LocalTime</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="jetleaf&#47;jetleaf-library-sidebar.html"
+    data-below-sidebar="jetleaf&#47;LocalTime-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">LocalTime</span> class 
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>A value object representing a time of day without any date or timezone information.</p>
+<p><code>LocalTime</code> is immutable and supports operations such as:</p>
+<ul>
+<li>Parsing from strings</li>
+<li>Formatting to strings</li>
+<li>Time arithmetic (addition/subtraction)</li>
+<li>Comparison and equality checks</li>
+</ul>
+<p>This class is useful when working with:</p>
+<ul>
+<li>Scheduling systems</li>
+<li>Time pickers</li>
+<li>Representing specific times (like "08:30 AM") without a date context</li>
+</ul>
+<h3 id="example">Example</h3>
+<pre class="language-dart"><code class="language-dart">final time = LocalTime(14, 30); // 2:30 PM
+final later = time.plusMinutes(45); // 3:15 PM
+print(later); // 15:15:00
+</code></pre>
+</section>
+
+
+    <section>
+      <dl class="dl-horizontal">
+        
+
+        
+  <dt>Implemented types</dt>
+  <dd>
+    <ul class="comma-separated clazz-relationships">
+        <li><a href="https://api.dart.dev/stable/3.9.2/dart-core/Comparable-class.html">Comparable</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/LocalTime-class.html">LocalTime</a></span>&gt;</span></li>
+    </ul>
+  </dd>
+        
+
+
+        
+        
+
+
+      </dl>
+    </section>
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+    <dl class="constructor-summary-list">
+        <dt id="LocalTime.new" class="callable">
+          <span class="name"><a href="../jetleaf/LocalTime/LocalTime.html">LocalTime.new</a></span><span class="signature">(<span class="parameter" id="-param-hour"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">hour</span>, </span><span class="parameter" id="-param-minute"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">minute</span>, [</span><span class="parameter" id="-param-second"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">second</span> = <span class="default-value">0</span>, </span><span class="parameter" id="-param-millisecond"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">millisecond</span> = <span class="default-value">0</span></span>])</span>
+        </dt>
+        <dd>
+          Constructs a <a href="../jetleaf/LocalTime-class.html">LocalTime</a> instance from its components.
+        </dd>
+        <dt id="LocalTime.fromDateTime" class="callable">
+          <span class="name"><a href="../jetleaf/LocalTime/LocalTime.fromDateTime.html">LocalTime.fromDateTime</a></span><span class="signature">(<span class="parameter" id="fromDateTime-param-dateTime"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/DateTime-class.html">DateTime</a></span> <span class="parameter-name">dateTime</span></span>)</span>
+        </dt>
+        <dd>
+          Constructs a <a href="../jetleaf/LocalTime-class.html">LocalTime</a> from a <a href="https://api.dart.dev/stable/3.9.2/dart-core/DateTime-class.html">DateTime</a> object by extracting its time portion.
+            <div class="constructor-modifier features">factory</div>
+        </dd>
+        <dt id="LocalTime.fromMillisecondOfDay" class="callable">
+          <span class="name"><a href="../jetleaf/LocalTime/LocalTime.fromMillisecondOfDay.html">LocalTime.fromMillisecondOfDay</a></span><span class="signature">(<span class="parameter" id="fromMillisecondOfDay-param-millisecondOfDay"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">millisecondOfDay</span></span>)</span>
+        </dt>
+        <dd>
+          Creates a <a href="../jetleaf/LocalTime-class.html">LocalTime</a> from the number of milliseconds since midnight.
+            <div class="constructor-modifier features">factory</div>
+        </dd>
+        <dt id="LocalTime.midnight" class="callable">
+          <span class="name"><a href="../jetleaf/LocalTime/LocalTime.midnight.html">LocalTime.midnight</a></span><span class="signature">()</span>
+        </dt>
+        <dd>
+          Returns a <a href="../jetleaf/LocalTime-class.html">LocalTime</a> instance for midnight (00:00:00.000).
+            <div class="constructor-modifier features">factory</div>
+        </dd>
+        <dt id="LocalTime.noon" class="callable">
+          <span class="name"><a href="../jetleaf/LocalTime/LocalTime.noon.html">LocalTime.noon</a></span><span class="signature">()</span>
+        </dt>
+        <dd>
+          Returns a <a href="../jetleaf/LocalTime-class.html">LocalTime</a> instance for noon (12:00:00.000).
+A value object representing a time of day without any date or timezone information.
+            <div class="constructor-modifier features">factory</div>
+        </dd>
+        <dt id="LocalTime.now" class="callable">
+          <span class="name"><a href="../jetleaf/LocalTime/LocalTime.now.html">LocalTime.now</a></span><span class="signature">()</span>
+        </dt>
+        <dd>
+          Creates a <a href="../jetleaf/LocalTime-class.html">LocalTime</a> representing the current system time (local clock).
+            <div class="constructor-modifier features">factory</div>
+        </dd>
+        <dt id="LocalTime.parse" class="callable">
+          <span class="name"><a href="../jetleaf/LocalTime/LocalTime.parse.html">LocalTime.parse</a></span><span class="signature">(<span class="parameter" id="parse-param-timeString"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">timeString</span></span>)</span>
+        </dt>
+        <dd>
+          Parses a time string into a <a href="../jetleaf/LocalTime-class.html">LocalTime</a> instance.
+            <div class="constructor-modifier features">factory</div>
+        </dd>
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="hashCode" class="property">
+  <span class="name"><a href="../jetleaf/LocalTime/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  Returns a hash code based on hour, minute, second, and millisecond.
+  <div class="features"><span class="feature">no setter</span><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="hour" class="property">
+  <span class="name"><a href="../jetleaf/LocalTime/hour.html">hour</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  The hour in 24-hour format. Must be between 0 and 23.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="millisecond" class="property">
+  <span class="name"><a href="../jetleaf/LocalTime/millisecond.html">millisecond</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  The millisecond of the second. Must be between 0 and 999.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="minute" class="property">
+  <span class="name"><a href="../jetleaf/LocalTime/minute.html">minute</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  The minute of the hour. Must be between 0 and 59.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Type-class.html">Type</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="second" class="property">
+  <span class="name"><a href="../jetleaf/LocalTime/second.html">second</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd>
+  The second of the minute. Must be between 0 and 59.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="compareTo" class="callable">
+  <span class="name"><a href="../jetleaf/LocalTime/compareTo.html">compareTo</a></span><span class="signature">(<wbr><span class="parameter" id="compareTo-param-other"><span class="type-annotation"><a href="../jetleaf/LocalTime-class.html">LocalTime</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Compares this time with another <a href="../jetleaf/LocalTime-class.html">LocalTime</a>.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="isAfter" class="callable">
+  <span class="name"><a href="../jetleaf/LocalTime/isAfter.html">isAfter</a></span><span class="signature">(<wbr><span class="parameter" id="isAfter-param-other"><span class="type-annotation"><a href="../jetleaf/LocalTime-class.html">LocalTime</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns <code>true</code> if this time is later than <code>other</code>.
+  
+
+</dd>
+
+        <dt id="isBefore" class="callable">
+  <span class="name"><a href="../jetleaf/LocalTime/isBefore.html">isBefore</a></span><span class="signature">(<wbr><span class="parameter" id="isBefore-param-other"><span class="type-annotation"><a href="../jetleaf/LocalTime-class.html">LocalTime</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns <code>true</code> if this time is earlier than <code>other</code>.
+  
+
+</dd>
+
+        <dt id="isEqual" class="callable">
+  <span class="name"><a href="../jetleaf/LocalTime/isEqual.html">isEqual</a></span><span class="signature">(<wbr><span class="parameter" id="isEqual-param-other"><span class="type-annotation"><a href="../jetleaf/LocalTime-class.html">LocalTime</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns <code>true</code> if this time is equal to <code>other</code>.
+  
+
+</dd>
+
+        <dt id="minus" class="callable">
+  <span class="name"><a href="../jetleaf/LocalTime/minus.html">minus</a></span><span class="signature">(<wbr><span class="parameter" id="minus-param-duration"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Duration-class.html">Duration</a></span> <span class="parameter-name">duration</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalTime-class.html">LocalTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a new <a href="../jetleaf/LocalTime-class.html">LocalTime</a> with the given <code>duration</code> subtracted.
+  
+
+</dd>
+
+        <dt id="minusHours" class="callable">
+  <span class="name"><a href="../jetleaf/LocalTime/minusHours.html">minusHours</a></span><span class="signature">(<wbr><span class="parameter" id="minusHours-param-hours"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">hours</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalTime-class.html">LocalTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a new <a href="../jetleaf/LocalTime-class.html">LocalTime</a> with the given <code>duration</code> subtracted.
+  
+
+</dd>
+
+        <dt id="minusMilliseconds" class="callable">
+  <span class="name"><a href="../jetleaf/LocalTime/minusMilliseconds.html">minusMilliseconds</a></span><span class="signature">(<wbr><span class="parameter" id="minusMilliseconds-param-milliseconds"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">milliseconds</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalTime-class.html">LocalTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a new <a href="../jetleaf/LocalTime-class.html">LocalTime</a> with the given <code>duration</code> subtracted.
+  
+
+</dd>
+
+        <dt id="minusMinutes" class="callable">
+  <span class="name"><a href="../jetleaf/LocalTime/minusMinutes.html">minusMinutes</a></span><span class="signature">(<wbr><span class="parameter" id="minusMinutes-param-minutes"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">minutes</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalTime-class.html">LocalTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a new <a href="../jetleaf/LocalTime-class.html">LocalTime</a> with the given <code>duration</code> subtracted.
+  
+
+</dd>
+
+        <dt id="minusSeconds" class="callable">
+  <span class="name"><a href="../jetleaf/LocalTime/minusSeconds.html">minusSeconds</a></span><span class="signature">(<wbr><span class="parameter" id="minusSeconds-param-seconds"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">seconds</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalTime-class.html">LocalTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a new <a href="../jetleaf/LocalTime-class.html">LocalTime</a> with the given <code>duration</code> subtracted.
+  
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="plus" class="callable">
+  <span class="name"><a href="../jetleaf/LocalTime/plus.html">plus</a></span><span class="signature">(<wbr><span class="parameter" id="plus-param-duration"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Duration-class.html">Duration</a></span> <span class="parameter-name">duration</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalTime-class.html">LocalTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a new <a href="../jetleaf/LocalTime-class.html">LocalTime</a> with the given <code>duration</code> added.
+  
+
+</dd>
+
+        <dt id="plusHours" class="callable">
+  <span class="name"><a href="../jetleaf/LocalTime/plusHours.html">plusHours</a></span><span class="signature">(<wbr><span class="parameter" id="plusHours-param-hours"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">hours</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalTime-class.html">LocalTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a new <a href="../jetleaf/LocalTime-class.html">LocalTime</a> with the given <code>duration</code> added.
+  
+
+</dd>
+
+        <dt id="plusMilliseconds" class="callable">
+  <span class="name"><a href="../jetleaf/LocalTime/plusMilliseconds.html">plusMilliseconds</a></span><span class="signature">(<wbr><span class="parameter" id="plusMilliseconds-param-milliseconds"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">milliseconds</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalTime-class.html">LocalTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a new <a href="../jetleaf/LocalTime-class.html">LocalTime</a> with the given <code>duration</code> added.
+  
+
+</dd>
+
+        <dt id="plusMinutes" class="callable">
+  <span class="name"><a href="../jetleaf/LocalTime/plusMinutes.html">plusMinutes</a></span><span class="signature">(<wbr><span class="parameter" id="plusMinutes-param-minutes"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">minutes</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalTime-class.html">LocalTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a new <a href="../jetleaf/LocalTime-class.html">LocalTime</a> with the given <code>duration</code> added.
+  
+
+</dd>
+
+        <dt id="plusSeconds" class="callable">
+  <span class="name"><a href="../jetleaf/LocalTime/plusSeconds.html">plusSeconds</a></span><span class="signature">(<wbr><span class="parameter" id="plusSeconds-param-seconds"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span> <span class="parameter-name">seconds</span></span>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/LocalTime-class.html">LocalTime</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a new <a href="../jetleaf/LocalTime-class.html">LocalTime</a> with the given <code>duration</code> added.
+  
+
+</dd>
+
+        <dt id="toMillisecondOfDay" class="callable">
+  <span class="name"><a href="../jetleaf/LocalTime/toMillisecondOfDay.html">toMillisecondOfDay</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns the total number of milliseconds since midnight.
+  
+
+</dd>
+
+        <dt id="toSecondOfDay" class="callable">
+  <span class="name"><a href="../jetleaf/LocalTime/toSecondOfDay.html">toSecondOfDay</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns the total number of seconds since midnight.
+  
+
+</dd>
+
+        <dt id="toString" class="callable">
+  <span class="name"><a href="../jetleaf/LocalTime/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns a string representation of the time in <code>HH:mm:ss</code> or <code>HH:mm:ss.SSS</code> format.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable">
+  <span class="name"><a href="../jetleaf/LocalTime/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Checks if another object is a <a href="../jetleaf/LocalTime-class.html">LocalTime</a> with the same values.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+    
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li><a href="../jetleaf/">jetleaf</a></li>
+    <li class="self-crumb">LocalTime class</li>
+</ol>
+
+    <h5>jetleaf library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

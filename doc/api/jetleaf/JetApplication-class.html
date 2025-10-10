@@ -1,0 +1,1116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the JetApplication class from the jetleaf library, for the Dart programming language.">
+  <title>JetApplication class - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li><a href="../jetleaf/">jetleaf.dart</a></li>
+    <li class="self-crumb">JetApplication class</li>
+  </ol>
+  <div class="self-name">JetApplication</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="jetleaf&#47;jetleaf-library-sidebar.html"
+    data-below-sidebar="jetleaf&#47;JetApplication-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">JetApplication</span> class 
+    <a href="https://dart.dev/language/class-modifiers#final" class="feature feature-final" title="This class can neither be extended, implemented, nor mixed in.">final</a>
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>Main entry point for JetLeaf framework applications.</p>
+<p>The <a href="../jetleaf/JetApplication-class.html">JetApplication</a> class provides a convenient way to bootstrap and launch
+JetLeaf applications from a main() method. It handles application context
+creation, environment setup, banner display, and application lifecycle management.</p>
+<h3 id="key-features">Key Features:</h3>
+<ul>
+<li><strong>Application Bootstrapping</strong>: Creates and configures the application context</li>
+<li><strong>Environment Setup</strong>: Configures property sources and profiles</li>
+<li><strong>Lifecycle Management</strong>: Handles startup, shutdown, and event publishing</li>
+<li><strong>Banner Display</strong>: Shows application banner during startup</li>
+<li><strong>Exception Handling</strong>: Comprehensive exception reporting and handling</li>
+<li><strong>Profile Management</strong>: Active profile detection and configuration</li>
+<li><strong>Command Line Support</strong>: Command line argument parsing and integration</li>
+</ul>
+<h3 id="basic-usage">Basic Usage:</h3>
+<pre class="language-dart"><code class="language-dart">void main(List&lt;String&gt; args) {
+  JetApplication.run(MyApplication, args);
+}
+
+@Configuration
+@ComponentScan
+class MyApplication {
+  // Application configuration
+}
+</code></pre>
+<h3 id="advanced-configuration">Advanced Configuration:</h3>
+<pre class="language-dart"><code class="language-dart">void main(List&lt;String&gt; args) async {
+  final app = JetApplication(MyApplication);
+  
+  // Custom configuration
+  app.setBannerMode(BannerMode.CONSOLE);
+  app.setAdditionalProfiles({'production'});
+  app.setAllowCircularReferences(true);
+  
+  // Add custom initializers
+  app.addInitializer((context) {
+    // Custom context initialization
+  });
+  
+  // Launch application
+  final context = await app.create(args, null);
+}
+</code></pre>
+<h3 id="application-lifecycle">Application Lifecycle:</h3>
+<ol>
+<li><strong>Detection</strong>: Detect runtime environment and application type</li>
+<li><strong>Bootstrap</strong>: Create bootstrap context and register components</li>
+<li><strong>Environment Setup</strong>: Configure property sources and profiles</li>
+<li><strong>Context Creation</strong>: Build and configure application context</li>
+<li><strong>Refresh</strong>: Initialize pods and publish application events</li>
+<li><strong>Runners</strong>: Execute application and command line runners</li>
+<li><strong>Ready</strong>: Application is fully operational</li>
+</ol>
+<h3 id="property-sources-in-order-of-precedence">Property Sources (in order of precedence):</h3>
+<ol>
+<li>Command line arguments (<code>--name=value</code>)</li>
+<li>JVM system properties (<code>System.getProperty()</code>)</li>
+<li>OS environment variables</li>
+<li>Application-specific property files</li>
+<li>Default properties</li>
+</ol>
+<p>See also:</p>
+<ul>
+<li><a href="../jetleaf/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a> for the application context interface</li>
+<li><code>ApplicationRunner</code> for custom application initialization logic</li>
+<li><code>CommandLineRunner</code> for command line specific initialization</li>
+<li><a href="../jetleaf/ApplicationEvent-class.html">ApplicationEvent</a> for application lifecycle events</li>
+</ul>
+</section>
+
+
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+    <dl class="constructor-summary-list">
+        <dt id="JetApplication.new" class="callable">
+          <span class="name"><a href="../jetleaf/JetApplication/JetApplication.html">JetApplication.new</a></span><span class="signature">(<span class="parameter" id="-param-_primarySource"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">_primarySource</span></span>)</span>
+        </dt>
+        <dd>
+          Main entry point for JetLeaf framework applications.
+        </dd>
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  The hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Type-class.html">Type</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="addBootstrapRegistryInitializer" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/addBootstrapRegistryInitializer.html">addBootstrapRegistryInitializer</a></span><span class="signature">(<wbr><span class="parameter" id="addBootstrapRegistryInitializer-param-initializer"><span class="type-annotation"><a href="../jetleaf/BootstrapRegistryInitializer-class.html">BootstrapRegistryInitializer</a></span> <span class="parameter-name">initializer</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Adds a single bootstrap registry initializer.
+  
+
+</dd>
+
+        <dt id="addBootstrapRegistryInitializers" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/addBootstrapRegistryInitializers.html">addBootstrapRegistryInitializers</a></span><span class="signature">(<wbr><span class="parameter" id="addBootstrapRegistryInitializers-param-initializers"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/BootstrapRegistryInitializer-class.html">BootstrapRegistryInitializer</a></span>&gt;</span></span> <span class="parameter-name">initializers</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Adds multiple bootstrap registry initializers.
+  
+
+</dd>
+
+        <dt id="addConversionService" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/addConversionService.html">addConversionService</a></span><span class="signature">(<wbr><span class="parameter" id="addConversionService-param-addConversionService"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">addConversionService</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Whether a conversion service should be added to the environment.
+  
+
+</dd>
+
+        <dt id="addExceptionReporter" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/addExceptionReporter.html">addExceptionReporter</a></span><span class="signature">(<wbr><span class="parameter" id="addExceptionReporter-param-reporter"><span class="type-annotation">ExceptionReporter</span> <span class="parameter-name">reporter</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Adds an exception reporter to the list of exception reporters.
+  
+
+</dd>
+
+        <dt id="addExitCodeExceptionHandler" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/addExitCodeExceptionHandler.html">addExitCodeExceptionHandler</a></span><span class="signature">(<wbr><span class="parameter" id="addExitCodeExceptionHandler-param-handler"><span class="type-annotation"><a href="../jetleaf/ExitCodeExceptionHandler-class.html">ExitCodeExceptionHandler</a></span> <span class="parameter-name">handler</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Adds an exit code exception handler to the list of exit code exception handlers.
+  
+
+</dd>
+
+        <dt id="addInitializer" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/addInitializer.html">addInitializer</a></span><span class="signature">(<wbr><span class="parameter" id="addInitializer-param-initializer"><span class="type-annotation"><a href="../jetleaf/ApplicationContextInitializer-class.html">ApplicationContextInitializer</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a></span>&gt;</span></span> <span class="parameter-name">initializer</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Adds a single application context initializer.
+  
+
+</dd>
+
+        <dt id="addInitializers" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/addInitializers.html">addInitializers</a></span><span class="signature">(<wbr><span class="parameter" id="addInitializers-param-initializers"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/ApplicationContextInitializer-class.html">ApplicationContextInitializer</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a></span>&gt;</span></span>&gt;</span></span> <span class="parameter-name">initializers</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Adds multiple application context initializers.
+  
+
+</dd>
+
+        <dt id="addListeners" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/addListeners.html">addListeners</a></span><span class="signature">(<wbr><span class="parameter" id="addListeners-param-listeners"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/ApplicationEventListener-class.html">ApplicationEventListener</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/ApplicationEvent-class.html">ApplicationEvent</a></span>&gt;</span></span>&gt;</span></span> <span class="parameter-name">listeners</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Adds multiple application event listeners.
+  
+
+</dd>
+
+        <dt id="create" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/create.html">create</a></span><span class="signature">(<wbr><span class="parameter" id="create-param-args"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>&gt;</span></span> <span class="parameter-name">args</span>, </span><span class="parameter" id="create-param-provider"><span class="type-annotation"><a href="../jetleaf/RuntimeProvider-class.html">RuntimeProvider</a>?</span> <span class="parameter-name">provider</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a>?</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Creates and initializes the application context.
+  
+
+</dd>
+
+        <dt id="getAddCommandLineProperties" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getAddCommandLineProperties.html">getAddCommandLineProperties</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets whether command line property parsing is enabled.
+  
+
+</dd>
+
+        <dt id="getAddConversionService" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getAddConversionService.html">getAddConversionService</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets whether conversion service registration is enabled.
+  
+
+</dd>
+
+        <dt id="getAdditionalProfiles" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getAdditionalProfiles.html">getAdditionalProfiles</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Set-class.html">Set</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets the additional active profiles.
+  
+
+</dd>
+
+        <dt id="getAllowCircularReferences" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getAllowCircularReferences.html">getAllowCircularReferences</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets whether circular references are allowed.
+  
+
+</dd>
+
+        <dt id="getAllowPodDefinitionOverriding" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getAllowPodDefinitionOverriding.html">getAllowPodDefinitionOverriding</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets whether pod definition overriding is allowed.
+  
+
+</dd>
+
+        <dt id="getApplicationType" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getApplicationType.html">getApplicationType</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/ApplicationType.html">ApplicationType</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets the application type.
+  
+
+</dd>
+
+        <dt id="getBannerMode" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getBannerMode.html">getBannerMode</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; BannerMode</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets the banner display mode.
+  
+
+</dd>
+
+        <dt id="getBootstrapRegistryInitializers" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getBootstrapRegistryInitializers.html">getBootstrapRegistryInitializers</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/BootstrapRegistryInitializer-class.html">BootstrapRegistryInitializer</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets the bootstrap registry initializers.
+  
+
+</dd>
+
+        <dt id="getConversionService" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getConversionService.html">getConversionService</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/ConfigurableConversionService-class.html">ConfigurableConversionService</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets the conversion service.
+  
+
+</dd>
+
+        <dt id="getDefaultProperties" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getDefaultProperties.html">getDefaultProperties</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>, <span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets the default properties.
+  
+
+</dd>
+
+        <dt id="getEnvironmentPrefix" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getEnvironmentPrefix.html">getEnvironmentPrefix</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets the environment property prefix.
+  
+
+</dd>
+
+        <dt id="getExceptionReporters" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getExceptionReporters.html">getExceptionReporters</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">ExceptionReporter</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns the list of exception reporters.
+  
+
+</dd>
+
+        <dt id="getExitCodeExceptionHandlers" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getExitCodeExceptionHandlers.html">getExitCodeExceptionHandlers</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/ExitCodeExceptionHandler-class.html">ExitCodeExceptionHandler</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns the list of exit code exception handlers.
+  
+
+</dd>
+
+        <dt id="getInitializers" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getInitializers.html">getInitializers</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/ApplicationContextInitializer-class.html">ApplicationContextInitializer</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a></span>&gt;</span></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets the application context initializers.
+  
+
+</dd>
+
+        <dt id="getKeepAlive" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getKeepAlive.html">getKeepAlive</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets whether the application should stay alive after startup.
+  
+
+</dd>
+
+        <dt id="getLazyInitialization" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getLazyInitialization.html">getLazyInitialization</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets whether lazy initialization is enabled.
+  
+
+</dd>
+
+        <dt id="getListeners" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getListeners.html">getListeners</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/ApplicationEventListener-class.html">ApplicationEventListener</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/ApplicationEvent-class.html">ApplicationEvent</a></span>&gt;</span></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets the application event listeners.
+  
+
+</dd>
+
+        <dt id="getLoggingListener" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getLoggingListener.html">getLoggingListener</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; LoggingListener?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Returns the logging listener.
+  
+
+</dd>
+
+        <dt id="getLogStartupInfo" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getLogStartupInfo.html">getLogStartupInfo</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets whether startup information logging is enabled.
+  
+
+</dd>
+
+        <dt id="getMainClass" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getMainClass.html">getMainClass</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets the main application class.
+  
+
+</dd>
+
+        <dt id="getPodNameGenerator" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getPodNameGenerator.html">getPodNameGenerator</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/PodNameGenerator-class.html">PodNameGenerator</a>?</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets the pod name generator.
+  
+
+</dd>
+
+        <dt id="getRegisterShutdownHook" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getRegisterShutdownHook.html">getRegisterShutdownHook</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets whether shutdown hook registration is enabled.
+  
+
+</dd>
+
+        <dt id="getStartup" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getStartup.html">getStartup</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="../jetleaf/ApplicationStartup-class.html">ApplicationStartup</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets the application startup tracker.
+  
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="setAddCommandLineProperties" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/setAddCommandLineProperties.html">setAddCommandLineProperties</a></span><span class="signature">(<wbr><span class="parameter" id="setAddCommandLineProperties-param-addCommandLineProperties"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">addCommandLineProperties</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sets whether command line property parsing is enabled.
+  
+
+</dd>
+
+        <dt id="setAdditionalProfiles" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/setAdditionalProfiles.html">setAdditionalProfiles</a></span><span class="signature">(<wbr><span class="parameter" id="setAdditionalProfiles-param-profiles"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Set-class.html">Set</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>&gt;</span></span> <span class="parameter-name">profiles</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sets the additional active profiles.
+  
+
+</dd>
+
+        <dt id="setAllowCircularReferences" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/setAllowCircularReferences.html">setAllowCircularReferences</a></span><span class="signature">(<wbr><span class="parameter" id="setAllowCircularReferences-param-allowCircularReferences"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">allowCircularReferences</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sets whether circular references are allowed.
+  
+
+</dd>
+
+        <dt id="setAllowPodDefinitionOverriding" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/setAllowPodDefinitionOverriding.html">setAllowPodDefinitionOverriding</a></span><span class="signature">(<wbr><span class="parameter" id="setAllowPodDefinitionOverriding-param-allowDefinitionOverriding"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">allowDefinitionOverriding</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sets whether pod definition overriding is allowed.
+  
+
+</dd>
+
+        <dt id="setApplicationStartup" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/setApplicationStartup.html">setApplicationStartup</a></span><span class="signature">(<wbr><span class="parameter" id="setApplicationStartup-param-applicationStartup"><span class="type-annotation"><a href="../jetleaf/ApplicationStartup-class.html">ApplicationStartup</a>?</span> <span class="parameter-name">applicationStartup</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sets the application startup tracker.
+  
+
+</dd>
+
+        <dt id="setApplicationType" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/setApplicationType.html">setApplicationType</a></span><span class="signature">(<wbr><span class="parameter" id="setApplicationType-param-webApplicationType"><span class="type-annotation"><a href="../jetleaf/ApplicationType.html">ApplicationType</a></span> <span class="parameter-name">webApplicationType</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sets the application type explicitly.
+  
+
+</dd>
+
+        <dt id="setBannerMode" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/setBannerMode.html">setBannerMode</a></span><span class="signature">(<wbr><span class="parameter" id="setBannerMode-param-bannerMode"><span class="type-annotation">BannerMode</span> <span class="parameter-name">bannerMode</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sets the banner display mode.
+  
+
+</dd>
+
+        <dt id="setBootstrapRegistryInitializers" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/setBootstrapRegistryInitializers.html">setBootstrapRegistryInitializers</a></span><span class="signature">(<wbr><span class="parameter" id="setBootstrapRegistryInitializers-param-initializers"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/BootstrapRegistryInitializer-class.html">BootstrapRegistryInitializer</a></span>&gt;</span></span> <span class="parameter-name">initializers</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sets the bootstrap registry initializers.
+  
+
+</dd>
+
+        <dt id="setConversionService" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/setConversionService.html">setConversionService</a></span><span class="signature">(<wbr><span class="parameter" id="setConversionService-param-conversionService"><span class="type-annotation"><a href="../jetleaf/ConfigurableConversionService-class.html">ConfigurableConversionService</a></span> <span class="parameter-name">conversionService</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sets the conversion service.
+  
+
+</dd>
+
+        <dt id="setDefaultProperties" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/setDefaultProperties.html">setDefaultProperties</a></span><span class="signature">(<wbr><span class="parameter" id="setDefaultProperties-param-defaultProperties"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>, <span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>&gt;</span></span> <span class="parameter-name">defaultProperties</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sets the default properties.
+  
+
+</dd>
+
+        <dt id="setEnvironmentPrefix" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/setEnvironmentPrefix.html">setEnvironmentPrefix</a></span><span class="signature">(<wbr><span class="parameter" id="setEnvironmentPrefix-param-environmentPrefix"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">environmentPrefix</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sets the environment property prefix.
+  
+
+</dd>
+
+        <dt id="setInitializers" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/setInitializers.html">setInitializers</a></span><span class="signature">(<wbr><span class="parameter" id="setInitializers-param-initializers"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/ApplicationContextInitializer-class.html">ApplicationContextInitializer</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a></span>&gt;</span></span>&gt;</span></span> <span class="parameter-name">initializers</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sets the application context initializers.
+  
+
+</dd>
+
+        <dt id="setKeepAlive" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/setKeepAlive.html">setKeepAlive</a></span><span class="signature">(<wbr><span class="parameter" id="setKeepAlive-param-keepAlive"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">keepAlive</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sets whether the application should stay alive after startup.
+  
+
+</dd>
+
+        <dt id="setLazyInitialization" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/setLazyInitialization.html">setLazyInitialization</a></span><span class="signature">(<wbr><span class="parameter" id="setLazyInitialization-param-lazyInitialization"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">lazyInitialization</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sets whether lazy initialization is enabled.
+  
+
+</dd>
+
+        <dt id="setListeners" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/setListeners.html">setListeners</a></span><span class="signature">(<wbr><span class="parameter" id="setListeners-param-listeners"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/ApplicationEventListener-class.html">ApplicationEventListener</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/ApplicationEvent-class.html">ApplicationEvent</a></span>&gt;</span></span>&gt;</span></span> <span class="parameter-name">listeners</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sets the application event listeners.
+  
+
+</dd>
+
+        <dt id="setLoggingListener" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/setLoggingListener.html">setLoggingListener</a></span><span class="signature">(<wbr><span class="parameter" id="setLoggingListener-param-listener"><span class="type-annotation">LoggingListener</span> <span class="parameter-name">listener</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Adds a logging listener to the list of logging listeners.
+  
+
+</dd>
+
+        <dt id="setLogStartupInfo" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/setLogStartupInfo.html">setLogStartupInfo</a></span><span class="signature">(<wbr><span class="parameter" id="setLogStartupInfo-param-logStartupInfo"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">logStartupInfo</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sets whether startup information logging is enabled.
+  
+
+</dd>
+
+        <dt id="setPodNameGenerator" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/setPodNameGenerator.html">setPodNameGenerator</a></span><span class="signature">(<wbr><span class="parameter" id="setPodNameGenerator-param-podNameGenerator"><span class="type-annotation"><a href="../jetleaf/PodNameGenerator-class.html">PodNameGenerator</a>?</span> <span class="parameter-name">podNameGenerator</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sets the pod name generator.
+  
+
+</dd>
+
+        <dt id="setRegisterShutdownHook" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/setRegisterShutdownHook.html">setRegisterShutdownHook</a></span><span class="signature">(<wbr><span class="parameter" id="setRegisterShutdownHook-param-registerShutdownHook"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span> <span class="parameter-name">registerShutdownHook</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Sets whether shutdown hook registration is enabled.
+  
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section class="summary offset-anchor" id="static-properties">
+    <h2>Static Properties</h2>
+    <dl class="properties">
+        <dt id="BANNER_LOCATION" class="property">
+  <span class="name"><a href="../jetleaf/JetApplication/BANNER_LOCATION.html">BANNER_LOCATION</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  
+
+</dt>
+<dd>
+  Property name used for banner location.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="BANNER_TEXT" class="property">
+  <span class="name"><a href="../jetleaf/JetApplication/BANNER_TEXT.html">BANNER_TEXT</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  
+
+</dt>
+<dd>
+  Property name used for banner text.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="JETLEAF_APPLICATION_PID" class="property">
+  <span class="name"><a href="../jetleaf/JetApplication/JETLEAF_APPLICATION_PID.html">JETLEAF_APPLICATION_PID</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  
+
+</dt>
+<dd>
+  Property name used to override application PID.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="JETLEAF_APPLICATION_TYPE" class="property">
+  <span class="name"><a href="../jetleaf/JetApplication/JETLEAF_APPLICATION_TYPE.html">JETLEAF_APPLICATION_TYPE</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  
+
+</dt>
+<dd>
+  Property name used to override application type.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="JETLEAF_APPLICATION_VERSION" class="property">
+  <span class="name"><a href="../jetleaf/JetApplication/JETLEAF_APPLICATION_VERSION.html">JETLEAF_APPLICATION_VERSION</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  
+
+</dt>
+<dd>
+  Property name used to override application version.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="JETLEAF_VERSION" class="property">
+  <span class="name"><a href="../jetleaf/JetApplication/JETLEAF_VERSION.html">JETLEAF_VERSION</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  
+
+</dt>
+<dd>
+  Property name used to override JetLeaf version.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+        <dt id="LAZY_INITIALIZATION" class="property">
+  <span class="name"><a href="../jetleaf/JetApplication/LAZY_INITIALIZATION.html">LAZY_INITIALIZATION</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  
+
+</dt>
+<dd>
+  Property name used to override lazy initialization.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section class="summary offset-anchor" id="static-methods">
+    <h2>Static Methods</h2>
+    <dl class="callables">
+        <dt id="close" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/close.html">close</a></span><span class="signature">(<wbr><span class="parameter" id="close-param-context"><span class="type-annotation"><a href="../jetleaf/ApplicationContext-class.html">ApplicationContext</a></span> <span class="parameter-name">context</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Closes the application context and releases resources.
+  
+
+</dd>
+
+        <dt id="exit" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/exit.html">exit</a></span><span class="signature">(<wbr><span class="parameter" id="exit-param-context"><span class="type-annotation"><a href="../jetleaf/ApplicationContext-class.html">ApplicationContext</a></span> <span class="parameter-name">context</span>, </span><span class="parameter" id="exit-param-exitCodeGenerators"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/ExitCodeGenerator-class.html">ExitCodeGenerator</a></span>&gt;</span></span> <span class="parameter-name">exitCodeGenerators</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gracefully exits the application with the appropriate exit code.
+  
+
+</dd>
+
+        <dt id="getShutdownHandler" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/getShutdownHandler.html">getShutdownHandler</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; ApplicationShutdownHandler</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Gets the global application shutdown handler.
+  
+
+</dd>
+
+        <dt id="run" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/run.html">run</a></span><span class="signature">(<wbr><span class="parameter" id="run-param-primarySource"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">primarySource</span>, </span><span class="parameter" id="run-param-args"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>&gt;</span></span> <span class="parameter-name">args</span>, [</span><span class="parameter" id="run-param-provider"><span class="type-annotation"><a href="../jetleaf/RuntimeProvider-class.html">RuntimeProvider</a>?</span> <span class="parameter-name">provider</span></span>])
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a>?</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Convenience method for running an application with a single primary source.
+  
+
+</dd>
+
+        <dt id="runSources" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/runSources.html">runSources</a></span><span class="signature">(<wbr><span class="parameter" id="runSources-param-primarySource"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">primarySource</span>, </span><span class="parameter" id="runSources-param-primarySources"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span>&gt;</span></span> <span class="parameter-name">primarySources</span>, </span><span class="parameter" id="runSources-param-args"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>&gt;</span></span> <span class="parameter-name">args</span>, [</span><span class="parameter" id="runSources-param-provider"><span class="type-annotation"><a href="../jetleaf/RuntimeProvider-class.html">RuntimeProvider</a>?</span> <span class="parameter-name">provider</span></span>])
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a>?</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Convenience method for running an application with multiple primary sources.
+  
+
+</dd>
+
+        <dt id="useHook" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/useHook.html">useHook</a></span><span class="signature">(<wbr><span class="parameter" id="useHook-param-hook"><span class="type-annotation">ApplicationHook</span> <span class="parameter-name">hook</span>, </span><span class="parameter" id="useHook-param-action"><span class="type-annotation"><a href="../jetleaf/Runnable-class.html">Runnable</a></span> <span class="parameter-name">action</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Executes an action with a specific application hook.
+  
+
+</dd>
+
+        <dt id="useThrowableHook" class="callable">
+  <span class="name"><a href="../jetleaf/JetApplication/useThrowableHook.html">useThrowableHook</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="useThrowableHook-param-hook"><span class="type-annotation">ApplicationHook</span> <span class="parameter-name">hook</span>, </span><span class="parameter" id="useThrowableHook-param-action"><span class="type-annotation"><a href="../jetleaf/ThrowingSupplier.html">ThrowingSupplier</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> <span class="parameter-name">action</span></span>)
+    <span class="returntype parameter">&#8594; T</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Executes a throwable action with a specific application hook.
+  
+
+</dd>
+
+    </dl>
+  </section>
+    
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li><a href="../jetleaf/">jetleaf</a></li>
+    <li class="self-crumb">JetApplication class</li>
+</ol>
+
+    <h5>jetleaf library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.0.0
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+
