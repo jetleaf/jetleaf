@@ -83,7 +83,7 @@ final class ApplicationImportSelector implements ImportSelector {
     // Filter assets to only include meta-inf
     List<Asset> importAssets = assets.where((asset) {
       final path = asset.getFilePath().toLowerCase();
-      return path.contains("meta-inf/");
+      return path.contains("meta-inf/") || path.contains("meta_config/") || path.contains("meta_inf/");
     }).toList();
 
     // Filter assets to only include yaml, yml, and properties files
@@ -122,8 +122,8 @@ final class ApplicationImportSelector implements ImportSelector {
     disableAutoConfigurationContent = _mergeContent(disableAutoConfigurationContent);
 
     // Build imports
-    enableAutoConfigurationContent.forEach((entry) => _buildImport(entry, list));
-    disableAutoConfigurationContent.forEach((entry) => _buildImport(entry, list));
+    enableAutoConfigurationContent.forEach((entry) => _buildImport(entry, list, false));
+    disableAutoConfigurationContent.forEach((entry) => _buildImport(entry, list, true));
     
     return list;
   }
@@ -137,7 +137,7 @@ final class ApplicationImportSelector implements ImportSelector {
   /// _buildImport({"package": "jetleaf_web"}, list);
   /// print(list); // [ImportClass.package("jetleaf_web")]
   /// ```
-  void _buildImport(dynamic entry, List<ImportClass> list) {
+  void _buildImport(dynamic entry, List<ImportClass> list, bool disable) {
     if (entry is Map) {
       entry.forEach((key, value) {
         if (value is List) {
@@ -146,14 +146,14 @@ final class ApplicationImportSelector implements ImportSelector {
               if (item.contains(".") && item.contains(":")) {
                 try {
                   Class.fromQualifiedName(item);
-                  list.add(ImportClass.qualified(item));
+                  list.add(ImportClass.qualified(item, disable));
                 } catch (_) {
                   // Extract package name
                   final packageName = _extractPackageName(item);
-                  list.add(ImportClass.package(packageName));
+                  list.add(ImportClass.package(packageName, disable));
                 }
               } else {
-                list.add(ImportClass.package(item));
+                list.add(ImportClass.package(item, disable));
               }
             }
           });
@@ -164,11 +164,11 @@ final class ApplicationImportSelector implements ImportSelector {
                 try {
                   final qualified = "$key:$value";
                   Class.fromQualifiedName(qualified);
-                  list.add(ImportClass.qualified(qualified));
+                  list.add(ImportClass.qualified(qualified, disable));
                 } catch (_) {
                   // Extract package name
                   final packageName = _extractPackageName(value);
-                  list.add(ImportClass.package(packageName));
+                  list.add(ImportClass.package(packageName, disable));
                 }
               }
             }

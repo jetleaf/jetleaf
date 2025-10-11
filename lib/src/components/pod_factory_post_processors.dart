@@ -90,8 +90,8 @@ final class LazyInitializationPodAwareProcessor implements PodFactoryPostProcess
   
   @override
   Future<void> postProcessFactory(ConfigurableListablePodFactory podFactory) async {
-    if (_logger.getIsDebugEnabled()) {
-      _logger.debug('Applying lazy initialization to all eligible pods.');
+    if (_logger.getIsTraceEnabled()) {
+      _logger.trace('Applying lazy initialization to all eligible pods.');
     }
     
     final names = podFactory.getDefinitionNames();
@@ -125,8 +125,8 @@ final class LazyInitializationPodAwareProcessor implements PodFactoryPostProcess
       }
     }
 
-    if (_logger.getIsDebugEnabled()) {
-      _logger.debug('Applied lazy initialization to pod definitions');
+    if (_logger.getIsTraceEnabled()) {
+      _logger.trace('Applied lazy initialization to pod definitions');
     }
   }
 }
@@ -207,8 +207,8 @@ final class PropertySourceOrderingPodAwareProcessor implements PodFactoryPostPro
 
   @override
   Future<void> postProcessFactory(ConfigurableListablePodFactory podFactory) async {
-    if (_logger.getIsDebugEnabled()) {
-      _logger.debug('Applying propertySourceOrdering to pod definitions');
+    if (_logger.getIsTraceEnabled()) {
+      _logger.trace('Applying propertySourceOrdering to pod definitions');
     }
     
     final env = _applicationContext.getEnvironment();
@@ -249,9 +249,12 @@ final class PropertySourceOrderingPodAwareProcessor implements PodFactoryPostPro
         env.getPropertySources().addFirst(source);
       }
 
-      if (_logger.getIsDebugEnabled()) {
-        final orderList = ordered.map((s) => s.getName()).join(", ");
-        _logger.debug("Applied propertySourceOrdering to pod definitions: [$orderList]");
+      if (_logger.getIsTraceEnabled()) {
+        final ortracest = ordered.map((s) => s.getName()).join(", ");
+        
+        if (_logger.getIsTraceEnabled()) {
+          _logger.trace('Applied propertySourceOrdering to pod definitions: [$ortracest]');
+        }
       }
     }
   }
