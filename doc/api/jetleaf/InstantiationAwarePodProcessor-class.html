@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
-  <meta name="description" content="API docs for the InstantiationAwarePodProcessor class from the jetleaf library, for the Dart programming language.">
-  <title>InstantiationAwarePodProcessor class - jetleaf library - Dart API</title>
+  <meta name="description" content="API docs for the PodInstantiationProcessor class from the jetleaf library, for the Dart programming language.">
+  <title>PodInstantiationProcessor class - jetleaf library - Dart API</title>
 
 
   
@@ -26,9 +26,9 @@
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../index.html">jetleaf</a></li>
     <li><a href="../jetleaf/">jetleaf.dart</a></li>
-    <li class="self-crumb">InstantiationAwarePodProcessor class</li>
+    <li class="self-crumb">PodInstantiationProcessor class</li>
   </ol>
-  <div class="self-name">InstantiationAwarePodProcessor</div>
+  <div class="self-name">PodInstantiationProcessor</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -46,9 +46,9 @@
     id="dartdoc-main-content"
     class="main-content"
     data-above-sidebar="jetleaf&#47;jetleaf-library-sidebar.html"
-    data-below-sidebar="jetleaf&#47;InstantiationAwarePodProcessor-class-sidebar.html">
+    data-below-sidebar="jetleaf&#47;PodInstantiationProcessor-class-sidebar.html">
     <div>
-<h1><span class="kind-class">InstantiationAwarePodProcessor</span> class 
+<h1><span class="kind-class">PodInstantiationProcessor</span> class 
     <a href="https://dart.dev/language/class-modifiers#abstract" class="feature feature-abstract" title="This type can not be directly constructed.">abstract</a>
  
 </h1></div>
@@ -66,7 +66,7 @@ providing extension points to:</p>
 </ul>
 <p>Example:</p>
 <pre class="language-dart"><code class="language-dart">class CustomInstantiationProcessor
-    implements InstantiationAwarePodProcessor {
+    implements PodInstantiationProcessor {
   @override
   Object? beforeInstantiation(Class podClass, String name) {
     print('Preparing to create pod: $name of type ${podClass.name}');
@@ -103,8 +103,8 @@ providing extension points to:</p>
   <dd>
     <ul class="gt-separated dark clazz-relationships">
       <li><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></li>
-        <li><a href="../jetleaf/PodAwareProcessor-class.html">PodAwareProcessor</a></li>
-      <li>InstantiationAwarePodProcessor</li>
+        <li><a href="../jetleaf/PodProcessor-class.html">PodProcessor</a></li>
+      <li>PodInstantiationProcessor</li>
     </ul>
   </dd>
 
@@ -123,8 +123,8 @@ providing extension points to:</p>
   <section class="summary offset-anchor" id="constructors">
     <h2>Constructors</h2>
     <dl class="constructor-summary-list">
-        <dt id="InstantiationAwarePodProcessor.new" class="callable">
-          <span class="name"><a href="../jetleaf/InstantiationAwarePodProcessor/InstantiationAwarePodProcessor.html">InstantiationAwarePodProcessor.new</a></span><span class="signature">()</span>
+        <dt id="PodInstantiationProcessor.new" class="callable">
+          <span class="name"><a href="../jetleaf/PodInstantiationProcessor/PodInstantiationProcessor.html">PodInstantiationProcessor.new</a></span><span class="signature">()</span>
         </dt>
         <dd>
           
@@ -171,7 +171,7 @@ providing extension points to:</p>
     <h2>Methods</h2>
     <dl class="callables">
         <dt id="determineCandidateArguments" class="callable">
-  <span class="name"><a href="../jetleaf/InstantiationAwarePodProcessor/determineCandidateArguments.html">determineCandidateArguments</a></span><span class="signature">(<wbr><span class="parameter" id="determineCandidateArguments-param-podName"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">podName</span>, </span><span class="parameter" id="determineCandidateArguments-param-executable"><span class="type-annotation"><a href="../jetleaf/Executable-class.html">Executable</a></span> <span class="parameter-name">executable</span>, </span><span class="parameter" id="determineCandidateArguments-param-parameters"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Parameter-class.html">Parameter</a></span>&gt;</span></span> <span class="parameter-name">parameters</span></span>)
+  <span class="name"><a href="../jetleaf/PodInstantiationProcessor/determineCandidateArguments.html">determineCandidateArguments</a></span><span class="signature">(<wbr><span class="parameter" id="determineCandidateArguments-param-podName"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">podName</span>, </span><span class="parameter" id="determineCandidateArguments-param-executable"><span class="type-annotation"><a href="../jetleaf/Executable-class.html">Executable</a></span> <span class="parameter-name">executable</span>, </span><span class="parameter" id="determineCandidateArguments-param-parameters"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Parameter-class.html">Parameter</a></span>&gt;</span></span> <span class="parameter-name">parameters</span></span>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/ArgumentValue-class.html">ArgumentValue</a></span>&gt;</span>?</span>&gt;</span></span>
   </span>
   
@@ -184,7 +184,7 @@ providing extension points to:</p>
 </dd>
 
         <dt id="determineCandidateConstructors" class="callable">
-  <span class="name"><a href="../jetleaf/InstantiationAwarePodProcessor/determineCandidateConstructors.html">determineCandidateConstructors</a></span><span class="signature">(<wbr><span class="parameter" id="determineCandidateConstructors-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="determineCandidateConstructors-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
+  <span class="name"><a href="../jetleaf/PodInstantiationProcessor/determineCandidateConstructors.html">determineCandidateConstructors</a></span><span class="signature">(<wbr><span class="parameter" id="determineCandidateConstructors-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="determineCandidateConstructors-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Constructor-class.html">Constructor</a></span>&gt;</span>?</span>&gt;</span></span>
   </span>
   
@@ -197,7 +197,7 @@ providing extension points to:</p>
 </dd>
 
         <dt id="getEarlyPodReference" class="callable">
-  <span class="name"><a href="../jetleaf/InstantiationAwarePodProcessor/getEarlyPodReference.html">getEarlyPodReference</a></span><span class="signature">(<wbr><span class="parameter" id="getEarlyPodReference-param-podHolder"><span class="type-annotation"><a href="../jetleaf/ObjectHolder-class.html">ObjectHolder</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span>&gt;</span></span> <span class="parameter-name">podHolder</span>, </span><span class="parameter" id="getEarlyPodReference-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="getEarlyPodReference-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
+  <span class="name"><a href="../jetleaf/PodInstantiationProcessor/getEarlyPodReference.html">getEarlyPodReference</a></span><span class="signature">(<wbr><span class="parameter" id="getEarlyPodReference-param-podHolder"><span class="type-annotation"><a href="../jetleaf/ObjectHolder-class.html">ObjectHolder</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span>&gt;</span></span> <span class="parameter-name">podHolder</span>, </span><span class="parameter" id="getEarlyPodReference-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="getEarlyPodReference-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/ObjectHolder-class.html">ObjectHolder</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span>&gt;</span></span>&gt;</span></span>
   </span>
   
@@ -223,7 +223,7 @@ providing extension points to:</p>
 </dd>
 
         <dt id="processAfterInitialization" class="callable inherited">
-  <span class="name"><a href="../jetleaf/PodAwareProcessor/processAfterInitialization.html">processAfterInitialization</a></span><span class="signature">(<wbr><span class="parameter" id="processAfterInitialization-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="processAfterInitialization-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="processAfterInitialization-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
+  <span class="name"><a href="../jetleaf/PodProcessor/processAfterInitialization.html">processAfterInitialization</a></span><span class="signature">(<wbr><span class="parameter" id="processAfterInitialization-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="processAfterInitialization-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="processAfterInitialization-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a>?</span>&gt;</span></span>
   </span>
   
@@ -237,7 +237,7 @@ any pod initialization callbacks.
 </dd>
 
         <dt id="processAfterInstantiation" class="callable">
-  <span class="name"><a href="../jetleaf/InstantiationAwarePodProcessor/processAfterInstantiation.html">processAfterInstantiation</a></span><span class="signature">(<wbr><span class="parameter" id="processAfterInstantiation-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="processAfterInstantiation-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="processAfterInstantiation-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
+  <span class="name"><a href="../jetleaf/PodInstantiationProcessor/processAfterInstantiation.html">processAfterInstantiation</a></span><span class="signature">(<wbr><span class="parameter" id="processAfterInstantiation-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="processAfterInstantiation-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="processAfterInstantiation-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>&gt;</span></span>
   </span>
   
@@ -251,7 +251,7 @@ property population.
 </dd>
 
         <dt id="processBeforeInitialization" class="callable inherited">
-  <span class="name"><a href="../jetleaf/PodAwareProcessor/processBeforeInitialization.html">processBeforeInitialization</a></span><span class="signature">(<wbr><span class="parameter" id="processBeforeInitialization-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="processBeforeInitialization-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="processBeforeInitialization-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
+  <span class="name"><a href="../jetleaf/PodProcessor/processBeforeInitialization.html">processBeforeInitialization</a></span><span class="signature">(<wbr><span class="parameter" id="processBeforeInitialization-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="processBeforeInitialization-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="processBeforeInitialization-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a>?</span>&gt;</span></span>
   </span>
   
@@ -265,7 +265,7 @@ any pod initialization callbacks.
 </dd>
 
         <dt id="processBeforeInstantiation" class="callable">
-  <span class="name"><a href="../jetleaf/InstantiationAwarePodProcessor/processBeforeInstantiation.html">processBeforeInstantiation</a></span><span class="signature">(<wbr><span class="parameter" id="processBeforeInstantiation-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="processBeforeInstantiation-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
+  <span class="name"><a href="../jetleaf/PodInstantiationProcessor/processBeforeInstantiation.html">processBeforeInstantiation</a></span><span class="signature">(<wbr><span class="parameter" id="processBeforeInstantiation-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="processBeforeInstantiation-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a>?</span>&gt;</span></span>
   </span>
   
@@ -278,7 +278,7 @@ any pod initialization callbacks.
 </dd>
 
         <dt id="processPropertyValues" class="callable">
-  <span class="name"><a href="../jetleaf/InstantiationAwarePodProcessor/processPropertyValues.html">processPropertyValues</a></span><span class="signature">(<wbr><span class="parameter" id="processPropertyValues-param-pvs"><span class="type-annotation"><a href="../jetleaf/PropertyValues-class.html">PropertyValues</a></span> <span class="parameter-name">pvs</span>, </span><span class="parameter" id="processPropertyValues-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="processPropertyValues-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="processPropertyValues-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
+  <span class="name"><a href="../jetleaf/PodInstantiationProcessor/processPropertyValues.html">processPropertyValues</a></span><span class="signature">(<wbr><span class="parameter" id="processPropertyValues-param-pvs"><span class="type-annotation"><a href="../jetleaf/PropertyValues-class.html">PropertyValues</a></span> <span class="parameter-name">pvs</span>, </span><span class="parameter" id="processPropertyValues-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="processPropertyValues-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="processPropertyValues-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/PropertyValues-class.html">PropertyValues</a>?</span>&gt;</span></span>
   </span>
   
@@ -292,7 +292,7 @@ to the given pod.
 </dd>
 
         <dt id="shouldProcessBeforeInitialization" class="callable inherited">
-  <span class="name"><a href="../jetleaf/PodAwareProcessor/shouldProcessBeforeInitialization.html">shouldProcessBeforeInitialization</a></span><span class="signature">(<wbr><span class="parameter" id="shouldProcessBeforeInitialization-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="shouldProcessBeforeInitialization-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="shouldProcessBeforeInitialization-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
+  <span class="name"><a href="../jetleaf/PodProcessor/shouldProcessBeforeInitialization.html">shouldProcessBeforeInitialization</a></span><span class="signature">(<wbr><span class="parameter" id="shouldProcessBeforeInitialization-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="shouldProcessBeforeInitialization-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="shouldProcessBeforeInitialization-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>&gt;</span></span>
   </span>
   
@@ -355,7 +355,7 @@ to the given pod.
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
     <li><a href="../index.html">jetleaf</a></li>
     <li><a href="../jetleaf/">jetleaf</a></li>
-    <li class="self-crumb">InstantiationAwarePodProcessor class</li>
+    <li class="self-crumb">PodInstantiationProcessor class</li>
 </ol>
 
     <h5>jetleaf library</h5>

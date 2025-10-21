@@ -94,7 +94,7 @@ Future&lt;Object&gt; applyAfterInitializationProcessing(Object existing, String 
   }
 
   if (hasPodPostProcessors()) {
-    for (PodAwareProcessor pp in getPodAwareProcessors()) {
+    for (PodProcessor pp in getPodProcessors()) {
       Object? processed = await pp.processAfterInitialization(pod, type, podName);
       if (processed == null) {
         return pod;

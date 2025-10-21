@@ -49,7 +49,7 @@ import 'entry/application_type_filter.dart';
 @EnableAutoConfiguration()
 @Target({TargetKind.classType})
 @Configuration("jetleaf_application")
-@Import([ClassType<ApplicationImportSelector>(package: PackageNames.MAIN)])
+@Import([ClassType<ApplicationImportSelector>(PackageNames.MAIN)])
 @ComponentScan(
   includeFilters: [ComponentScanFilter(type: FilterType.CUSTOM, typeFilter: ApplicationTypeFilter())]
 )

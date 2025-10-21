@@ -92,7 +92,7 @@ final stringClass = await loader.loadClass&lt;String&gt;('dart:core/string.dart.
 
 // Load with custom domain
 final userClass = await loader.loadClass&lt;User&gt;(
-  'com.example.User',
+  'package:example/test.dart.User',
   ProtectionDomain.application()
 );
 </code></pre>

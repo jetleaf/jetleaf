@@ -80,7 +80,7 @@
 </ul>
 <h2 id="example">Example</h2>
 <pre class="language-dart"><code class="language-dart">class Example with MixinA, MixinB {}
-final exampleClass = await loader.loadClass&lt;Example&gt;('com.example.Example');
+final exampleClass = await loader.loadClass&lt;Example&gt;('package:example/test.dart.Example');
 final mixins = loader.findMixins&lt;MixinA&gt;(exampleClass);
 </code></pre>
 </section>

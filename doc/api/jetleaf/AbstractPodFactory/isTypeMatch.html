@@ -146,7 +146,7 @@ Future&lt;bool&gt; isTypeMatch(String name, Class typeToMatch, [bool allowPodPro
 
     &#47;&#47; 1.b) Instance is not a provider
     if (isFactoryDereference) {
-      &#47;&#47; Caller explicitly asked for factory reference (e.g. &quot;&amp;beanName&quot;) but the cached instance is the bean itself,
+      &#47;&#47; Caller explicitly asked for factory reference (e.g. &quot;&amp;podName&quot;) but the cached instance is the pod itself,
       &#47;&#47; so the factory reference semantics don&#39;t match.
       return false;
     }

@@ -1,6 +1,6 @@
 # JetLeaf
 
-🍃 **JetLeaf** is a comprehensive, enterprise-grade Dart backend framework that brings Spring-like dependency injection, configuration management, and application lifecycle to Dart server-side development.
+🍃 **JetLeaf** is a comprehensive, enterprise-grade Dart backend framework that brings Jetleaf-like dependency injection, configuration management, and application lifecycle to Dart server-side development.
 
 JetLeaf provides a complete foundation for building scalable, maintainable backend applications with powerful features like annotation-driven configuration, automatic component scanning, profile-based environments, and event-driven architecture.
 

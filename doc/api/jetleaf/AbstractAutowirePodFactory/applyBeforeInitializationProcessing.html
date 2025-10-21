@@ -87,7 +87,7 @@ Future&lt;Object&gt; applyBeforeInitializationProcessing(Object existing, String
   Object pod = existing;
 
   if (hasPodPostProcessors()) {
-    for (final aware in getPodAwareProcessors()) {
+    for (final aware in getPodProcessors()) {
       final shouldProcess = await aware.shouldProcessBeforeInitialization(pod, type, podName);
 
       if (containsDefinition(podName) &amp;&amp; !shouldProcess) {

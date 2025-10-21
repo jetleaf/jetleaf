@@ -67,7 +67,7 @@
 <section class="desc markdown">
   <p>Destroys an existing pod instance by invoking its destruction methods.</p>
 <p>This method calls destruction callbacks such as @PreDestroy methods
-or DisposableBean interfaces.</p>
+or DisposablePod interfaces.</p>
 <h2 id="usage-example">Usage Example:</h2>
 <pre class="language-dart"><code class="language-dart">final pod = getExistingPod();
 await factory.destroyExistingPod(pod, Class&lt;MyPod&gt;(), 'myPod');

@@ -66,7 +66,7 @@ circular dependency detection, and PodProvider unwrapping.</p>
 <li>Hierarchical pod provider support with parent-child relationships</li>
 <li>Singleton and prototype scope management</li>
 <li>Custom scope registration and handling</li>
-<li>Pod post-processing with <a href="../jetleaf/PodAwareProcessor-class.html">PodAwareProcessor</a></li>
+<li>Pod post-processing with <a href="../jetleaf/PodProcessor-class.html">PodProcessor</a></li>
 <li>Expression resolution for dynamic value injection</li>
 <li>Lifecycle management with destruction callbacks</li>
 <li>Circular dependency detection and prevention</li>
@@ -287,8 +287,8 @@ for pod creation, management, and lifecycle handling in the Jetleaf framework.
       id="instance-methods">
     <h2>Methods</h2>
     <dl class="callables">
-        <dt id="addPodAwareProcessor" class="callable">
-  <span class="name"><a href="../jetleaf/AbstractPodFactory/addPodAwareProcessor.html">addPodAwareProcessor</a></span><span class="signature">(<wbr><span class="parameter" id="addPodAwareProcessor-param-processor"><span class="type-annotation"><a href="../jetleaf/PodAwareProcessor-class.html">PodAwareProcessor</a></span> <span class="parameter-name">processor</span></span>)
+        <dt id="addPodProcessor" class="callable">
+  <span class="name"><a href="../jetleaf/AbstractPodFactory/addPodProcessor.html">addPodProcessor</a></span><span class="signature">(<wbr><span class="parameter" id="addPodProcessor-param-processor"><span class="type-annotation"><a href="../jetleaf/PodProcessor-class.html">PodProcessor</a></span> <span class="parameter-name">processor</span></span>)
     <span class="returntype parameter">&#8594; void</span>
   </span>
   
@@ -994,8 +994,8 @@ resource, or service belongs to.
 
 </dd>
 
-        <dt id="getPodAwareProcessorCount" class="callable">
-  <span class="name"><a href="../jetleaf/AbstractPodFactory/getPodAwareProcessorCount.html">getPodAwareProcessorCount</a></span><span class="signature">(<wbr>)
+        <dt id="getPodProcessorCount" class="callable">
+  <span class="name"><a href="../jetleaf/AbstractPodFactory/getPodProcessorCount.html">getPodProcessorCount</a></span><span class="signature">(<wbr>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
   </span>
   
@@ -1007,9 +1007,9 @@ resource, or service belongs to.
 
 </dd>
 
-        <dt id="getPodAwareProcessors" class="callable">
-  <span class="name"><a href="../jetleaf/AbstractPodFactory/getPodAwareProcessors.html">getPodAwareProcessors</a></span><span class="signature">(<wbr>)
-    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/PodAwareProcessor-class.html">PodAwareProcessor</a></span>&gt;</span></span>
+        <dt id="getPodProcessors" class="callable">
+  <span class="name"><a href="../jetleaf/AbstractPodFactory/getPodProcessors.html">getPodProcessors</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/PodProcessor-class.html">PodProcessor</a></span>&gt;</span></span>
   </span>
   
 

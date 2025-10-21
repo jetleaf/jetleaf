@@ -36,5 +36,7 @@ export 'package:jetleaf_convert/convert.dart';
 // POD
 export 'package:jetleaf_pod/pod.dart';
 
+export 'package:jetleaf_cli/jetleaf_cli.dart';
+
 // AOP
 // export 'package:jetleaf_aop/aop.dart';

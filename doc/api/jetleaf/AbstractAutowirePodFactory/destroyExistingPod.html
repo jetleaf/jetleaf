@@ -72,7 +72,7 @@
 <section class="desc markdown">
   <p>Destroys an existing pod instance by invoking its destruction methods.</p>
 <p>This method calls destruction callbacks such as @PreDestroy methods
-or DisposableBean interfaces.</p>
+or DisposablePod interfaces.</p>
 <h2 id="usage-example">Usage Example:</h2>
 <pre class="language-dart"><code class="language-dart">final pod = getExistingPod();
 await factory.destroyExistingPod(pod, Class&lt;MyPod&gt;(), 'myPod');
@@ -93,7 +93,7 @@ Future&lt;void&gt; destroyExistingPod(Object existing, Class type, String name) 
   try {
     if(DisposableLifecycleManager.hasDestroyMethod(existing, getMergedPodDefinition(name))) {
       &#47;&#47; Apply destruction post-processors
-      for (DestructionAwarePodProcessor processor in getPodProcessorCacheManager().destruction) {
+      for (PodDestructionProcessor processor in getPodProcessorCacheManager().destruction) {
         processor.processBeforeDestruction(existing, type, name);
       }
     }

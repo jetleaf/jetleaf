@@ -82,7 +82,6 @@ Future<RuntimeProvider> runScan(Log logger) async {
       packagesToExclude: [
         'collection',
         'analyzer',
-        'package:jetleaf_lang/reflection.dart',
         "r:.*/example/.*",
         "r:.*/test/.*",
         "r:.*/tool/.*",

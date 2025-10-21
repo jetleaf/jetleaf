@@ -99,7 +99,7 @@ Future&lt;PodHolder&gt; createInstance(String podName, RootPodDefinition root, L
   }
 
   &#47;&#47; Obtain from constructor arguments
-  final cs = await determineConstructorsFromPodAwareProcessors(podClass, podName);
+  final cs = await determineConstructorsFromPodProcessors(podClass, podName);
   final instance = await instantiateUsingConstructor(podName, root, cs, args);
   return (instance, instance.getClass());
 }</code></pre>

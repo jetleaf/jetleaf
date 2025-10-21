@@ -14,9 +14,9 @@
 
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_lang/lang.dart';
-import 'package:jetleaf_utils/utils.dart';
 
 import '../jet_leaf_application.dart';
+import 'jet_leaf_config_parser.dart';
 
 /// {@template jetleaf_import_selector}
 /// 🫘 Default [ImportSelector] implementation for JetLeaf.
@@ -75,107 +75,63 @@ final class ApplicationImportSelector implements ImportSelector {
       list.add(ImportClass.package(userPackage.getName()));
     }
 
-    List<Map<String, dynamic>> content = [];
+    List<Map<String, List<String>>> configurations = [];
 
     // Load all assets
     final assets = Runtime.getAllAssets();
 
+    bool isConfig(String path) => path.contains("meta-inf/") || path.contains("meta_config/") || path.contains("meta_inf/");
+
     // Filter assets to only include meta-inf
-    List<Asset> importAssets = assets.where((asset) {
-      final path = asset.getFilePath().toLowerCase();
-      return path.contains("meta-inf/") || path.contains("meta_config/") || path.contains("meta_inf/");
-    }).toList();
-
-    // Filter assets to only include yaml, yml, and properties files
-    final extraAssets = assets.where((asset) {
-      final path = asset.getFilePath().toLowerCase();
-      return path.endsWith(".yaml") || path.endsWith(".yml")
-      || path.endsWith(".properties");
-    }).toList();
-
-    // Add extra assets to import assets
-    importAssets.addAll(extraAssets);
+    List<Asset> importAssets = assets.where((asset) => isConfig(asset.getFilePath().toLowerCase())).toList();
 
     for (final asset in importAssets) {
-      if (asset.getFilePath().endsWith(".yaml") || asset.getFilePath().endsWith(".yml")) {
-        final parser = YamlParser();
-        content.add(parser.parseAsset(asset));
-      } else if (asset.getFilePath().endsWith(".properties")) {
-        final parser = PropertiesParser();
-        content.add(parser.parseAsset(asset));
+      final parser = JetLeafConfigParser();
+      configurations.add(parser.parseAsset(asset));
+    }
+
+    if (configurations.isNotEmpty) {
+      for (final configuration in configurations) {
+        final enableConfiguration = configuration[JetLeafApplication.ENABLE_AUTO_CONFIGURATION_PROPERTY];
+        final disableConfiguration = configuration[JetLeafApplication.DISABLE_AUTO_CONFIGURATION_PROPERTY];
+
+        if (enableConfiguration != null) {
+          for (final item in enableConfiguration) {
+            if (item.contains(".")) {
+              try {
+                Class.fromQualifiedName(item);
+                list.add(ImportClass.qualified(item, false));
+              } catch (_) {
+                // Extract package name
+                final packageName = _extractPackageName(item);
+                list.add(ImportClass.package(packageName, false));
+              }
+            } else {
+              list.add(ImportClass.package(item, false));
+            }
+          }
+        }
+
+        if (disableConfiguration != null) {
+          for (final item in disableConfiguration) {
+            if (item.contains(".")) {
+              try {
+                Class.fromQualifiedName(item);
+                list.add(ImportClass.qualified(item, true));
+              } catch (_) {
+                // Extract package name
+                final packageName = _extractPackageName(item);
+                list.add(ImportClass.package(packageName, true));
+              }
+            } else {
+              list.add(ImportClass.package(item, true));
+            }
+          }
+        }
       }
     }
-
-    // Collect only the maps that contain the enable property, 
-    // but keep just that key in the result
-    List<dynamic> enableAutoConfigurationContent = content
-      .where((entry) => entry.containsKey(JetLeafApplication.ENABLE_AUTO_CONFIGURATION_PROPERTY))
-      .map((entry) => entry[JetLeafApplication.ENABLE_AUTO_CONFIGURATION_PROPERTY])
-      .toList();
-    enableAutoConfigurationContent = _mergeContent(enableAutoConfigurationContent);
-
-    // Same for disable property
-    List<dynamic> disableAutoConfigurationContent = content
-      .where((entry) => entry.containsKey(JetLeafApplication.DISABLE_AUTO_CONFIGURATION_PROPERTY))
-      .map((entry) => entry[JetLeafApplication.DISABLE_AUTO_CONFIGURATION_PROPERTY])
-      .toList();
-    disableAutoConfigurationContent = _mergeContent(disableAutoConfigurationContent);
-
-    // Build imports
-    enableAutoConfigurationContent.forEach((entry) => _buildImport(entry, list, false));
-    disableAutoConfigurationContent.forEach((entry) => _buildImport(entry, list, true));
     
     return list;
-  }
-
-  /// Builds imports from a given entry.
-  /// 
-  /// ## Example
-  /// 
-  /// ```dart
-  /// final list = <ImportClass>[];
-  /// _buildImport({"package": "jetleaf_web"}, list);
-  /// print(list); // [ImportClass.package("jetleaf_web")]
-  /// ```
-  void _buildImport(dynamic entry, List<ImportClass> list, bool disable) {
-    if (entry is Map) {
-      entry.forEach((key, value) {
-        if (value is List) {
-          value.forEach((item) {
-            if (item is String) {
-              if (item.contains(".") && item.contains(":")) {
-                try {
-                  Class.fromQualifiedName(item);
-                  list.add(ImportClass.qualified(item, disable));
-                } catch (_) {
-                  // Extract package name
-                  final packageName = _extractPackageName(item);
-                  list.add(ImportClass.package(packageName, disable));
-                }
-              } else {
-                list.add(ImportClass.package(item, disable));
-              }
-            }
-          });
-        } else if (value is Map) {
-          value.forEach((key, value) {
-            if (key == "package") {
-              if (value is String) {
-                try {
-                  final qualified = "$key:$value";
-                  Class.fromQualifiedName(qualified);
-                  list.add(ImportClass.qualified(qualified, disable));
-                } catch (_) {
-                  // Extract package name
-                  final packageName = _extractPackageName(value);
-                  list.add(ImportClass.package(packageName, disable));
-                }
-              }
-            }
-          });
-        }
-      });
-    }
   }
 
   /// Extracts the package name from a package specification.
@@ -215,81 +171,5 @@ final class ApplicationImportSelector implements ImportSelector {
     }
 
     return packageSpec;
-  }
-
-  /// Merge a list of maps into a single deduplicated list of maps.
-  ///
-  /// - If a key appears in multiple maps, values are merged:
-  ///   - If both values are lists → concatenate & deduplicate
-  ///   - If both values are maps  → recursively merge
-  ///   - Otherwise → overwrite (last wins)
-  List<Map<String, dynamic>> _mergeContent(dynamic content) {
-    final merged = <String, dynamic>{};
-
-    if (content is List) {
-      for (final map in content) {
-        if (map is Map) {
-          _mergeMap(map, merged);
-        }
-      }
-    } else if (content is Map) {
-      _mergeMap(content, merged);
-    }
-
-    return [merged];
-  }
-
-  void _mergeMap(Map map, Map<String, dynamic> merged) {
-    map.forEach((key, value) {
-      if (merged.containsKey(key)) {
-        final existing = merged[key];
-
-        if (existing is List && value is List) {
-          // Merge lists, deduplicate, merge maps inside
-          final result = [...existing];
-          for (final item in value) {
-            if (item is Map) {
-              // Try to merge maps if an identical key map already exists
-              final idx = result.indexWhere((e) => e is Map && e.keys.first == item.keys.first);
-              if (idx != -1 && result[idx] is Map) {
-                result[idx] = _mergeTwoMaps(result[idx] as Map, item);
-              } else {
-                result.add(item);
-              }
-            } else if (!result.contains(item)) {
-              result.add(item);
-            }
-          }
-          merged[key] = result;
-        } else if (existing is Map && value is Map) {
-          merged[key] = _mergeTwoMaps(existing, value);
-        } else {
-          // fallback: overwrite
-          merged[key] = value;
-        }
-      } else {
-        merged[key] = value;
-      }
-    });
-  }
-
-  /// Helper to merge two maps deeply
-  Map<String, dynamic> _mergeTwoMaps(Map a, Map b) {
-    final result = Map<String, dynamic>.from(a);
-    b.forEach((key, value) {
-      if (result.containsKey(key)) {
-        final existing = result[key];
-        if (existing is List && value is List) {
-          result[key] = {...existing, ...value}.toList();
-        } else if (existing is Map && value is Map) {
-          result[key] = _mergeTwoMaps(existing, value);
-        } else {
-          result[key] = value;
-        }
-      } else {
-        result[key] = value;
-      }
-    });
-    return result;
   }
 }

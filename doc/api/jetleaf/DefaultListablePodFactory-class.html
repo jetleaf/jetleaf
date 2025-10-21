@@ -285,8 +285,8 @@ comprehensive pod management capabilities in the Jetleaf framework.
       id="instance-methods">
     <h2>Methods</h2>
     <dl class="callables">
-        <dt id="addPodAwareProcessor" class="callable inherited">
-  <span class="name"><a href="../jetleaf/AbstractPodFactory/addPodAwareProcessor.html">addPodAwareProcessor</a></span><span class="signature">(<wbr><span class="parameter" id="addPodAwareProcessor-param-processor"><span class="type-annotation"><a href="../jetleaf/PodAwareProcessor-class.html">PodAwareProcessor</a></span> <span class="parameter-name">processor</span></span>)
+        <dt id="addPodProcessor" class="callable inherited">
+  <span class="name"><a href="../jetleaf/AbstractPodFactory/addPodProcessor.html">addPodProcessor</a></span><span class="signature">(<wbr><span class="parameter" id="addPodProcessor-param-processor"><span class="type-annotation"><a href="../jetleaf/PodProcessor-class.html">PodProcessor</a></span> <span class="parameter-name">processor</span></span>)
     <span class="returntype parameter">&#8594; void</span>
   </span>
   
@@ -911,8 +911,8 @@ constructor, or default instantiation).
 
 </dd>
 
-        <dt id="determineConstructorsFromPodAwareProcessors" class="callable inherited">
-  <span class="name"><a href="../jetleaf/AbstractAutowirePodFactory/determineConstructorsFromPodAwareProcessors.html">determineConstructorsFromPodAwareProcessors</a></span><span class="signature">(<wbr><span class="parameter" id="determineConstructorsFromPodAwareProcessors-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="determineConstructorsFromPodAwareProcessors-param-podName"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">podName</span></span>)
+        <dt id="determineConstructorsFromPodProcessors" class="callable inherited">
+  <span class="name"><a href="../jetleaf/AbstractAutowirePodFactory/determineConstructorsFromPodProcessors.html">determineConstructorsFromPodProcessors</a></span><span class="signature">(<wbr><span class="parameter" id="determineConstructorsFromPodProcessors-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="determineConstructorsFromPodProcessors-param-podName"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">podName</span></span>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/Constructor-class.html">Constructor</a></span>&gt;</span>?</span>&gt;</span></span>
   </span>
   
@@ -1423,8 +1423,8 @@ resource, or service belongs to.
 
 </dd>
 
-        <dt id="getPodAwareProcessorCount" class="callable inherited">
-  <span class="name"><a href="../jetleaf/AbstractPodFactory/getPodAwareProcessorCount.html">getPodAwareProcessorCount</a></span><span class="signature">(<wbr>)
+        <dt id="getPodProcessorCount" class="callable inherited">
+  <span class="name"><a href="../jetleaf/AbstractPodFactory/getPodProcessorCount.html">getPodProcessorCount</a></span><span class="signature">(<wbr>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
   </span>
   
@@ -1436,9 +1436,9 @@ resource, or service belongs to.
 
 </dd>
 
-        <dt id="getPodAwareProcessors" class="callable inherited">
-  <span class="name"><a href="../jetleaf/AbstractPodFactory/getPodAwareProcessors.html">getPodAwareProcessors</a></span><span class="signature">(<wbr>)
-    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/PodAwareProcessor-class.html">PodAwareProcessor</a></span>&gt;</span></span>
+        <dt id="getPodProcessors" class="callable inherited">
+  <span class="name"><a href="../jetleaf/AbstractPodFactory/getPodProcessors.html">getPodProcessors</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/PodProcessor-class.html">PodProcessor</a></span>&gt;</span></span>
   </span>
   
 
@@ -2542,7 +2542,7 @@ applying the given <a href="../jetleaf/StringValueResolver-class.html">StringVal
 
 </dt>
 <dd class="inherited">
-  Gives InstantiationAwarePodProcessors a chance to return a proxy instead
+  Gives PodInstantiationProcessors a chance to return a proxy instead
 of the target pod instance before instantiation.
   <div class="features"><span class="feature">inherited</span></div>
 

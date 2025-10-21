@@ -122,7 +122,7 @@ FutureOr&lt;Object&gt; doCreate(String name, RootPodDefinition definition, List&
   try {
     _currentlyCreatedPod.set(name);
 
-    &#47;&#47; Give InstantiationAwarePodProcessors a chance to return a proxy instead of the target pod instance
+    &#47;&#47; Give PodInstantiationProcessors a chance to return a proxy instead of the target pod instance
     Object? pod = await applyBeforeInstantiationProcessing(name, definition);
     if (pod != null) {
       return pod;

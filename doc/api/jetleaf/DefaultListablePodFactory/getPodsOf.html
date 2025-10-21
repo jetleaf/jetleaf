@@ -116,7 +116,7 @@ Future&lt;Map&lt;String, T&gt;&gt; getPodsOf&lt;T&gt;(Class&lt;T&gt; type, {bool
 
 						onSuppressedException(e);
 						&#47;&#47; Ignore: indicates a circular reference when autowiring constructors.
-						&#47;&#47; We want to find matches other than the currently created bean itself.
+						&#47;&#47; We want to find matches other than the currently created pod itself.
 						continue;
 					}
 				}

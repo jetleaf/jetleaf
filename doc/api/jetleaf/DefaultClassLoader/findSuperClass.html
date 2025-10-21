@@ -81,9 +81,9 @@ If <code>false</code>, returns the nearest superclass in the hierarchy.</li>
 <li>The superclass <a href="../../jetleaf/Class-class.html">Class</a> instance, or <code>null</code> if none exists.</li>
 </ul>
 <h2 id="example">Example</h2>
-<pre class="language-dart"><code class="language-dart">final dogClass = await loader.loadClass&lt;Dog&gt;('com.example.Dog');
+<pre class="language-dart"><code class="language-dart">final dogClass = await loader.loadClass&lt;Dog&gt;('package:example/test.dart.Dog');
 final superClass = loader.findSuperClass(dogClass);
-print(superClass?.qualifiedName); // e.g., "com.example.Animal"
+print(superClass?.qualifiedName); // e.g., "package:example/test.dart.Animal"
 </code></pre>
 <h2 id="usage-notes">Usage Notes</h2>
 <ul>

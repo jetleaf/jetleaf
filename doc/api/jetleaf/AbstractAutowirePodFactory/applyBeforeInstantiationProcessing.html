@@ -86,7 +86,7 @@ Future&lt;Object?&gt; applyBeforeInstantiationProcessing(String podName, PodDefi
   Object? pod;
 
   if (!root.design.isInfrastructure &amp;&amp; hasInstantiationPodPostProcessors()) {
-    for (InstantiationAwarePodProcessor processor in getPodProcessorCacheManager().instantiation) {
+    for (PodInstantiationProcessor processor in getPodProcessorCacheManager().instantiation) {
       pod = await processor.processBeforeInstantiation(root.type, podName);
       if (pod != null) {
         return pod;

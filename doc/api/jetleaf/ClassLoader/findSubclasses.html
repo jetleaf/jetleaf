@@ -81,7 +81,7 @@
 <li>Supports incremental updates for dynamic loading</li>
 </ul>
 <h2 id="example">Example</h2>
-<pre class="language-dart"><code class="language-dart">final animalClass = await loader.loadClass&lt;Animal&gt;('com.example.Animal');
+<pre class="language-dart"><code class="language-dart">final animalClass = await loader.loadClass&lt;Animal&gt;('package:example/test.dart.Animal');
 final subclasses = await loader.findSubclasses(animalClass);
 // Returns: [Dog, Cat, Bird] (direct subclasses only)
 </code></pre>

@@ -9,7 +9,7 @@
 //
 // For licensing terms, see the LICENSE file in the root of this project.
 // ---------------------------------------------------------------------------
-// 
+//
 // 🔧 Powered by Hapnium — the Dart backend engine 🍃
 
 import 'package:jetleaf_core/context.dart';
@@ -23,7 +23,7 @@ import 'package:jetleaf_pod/pod.dart';
 /// {@template lazy_initialization_pod_aware_processor}
 /// 🦥 Post-processor that enables lazy initialization for all eligible pods.
 ///
-/// The [LazyInitializationPodAwareProcessor] is a [PodFactoryPostProcessor]
+/// The [LazyInitializationPodFactoryPostProcessor] is a [PodFactoryPostProcessor]
 /// that automatically configures pods for lazy initialization, meaning they
 /// are created only when first requested rather than during application startup.
 ///
@@ -52,8 +52,8 @@ import 'package:jetleaf_pod/pod.dart';
 /// @Configuration
 /// class AppConfig {
 ///   @Pod
-///   LazyInitializationPodAwareProcessor lazyProcessor() {
-///     return LazyInitializationPodAwareProcessor();
+///   LazyInitializationPodProcessor lazyProcessor() {
+///     return LazyInitializationPodProcessor();
 ///   }
 /// }
 /// ```
@@ -74,32 +74,38 @@ import 'package:jetleaf_pod/pod.dart';
 /// - [PriorityOrdered] for execution order control
 /// - [DesignRole] for pod role definitions
 /// {@endtemplate}
-final class LazyInitializationPodAwareProcessor implements PodFactoryPostProcessor, PriorityOrdered {
+final class LazyInitializationPodFactoryPostProcessor
+    implements PodFactoryPostProcessor, PriorityOrdered {
   /// {@template lazy_initialization_pod_aware_processor.logger}
   /// Logger instance for tracking processor operations and debugging.
-  /// 
+  ///
   /// Used at various log levels:
   /// - `DEBUG`: Major processing phases
   /// - `TRACE`: Individual pod processing decisions
   /// - `INFO`: Configuration summary and statistics
   /// {@endtemplate}
-  final Log _logger = LogFactory.getLog(LazyInitializationPodAwareProcessor);
+  final Log _logger = LogFactory.getLog(
+    LazyInitializationPodFactoryPostProcessor,
+  );
 
   @override
   int getOrder() => Ordered.HIGHEST_PRECEDENCE - 2;
-  
+
   @override
-  Future<void> postProcessFactory(ConfigurableListablePodFactory podFactory) async {
+  Future<void> postProcessFactory(
+    ConfigurableListablePodFactory podFactory,
+  ) async {
     if (_logger.getIsTraceEnabled()) {
       _logger.trace('Applying lazy initialization to all eligible pods.');
     }
-    
+
     final names = podFactory.getDefinitionNames();
     for (final name in names) {
       final definition = podFactory.getDefinition(name);
-      bool isAlreadyLazy = definition.lifecycle.isLazy != null && definition.lifecycle.isLazy!;
+      bool isAlreadyLazy =
+          definition.lifecycle.isLazy != null && definition.lifecycle.isLazy!;
 
-      // Skip infrastructure/internal beans
+      // Skip infrastructure/internal pods
       if (definition.design.role == DesignRole.INFRASTRUCTURE) {
         if (_logger.getIsTraceEnabled()) {
           _logger.trace("Skipping infrastructure pod: $name");
@@ -110,7 +116,9 @@ final class LazyInitializationPodAwareProcessor implements PodFactoryPostProcess
 
       if (isAlreadyLazy) {
         if (_logger.getIsTraceEnabled()) {
-          _logger.trace('Skipping pod $name since it is already marked as lazy');
+          _logger.trace(
+            'Skipping pod $name since it is already marked as lazy',
+          );
         }
 
         continue;
@@ -134,13 +142,13 @@ final class LazyInitializationPodAwareProcessor implements PodFactoryPostProcess
 /// {@template property_source_ordering_pod_aware_processor}
 /// 🔄 Post-processor that reorders property sources for optimal resolution.
 ///
-/// The [PropertySourceOrderingPodAwareProcessor] ensures property sources
+/// The [PropertySourceOrderingPodFactoryPostProcessor] ensures property sources
 /// are ordered with the correct precedence for property resolution, following
 /// the principle that more specific sources should override more general ones.
 ///
 /// ### Property Source Precedence (Highest to Lowest):
 /// 1. **Command Line Arguments**: `--property=value` (most specific)
-/// 2. **System Properties**: JVM/Dart VM system properties
+/// 2. **System Properties**: DVM/Dart VM system properties
 /// 3. **Environment Variables**: OS-level environment variables
 /// 4. **Application Properties**: application.properties/.yaml files
 /// 5. **Default Properties**: Framework defaults (least specific)
@@ -162,8 +170,8 @@ final class LazyInitializationPodAwareProcessor implements PodFactoryPostProcess
 /// @Configuration
 /// class PropertyConfig {
 ///   @Pod
-///   PropertySourceOrderingPodAwareProcessor propertyOrdering() {
-///     return PropertySourceOrderingPodAwareProcessor();
+///   PropertySourceOrderingPodProcessor propertyOrdering() {
+///     return PropertySourceOrderingPodProcessor();
 ///   }
 /// }
 /// ```
@@ -181,36 +189,41 @@ final class LazyInitializationPodAwareProcessor implements PodFactoryPostProcess
 /// - [GlobalEnvironment] for environment implementation
 /// - [AnnotationAwareOrderComparator] for ordering logic
 /// {@endtemplate}
-final class PropertySourceOrderingPodAwareProcessor implements PodFactoryPostProcessor, PriorityOrdered {
+final class PropertySourceOrderingPodFactoryPostProcessor
+    implements PodFactoryPostProcessor, PriorityOrdered {
   /// {@template property_source_ordering_pod_aware_processor.logger}
   /// Logger instance for tracking property source ordering operations.
-  /// 
+  ///
   /// Provides detailed tracing of the reordering process at various levels:
   /// - `DEBUG`: Overall processing phases and summary
   /// - `TRACE`: Individual source extraction and ordering decisions
   /// - `INFO`: Final property source order configuration
   /// {@endtemplate}
-  final Log _logger = LogFactory.getLog(PropertySourceOrderingPodAwareProcessor);
+  final Log _logger = LogFactory.getLog(
+    PropertySourceOrderingPodFactoryPostProcessor,
+  );
 
   /// {@template property_source_ordering_pod_aware_processor.application_context}
   /// The application context instance provided via [ApplicationContextAware].
-  /// 
+  ///
   /// Used to access the environment and its property sources for reordering.
   /// {@endtemplate}
   final ApplicationContext _applicationContext;
 
   /// {@macro property_source_ordering_pod_aware_processor}
-  PropertySourceOrderingPodAwareProcessor(this._applicationContext);
+  PropertySourceOrderingPodFactoryPostProcessor(this._applicationContext);
 
   @override
   int getOrder() => Ordered.LOWEST_PRECEDENCE + 2;
 
   @override
-  Future<void> postProcessFactory(ConfigurableListablePodFactory podFactory) async {
+  Future<void> postProcessFactory(
+    ConfigurableListablePodFactory podFactory,
+  ) async {
     if (_logger.getIsTraceEnabled()) {
       _logger.trace('Applying propertySourceOrdering to pod definitions');
     }
-    
+
     final env = _applicationContext.getEnvironment();
     if (env is GlobalEnvironment) {
       final sources = env.getPropertySources();
@@ -218,30 +231,42 @@ final class PropertySourceOrderingPodAwareProcessor implements PodFactoryPostPro
       final ordered = <PropertySource>[];
 
       // 1️⃣ High-priority system and command-line sources
-      final system = sources.remove(GlobalEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
-      final envVars = sources.remove(GlobalEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
-      final cmdLine = sources.remove(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME);
+      final system = sources.remove(
+        GlobalEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME,
+      );
+      final envVars = sources.remove(
+        GlobalEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
+      );
+      final cmdLine = sources.remove(
+        CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME,
+      );
 
       if (cmdLine != null) ordered.add(cmdLine);
       if (system != null) ordered.add(system);
       if (envVars != null) ordered.add(envVars);
 
       if (_logger.getIsTraceEnabled()) {
-        _logger.trace('Adding remaining sources in their existing order: ${ordered.map((s) => s.getName()).join(", ")}');
+        _logger.trace(
+          'Adding remaining sources in their existing order: ${ordered.map((s) => s.getName()).join(", ")}',
+        );
       }
 
       // 2️⃣ Add remaining sources in their existing order
       ordered.addAll(sources.toList());
 
       if (_logger.getIsTraceEnabled()) {
-        _logger.trace('Sorting and applying back: ${ordered.map((s) => s.getName()).join(", ")}');
+        _logger.trace(
+          'Sorting and applying back: ${ordered.map((s) => s.getName()).join(", ")}',
+        );
       }
 
       // 3️⃣ Sort and apply back
       AnnotationAwareOrderComparator.sort(ordered);
 
       if (_logger.getIsTraceEnabled()) {
-        _logger.trace('Applying new order back: ${ordered.map((s) => s.getName()).join(", ")}');
+        _logger.trace(
+          'Applying new order back: ${ordered.map((s) => s.getName()).join(", ")}',
+        );
       }
 
       // 3️⃣ Apply the new order back to the environment
@@ -251,9 +276,11 @@ final class PropertySourceOrderingPodAwareProcessor implements PodFactoryPostPro
 
       if (_logger.getIsTraceEnabled()) {
         final ortracest = ordered.map((s) => s.getName()).join(", ");
-        
+
         if (_logger.getIsTraceEnabled()) {
-          _logger.trace('Applied propertySourceOrdering to pod definitions: [$ortracest]');
+          _logger.trace(
+            'Applied propertySourceOrdering to pod definitions: [$ortracest]',
+          );
         }
       }
     }

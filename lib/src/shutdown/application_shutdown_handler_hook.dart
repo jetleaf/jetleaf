@@ -348,23 +348,15 @@ class ApplicationShutdownHandlerHook implements Runnable {
   Future<void> _closeAndWait(ConfigurableApplicationContext context) async {
     if (!context.isRunning()) return;
 
-    context.close();
-    final completer = Completer<void>();
-    var waited = Duration.zero;
-
-    Timer.periodic(Duration(milliseconds: _sleep), (timer) {
-      if (!context.isRunning()) {
-        timer.cancel();
-        completer.complete();
-      } else if (waited >= _timeout) {
-        timer.cancel();
+    await context.close();
+    final start = DateTime.now();
+    while (context.isRunning()) {
+      if (DateTime.now().difference(start) > _timeout) {
         stderr.writeln('Timeout while waiting for context shutdown.');
-        completer.complete();
+        break;
       }
-      waited += Duration(milliseconds: _sleep);
-    });
-
-    await completer.future;
+      await Future.delayed(Duration(milliseconds: _sleep));
+    }
   }
 
   /// {@template assert_not_in_progress}
@@ -466,7 +458,7 @@ class _ApplicationContextClosedListener implements ApplicationEventListener<Cont
   }
 
   @override
-  void onApplicationEvent(ContextClosedEvent event) {
+  Future<void> onApplicationEvent(ContextClosedEvent event) async {
     return synchronized(hook, () {
       final context = event.getApplicationContext();
       hook._contexts.remove(context);

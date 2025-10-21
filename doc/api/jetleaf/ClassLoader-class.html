@@ -84,7 +84,7 @@ intelligent caching strategies</li>
 final loader = SystemClassLoader();
 
 // Load a class with caching
-final userClass = await loader.loadClass&lt;User&gt;('com.example.User');
+final userClass = await loader.loadClass&lt;User&gt;('package:example/test.dart.User');
 
 // Find related classes efficiently
 final subclasses = await loader.findSubclasses(userClass);

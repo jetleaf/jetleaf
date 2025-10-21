@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
-  <meta name="description" content="API docs for the DestructionAwarePodProcessor class from the jetleaf library, for the Dart programming language.">
-  <title>DestructionAwarePodProcessor class - jetleaf library - Dart API</title>
+  <meta name="description" content="API docs for the PodDestructionProcessor class from the jetleaf library, for the Dart programming language.">
+  <title>PodDestructionProcessor class - jetleaf library - Dart API</title>
 
 
   
@@ -26,9 +26,9 @@
   <ol class="breadcrumbs gt-separated dark hidden-xs">
     <li><a href="../index.html">jetleaf</a></li>
     <li><a href="../jetleaf/">jetleaf.dart</a></li>
-    <li class="self-crumb">DestructionAwarePodProcessor class</li>
+    <li class="self-crumb">PodDestructionProcessor class</li>
   </ol>
-  <div class="self-name">DestructionAwarePodProcessor</div>
+  <div class="self-name">PodDestructionProcessor</div>
   <form class="search navbar-right" role="search">
     <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
   </form>
@@ -46,9 +46,9 @@
     id="dartdoc-main-content"
     class="main-content"
     data-above-sidebar="jetleaf&#47;jetleaf-library-sidebar.html"
-    data-below-sidebar="jetleaf&#47;DestructionAwarePodProcessor-class-sidebar.html">
+    data-below-sidebar="jetleaf&#47;PodDestructionProcessor-class-sidebar.html">
     <div>
-<h1><span class="kind-class">DestructionAwarePodProcessor</span> class 
+<h1><span class="kind-class">PodDestructionProcessor</span> class 
     <a href="https://dart.dev/language/class-modifiers#abstract" class="feature feature-abstract" title="This type can not be directly constructed.">abstract</a>
  
 </h1></div>
@@ -64,7 +64,7 @@
 <li>Determine whether a Pod <strong>requires destruction</strong>.</li>
 </ul>
 <p>Example:</p>
-<pre class="language-dart"><code class="language-dart">class CleanupProcessor implements DestructionAwarePodProcessor {
+<pre class="language-dart"><code class="language-dart">class CleanupProcessor implements PodDestructionProcessor {
   @override
   void beforeDestruction(Object pod, Class podClass, String name) {
     print('Cleaning up resources for pod: $name');
@@ -92,8 +92,8 @@
   <dd>
     <ul class="gt-separated dark clazz-relationships">
       <li><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></li>
-        <li><a href="../jetleaf/PodAwareProcessor-class.html">PodAwareProcessor</a></li>
-      <li>DestructionAwarePodProcessor</li>
+        <li><a href="../jetleaf/PodProcessor-class.html">PodProcessor</a></li>
+      <li>PodDestructionProcessor</li>
     </ul>
   </dd>
 
@@ -112,8 +112,8 @@
   <section class="summary offset-anchor" id="constructors">
     <h2>Constructors</h2>
     <dl class="constructor-summary-list">
-        <dt id="DestructionAwarePodProcessor.new" class="callable">
-          <span class="name"><a href="../jetleaf/DestructionAwarePodProcessor/DestructionAwarePodProcessor.html">DestructionAwarePodProcessor.new</a></span><span class="signature">()</span>
+        <dt id="PodDestructionProcessor.new" class="callable">
+          <span class="name"><a href="../jetleaf/PodDestructionProcessor/PodDestructionProcessor.html">PodDestructionProcessor.new</a></span><span class="signature">()</span>
         </dt>
         <dd>
           
@@ -173,7 +173,7 @@
 </dd>
 
         <dt id="processAfterDestruction" class="callable">
-  <span class="name"><a href="../jetleaf/DestructionAwarePodProcessor/processAfterDestruction.html">processAfterDestruction</a></span><span class="signature">(<wbr><span class="parameter" id="processAfterDestruction-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="processAfterDestruction-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="processAfterDestruction-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
+  <span class="name"><a href="../jetleaf/PodDestructionProcessor/processAfterDestruction.html">processAfterDestruction</a></span><span class="signature">(<wbr><span class="parameter" id="processAfterDestruction-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="processAfterDestruction-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="processAfterDestruction-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
   </span>
   
@@ -187,7 +187,7 @@ destruction, e.g. invoking custom destruction callbacks.
 </dd>
 
         <dt id="processAfterInitialization" class="callable inherited">
-  <span class="name"><a href="../jetleaf/PodAwareProcessor/processAfterInitialization.html">processAfterInitialization</a></span><span class="signature">(<wbr><span class="parameter" id="processAfterInitialization-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="processAfterInitialization-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="processAfterInitialization-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
+  <span class="name"><a href="../jetleaf/PodProcessor/processAfterInitialization.html">processAfterInitialization</a></span><span class="signature">(<wbr><span class="parameter" id="processAfterInitialization-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="processAfterInitialization-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="processAfterInitialization-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a>?</span>&gt;</span></span>
   </span>
   
@@ -201,7 +201,7 @@ any pod initialization callbacks.
 </dd>
 
         <dt id="processBeforeDestruction" class="callable">
-  <span class="name"><a href="../jetleaf/DestructionAwarePodProcessor/processBeforeDestruction.html">processBeforeDestruction</a></span><span class="signature">(<wbr><span class="parameter" id="processBeforeDestruction-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="processBeforeDestruction-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="processBeforeDestruction-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
+  <span class="name"><a href="../jetleaf/PodDestructionProcessor/processBeforeDestruction.html">processBeforeDestruction</a></span><span class="signature">(<wbr><span class="parameter" id="processBeforeDestruction-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="processBeforeDestruction-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="processBeforeDestruction-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
   </span>
   
@@ -215,7 +215,7 @@ destruction, e.g. invoking custom destruction callbacks.
 </dd>
 
         <dt id="processBeforeInitialization" class="callable inherited">
-  <span class="name"><a href="../jetleaf/PodAwareProcessor/processBeforeInitialization.html">processBeforeInitialization</a></span><span class="signature">(<wbr><span class="parameter" id="processBeforeInitialization-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="processBeforeInitialization-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="processBeforeInitialization-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
+  <span class="name"><a href="../jetleaf/PodProcessor/processBeforeInitialization.html">processBeforeInitialization</a></span><span class="signature">(<wbr><span class="parameter" id="processBeforeInitialization-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="processBeforeInitialization-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="processBeforeInitialization-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a>?</span>&gt;</span></span>
   </span>
   
@@ -229,7 +229,7 @@ any pod initialization callbacks.
 </dd>
 
         <dt id="requiresDestruction" class="callable">
-  <span class="name"><a href="../jetleaf/DestructionAwarePodProcessor/requiresDestruction.html">requiresDestruction</a></span><span class="signature">(<wbr><span class="parameter" id="requiresDestruction-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="requiresDestruction-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="requiresDestruction-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
+  <span class="name"><a href="../jetleaf/PodDestructionProcessor/requiresDestruction.html">requiresDestruction</a></span><span class="signature">(<wbr><span class="parameter" id="requiresDestruction-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="requiresDestruction-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="requiresDestruction-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>&gt;</span></span>
   </span>
   
@@ -243,7 +243,7 @@ post-processor.
 </dd>
 
         <dt id="shouldProcessBeforeInitialization" class="callable inherited">
-  <span class="name"><a href="../jetleaf/PodAwareProcessor/shouldProcessBeforeInitialization.html">shouldProcessBeforeInitialization</a></span><span class="signature">(<wbr><span class="parameter" id="shouldProcessBeforeInitialization-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="shouldProcessBeforeInitialization-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="shouldProcessBeforeInitialization-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
+  <span class="name"><a href="../jetleaf/PodProcessor/shouldProcessBeforeInitialization.html">shouldProcessBeforeInitialization</a></span><span class="signature">(<wbr><span class="parameter" id="shouldProcessBeforeInitialization-param-pod"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">pod</span>, </span><span class="parameter" id="shouldProcessBeforeInitialization-param-podClass"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a></span> <span class="parameter-name">podClass</span>, </span><span class="parameter" id="shouldProcessBeforeInitialization-param-name"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span> <span class="parameter-name">name</span></span>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>&gt;</span></span>
   </span>
   
@@ -306,7 +306,7 @@ post-processor.
 <ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
     <li><a href="../index.html">jetleaf</a></li>
     <li><a href="../jetleaf/">jetleaf</a></li>
-    <li class="self-crumb">DestructionAwarePodProcessor class</li>
+    <li class="self-crumb">PodDestructionProcessor class</li>
 </ol>
 
     <h5>jetleaf library</h5>

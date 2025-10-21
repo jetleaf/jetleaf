@@ -80,9 +80,9 @@
 <li>Conditional loading strategies</li>
 </ul>
 <h2 id="example">Example</h2>
-<pre class="language-dart"><code class="language-dart">if (!loader.isLoaded('com.example.User')) {
+<pre class="language-dart"><code class="language-dart">if (!loader.isLoaded('package:example/test.dart.User')) {
   print('Loading User class for first time...');
-  await loader.loadClass&lt;User&gt;('com.example.User');
+  await loader.loadClass&lt;User&gt;('package:example/test.dart.User');
 }
 </code></pre>
 <h2 id="performance">Performance</h2>

@@ -90,7 +90,7 @@
 <h2 id="example">Example</h2>
 <pre class="language-dart"><code class="language-dart">class MyClass extends BaseClass with MixinA, MixinB {}
 
-final myClass = await loader.loadClass&lt;MyClass&gt;('com.example.MyClass');
+final myClass = await loader.loadClass&lt;MyClass&gt;('package:example/test.dart.MyClass');
 final mixins = await loader.findMixins(myClass);
 // Returns: [MixinA, MixinB] (in application order)
 </code></pre>

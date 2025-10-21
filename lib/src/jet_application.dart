@@ -104,7 +104,7 @@ import 'runtime/jet_runtime_scan.dart';
 ///
 /// ### Property Sources (in order of precedence):
 /// 1. Command line arguments (`--name=value`)
-/// 2. JVM system properties (`System.getProperty()`)
+/// 2. DVM system properties (`System.getProperty()`)
 /// 3. OS environment variables
 /// 4. Application-specific property files
 /// 5. Default properties
@@ -351,7 +351,7 @@ final class JetApplication {
   RuntimeProvider? _runtimeProvider;
 
   /// {@template jet_application.pod_name_generator}
-  /// Custom pod name generator for bean naming strategy.
+  /// Custom pod name generator for pod naming strategy.
   ///
   /// If specified, this generator is used to create names for registered
   /// pods instead of the default naming strategy.
@@ -490,6 +490,26 @@ final class JetApplication {
   /// Defaults to `true`.
   /// {@endtemplate}
   bool _logStartupInfo = true;
+
+  /// {@template configurable_pod_factory.expression_resolver}
+  /// Holds the currently registered [PodExpressionResolver], if any.
+  ///
+  /// The resolver is responsible for evaluating pod expressions at runtime,
+  /// such as those used in `@Value`, `@Conditional`, or other dynamic
+  /// annotations within Jetleaf pods.
+  ///
+  /// - Can be null if no resolver is registered.
+  /// - Provides the central mechanism for expression resolution across the pod factory.
+  ///
+  /// ### Example:
+  /// ```dart
+  /// if (_expressionResolver != null) {
+  ///   final context = _expressionResolver!.createContext();
+  ///   final value = context.evaluate('some.expression');
+  /// }
+  /// ```
+  /// {@endtemplate}
+  PodExpressionResolver? _expressionResolver;
 
   /// {@template jet_application.system_detector}
   /// Detector for system properties and runtime environment.
@@ -745,9 +765,9 @@ final class JetApplication {
           continue;
         }
 
-        final constructor = cls.getNoArgConstructor() ?? cls.getBestConstructor([]);
+        final constructor = cls.isInvokable() ? cls.getNoArgConstructor() ?? cls.getBestConstructor([]) : null;
         
-        if(constructor != null && (!cls.isAbstract() || constructor.isFactory())) {
+        if(constructor != null) {
           final instance = constructor.newInstance();
           listeners.add(instance);
         } else {
@@ -833,6 +853,10 @@ final class JetApplication {
 
       _applicationListeners.onStarted(context, _startup.getTimeTakenToStarted());
       await _callRunners(context, aargs);
+
+      if (context.getPodExpressionResolver() != null && _expressionResolver == null) {
+        _expressionResolver = context.getPodExpressionResolver();
+      }
 
       return context;
     } on Throwable catch (e) {
@@ -1106,14 +1130,18 @@ final class JetApplication {
     podFactory.setAllowDefinitionOverriding(_allowDefinitionOverriding);
 
     if (_lazyInitialization) {
-      context.addPodFactoryPostProcessor(LazyInitializationPodAwareProcessor());
+      context.addPodFactoryPostProcessor(LazyInitializationPodFactoryPostProcessor());
     }
 
     if (_keepAlive) {
       context.addApplicationListener(KeepAlive());
     }
 
-    context.addPodFactoryPostProcessor(PropertySourceOrderingPodAwareProcessor(context));
+    if (_expressionResolver != null) {
+      context.setPodExpressionResolver(_expressionResolver);
+    }
+
+    context.addPodFactoryPostProcessor(PropertySourceOrderingPodFactoryPostProcessor(context));
     _applicationListeners.onContextLoaded(context);
   }
 
@@ -1452,6 +1480,32 @@ final class JetApplication {
   /// {@endtemplate}
   void setLazyInitialization(bool lazyInitialization) {
     _lazyInitialization = lazyInitialization;
+  }
+
+  // ============================== POD EXPRESSION RESOLVER ============================== 
+
+  /// {@template configurable_pod_factory.get_expression_resolver}
+  /// Returns the currently registered [PodExpressionResolver], or `null` if none.
+  ///
+  /// The resolver evaluates pod expressions such as `@Value` and `@Conditional`
+  /// within the Jetleaf container.
+  /// {@endtemplate}
+  PodExpressionResolver? getPodExpressionResolver() => _expressionResolver;
+
+  /// {@template configurable_pod_factory.set_expression_resolver}
+  /// Registers or updates the [PodExpressionResolver] used by this pod factory.
+  ///
+  /// Setting this resolver ensures that all expression evaluations within
+  /// pod definitions use the provided resolver instance. Passing `null` will
+  /// clear the current resolver.
+  ///
+  /// ### Example:
+  /// ```dart
+  /// setPodExpressionResolver(resolver);
+  /// ```
+  /// {@endtemplate}
+  void setPodExpressionResolver(PodExpressionResolver? valueResolver) {
+    _expressionResolver = valueResolver;
   }
 
   // ============================== LOG STARTUP INFO ============================== 

@@ -94,7 +94,7 @@
 
 // Or use with try-with-resources pattern
 await using(SystemClassLoader(), (loader) async {
-  return await loader.loadClass&lt;User&gt;('com.example.User');
+  return await loader.loadClass&lt;User&gt;('package:example/test.dart.User');
 });
 </code></pre>
 <h2 id="resource-management">Resource Management</h2>
