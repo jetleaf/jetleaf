@@ -20,33 +20,57 @@ import 'package:jetleaf_utils/utils.dart';
 import 'bootstrap_context.dart';
 
 /// {@template default_bootstrap_context}
-/// Default implementation of [ConfigurableBootstrapContext] used during
-/// application bootstrap phase in the JetLeaf framework.
+/// The default implementation of [ConfigurableBootstrapContext] in JetLeaf.
 ///
-/// It allows registration and lazy resolution of bootstrapped components
-/// using type-safe keys (`Class<T>`). It also manages event listeners for
-/// context closure events.
+/// This class is responsible for managing instance suppliers, created instances,
+/// and event listeners during the bootstrap phase of the application. It provides
+/// a thread-safe, singleton-aware mechanism for instance creation, caching, and
+/// retrieval.
 ///
-/// ### Features:
-/// - Type-safe registration of components
-/// - Lazy instantiation via `BootstrapRegistryInstanceSupplier`
-/// - Singleton scope support
-/// - Graceful fallback methods: `getOrElse`, `getOrElseSupply`, `getOrElseThrow`
-/// - Close listeners for context lifecycle events
+/// ### Responsibilities
 ///
-/// ### Example:
+/// 1. **Instance Supplier Registration**
+///    - Allows registering factories ([BootstrapInstanceSupplier]) for classes.
+///    - Supports optional replacement of existing registrations while ensuring
+///      that already created instances cannot be overridden.
+///
+/// 2. **Instance Retrieval**
+///    - Returns instances for registered classes on demand.
+///    - Supports singleton caching if the supplier’s scope is [ScopeType.SINGLETON].
+///    - Provides optional fallback values ([orElse]) or suppliers ([orSupply]) when
+///      no registration exists.
+///
+/// 3. **Event Handling**
+///    - Allows adding listeners for bootstrap context events via [ApplicationEventBus].
+///    - Emits [BootstrapContextClosedEvent] when the context is closed.
+///
+/// 4. **Thread-Safety**
+///    - All access to internal maps ([_isps], [_instances]) is synchronized to
+///      avoid race conditions during concurrent access.
+///
+/// ### Usage
 /// ```dart
 /// final context = DefaultBootstrapContext();
-/// context.register(MyService.classType, SingletonBootstrapSupplier((ctx) => MyService()));
-///
+/// context.register(MyService.classType, BootstrapInstanceSupplier.singleton(() => MyService()));
 /// final service = context.get(MyService.classType);
+/// context.close(applicationContext);
 /// ```
 /// {@endtemplate}
-class DefaultBootstrapContext implements ConfigurableBootstrapContext {
-	final Map<Class, BootstrapInstanceSupplier<Object>> _isps = {};
-	final Map<Class, Object> _instances = {};
-	final ApplicationEventBus _eventBus = _BootstrapEventBus();
+final class DefaultBootstrapContext implements ConfigurableBootstrapContext {
+  /// Map of registered instance suppliers keyed by their class type.
+  final Map<Class, BootstrapInstanceSupplier<Object>> _isps = {};
+
+  /// Map of already created singleton instances keyed by their class type.
+  final Map<Class, Object> _instances = {};
+
+  /// Event bus used to broadcast bootstrap lifecycle events.
+  final ApplicationEventBus _eventBus = _BootstrapEventBus();
+
+  /// The main application class associated with this bootstrap context.
   late Class<Object> _applicationClass;
+
+  /// {@macro default_bootstrap_context}
+  DefaultBootstrapContext();
 
 	@override
 	Class<Object> getApplicationClass() => _applicationClass;

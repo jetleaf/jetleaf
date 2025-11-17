@@ -51,7 +51,7 @@ import 'entry/application_type_filter.dart';
 @Configuration("jetleaf_application")
 @Import([ClassType<ApplicationImportSelector>(PackageNames.MAIN)])
 @ComponentScan(
-  includeFilters: [ComponentScanFilter(type: FilterType.CUSTOM, typeFilter: ApplicationTypeFilter())]
+  includeFilters: [ComponentScanFilter(FilterType.CUSTOM, typeFilter: ApplicationTypeFilter())]
 )
 class JetLeafApplication extends ReflectableAnnotation {
   /// {@template jetleaf_app_enable_auto_config}

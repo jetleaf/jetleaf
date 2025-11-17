@@ -16,44 +16,86 @@ import 'dart:async';
 
 import 'package:jetleaf_lang/lang.dart';
 
-/// {@template exception_handler}
-/// A global uncaught exception handler for JetLeaf that integrates with Dart's [Zone] system.
+/// {@template application_exception_handler}
+/// A global, thread-safe handler for uncaught exceptions in JetLeaf applications.
 ///
-/// This class provides:
-/// - Thread-local tracking of uncaught exceptions
-/// - Exit code registration for critical failures
-/// - Filtering of already logged or known log-related exceptions
+/// The [ApplicationExceptionHandler] is responsible for intercepting all uncaught
+/// exceptions thrown during the execution of the application, either synchronously
+/// or asynchronously (within [Zone]s). It ensures that exceptions are:
+/// 
+/// 1. **Wrapped consistently**: Non-[Throwable] objects (e.g., [Exception], [Error])
+///    are wrapped into [RuntimeException] for uniform handling.
+/// 2. **De-duplicated**: Exceptions are tracked internally to avoid logging the
+///    same exception multiple times, including nested causes.
+/// 3. **Delegated**: Optionally forwarded to a parent handler provided via the
+///    constructor for integration with external logging or error handling frameworks.
+/// 4. **Terminating gracefully**: Supports registering a custom exit code that
+///    terminates the application when a critical exception occurs.
+/// 5. **Recognized**: Known logging-related errors (see [_logConfigurationMessages])
+///    are detected and treated specially.
 ///
-/// It ensures that only unhandled, significant exceptions are escalated to a parent handler
-/// and optionally terminates the process via [System.exit].
+/// Thread-local storage ([_handlerLocal]) ensures that each Dart isolate can
+/// maintain its own handler, providing isolated exception handling per execution
+/// context. Use [current] to access the handler in the current isolate.
 ///
-/// ### Example
+/// ## Example Usage
 /// ```dart
 /// void main() {
+///   final handler = ApplicationExceptionHandler.current;
+///   
 ///   runZonedGuarded(() {
-///     // Your JetLeaf app logic
-///     throw Exception("Unexpected error");
-///   }, ExceptionHandler.current.uncaughtException);
+///     throw Exception("Something went wrong!");
+///   }, handler.uncaughtException);
 /// }
 /// ```
+///
+/// References:
+/// - [Throwable]: Base class for exceptions in JetLeaf.
+/// - [RuntimeException]: Wrapper for non-Throwable objects.
+/// - [Zone]: Dart class for asynchronous exception handling.
+/// - [_logConfigurationMessages]: Recognized log configuration error messages.
 /// {@endtemplate}
 class ApplicationExceptionHandler {
+  /// Known log-related error messages that should always be passed
+  /// to the parent handler if present.
+  ///
+  /// These include:
+  /// - "Logback configuration error detected"
+  /// - "Logging initialization failed"
+  /// - "Could not initialize logging"
   static final Set<String> _logConfigurationMessages = {
     "Logback configuration error detected",
     "Logging initialization failed",
     "Could not initialize logging",
   };
 
+  /// Exit code to be used when the application terminates due to an uncaught exception.
+  /// Defaults to 0 (no exit).
   int _exitCode = 0;
+
+  /// List of exceptions that have already been handled/logged.
+  ///
+  /// Used to prevent repeated logging of the same exception, including nested causes.
   final List<Throwable> _loggedExceptions = [];
+
+  /// Singleton default handler used if no thread-local handler exists.
   static final ApplicationExceptionHandler _default = ApplicationExceptionHandler();
+
+  /// Thread-local storage for isolate-specific handlers.
+  ///
+  /// Each Dart isolate can have its own independent exception handler.
   static final LocalThread<ApplicationExceptionHandler> _handlerLocal = LocalThread<ApplicationExceptionHandler>();
 
+  /// Optional parent handler for delegation of exceptions.
+  ///
+  /// If provided, uncaught exceptions may be forwarded to this handler
+  /// after internal checks.
   final void Function(Object error, StackTrace stack)? _parentHandler;
 
-  /// {@macro exception_handler}
+  /// {@macro application_exception_handler}
   ///
-  /// If a [_parentHandler] is passed, uncaught exceptions may be delegated to it.
+  /// - [parentHandler]: Optional function that receives uncaught exceptions
+  ///   after internal handling.
   ApplicationExceptionHandler([this._parentHandler]);
 
   /// Registers an exception as already logged to avoid duplicate handling.

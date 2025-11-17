@@ -51,7 +51,7 @@ final class JetLeafBanner implements Banner {
   void printBanner(Environment environment, Class<Object> sourceClass, PrintStream printStream) {
     printStream.println();
 
-    String banner = BANNER.replaceAll("{VERSION}", "v" + JetLeafVersion.getVersion());
+    String banner = BANNER.replaceAll("{VERSION}", "v${JetLeafVersion.getVersion()}");
     printStream.println(banner);
   }
 

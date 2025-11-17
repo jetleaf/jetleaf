@@ -31,7 +31,6 @@ import 'package:jetleaf_lang/lang.dart';
 /// ```dart
 /// final factory = ApplicationContextFactory.DEFAULT;
 /// final context = factory.create(ApplicationType.WEB);
-/// final environment = factory.createEnvironment(ApplicationType.WEB);
 /// ```
 ///
 /// This interface enables integration points for customizing the environment
@@ -56,34 +55,6 @@ abstract class ApplicationContextFactory {
   /// {@endtemplate}
   ConfigurableApplicationContext create(ApplicationType applicationType);
 
-  /// {@template application_context_factory_environment_type}
-  /// Returns the Dart [Type] of the [ConfigurableEnvironment] to use for the given
-  /// [applicationType].
-  ///
-  /// This allows factory consumers to know what type of environment will be instantiated.
-  ///
-  /// ### Example:
-  /// ```dart
-  /// final envType = factory.getEnvironmentType(ApplicationType.WEB);
-  /// print(envType); // e.g. ApplicationEnvironment
-  /// ```
-  /// {@endtemplate}
-  AbstractEnvironment? getEnvironmentType(ApplicationType applicationType);
-
-  /// {@template application_context_factory_create_environment}
-  /// Creates a new [ConfigurableEnvironment] suitable for the given [applicationType].
-  ///
-  /// Typically used during bootstrapping to create and inject environment configuration
-  /// into the application context before it is refreshed.
-  ///
-  /// ### Example:
-  /// ```dart
-  /// final env = factory.createEnvironment(ApplicationType.WEB);
-  /// print(env.getProperty('server.port'));
-  /// ```
-  /// {@endtemplate}
-  ConfigurableEnvironment createEnvironment(ApplicationType applicationType);
-
   /// Creates an [ApplicationContextFactory] that uses the provided [supplier]
   /// to construct the application context.
   ///
@@ -95,7 +66,7 @@ abstract class ApplicationContextFactory {
   /// var ctx = factory.create(ApplicationType.NONE);
   /// ```
   static ApplicationContextFactory of(Supplier<ConfigurableApplicationContext> supplier) {
-    return _(supplier);
+    return _ApplicationContextFactory(supplier);
   }
 }
 
@@ -112,19 +83,13 @@ abstract class ApplicationContextFactory {
 /// var ctx = factory.create(ApplicationType.NONE);
 /// ```
 /// {@endtemplate}
-class _ extends ApplicationContextFactory {
+class _ApplicationContextFactory extends ApplicationContextFactory {
   /// The supplier function used to provide a new [ConfigurableApplicationContext].
   final Supplier<ConfigurableApplicationContext> _supplier;
 
   /// {@macro supplier_application_context_factory}
-  _(this._supplier);
+  _ApplicationContextFactory(this._supplier);
 
   @override
   ConfigurableApplicationContext create(ApplicationType applicationType) => _supplier();
-
-  @override
-  AbstractEnvironment? getEnvironmentType(ApplicationType applicationType) => null;
-
-  @override
-  ConfigurableEnvironment createEnvironment(ApplicationType applicationType) => GlobalEnvironment();
 }

@@ -23,38 +23,86 @@ import 'package:meta/meta.dart';
 
 import 'application_shutdown_handler.dart';
 
-/// {@template jet_application_shutdown_hook}
-/// A handler that manages shutdown hooks in a Dart VM environment,
-/// specifically designed for JetLeaf applications.
+/// {@template application_shutdown_handler_hook}
+/// The `ApplicationShutdownHandlerHook` is responsible for managing the **graceful
+/// shutdown** of a JetLeaf application, ensuring that all registered
+/// [ConfigurableApplicationContext] instances and shutdown handlers are executed
+/// in a predictable and safe order when the Dart process exits or receives a
+/// termination signal.
 ///
-/// This class provides lifecycle control that supports registering active
-/// [ConfigurableApplicationContext] instances and gracefully shuts them down
-/// when the Dart VM receives termination signals (`SIGINT` or `SIGTERM`).
+/// This class supports:
+/// 
+/// 1. **Automatic shutdown hook registration** using Dart's `ProcessSignal`
+///    mechanism to handle `SIGINT` and `SIGTERM`.
+/// 2. **Tracking of active and closed contexts** to avoid double closures.
+/// 3. **Execution of registered shutdown handlers** in **reverse registration order**
+///    to ensure that dependent services are shut down in a safe sequence.
+/// 4. **Environment cleanup** such as disposing of logging listeners.
+/// 5. **Concurrency safety**, with internal synchronization to avoid race conditions
+///    when multiple contexts or handlers are being registered or executed concurrently.
 ///
-/// Shutdown handlers registered through [handler] are executed *after* the
-/// application contexts are closed.
-///
-/// ### Example:
+/// ### Usage Example:
 /// ```dart
-/// final hook = ShutdownHook();
-/// hook.enableShutdownHookAddition();
-/// hook.registerApplicationContext(myAppContext);
-///
-/// hook.handlers.add(() => print("Cleanup done."));
+/// final shutdownHook = ApplicationShutdownHandlerHook();
+/// shutdownHook.enableShutdownHook(); // Allow automatic signal registration
+/// shutdownHook.registerApplicationContext(appContext);
+/// shutdownHook.handler.add(() => print("Custom shutdown action"));
 /// ```
+///
+/// ### References:
+/// - [ConfigurableApplicationContext]: Represents an application context that can
+///   be started and closed.
+/// - [Runnable]: Interface implemented by shutdown handlers.
+/// - [_ApplicationContextClosedListener]: Internal listener monitoring context closure.
 /// {@endtemplate}
 class ApplicationShutdownHandlerHook implements Runnable {
+  /// Sleep interval in milliseconds for polling contexts during shutdown.
+  ///
+  /// This interval is used in `_closeAndWait` to check if contexts have completed
+  /// their shutdown sequence. A small delay prevents busy-waiting while allowing
+  /// fast shutdown.
   static const int _sleep = 50;
+
+  /// Maximum duration to wait for contexts to close before forcing exit.
+  ///
+  /// This ensures that hanging or slow contexts do not block the shutdown
+  /// indefinitely. Default is 10 minutes.
   static const Duration _timeout = Duration(minutes: 10);
+
+  /// Logger used for reporting informational, warning, and error messages
+  /// during shutdown.
   final _logger = LogFactory.getLog(ApplicationShutdownHandlerHook);
 
+  /// Active application contexts tracked by the shutdown hook.
+  ///
+  /// These contexts will be closed when the shutdown hook is executed.
   final Set<ConfigurableApplicationContext> _contexts = {};
+
+  /// Contexts that have been previously closed but need re-verification.
+  ///
+  /// Used to ensure that all shutdown logic is idempotent.
   final Set<ConfigurableApplicationContext> _closedContexts = {};
+
+  /// Whether a shutdown hook has been added to the Dart runtime.
   bool _shutdownHookAdded = false;
+
+  /// Flag indicating if shutdown hooks are enabled.
+  ///
+  /// Only after calling [enableShutdownHook] will runtime signals be intercepted.
   bool _shutdownHookEnabled = false;
+
+  /// Flag indicating if a shutdown is currently in progress.
+  ///
+  /// Prevents re-entrant execution of the shutdown logic.
   bool _inProgress = false;
 
+  /// {@macro application_shutdown_handler_hook}
+  ApplicationShutdownHandlerHook();
+
+  /// Internal listener to track closure of application contexts.
   _ApplicationContextClosedListener get _closeListener => _ApplicationContextClosedListener(this);
+
+  /// Internal handlers manager for registered shutdown actions.
   _Handlers get _handlers => _Handlers(this);
 
   /// {@template shutdown_hook_handlers}
@@ -172,8 +220,8 @@ class ApplicationShutdownHandlerHook implements Runnable {
   /// ```
   /// {@endtemplate}
   void _registerProcessSignalHook() {
-    ProcessSignal.sigint.watch().listen((_) async => await _runInternal());
-    ProcessSignal.sigterm.watch().listen((_) async => await _runInternal());
+    ProcessSignal.sigint.watch().listen((signal) async => await _runInternal());
+    ProcessSignal.sigterm.watch().listen((signal) async => await _runInternal());
   }
 
   /// {@template run_internal}

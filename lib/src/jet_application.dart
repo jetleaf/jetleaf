@@ -29,7 +29,6 @@ import 'components/pod_factory_post_processors.dart';
 import 'context/bootstrap_context.dart';
 import 'context/bootstrap_context_impl.dart';
 import 'context/context_factory.dart';
-import 'components/conversion_service.dart';
 import 'components/runner.dart';
 import 'context/default_context_factory.dart';
 import 'exception_handler/application_exception_handler.dart';
@@ -42,7 +41,6 @@ import 'logging/logging_listener.dart';
 import 'logging/startup_logger.dart';
 import 'exception_handler/exception_handler.dart';
 import 'exception_handler/exception_reporter.dart';
-import 'runtime/jet_runtime_scan.dart';
 
 /// {@template jet_application}
 /// Main entry point for JetLeaf framework applications.
@@ -260,7 +258,7 @@ final class JetApplication {
   /// These reporters are called when unhandled exceptions occur during
   /// application startup or operation.
   /// {@endtemplate}
-  List<ExceptionReporter> _exceptionReporters = [];
+  final List<ExceptionReporter> _exceptionReporters = [];
 
   /// {@template jet_application.exit_code_exception_handlers}
   /// Exit code exception handlers for converting exceptions to exit codes.
@@ -268,7 +266,7 @@ final class JetApplication {
   /// These handlers determine the appropriate exit code when the application
   /// terminates due to an exception.
   /// {@endtemplate}
-  List<ExitCodeExceptionHandler> _exitCodeExceptionHandlers = [];
+  final List<ExitCodeExceptionHandler> _exitCodeExceptionHandlers = [];
 
   /// {@template jet_application.default_properties}
   /// Default properties applied to the environment.
@@ -489,7 +487,7 @@ final class JetApplication {
   ///
   /// Defaults to `true`.
   /// {@endtemplate}
-  bool _logStartupInfo = true;
+  final bool _logStartupInfo = true;
 
   /// {@template configurable_pod_factory.expression_resolver}
   /// Holds the currently registered [PodExpressionResolver], if any.
@@ -579,7 +577,7 @@ final class JetApplication {
   /// {@endtemplate}
   Future<ConfigurableApplicationContext?> create(List<String> args, RuntimeProvider? provider) async {
     final system = _detector.detect(args);
-    _runtimeProvider = provider;
+    _runtimeProvider = provider ?? GLOBAL_RUNTIME_PROVIDER;
 
     /// As at v1.0.0, we have two different ways of running the `JetLeaf` application.
     /// 
@@ -611,12 +609,8 @@ final class JetApplication {
 
         For production, you need to use the `JetLeaf` cli command to build your application. Then,
         utilize the dart run command with the target file to run your application.
-          - `jl generate`
-            Builds the bootstrap file that contains all you source code offers.
           - `jl build`
-            Compiles your application to fat .dill file.
-          - `jl serve`
-            Runs `generate` and `build` at the same time, simultaneously.
+            Compiles your application to an executable file.
           - `dart run build/main.dill`
             Runs your application in production mode.
       ''');
@@ -648,12 +642,16 @@ final class JetApplication {
       /// It is to track the time taken to reach any point of the application startup process.
       _startup = StartupTracker.create();
 
-      if(_runtimeProvider == null) {
-        final result = await runScan(_logger);
-        Runtime.register(result);
-        _runtimeProvider = result;
+      // Runtime is mostly null when the application did not run through the jetleaf's cli command
+      RuntimeProvider? runtime = _runtimeProvider;
+      if(runtime == null) {
+        final result = await runScan();
+        runtime = result;
       }
-
+      
+      _runtimeProvider = runtime;
+      GLOBAL_RUNTIME_PROVIDER = runtime;
+      Runtime.register(runtime);
       _mainApplicationClass = Class.forObject(_primarySource);
 
       /// We use the [JetApplicationShutdownHook] to register a shutdown hook with the system.
@@ -673,13 +671,13 @@ final class JetApplication {
         if (context.isRunning()) {
           _applicationListeners.onReady(context, _startup.getReady());
         }
-      } on Throwable catch (e) {
+      } on Throwable catch (e, st) {
         throw ExceptionHandler(
           _logger,
           _shutdownHook,
           _exceptionReporters,
           _exitCodeExceptionHandlers,
-        ).handleRunFailure(context, e, null);
+        ).handleRunFailure(context, e, null, st);
       }
 
       return context;
@@ -813,7 +811,10 @@ final class JetApplication {
 
     try {
       ApplicationArguments aargs = DefaultApplicationArguments(args);
-      ConfigurableEnvironment environment = await _setupEnvironment(aargs);
+      _applicationType = _detectApplicationType();
+      context = _applicationContextFactory.create(_applicationType);
+
+      ConfigurableEnvironment environment = await _setupEnvironment(aargs, context.getSupportingEnvironment());
 
       final listener = _boostrapContext.get(
         Class<LoggingListener>(null, PackageNames.LOGGING),
@@ -825,13 +826,12 @@ final class JetApplication {
       }
       
       _banner = _printBanner(environment);
-      _applicationType = _detectApplicationType();
+
 
       if(_logger.getIsInfoEnabled()) {
         _logger.info("Launching ${_mainApplicationClass.getName()} with application type: ${_applicationType.getEmoji()} ${_applicationType.getName()}");
       }
 
-      context = _applicationContextFactory.create(_applicationType);
       context.setApplicationStartup(_applicationStartup);
       context.setMainApplicationClass(_mainApplicationClass);
       
@@ -844,7 +844,7 @@ final class JetApplication {
         _shutdownHook.registerApplicationContext(context);
       }
 
-       await context.refresh();
+       await context.setup();
       _startup.started();
 
       if (_logStartupInfo) {
@@ -858,14 +858,16 @@ final class JetApplication {
         _expressionResolver = context.getPodExpressionResolver();
       }
 
+      await _refreshConversionService(context);
+
       return context;
-    } on Throwable catch (e) {
+    } on Throwable catch (e, st) {
       throw ExceptionHandler(
         _logger,
         _shutdownHook,
         _exceptionReporters,
         _exitCodeExceptionHandlers,
-      ).handleRunFailure(context, e, null);
+      ).handleRunFailure(context, e, null, st);
     }
   }
 
@@ -900,7 +902,8 @@ final class JetApplication {
     try {
       return _conversionService;
     } catch (_) {
-      return ApplicationConversionService();
+      _conversionService = ApplicationConversionService();
+      return _conversionService;
     }
   }
 
@@ -921,8 +924,8 @@ final class JetApplication {
   ///
   /// Returns the configured [ConfigurableEnvironment]
   /// {@endtemplate}
-  Future<ConfigurableEnvironment> _setupEnvironment(ApplicationArguments args) async {
-    final env = _environment ?? _applicationContextFactory.createEnvironment(_applicationType);
+  Future<ConfigurableEnvironment> _setupEnvironment(ApplicationArguments args, ConfigurableEnvironment environment) async {
+    final env = _environment ?? environment;
     
     if (_addConversionService) {
       env.setConversionService(_getConversionService());
@@ -1035,7 +1038,7 @@ final class JetApplication {
     }
 
     // 2. We will auto detect from the [_mainApplicationClass] for [@EnableWebServer()]
-    final hasWebServer = Runtime.getAllPackages().where((p) => p.getName() == PackageNames.WEB).isNotEmpty;
+    final hasWebServer = Runtime.getAllPackages().find((p) => p.getName() == PackageNames.WEB) != null;
     if(hasWebServer) {
       return ApplicationType.WEB;
     }
@@ -1166,7 +1169,10 @@ final class JetApplication {
 
     final sorted = runners.toList();
     sorted.sort(OrderComparator().compare);
-    sorted.forEach((runner) => _callRunner(runner, args));
+  
+    for (var runner in sorted) {
+      _callRunner(runner, args);
+    }
   }
 
   /// {@template jet_application._call_runner}
@@ -1197,6 +1203,59 @@ final class JetApplication {
   /// {@endtemplate}
   void _callRunnerInternal<R extends Runner>(R runner, ThrowingConsumer<R> call) {
     call.callSafely(runner, message: () => "Failed to execute $R");
+  }
+
+  /// Refreshes and rebinds the active [ConversionService] within the application context.
+  ///
+  /// This method ensures that the JetLeaf runtime uses the most up-to-date
+  /// `ApplicationConversionService` when no user-defined conversion service
+  /// is provided.
+  ///
+  /// The method performs the following steps:
+  /// 1. Verifies that the current conversion service is the default
+  ///    [ApplicationConversionService].
+  /// 2. Retrieves the configured conversion service pod from the
+  ///    [ConfigurableApplicationContext].
+  /// 3. Rebinds it as the active conversion service for:
+  ///    - The [ApplicationContext]
+  ///    - The [PodFactory]
+  ///    - The [Environment], if configurable
+  ///
+  /// This allows dynamic type conversions (e.g., for configuration properties,
+  /// validation, or request binding) to remain consistent across the framework.
+  ///
+  /// Example:
+  /// ```dart
+  /// await _refreshConversionService(context);
+  /// ```
+  ///
+  /// See also:
+  /// - [ApplicationConversionService]
+  /// - [ConfigurableApplicationContext]
+  /// - [ConfigurableEnvironment]
+  Future<void> _refreshConversionService(ConfigurableApplicationContext context) async {
+    // Only do this when the user did not provide a default conversion service
+    if (_conversionService is ApplicationConversionService) {
+      final podFactory = context.getPodFactory();
+
+      if (podFactory.containsDefinition(AbstractApplicationContext.JETLEAF_CONVERSION_SERVICE_POD_NAME)) {
+        final conversionService = await podFactory.getPod<ApplicationConversionService>(AbstractApplicationContext.JETLEAF_CONVERSION_SERVICE_POD_NAME);
+
+        if (_addConversionService) {
+          context.setConversionService(conversionService);
+          podFactory.setConversionService(conversionService);
+        }
+
+        final env = context.getEnvironment();
+
+        if (env is ConfigurableEnvironment) {
+          env.setConversionService(conversionService);
+        }
+
+        context.setEnvironment(env);
+        _conversionService = conversionService;
+      }
+    }
   }
 
   // ============================== RUN METHODS ============================== 
@@ -1926,31 +1985,92 @@ extension ThrowingConsumerX<T> on ThrowingConsumer<T> {
 }
 
 /// {@template default_application_hook}
-/// Default implementation of [ApplicationHook] providing basic hook functionality.
+/// Default implementation of [ApplicationHook] in JetLeaf.
 ///
-/// This hook manages application run listeners and startup tracking for
-/// the application lifecycle.
+/// This hook serves as the central point for managing **application lifecycle events**
+/// and orchestrating the execution of run listeners. It is typically used internally
+/// by the JetLeaf framework but can also be extended or replaced if custom behavior
+/// is required during application startup or shutdown.
 ///
-/// See also:
-/// - [ApplicationHook] for the hook interface
-/// - [ApplicationRunListeners] for run listener management
+/// The primary responsibilities of this hook include:
+///
+/// 1. **Listener Management**
+///    - Maintains a collection of [ApplicationRunListener] instances.
+///    - Ensures that each listener is invoked in order during application lifecycle events.
+///
+/// 2. **Startup Tracking**
+///    - Tracks the startup sequence via [ApplicationStartup], which can measure
+///      duration, report progress, or emit diagnostic information.
+///
+/// 3. **Lifecycle Coordination**
+///    - Delegates lifecycle events (startup, ready, shutdown) to all registered listeners.
+///    - Provides a consistent and predictable execution order for application hooks.
+///
+/// ### How It Works
+///
+/// During the application bootstrap:
+///
+/// 1. The JetLeaf framework initializes the [DefaultApplicationHook] with a list
+///    of listeners and a startup tracker.
+/// 2. When the application is started, [getRunListener] is called with the active
+///    [JetApplication] instance.
+/// 3. [ApplicationRunListeners], a composite listener, wraps all individual listeners
+///    and ensures that lifecycle events are forwarded correctly.
+///
+/// This pattern allows multiple independent modules to register listeners without
+/// interfering with each other. Each listener can react to startup, ready, or shutdown
+/// events independently while the hook guarantees correct ordering.
+///
+/// ### Example Usage
+///
+/// ```dart
+/// final startupTracker = ApplicationStartup();
+/// final listeners = [LoggingRunListener(), MetricsRunListener()];
+///
+/// final hook = DefaultApplicationHook(listeners, startupTracker);
+/// final runListener = hook.getRunListener(myJetApplication);
+///
+/// runListener.onApplicationStarting();
+/// runListener.onApplicationReady();
+/// runListener.onApplicationStopping();
+/// ```
+///
+/// ### Extending or Customizing
+///
+/// If you need custom behavior, you can subclass [DefaultApplicationHook] and override
+/// [getRunListener] to provide your own composite or decorated run listeners:
+///
+/// ```dart
+/// class CustomApplicationHook extends DefaultApplicationHook {
+///   CustomApplicationHook(List<ApplicationRunListener> listeners, ApplicationStartup startup)
+///     : super(listeners, startup);
+///
+///   @override
+///   ApplicationRunListener getRunListener(JetApplication jetApplication) {
+///     final original = super.getRunListener(jetApplication);
+///     return LoggingDecorator(original); // add logging around all events
+///   }
+/// }
+/// ```
+///
+/// This ensures your custom logic is seamlessly integrated with JetLeaf’s lifecycle.
 /// {@endtemplate}
-class DefaultApplicationHook implements ApplicationHook {
-  /// {@template default_application_hook.listeners}
-  /// The run listeners managed by this hook.
-  /// {@endtemplate}
+final class DefaultApplicationHook implements ApplicationHook {
+  /// The list of listeners that will be invoked for lifecycle events.
   final List<ApplicationRunListener> _listeners;
 
-  /// {@template default_application_hook.application_startup}
-  /// The application startup tracker for timing information.
-  /// {@endtemplate}
+  /// Tracks the application startup lifecycle and duration.
   final ApplicationStartup _applicationStartup;
 
+  /// Creates a new [DefaultApplicationHook] with the provided run listeners
+  /// and startup tracker.
+  /// 
   /// {@macro default_application_hook}
   DefaultApplicationHook(this._listeners, this._applicationStartup);
 
   @override
   ApplicationRunListener getRunListener(JetApplication jetApplication) {
+    // Returns a composite listener that delegates events to all registered listeners.
     return ApplicationRunListeners(_listeners, _applicationStartup);
   }
 }

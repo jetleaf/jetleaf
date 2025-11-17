@@ -23,30 +23,54 @@ import 'application_exception_handler.dart';
 import 'exception_reporter.dart';
 
 /// {@template exception_handler}
-/// Centralized error handling for JetLeaf application startup and runtime.
+/// Responsible for handling exceptions thrown during the application lifecycle
+/// (startup or runtime) in JetLeaf applications.
 ///
-/// The [ExceptionHandler] class is responsible for:
-/// - Wrapping and rethrowing exceptions in a consistent manner
-/// - Mapping exceptions to process exit codes
-/// - Notifying [ApplicationRunListeners] of failures
-/// - Closing and unregistering failed [ConfigurableApplicationContext]s
-/// - Forwarding exceptions to registered [ExceptionReporter]s
-/// - Logging failures in a structured, non-duplicative way
+/// This class provides a unified mechanism for:
+/// 1. Mapping exceptions to application exit codes.
+/// 2. Notifying registered [ApplicationRunListeners] about failures.
+/// 3. Reporting exceptions via [ExceptionReporter]s.
+/// 4. Closing the [ConfigurableApplicationContext] safely.
+/// 5. Returning a wrapped [RuntimeException] to maintain a consistent exception type.
 ///
-/// This ensures that application failures are reported consistently
-/// and that resources are properly released when an error occurs.
+/// Key behaviors:
+/// - Ensures that exceptions are properly logged using [_logger].
+/// - Avoids duplicate reporting by integrating with [ApplicationExceptionHandler].
+/// - Supports recursive cause resolution for exit code generation via [ExitCodeGenerator].
+///
+/// ## Example
+/// ```dart
+/// final handler = ExceptionHandler(
+///   logger,
+///   shutdownHook,
+///   [ConsoleExceptionReporter()],
+///   [DefaultExitCodeExceptionHandler()],
+/// );
+///
+/// try {
+///   runApplication();
+/// } catch (e, st) {
+///   handler.handleRunFailure(context, e as Throwable, listeners);
+/// }
+/// ```
+///
+/// References:
+/// - [ApplicationExceptionHandler]: Tracks logged exceptions and exit codes.
+/// - [ConfigurableApplicationContext]: The application context that may be closed on failure.
+/// - [ExceptionReporter]: Interface for reporting exceptions externally.
+/// - [ExitCodeGenerator]: Interface for exceptions providing specific exit codes.
 /// {@endtemplate}
 final class ExceptionHandler {
-  /// Logger used to output exception details.
+  /// Logger used to output exception details and stack traces.
   final Log _logger;
 
-  /// Manages application shutdown hooks and cleanup.
+  /// Manages application shutdown hooks and cleanup for failed contexts.
   final ApplicationShutdownHandlerHook _shutdownHook;
 
-  /// A collection of reporters used to publish exceptions.
+  /// A collection of reporters used to publish exception details to various targets.
   final List<ExceptionReporter> _exceptionReporters;
 
-  /// A collection of handlers that can map exceptions to exit codes.
+  /// A collection of handlers mapping exceptions to exit codes.
   final List<ExitCodeExceptionHandler> _exitCodeExceptionHandlers;
 
   /// {@macro exception_handler}
@@ -60,15 +84,20 @@ final class ExceptionHandler {
   /// Handles an exception that occurred during application startup or runtime.
   ///
   /// Responsibilities:
-  /// - Maps the exception to an appropriate exit code
-  /// - Notifies registered [ApplicationRunListeners]
-  /// - Reports the failure via [ExceptionReporter]s
-  /// - Closes the [ConfigurableApplicationContext] if available
-  /// - Returns a wrapped [RuntimeException] for consistent rethrowing
+  /// - Maps the exception to an appropriate exit code via [_handleExitCode].
+  /// - Notifies registered [ApplicationRunListeners] about the failure.
+  /// - Reports the failure via [_reportFailure] using registered [ExceptionReporter]s.
+  /// - Closes the [ConfigurableApplicationContext] safely if provided.
+  /// - Returns a [RuntimeException] for consistent rethrowing.
   ///
-  /// If the given [exception] is already a [JetLeafException], it is returned
-  /// unchanged. Otherwise, it may be wrapped in an [IllegalStateException].
-  RuntimeException handleRunFailure(ConfigurableApplicationContext? context, Throwable exception, ApplicationRunListeners? listeners) {
+  /// If the given [exception] is already a [JetLeafException], it is returned unchanged.
+  /// Otherwise, it may be wrapped in an [IllegalStateException].
+  ///
+  /// References:
+  /// - [_handleExitCode]
+  /// - [_reportFailure]
+  /// - [ApplicationRunListeners.onFailed]
+  RuntimeException handleRunFailure(ConfigurableApplicationContext? context, Throwable exception, ApplicationRunListeners? listeners, StackTrace? st) {
     if (exception is JetLeafException) {
       return exception;
     }
@@ -88,7 +117,7 @@ final class ExceptionHandler {
       }
     } on Exception catch (ex) {
       if (_logger.getIsInfoEnabled()) {
-        _logger.info("Unable to close ApplicationContext ${context?.getId()}", error: ex);
+        _logger.info("Unable to close ApplicationContext ${context?.getId()}", error: ex, stacktrace: st);
       }
     }
 

@@ -26,26 +26,14 @@ environment:
 
 dependencies:
   meta: ^1.17.0
-  jetleaf_lang: 
-    path: ../jetleaf_lang
-  jetleaf_logging: 
-    path: ../jetleaf_logging
-  jetleaf_convert: 
-    path: ../jetleaf_convert
-  jetleaf_core: 
-    path: ../jetleaf_core
-  jetleaf_utils: 
-    path: ../jetleaf_utils
-  jetleaf_env: 
-    path: ../jetleaf_env
-  jetleaf_pod: 
-    path: ../jetleaf_pod
-  jetleaf_cli: 
-    path: ../jetleaf_cli
+  jetleaf_lang: ^1.0.1
+  jetleaf_logging: ^1.0.1
+  jetleaf_convert: ^1.0.1
+  jetleaf_core: ^1.0.1
+  jetleaf_utils: ^1.0.1
+  jetleaf_env: ^1.0.1
+  jetleaf_pod: ^1.0.1
 
 dev_dependencies:
   test: ^1.21.0
   lints: ^6.0.0
-
-executables:
-  jl: cli

@@ -59,7 +59,7 @@ final class ApplicationLoggingListener implements LoggingListener {
   /// Active environment from which logging configuration is read.
   /// May be `null` if no environment has been provided.
   /// {@endtemplate}
-  Environment? _environment;
+  final Environment? _environment;
 
   /// {@macro application_logging_listener}
   ///

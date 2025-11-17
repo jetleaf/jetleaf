@@ -105,7 +105,9 @@ final class DartConfigParser {
         // // single-line comment
         if (ch == 0x2F && i + 1 < s.length && s.codeUnitAt(i + 1) == 0x2F) {
           i += 2;
-          while (i < s.length && s.codeUnitAt(i) != 0x0A) i++;
+          while (i < s.length && s.codeUnitAt(i) != 0x0A) {
+            i++;
+          }
           if (i < s.length) out.writeCharCode(0x0A); // keep newline
           continue;
         }
@@ -230,7 +232,9 @@ final class DartConfigParser {
 
     while (i < mapContent.length) {
       // skip whitespace and commas
-      while (i < mapContent.length && _isWhitespace(mapContent.codeUnitAt(i))) i++;
+      while (i < mapContent.length && _isWhitespace(mapContent.codeUnitAt(i))) {
+        i++;
+      }
       if (i >= mapContent.length) break;
       if (mapContent.codeUnitAt(i) == 0x2C) { i++; continue; } // ','
 
@@ -294,7 +298,9 @@ final class DartConfigParser {
   String? _extractCalleeBeforeParen(String s, int parenIndex) {
     int i = parenIndex - 1;
     // Skip whitespace
-    while (i >= 0 && _isWhitespace(s.codeUnitAt(i))) i--;
+    while (i >= 0 && _isWhitespace(s.codeUnitAt(i))) {
+      i--;
+    }
     if (i < 0) return null;
 
     // Collect identifier or dotted chain going left
@@ -343,8 +349,9 @@ final class DartConfigParser {
       if (!inSingle && ch == 0x22) { inDouble = !inDouble; continue; }
       if (!inDouble && ch == 0x27) { inSingle = !inSingle; continue; }
       if (!inSingle && !inDouble) {
-        if (ch == 0x28) depth++;
-        else if (ch == 0x29) {
+        if (ch == 0x28) {
+          depth++;
+        } else if (ch == 0x29) {
           depth--;
           if (depth == 0) return i;
         }
@@ -360,12 +367,16 @@ final class DartConfigParser {
     final out = <dynamic>[];
     int i = 0;
     while (i < s.length) {
-      while (i < s.length && _isWhitespace(s.codeUnitAt(i))) i++;
+      while (i < s.length && _isWhitespace(s.codeUnitAt(i))) {
+        i++;
+      }
       if (i >= s.length) break;
       final result = _parseValueFrom(s, i);
       out.add(result.value);
       i = result.nextIndex;
-      while (i < s.length && _isWhitespace(s.codeUnitAt(i))) i++;
+      while (i < s.length && _isWhitespace(s.codeUnitAt(i))) {
+        i++;
+      }
       if (i < s.length && s.codeUnitAt(i) == 0x2C) i++;
     }
     return out;
@@ -373,7 +384,9 @@ final class DartConfigParser {
 
   _ValueNext _parseValueFrom(String s, int start) {
     int i = start;
-    while (i < s.length && _isWhitespace(s.codeUnitAt(i))) i++;
+    while (i < s.length && _isWhitespace(s.codeUnitAt(i))) {
+      i++;
+    }
     if (i >= s.length) return _ValueNext(null, i);
 
     final ch = s.codeUnitAt(i);
@@ -423,13 +436,21 @@ final class DartConfigParser {
       if (ch == 0x5C) {
         if (i + 1 < s.length) {
           final next = s.codeUnitAt(i + 1);
-          if (next == 0x6E) buf.write('\n');
-          else if (next == 0x72) buf.write('\r');
-          else if (next == 0x74) buf.write('\t');
-          else if (next == 0x22) buf.write('"');
-          else if (next == 0x27) buf.write("'");
-          else if (next == 0x5C) buf.write('\\');
-          else buf.writeCharCode(next);
+          if (next == 0x6E) {
+            buf.write('\n');
+          } else if (next == 0x72) {
+            buf.write('\r');
+          } else if (next == 0x74) {
+            buf.write('\t');
+          } else if (next == 0x22) {
+            buf.write('"');
+          } else if (next == 0x27) {
+            buf.write("'");
+          } else if (next == 0x5C) {
+            buf.write('\\');
+          } else {
+            buf.writeCharCode(next);
+          }
           i += 2;
           continue;
         } else {
@@ -450,13 +471,17 @@ final class DartConfigParser {
     int i = start + 1;
     final items = <dynamic>[];
     while (i < s.length) {
-      while (i < s.length && _isWhitespace(s.codeUnitAt(i))) i++;
+      while (i < s.length && _isWhitespace(s.codeUnitAt(i))) {
+        i++;
+      }
       if (i >= s.length) break;
       if (s.codeUnitAt(i) == 0x5D) { i++; break; } // closing ']'
       final itemRes = _parseValueFrom(s, i);
       items.add(itemRes.value);
       i = itemRes.nextIndex;
-      while (i < s.length && _isWhitespace(s.codeUnitAt(i))) i++;
+      while (i < s.length && _isWhitespace(s.codeUnitAt(i))) {
+        i++;
+      }
       if (i < s.length && s.codeUnitAt(i) == 0x2C) i++;
     }
     return _ValueNext(items, i);

@@ -14,68 +14,59 @@
 
 import 'package:jetleaf_lang/lang.dart';
 
-/// {@template application_shutdown_handlers}
-/// Interface used to register or remove shutdown handlers for the Dart VM,
-/// typically during JetLeaf application shutdown.
+/// {@template application_shutdown_handler}
+/// Represents a registry of shutdown actions (tasks) that are executed when
+/// the application is in the process of shutting down.
 ///
-/// These handlers are executed **sequentially** in the order they were added,
-/// after the `ConfigurableApplicationContext` has been closed but before
-/// the Dart process exits. This allows for cleanup operations such as:
-/// - Closing database connections
-/// - Flushing logs
-/// - Releasing file handles or sockets
+/// Implementations of this interface are responsible for managing and
+/// executing shutdown tasks in a controlled manner, ensuring that
+/// resources are released properly and any cleanup logic is executed.
 ///
-/// ### Example:
+/// Shutdown tasks are typically added during the lifecycle of an
+/// application for purposes such as:
+/// - Closing open files or database connections
+/// - Terminating background threads or isolates
+/// - Cleaning up temporary directories or caches
+/// - Sending final logs or telemetry data
+///
+/// ### Example usage:
 /// ```dart
-/// class DefaultShutdownHandlers implements ApplicationShutdownHandler {
-///   final List<Runnable> _handlers = [];
+/// final ApplicationShutdownHandler shutdownHandlers = ...;
 ///
-///   @override
-///   void add(Runnable runnable) => _handlers.add(runnable);
+/// // Add a shutdown task
+/// shutdownHandlers.add(() => print('Disconnecting resources...'));
 ///
-///   @override
-///   void remove(Runnable runnable) => _handlers.remove(runnable);
-///
-///   void runAll() {
-///     for (final handler in _handlers) {
-///       handler.run();
-///     }
-///   }
-/// }
-///
-/// final shutdownHandlers = DefaultShutdownHandlers();
-///
-/// shutdownHandlers.add(() => print('Closing DB...'));
-/// shutdownHandlers.add(() => print('Flushing logs...'));
+/// // Remove a previously registered task
+/// void cleanup() => print('Cleaning temporary files...');
+/// shutdownHandlers.add(cleanup);
+/// shutdownHandlers.remove(cleanup);
 /// ```
+///
+/// ### Implementation Notes:
+/// - Tasks should ideally be **idempotent**, as multiple shutdown
+///   signals may be received depending on the runtime environment.
+/// - Tasks should be **short-running** and non-blocking, or if long-running,
+///   the implementation should handle them asynchronously.
+/// - Implementations may execute tasks **in order of addition** or in reverse,
+///   depending on the design. This interface does not mandate a specific ordering.
+/// - The interface is designed to be **thread-safe**; implementations should
+///   handle concurrent calls to `add` and `remove`.
 /// {@endtemplate}
 abstract interface class ApplicationShutdownHandler {
-  /// {@template add_shutdown_handler}
+  /// {@macro add_shutdown_handler}
+  ///
   /// Registers a shutdown [runnable] that will be called when the application
   /// is shutting down.
   ///
-  /// Actions are executed **in the order they were added**.
-  ///
-  /// ### Example:
-  /// ```dart
-  /// shutdownHandlers.add(() => print('Disconnecting...'));
-  /// ```
-  /// {@endtemplate}
+  /// Actions are executed **in the order they were added**, unless the
+  /// implementation specifies reverse execution.
   void add(Runnable runnable);
 
-  /// {@template remove_shutdown_handler}
+  /// {@macro remove_shutdown_handler}
+  ///
   /// Removes a previously registered shutdown [runnable], if it exists.
   ///
   /// If the same function reference was registered multiple times, only the
   /// first match will be removed.
-  ///
-  /// ### Example:
-  /// ```dart
-  /// void clean() => print('Cleaning up...');
-  ///
-  /// shutdownHandlers.add(clean);
-  /// shutdownHandlers.remove(clean);
-  /// ```
-  /// {@endtemplate}
   void remove(Runnable runnable);
 }

@@ -47,8 +47,7 @@ class JetLeafException extends RuntimeException {
   ///
   /// Use this when the context exists but is no longer valid, such as after
   /// a failed refresh or shutdown sequence.
-  JetLeafException(this._applicationContext)
-      : super("Application context was abandoned");
+  JetLeafException(this._applicationContext) : super("Application context was abandoned");
 
   /// Returns the [ConfigurableApplicationContext] that was abandoned,
   /// or `null` if no context was ever created.
