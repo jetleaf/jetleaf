@@ -1279,30 +1279,6 @@ final class JetApplication {
   /// Returns the created application context
   /// {@endtemplate}
   static Future<ConfigurableApplicationContext?> run(Object primarySource, List<String> args, [RuntimeProvider? provider]) {
-    return runSources(primarySource, [], args, provider);
-  }
-
-  /// {@template jet_application.run_sources}
-  /// Convenience method for running an application with multiple primary sources.
-  ///
-  /// Useful when an application is composed of multiple configuration classes
-  /// or modules.
-  ///
-  /// ### Usage:
-  /// ```dart
-  /// void main(List<String> args) {
-  ///   JetApplication.runSources(MyApplication, [DatabaseConfig, SecurityConfig], args);
-  /// }
-  /// ```
-  ///
-  /// [primarySource] the main primary source
-  /// [primarySources] additional primary sources
-  /// [args] command line arguments
-  /// [provider] optional runtime provider
-  ///
-  /// Returns the created application context
-  /// {@endtemplate}
-  static Future<ConfigurableApplicationContext?> runSources(Object primarySource, List<Object> primarySources, List<String> args, [RuntimeProvider? provider]) {
     return JetApplication(primarySource).create(args, provider);
   }
 
