@@ -96,13 +96,16 @@ class DefaultPropertiesPropertySource extends MapPropertySource {
   /// DefaultPropertiesPropertySource.addOrMerge(defaults, env.propertySources);
   /// ```
   /// {@endtemplate}
-  static void addOrMerge(Map<String, Object> source, MutablePropertySources sources) {
+  static void addOrMerge(Map<String, Object> source, MutablePropertySources sources, [String? name]) {
+    final resolvedName = name ?? NAME;
+  
     if (source.isNotEmpty) {
       final resultingSource = <String, Object>{};
       final propertySource = DefaultPropertiesPropertySource(resultingSource);
-      if (sources.containsName(NAME)) {
-        mergeIfPossible(source, sources, resultingSource);
-        sources.replace(NAME, propertySource);
+
+      if (sources.containsName(resolvedName)) {
+        mergeIfPossible(source, sources, resultingSource, resolvedName);
+        sources.replace(resolvedName, propertySource);
       } else {
         resultingSource.addAll(source);
         sources.addLast(propertySource);
@@ -116,8 +119,8 @@ class DefaultPropertiesPropertySource extends MapPropertySource {
   ///
   /// The result is written into [resultingSource].
   /// {@endtemplate}
-  static void mergeIfPossible(Map<String, Object> source, MutablePropertySources sources, Map<String, Object> resultingSource) {
-    final existingSource = sources.get(NAME);
+  static void mergeIfPossible(Map<String, Object> source, MutablePropertySources sources, Map<String, Object> resultingSource, String name) {
+    final existingSource = sources.get(name);
     if (existingSource != null) {
       final underlyingSource = existingSource.getSource();
       if (underlyingSource is Map) {
@@ -133,18 +136,39 @@ class DefaultPropertiesPropertySource extends MapPropertySource {
   ///
   /// This allows user-defined or system-level property sources to override it.
   /// {@endtemplate}
-  static void moveToEnd(ConfigurableEnvironment environment) {
-    moveSourcesToEnd(environment.getPropertySources());
+  static void moveToEnd(ConfigurableEnvironment environment, [String? name]) {
+    moveSourcesToEnd(environment.getPropertySources(), name);
   }
 
   /// {@template default_properties_property_source.move_sources_to_end}
   /// Moves the `"defaultProperties"` source to the end of the [propertySources]
   /// collection, preserving its values but placing it last in resolution order.
   /// {@endtemplate}
-  static void moveSourcesToEnd(MutablePropertySources propertySources) {
-    final propertySource = propertySources.remove(NAME);
+  static void moveSourcesToEnd(MutablePropertySources propertySources, [String? name]) {
+    final propertySource = propertySources.remove(name ?? NAME);
     if (propertySource != null) {
       propertySources.addLast(propertySource);
+    }
+  }
+
+  /// {@template default_properties_property_source.move_to_start}
+  /// Moves the `"defaultProperties"` source to the start of the given [environment]'s
+  /// property sources list.
+  ///
+  /// This allows user-defined or system-level property sources to override it.
+  /// {@endtemplate}
+  static void moveToStart(ConfigurableEnvironment environment, [String? name]) {
+    moveSourcesToStart(environment.getPropertySources(), name);
+  }
+
+  /// {@template default_properties_property_source.move_sources_to_start}
+  /// Moves the `"defaultProperties"` source to the start of the [propertySources]
+  /// collection, preserving its values but placing it last in resolution order.
+  /// {@endtemplate}
+  static void moveSourcesToStart(MutablePropertySources propertySources, [String? name]) {
+    final propertySource = propertySources.remove(name ?? NAME);
+    if (propertySource != null) {
+      propertySources.addFirst(propertySource);
     }
   }
 }

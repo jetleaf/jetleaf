@@ -14,9 +14,9 @@
 
 import 'package:jetleaf_env/property.dart';
 
-class Application extends ConfigurationProperty {
+class Application extends ApplicationConfigurationProperty {
   @override
-  ConfigurationProperties properties() => ConfigurationProperties({
+  ApplicationConfigurationProperties properties() => ApplicationConfigurationProperties({
     JetProperty.custom("logging.type", "flat", "Logging type"),
     JetProperty.custom("logging.level", "all", "Logging level"),
     JetProperty.custom("logging.show.time-only", true, "Show time only"),

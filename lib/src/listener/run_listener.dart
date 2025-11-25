@@ -12,6 +12,8 @@
 // 
 // 🔧 Powered by Hapnium — the Dart backend engine 🍃
 
+import 'dart:async';
+
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_env/env.dart';
 import 'package:jetleaf_lang/lang.dart';
@@ -54,39 +56,39 @@ abstract class ApplicationRunListener {
   ///
   /// Use this hook for **very early initialization logic**, such as logging
   /// startup banners or initializing bootstrap resources.
-  void onStarting(ConfigurableBootstrapContext context, Class<Object> mainClass) {}
+  FutureOr<void> onStarting(ConfigurableBootstrapContext context, Class<Object> mainClass) {}
 
   /// Called once the application environment has been prepared.
   ///
   /// This is typically where you can **inspect or modify environment variables,
   /// configuration files, or system properties** before the application context
   /// is created.
-  void onEnvironmentPrepared(ConfigurableBootstrapContext context, ConfigurableEnvironment environment) {}
+  FutureOr<void> onEnvironmentPrepared(ConfigurableBootstrapContext context, ConfigurableEnvironment environment) {}
 
   /// Called after the application context has been created but not yet loaded.
   ///
   /// Allows for **programmatic modifications of the context** before pods or
   /// components are loaded into it.
-  void onContextPrepared(ConfigurableApplicationContext context) {}
+  FutureOr<void> onContextPrepared(ConfigurableApplicationContext context) {}
 
   /// Called when the application context has loaded all configurations.
   ///
   /// This happens **before the context is refreshed**. It is useful for
   /// validating configurations or setting up monitoring tools.
-  void onContextLoaded(ConfigurableApplicationContext context) {}
+  FutureOr<void> onContextLoaded(ConfigurableApplicationContext context) {}
 
   /// Called after the application context has been refreshed and started.
   ///
   /// Provides the [timeTaken] to start the context. This is useful for
   /// logging startup performance or initializing runtime services.
-  void onStarted(ConfigurableApplicationContext context, Duration timeTaken) {}
+  FutureOr<void> onStarted(ConfigurableApplicationContext context, Duration timeTaken) {}
 
   /// Called when the application is fully ready to service requests.
   ///
   /// This is the **final lifecycle stage** before the application begins
   /// handling traffic. Use this to trigger tasks that require a fully
   /// initialized system.
-  void onReady(ConfigurableApplicationContext context, Duration timeTaken) {}
+  FutureOr<void> onReady(ConfigurableApplicationContext context, Duration timeTaken) {}
 
   /// Called if the application fails to start.
   ///
@@ -94,7 +96,7 @@ abstract class ApplicationRunListener {
   /// very early) and the [exception] that caused the failure.
   ///
   /// Use this to log or report startup errors.
-  void onFailed(ConfigurableApplicationContext? context, Object exception) {}
+  FutureOr<void> onFailed(ConfigurableApplicationContext? context, Object exception) {}
 }
 
 /// {@template jet_application_hook}

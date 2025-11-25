@@ -664,12 +664,12 @@ final class JetApplication {
       _boostrapContext = await _createBootstrapContext();
       _boostrapContext.setApplicationClass(_mainApplicationClass);
       _applicationListeners = _getRunListeners(args);
-      _applicationListeners.onStarting(_boostrapContext, _mainApplicationClass);
+      await _applicationListeners.onStarting(_boostrapContext, _mainApplicationClass);
       ConfigurableApplicationContext context = await _buildApplicationContext(args);
 
       try {
         if (context.isRunning()) {
-          _applicationListeners.onReady(context, _startup.getReady());
+          await _applicationListeners.onReady(context, _startup.getReady());
         }
       } on Throwable catch (e, st) {
         throw ExceptionHandler(
@@ -759,7 +759,7 @@ final class JetApplication {
     if(classes.isNotEmpty) {
       for(final cls in classes) {
         // Skip ApplicationRunListeners
-        if(cls.getType() == ApplicationRunListeners) {
+        if(cls == Class<ApplicationRunListeners>(null, PackageNames.MAIN)) {
           continue;
         }
 
@@ -838,7 +838,7 @@ final class JetApplication {
       // At this point, [Environment] must have been set, so we can proceed with caution.
       context.setEnvironment(_environment!);
 
-      _setupApplicationContext(context, aargs);
+      await _setupApplicationContext(context, aargs);
       
       if (_registerShutdownHook) {
         _shutdownHook.registerApplicationContext(context);
@@ -851,7 +851,7 @@ final class JetApplication {
         _startupLogger.logStarted(_logger, _startup);
       }
 
-      _applicationListeners.onStarted(context, _startup.getTimeTakenToStarted());
+      await _applicationListeners.onStarted(context, _startup.getTimeTakenToStarted());
       await _callRunners(context, aargs);
 
       if (context.getPodExpressionResolver() != null && _expressionResolver == null) {
@@ -938,7 +938,7 @@ final class JetApplication {
     }
 
     ConfigurationPropertySource.attach(env);
-    _applicationListeners.onEnvironmentPrepared(_boostrapContext, env);
+    await _applicationListeners.onEnvironmentPrepared(_boostrapContext, env);
 
     ApplicationInfoPropertySource.moveToEnd(env);
     DefaultPropertiesPropertySource.moveSourcesToEnd(env.getPropertySources());
@@ -1061,12 +1061,12 @@ final class JetApplication {
   /// [context] the application context to configure
   /// [args] application arguments for context configuration
   /// {@endtemplate}
-  void _setupApplicationContext(ConfigurableApplicationContext context, ApplicationArguments args) {
+  Future<void> _setupApplicationContext(ConfigurableApplicationContext context, ApplicationArguments args) async {
     for (final initializer in _initializers) {
       initializer.initialize(context);
     }
   
-    _applicationListeners.onContextPrepared(context);
+    await _applicationListeners.onContextPrepared(context);
     _boostrapContext.close(context);
 
     if (_logStartupInfo) {
@@ -1145,7 +1145,7 @@ final class JetApplication {
     }
 
     context.addPodFactoryPostProcessor(PropertySourceOrderingPodFactoryPostProcessor(context));
-    _applicationListeners.onContextLoaded(context);
+    await _applicationListeners.onContextLoaded(context);
   }
 
   /// {@template jet_application._call_runners}

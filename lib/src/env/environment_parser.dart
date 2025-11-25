@@ -17,17 +17,13 @@ import 'package:jetleaf_lang/lang.dart';
 import 'package:jetleaf_utils/utils.dart';
 
 import 'dart_config_parser.dart';
-
-/// Type alias for environment loaded data: (profile, properties)
-/// 
-/// This is a tuple containing the profile name and properties map.
-typedef ParsedEnvironmentData = (String packageName, String profile, Map<String, Object> properties);
+import 'models.dart';
 
 /// {@template environment_parser}
 /// Base interface for parsing configuration files into environment data.
 /// 
 /// Environment parsers extract configuration properties from various file formats
-/// and return them as [ParsedEnvironmentData] tuples containing the profile name
+/// and return them as [ParsedEnvironmentSource] tuples containing the profile name
 /// and properties map.
 /// 
 /// Unlike regular parsers that work with raw content, environment parsers:
@@ -59,7 +55,7 @@ abstract class EnvironmentParser extends Parser {
   /// Returns a tuple containing:
   /// - Profile name (e.g., "dev", "prod", "default")
   /// - Properties map with configuration key-value pairs
-  ParsedEnvironmentData load(Asset asset);
+  ParsedEnvironmentSource load(Asset asset);
   
   /// Extracts profile name from a file name.
   /// 
@@ -133,11 +129,11 @@ class EnvEnvironmentParser extends EnvParser implements EnvironmentParser {
   }
   
   @override
-  ParsedEnvironmentData load(Asset asset) {
+  ParsedEnvironmentSource load(Asset asset) {
     final profile = extractProfileFromFileName(asset.getFileName());
     final content = Map<String, Object>.from(parseAsset(asset));
     
-    return (asset.getPackageName() ?? "", profile, content);
+    return ParsedEnvironmentSource(asset.getPackageName() ?? "", profile, content);
   }
   
   @override
@@ -187,11 +183,11 @@ class JsonEnvironmentParser extends JsonParser implements EnvironmentParser {
   }
   
   @override
-  ParsedEnvironmentData load(Asset asset) {
+  ParsedEnvironmentSource load(Asset asset) {
     final profile = extractProfileFromFileName(asset.getFileName());
     final properties = Map<String, Object>.from(parseAsset(asset));
     
-    return (asset.getPackageName() ?? "", profile, properties);
+    return ParsedEnvironmentSource(asset.getPackageName() ?? "", profile, properties);
   }
   
   @override
@@ -258,11 +254,11 @@ class PropertiesEnvironmentParser extends PropertiesParser implements Environmen
   }
   
   @override
-  ParsedEnvironmentData load(Asset asset) {
+  ParsedEnvironmentSource load(Asset asset) {
     final profile = extractProfileFromFileName(asset.getFileName());
     final properties = Map<String, Object>.from(parseAsset(asset));
     
-    return (asset.getPackageName() ?? "", profile, properties);
+    return ParsedEnvironmentSource(asset.getPackageName() ?? "", profile, properties);
   }
   
   @override
@@ -330,11 +326,11 @@ class YamlEnvironmentParser extends YamlParser implements EnvironmentParser {
   }
   
   @override
-  ParsedEnvironmentData load(Asset asset) {
+  ParsedEnvironmentSource load(Asset asset) {
     final profile = extractProfileFromFileName(asset.getFileName());
     final properties = Map<String, Object>.from(parseAsset(asset));
     
-    return (asset.getPackageName() ?? "", profile, properties);
+    return ParsedEnvironmentSource(asset.getPackageName() ?? "", profile, properties);
   }
   
   @override
@@ -402,9 +398,9 @@ class DartEnvironmentParser extends EnvironmentParser {
   }
   
   @override
-  ParsedEnvironmentData load(Asset asset) {
+  ParsedEnvironmentSource load(Asset asset) {
     final profile = extractProfileFromFileName(asset.getFileName());
     final properties = Map<String, Object>.from(DartConfigParser().parse(asset.getContentAsString()));
-    return (asset.getPackageName() ?? "", profile, properties);
+    return ParsedEnvironmentSource(asset.getPackageName() ?? "", profile, properties);
   }
 }

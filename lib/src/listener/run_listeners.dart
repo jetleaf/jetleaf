@@ -12,6 +12,8 @@
 // 
 // 🔧 Powered by Hapnium — the Dart backend engine 🍃
 
+import 'dart:async';
+
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_env/env.dart';
 import 'package:jetleaf_lang/lang.dart';
@@ -118,42 +120,42 @@ final class ApplicationRunListeners implements ApplicationRunListener {
   ApplicationRunListeners(this._listeners, this._startup);
   
   @override
-  void onStarting(ConfigurableBootstrapContext context, Class<Object> mainClass) {
-    _doWith("starting", (listener) => listener.onStarting(context, mainClass), (step) {
+  FutureOr<void> onStarting(ConfigurableBootstrapContext context, Class<Object> mainClass) async {
+    _doWith("starting", (listener) async => await listener.onStarting(context, mainClass), (step) {
       step.tag("mainClass", value: mainClass.getName());
     });
   }
   
   @override
-  void onEnvironmentPrepared(ConfigurableBootstrapContext context, ConfigurableEnvironment environment) {
-    _doWith("environmentPrepared", (listener) => listener.onEnvironmentPrepared(context, environment));
+  FutureOr<void> onEnvironmentPrepared(ConfigurableBootstrapContext context, ConfigurableEnvironment environment) async {
+    _doWith("environmentPrepared", (listener) async => await listener.onEnvironmentPrepared(context, environment));
   }
   
   @override
-  void onContextPrepared(ConfigurableApplicationContext context) {
-    _doWith("contextPrepared", (listener) => listener.onContextPrepared(context));
+  FutureOr<void> onContextPrepared(ConfigurableApplicationContext context) async {
+    _doWith("contextPrepared", (listener) async => await listener.onContextPrepared(context));
   }
   
   @override
-  void onContextLoaded(ConfigurableApplicationContext context) {
-    _doWith("contextLoaded", (listener) => listener.onContextLoaded(context));
+  FutureOr<void> onContextLoaded(ConfigurableApplicationContext context) async {
+    _doWith("contextLoaded", (listener) async => await listener.onContextLoaded(context));
   }
   
   @override
-  void onStarted(ConfigurableApplicationContext context, Duration timeTaken) {
-    _doWith("started", (listener) => listener.onStarted(context, timeTaken));
+  FutureOr<void> onStarted(ConfigurableApplicationContext context, Duration timeTaken) async {
+    _doWith("started", (listener) async => await listener.onStarted(context, timeTaken));
   }
   
   @override
-  void onReady(ConfigurableApplicationContext context, Duration timeTaken) {
-    _doWith("ready", (listener) => listener.onReady(context, timeTaken));
+  FutureOr<void> onReady(ConfigurableApplicationContext context, Duration timeTaken) async {
+    _doWith("ready", (listener) async => await listener.onReady(context, timeTaken));
   }
 
   @override
-  void onFailed(ConfigurableApplicationContext? context, Object exception) {
-    _doWith("failed", (listener) {
+  FutureOr<void> onFailed(ConfigurableApplicationContext? context, Object exception) async {
+    _doWith("failed", (listener) async {
       try {
-        listener.onFailed(context, exception);
+        await listener.onFailed(context, exception);
       } catch (ex) {
         if (_logger.getIsErrorEnabled()) {
           _logger.error("Error in failure listener", error: ex);
@@ -202,12 +204,16 @@ final class ApplicationRunListeners implements ApplicationRunListener {
   /// - Applies optional [stepAction] tagging.
   /// - Ends the step when processing completes.
   /// {@endtemplate}
-  void _doWith(String stepName, Consumer<ApplicationRunListener> consumer, [Consumer<StartupStep>? stepAction]) {
+  FutureOr<void> _doWith(String stepName, FutureOr<void> Function(ApplicationRunListener) consumer, [Consumer<StartupStep>? stepAction]) async {
     final tag = _startup.start("listeners.$stepName");
+    
     try {
       for (final listener in _listeners) {
-        consumer(listener);
-        stepAction?.call(tag);
+        await consumer(listener);
+
+        if (stepAction != null) {
+          stepAction(tag);
+        }
       }
     } finally {
       tag.end();

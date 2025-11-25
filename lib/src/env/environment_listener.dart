@@ -22,9 +22,8 @@ import '../jet_application.dart';
 import '../jet_leaf_version.dart';
 import '../listener/run_listener.dart';
 import 'environment_parser.dart';
+import 'models.dart';
 import 'property_source.dart';
-
-typedef _ParsedEnvironmentData = (String profile, Map<String, Object> properties);
 
 /// {@template environment_listener}
 /// A listener that prepares and configures the application environment.
@@ -60,7 +59,7 @@ final class EnvironmentListener extends ApplicationRunListener {
   EnvironmentListener();
 
   @override
-  void onEnvironmentPrepared(ConfigurableBootstrapContext context, ConfigurableEnvironment environment) async {
+  void onEnvironmentPrepared(ConfigurableBootstrapContext context, ConfigurableEnvironment environment) {
     final otherParsers = <EnvironmentParser>[
       EnvEnvironmentParser(),
       JsonEnvironmentParser(),
@@ -73,7 +72,7 @@ final class EnvironmentListener extends ApplicationRunListener {
 
     // --- 1) Collect parsed entries with package info -------------------------
 
-    final otherParserResult = <ParsedEnvironmentData>[];
+    final otherParserResult = <ParsedEnvironmentSource>[];
     for (final asset in assets) {
       final parser = otherParsers.find((p) => p.canParse(asset));
 
@@ -82,8 +81,12 @@ final class EnvironmentListener extends ApplicationRunListener {
       }
     }
 
-    final parsedEntries = <ParsedEnvironmentData>[];
-    final flattened = List<ParsedEnvironmentData>.from(otherParserResult.map((d) => (d.$1, d.$2, _flattenAndNormalizeMap(d.$3))));
+    final parsedEntries = <ParsedEnvironmentSource>[];
+    final flattened = List<ParsedEnvironmentSource>.from(otherParserResult.map((d) => ParsedEnvironmentSource(
+      d.packageName,
+      d.profile,
+      _flattenAndNormalizeMap(d.properties))
+    ));
     parsedEntries.addAll(flattened);
 
     // The use of dart environment parser can be tricky at some point, but since Jetleaf supports
@@ -94,22 +97,22 @@ final class EnvironmentListener extends ApplicationRunListener {
     }
 
     // --- 2) Build profile -> list of entries (preserving package info) ------
-    final Map<String, List<ParsedEnvironmentData>> byProfile = {};
+    final Map<String, List<ParsedEnvironmentSource>> byProfile = {};
     for (final entry in parsedEntries) {
-      final profile = entry.$2;
+      final profile = entry.profile;
       byProfile.putIfAbsent(profile, () => []).add(entry);
     }
 
     // --- 3) For each profile, sort entries so rootPackage entries come first ---
     // (We will process entries in order: root-package first, then others)
-    List<_ParsedEnvironmentData> envResult = [];
+    List<EnvironmentSource> envResult = [];
     for (final profile in byProfile.keys) {
       final entries = byProfile[profile]!;
 
       // sort so root package entries come first
       entries.sort((a, b) {
-        final aPkg = a.$1;
-        final bPkg = b.$1;
+        final aPkg = a.packageName;
+        final bPkg = b.packageName;
         if (aPkg == rootPackageName && bPkg != rootPackageName) return -1;
         if (bPkg == rootPackageName && aPkg != rootPackageName) return 1;
         // keep relative order otherwise (stable) — keep original order by not swapping
@@ -121,7 +124,7 @@ final class EnvironmentListener extends ApplicationRunListener {
 
       // process entries in order: root (user) ones first => they set initial values
       for (final entry in entries) {
-        final props = entry.$3;
+        final props = entry.properties;
         final flat = _flattenAndNormalizeMap(props);
 
         // Merge BUT preserve existing keys (user-first)
@@ -131,7 +134,7 @@ final class EnvironmentListener extends ApplicationRunListener {
         });
       }
 
-      envResult.add((profile, merged));
+      envResult.add(EnvironmentSource(profile, merged));
     }
 
     // 4) Register property sources: add unprofiled sources always; add profile-specific
@@ -141,18 +144,14 @@ final class EnvironmentListener extends ApplicationRunListener {
     final sources = environment.getPropertySources();
 
     for (final item in envResult) {
-      final sourceName = item.$1;
-      final properties = item.$2;
-
-      if(sourceName == AbstractEnvironment.RESERVED_DEFAULT_PROFILE_NAME) {
-        DefaultPropertiesPropertySource.addOrMerge(properties, sources);
-      } else {
-        sources.addLast(PropertiesPropertySource(sourceName, properties));
-      }
+      DefaultPropertiesPropertySource.addOrMerge(item.properties, sources, item.profile);
     }
 
     for (final source in sources) {
-      environment.getPropertySources().addFirst(source);
+      final envSource = envResult.find((e) => e.profile.equals(source.getName()));
+      if (envSource != null) {
+        environment.getPropertySources().addFirst(source);
+      }
     }
 
     // 5) Register version property source
@@ -210,7 +209,7 @@ final class EnvironmentListener extends ApplicationRunListener {
     // Build a profile -> properties map from envResult
     final Map<String, Map<String, Object>> profileToProps = {};
     for (final item in envResult) {
-      profileToProps[item.$1] = item.$2;
+      profileToProps[item.profile] = item.properties;
     }
 
     final activeProfiles = environment.getActiveProfiles();
@@ -274,14 +273,14 @@ final class EnvironmentListener extends ApplicationRunListener {
   }
 }
 
-List<_ParsedEnvironmentData> flattenEnvironment(List<_ParsedEnvironmentData> inputs) {
+List<EnvironmentSource> flattenEnvironment(List<EnvironmentSource> inputs) {
   final Map<String, Map<String, Object>> acc = {};
 
-  for (final (profile, properties) in inputs) {
-    final mergedForProfile = acc.putIfAbsent(profile, () => <String, Object>{});
+  for (final input in inputs) {
+    final mergedForProfile = acc.putIfAbsent(input.profile, () => <String, Object>{});
 
     // First flatten incoming properties into dotted keys and normalize values
-    final flat = _flattenAndNormalizeMap(properties);
+    final flat = _flattenAndNormalizeMap(input.properties);
 
     // Merge flattened keys into accumulator
     flat.forEach((key, incoming) {
@@ -291,7 +290,7 @@ List<_ParsedEnvironmentData> flattenEnvironment(List<_ParsedEnvironmentData> inp
   }
 
   // Return list of (profile, properties) tuples
-  return acc.entries.map((e) => (e.key, Map<String, Object>.from(e.value))).toList();
+  return acc.entries.map((e) => EnvironmentSource(e.key, Map<String, Object>.from(e.value))).toList();
 }
 
 /// --- Flatten & normalize -------------------------------------------------
