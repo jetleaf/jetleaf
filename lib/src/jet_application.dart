@@ -645,7 +645,7 @@ final class JetApplication {
       // Runtime is mostly null when the application did not run through the jetleaf's cli command
       RuntimeProvider? runtime = _runtimeProvider;
       if(runtime == null) {
-        final result = await runScan(forceLoadLibraries: !args.contains("JL_PROD"));
+        final result = await runScan(forceLoadLibraries: !args.contains(Constant.JETLEAF_GENERATED_DIR_NAME));
         runtime = result;
       }
       
