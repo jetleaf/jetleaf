@@ -101,19 +101,12 @@ final class DefaultApplicationContextFactory implements ApplicationContextFactor
     final classes = cac.getSubClasses().where((cl) => !cl.isAbstract());
 
     for(final cls in classes) {
-      if(_logger.getIsInfoEnabled()) {
-        _logger.info("Checking if application type [$applicationType] is supported by ${cls.getName()}");
-      }
-
-      final defc = cls.getNoArgConstructor() ?? cls.getBestConstructor([]);
       try {
-        if(defc != null) {
-          final source = defc.newInstance();
+        final source = ExecutableInstantiator.of(cls).newInstance();
+        if (source is ConfigurableApplicationContext) {
           sources.add(source);
-        } else {
-          if(_logger.getIsWarnEnabled()) {
-            _logger.warn("${cls.getName()} does not have a no-arg constructor");
-          }
+        } else if(_logger.getIsWarnEnabled()) {
+          _logger.warn("${cls.getName()} does not have a no-arg constructor or not a type of configurable application context");
         }
       } catch (_) {
         // No-op
@@ -121,6 +114,10 @@ final class DefaultApplicationContextFactory implements ApplicationContextFactor
     }
 
     if(sources.isNotEmpty) {
+      if(_logger.getIsInfoEnabled()) {
+        _logger.info("Checking for application context that supports application type [$applicationType]");
+      }
+
       final cac = sources.find((c) => c.supports(applicationType));
       if(cac != null) {
         return cac;

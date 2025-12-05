@@ -16,6 +16,7 @@ import 'dart:async';
 
 import 'package:jetleaf_convert/convert.dart';
 import 'package:jetleaf_core/context.dart';
+import 'package:jetleaf_core/core.dart';
 import 'package:jetleaf_pod/pod.dart';
 import 'package:jetleaf_env/env.dart';
 import 'package:jetleaf_env/property.dart';
@@ -33,6 +34,7 @@ import 'components/runner.dart';
 import 'context/default_context_factory.dart';
 import 'exception_handler/application_exception_handler.dart';
 import 'env/property_source.dart';
+import 'exception_handler/exception_reporter_manager.dart';
 import 'listener/run_listener.dart';
 import 'listener/run_listeners.dart';
 import 'shutdown/application_shutdown_handler_hook.dart';
@@ -40,7 +42,6 @@ import 'shutdown/application_shutdown_handler.dart';
 import 'logging/logging_listener.dart';
 import 'logging/startup_logger.dart';
 import 'exception_handler/exception_handler.dart';
-import 'exception_handler/exception_reporter.dart';
 
 /// {@template jet_application}
 /// Main entry point for JetLeaf framework applications.
@@ -258,7 +259,7 @@ final class JetApplication {
   /// These reporters are called when unhandled exceptions occur during
   /// application startup or operation.
   /// {@endtemplate}
-  final List<ExceptionReporter> _exceptionReporters = [];
+  List<ExceptionReporter> _exceptionReporters = [];
 
   /// {@template jet_application.exit_code_exception_handlers}
   /// Exit code exception handlers for converting exceptions to exit codes.
@@ -427,6 +428,12 @@ final class JetApplication {
   /// Defaults to `false`.
   /// {@endtemplate}
   bool _allowCircularReferences = false;
+
+  /// Tracks whether reporters have already been fetched from the application context.
+  /// 
+  /// Used to prevent repeatedly querying the context for reporters, since
+  /// reporter lookup is typically an expensive or one-time initialization step.
+  bool _reportersFetched = false;
 
   /// {@template jet_application.allow_definition_overriding}
   /// Whether a pod definition may be overridden.
@@ -670,12 +677,13 @@ final class JetApplication {
       try {
         if (context.isRunning()) {
           await _applicationListeners.onReady(context, _startup.getReady());
+          StartupEvent.publish(context, _startup);
         }
       } on Throwable catch (e, st) {
         throw ExceptionHandler(
           _logger,
           _shutdownHook,
-          _exceptionReporters,
+          _getExceptionReporters(context),
           _exitCodeExceptionHandlers,
         ).handleRunFailure(context, e, null, st);
       }
@@ -763,15 +771,15 @@ final class JetApplication {
           continue;
         }
 
-        final constructor = cls.isInvokable() ? cls.getNoArgConstructor() ?? cls.getBestConstructor([]) : null;
-        
-        if(constructor != null) {
-          final instance = constructor.newInstance();
-          listeners.add(instance);
-        } else {
-          if(_logger.getIsWarnEnabled()) {
-            _logger.warn("ApplicationRunListener ${cls.getName()} does not have a no-arg constructor");
+        try {
+          final listener = ExecutableInstantiator.of(cls).newInstance();
+          if (listener is ApplicationRunListener) {
+            listeners.add(listener);
+          } else if(_logger.getIsWarnEnabled()) {
+            _logger.warn("ApplicationRunListener ${cls.getName()} was not instantiated because it was not a no-arg constructor or not of listener type");
           }
+        } catch (_) {
+          // No-op
         }
       }
     }
@@ -846,12 +854,14 @@ final class JetApplication {
 
        await context.setup();
       _startup.started();
+      StartupEvent.publish(context, _startup);
 
       if (_logStartupInfo) {
         _startupLogger.logStarted(_logger, _startup);
       }
 
       await _applicationListeners.onStarted(context, _startup.getTimeTakenToStarted());
+      StartupEvent.publish(context, _startup);
       await _callRunners(context, aargs);
 
       if (context.getPodExpressionResolver() != null && _expressionResolver == null) {
@@ -865,7 +875,7 @@ final class JetApplication {
       throw ExceptionHandler(
         _logger,
         _shutdownHook,
-        _exceptionReporters,
+        _getExceptionReporters(context),
         _exitCodeExceptionHandlers,
       ).handleRunFailure(context, e, null, st);
     }
@@ -925,7 +935,7 @@ final class JetApplication {
   /// Returns the configured [ConfigurableEnvironment]
   /// {@endtemplate}
   Future<ConfigurableEnvironment> _setupEnvironment(ApplicationArguments args, ConfigurableEnvironment environment) async {
-    final env = _environment ?? environment;
+    ConfigurableEnvironment env = _environment ?? environment;
     
     if (_addConversionService) {
       env.setConversionService(_getConversionService());
@@ -1190,6 +1200,43 @@ final class JetApplication {
     } else if (runner is CommandLineRunner) {
       _callRunnerInternal<CommandLineRunner>(runner, (commandLineRunner) => commandLineRunner.run(args.getSourceArgs()));
     }
+  }
+
+  /// Returns the list of all available [ExceptionReporter] instances.
+  ///
+  /// The returned list includes:
+  ///  - Reporters explicitly registered via `_exceptionReporters`
+  ///  - Reporters discovered dynamically from the application context
+  ///
+  /// Discovery from the context happens only **once**:
+  ///  - The first call with a non-null [context] triggers reporter discovery
+  ///    through the [ExceptionReporterManager].
+  ///  - Subsequent calls return cached reporters and do not re-query the context.
+  ///
+  /// This behavior ensures:
+  ///  - Reporter collection is deterministic
+  ///  - Performance is improved by avoiding repeated environment scanning
+  ///  - User-provided reporters take precedence (added first)
+  ///
+  /// If [context] is `null`, only explicitly registered reporters are returned.
+  ///
+  /// ### Parameters
+  /// - [context] – the application context used to discover additional reporters
+  ///
+  /// ### Returns
+  /// A combined list of registered and discovered reporters.
+  List<ExceptionReporter> _getExceptionReporters(ConfigurableApplicationContext? context) {
+    final reporters = List<ExceptionReporter>.from(_exceptionReporters);
+    
+    if (_reportersFetched) {
+      return reporters;
+    }
+
+    final fetched = ExceptionReporterManager(context);
+    reporters.addAll(fetched.getReporters());
+    _reportersFetched = true;
+
+    return _exceptionReporters = reporters;
   }
 
   /// {@template jet_application._call_runner_internal}

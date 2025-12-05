@@ -15,6 +15,7 @@
 import 'dart:async';
 
 import 'package:jetleaf_core/context.dart';
+import 'package:jetleaf_core/core.dart';
 import 'package:jetleaf_env/env.dart';
 import 'package:jetleaf_lang/lang.dart';
 import 'package:jetleaf_logging/logging.dart';
@@ -121,39 +122,41 @@ final class ApplicationRunListeners implements ApplicationRunListener {
   
   @override
   FutureOr<void> onStarting(ConfigurableBootstrapContext context, Class<Object> mainClass) async {
-    _doWith("starting", (listener) async => await listener.onStarting(context, mainClass), (step) {
+    await _doWith("starting", (listener) async => await listener.onStarting(context, mainClass), (step) {
       step.tag("mainClass", value: mainClass.getName());
     });
   }
   
   @override
   FutureOr<void> onEnvironmentPrepared(ConfigurableBootstrapContext context, ConfigurableEnvironment environment) async {
-    _doWith("environmentPrepared", (listener) async => await listener.onEnvironmentPrepared(context, environment));
+    await _doWith("environmentPrepared", (listener) async => await listener.onEnvironmentPrepared(context, environment));
   }
   
   @override
   FutureOr<void> onContextPrepared(ConfigurableApplicationContext context) async {
-    _doWith("contextPrepared", (listener) async => await listener.onContextPrepared(context));
+    await _doWith("contextPrepared", (listener) async => await listener.onContextPrepared(context));
   }
   
   @override
   FutureOr<void> onContextLoaded(ConfigurableApplicationContext context) async {
-    _doWith("contextLoaded", (listener) async => await listener.onContextLoaded(context));
+    await _doWith("contextLoaded", (listener) async => await listener.onContextLoaded(context));
   }
   
   @override
   FutureOr<void> onStarted(ConfigurableApplicationContext context, Duration timeTaken) async {
-    _doWith("started", (listener) async => await listener.onStarted(context, timeTaken));
+    await _doWith("started", (listener) async => await listener.onStarted(context, timeTaken));
+    await AvailabilityEvent.publish(context, LivenessState.ACTIVE);
   }
   
   @override
   FutureOr<void> onReady(ConfigurableApplicationContext context, Duration timeTaken) async {
-    _doWith("ready", (listener) async => await listener.onReady(context, timeTaken));
+    await _doWith("ready", (listener) async => await listener.onReady(context, timeTaken));
+    await AvailabilityEvent.publish(context, ReadinessState.ACCEPTING_TRAFFIC);
   }
 
   @override
   FutureOr<void> onFailed(ConfigurableApplicationContext? context, Object exception) async {
-    _doWith("failed", (listener) async {
+    await _doWith("failed", (listener) async {
       try {
         await listener.onFailed(context, exception);
       } catch (ex) {

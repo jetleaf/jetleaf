@@ -68,6 +68,9 @@ final class EnvironmentSource {
   /// Both [profile] and [properties] must be provided and will not be modified
   /// after construction.
   const EnvironmentSource(this.profile, this.properties);
+
+  @override
+  String toString() => "EnvironmentSource(profile: $profile, properties: $properties)";
 }
 
 /// {@template parsed_environment_data}
@@ -118,4 +121,7 @@ final class ParsedEnvironmentSource extends EnvironmentSource {
   ///
   /// All fields must be provided and cannot be modified after construction.
   const ParsedEnvironmentSource(this.packageName, super.profile, super.properties);
+
+  @override
+  String toString() => "ParsedEnvironmentSource(packageName: $packageName, profile: $profile, properties: $properties)";
 }

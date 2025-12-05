@@ -125,24 +125,17 @@ final class LifecycleRunListener implements ApplicationRunListener {
   /// Checks if the given [clazz] is assignable to [ConfigurableApplicationContext]
   bool _isAssignableFromApplicationContext(Class clazz) => Class<ConfigurableApplicationContext>(null, PackageNames.MAIN).isAssignableFrom(clazz);
 
-  /// Checks if the given [clazz] is assignable to [Duration]
-  bool _isAssignableFromDuration(Class clazz) => Class<Duration>(null, PackageNames.DART).isAssignableFrom(clazz);
-
   @override
   void onContextLoaded(ConfigurableApplicationContext context) {
     for(final method in _onContextLoadedMethods) {
       final cls = method.getDeclaringClass();
       final instance = !cls.isInvokable() ? null : (cls.getNoArgConstructor() ?? cls.getBestConstructor([]))?.newInstance();
 
-      final arguments = <String, Object>{};
-      final parameters = method.getParameters();
-      final contextArgName = parameters.find((p) => _isAssignableFromApplicationContext(p.getClass()))?.getName();
+      final arguments = ExecutableArgumentResolver()
+        .and(Class<ApplicationContext>(null, PackageNames.MAIN), context)
+        .resolve(method);
       
-      if(contextArgName != null) {
-        arguments[contextArgName] = context;
-      }
-      
-      method.invoke(instance, arguments);
+      method.invoke(instance, arguments.getNamedArguments(), arguments.getPositionalArguments());
     }
   }
 
@@ -152,15 +145,11 @@ final class LifecycleRunListener implements ApplicationRunListener {
       final cls = method.getDeclaringClass();
       final instance = !cls.isInvokable() ? null : (cls.getNoArgConstructor() ?? cls.getBestConstructor([]))?.newInstance();
 
-      final arguments = <String, Object>{};
-      final parameters = method.getParameters();
-      final contextArgName = parameters.find((p) => _isAssignableFromApplicationContext(p.getClass()))?.getName();
+      final arguments = ExecutableArgumentResolver()
+        .and(Class<ApplicationContext>(null, PackageNames.MAIN), context)
+        .resolve(method);
       
-      if(contextArgName != null) {
-        arguments[contextArgName] = context;
-      }
-      
-      method.invoke(instance, arguments);
+      method.invoke(instance, arguments.getNamedArguments(), arguments.getPositionalArguments());
     }
   }
 
@@ -170,20 +159,12 @@ final class LifecycleRunListener implements ApplicationRunListener {
       final cls = method.getDeclaringClass();
       final instance = !cls.isInvokable() ? null : (cls.getNoArgConstructor() ?? cls.getBestConstructor([]))?.newInstance();
 
-      final arguments = <String, Object>{};
-      final parameters = method.getParameters();
-      final contextArgName = parameters.find((p) => _isAssignableFromBootstrapContext(p.getClass()))?.getName();
-      final environmentArgName = parameters.find((p) => !_isAssignableFromBootstrapContext(p.getClass()))?.getName();
+      final arguments = ExecutableArgumentResolver()
+        .and(Class<BootstrapContext>(null, PackageNames.MAIN), context)
+        .and(Class<Environment>(), environment)
+        .resolve(method);
       
-      if(contextArgName != null) {
-        arguments[contextArgName] = context;
-      }
-      
-      if(environmentArgName != null) {
-        arguments[environmentArgName] = environment;
-      }
-      
-      method.invoke(instance, arguments);
+      method.invoke(instance, arguments.getNamedArguments(), arguments.getPositionalArguments());
     }
   }
 
@@ -192,21 +173,13 @@ final class LifecycleRunListener implements ApplicationRunListener {
     for(final method in _onFailedMethods) {
       final cls = method.getDeclaringClass();
       final instance = !cls.isInvokable() ? null : (cls.getNoArgConstructor() ?? cls.getBestConstructor([]))?.newInstance();
-
-      final arguments = <String, Object?>{};
-      final parameters = method.getParameters();
-      final contextArgName = parameters.find((p) => _isAssignableFromApplicationContext(p.getClass()))?.getName();
-      final exceptionArgName = parameters.find((p) => ClassUtils.isAssignableToError(p.getClass()))?.getName();
       
-      if(contextArgName != null) {
-        arguments[contextArgName] = context;
-      }
+      final arguments = ExecutableArgumentResolver()
+        .when((p) => _isAssignableFromApplicationContext(p.getClass()), context)
+        .when((p) => ClassUtils.isAssignableToError(p.getClass()), exception)
+        .resolve(method);
       
-      if(exceptionArgName != null) {
-        arguments[exceptionArgName] = exception;
-      }
-      
-      method.invoke(instance, arguments);
+      method.invoke(instance, arguments.getNamedArguments(), arguments.getPositionalArguments());
     }
   }
 
@@ -215,21 +188,13 @@ final class LifecycleRunListener implements ApplicationRunListener {
     for(final method in _onReadyMethods) {
       final cls = method.getDeclaringClass();
       final instance = !cls.isInvokable() ? null : (cls.getNoArgConstructor() ?? cls.getBestConstructor([]))?.newInstance();
-
-      final arguments = <String, Object>{};
-      final parameters = method.getParameters();
-      final contextArgName = parameters.find((p) => _isAssignableFromApplicationContext(p.getClass()))?.getName();
-      final timeTakenArgName = parameters.find((p) => _isAssignableFromDuration(p.getClass()))?.getName();
       
-      if(contextArgName != null) {
-        arguments[contextArgName] = context;
-      }
+      final arguments = ExecutableArgumentResolver()
+        .and(Class<ApplicationContext>(null, PackageNames.MAIN), context)
+        .and(Class<Duration>(null, PackageNames.DART), timeTaken)
+        .resolve(method);
       
-      if(timeTakenArgName != null) {
-        arguments[timeTakenArgName] = timeTaken;
-      }
-      
-      method.invoke(instance, arguments);
+      method.invoke(instance, arguments.getNamedArguments(), arguments.getPositionalArguments());
     }
   }
 
@@ -239,20 +204,12 @@ final class LifecycleRunListener implements ApplicationRunListener {
       final cls = method.getDeclaringClass();
       final instance = !cls.isInvokable() ? null : (cls.getNoArgConstructor() ?? cls.getBestConstructor([]))?.newInstance();
 
-      final arguments = <String, Object>{};
-      final parameters = method.getParameters();
-      final contextArgName = parameters.find((p) => _isAssignableFromApplicationContext(p.getClass()))?.getName();
-      final timeTakenArgName = parameters.find((p) => _isAssignableFromDuration(p.getClass()))?.getName();
+      final arguments = ExecutableArgumentResolver()
+        .and(Class<ApplicationContext>(null, PackageNames.MAIN), context)
+        .and(Class<Duration>(null, PackageNames.DART), timeTaken)
+        .resolve(method);
       
-      if(contextArgName != null) {
-        arguments[contextArgName] = context;
-      }
-      
-      if(timeTakenArgName != null) {
-        arguments[timeTakenArgName] = timeTaken;
-      }
-      
-      method.invoke(instance, arguments);
+      method.invoke(instance, arguments.getNamedArguments(), arguments.getPositionalArguments());
     }
   }
 
@@ -261,21 +218,13 @@ final class LifecycleRunListener implements ApplicationRunListener {
     for(final method in _onStartingMethods) {
       final cls = method.getDeclaringClass();
       final instance = !cls.isInvokable() ? null : (cls.getNoArgConstructor() ?? cls.getBestConstructor([]))?.newInstance();
-      final arguments = <String, Object>{};
-
-      final parameters = method.getParameters();
-      final classArgName = parameters.find((p) => !_isAssignableFromBootstrapContext(p.getClass()))?.getName();
-      final contextArgName = parameters.find((p) => _isAssignableFromBootstrapContext(p.getClass()))?.getName();
       
-      if(classArgName != null) {
-        arguments[classArgName] = mainClass;
-      }
+      final arguments = ExecutableArgumentResolver()
+        .when((p) => !_isAssignableFromBootstrapContext(p.getClass()), mainClass)
+        .when((p) => _isAssignableFromBootstrapContext(p.getClass()), context)
+        .resolve(method);
       
-      if(contextArgName != null) {
-        arguments[contextArgName] = context;
-      }
-      
-      method.invoke(instance, arguments);
+      method.invoke(instance, arguments.getNamedArguments(), arguments.getPositionalArguments());
     }
   }
 }
