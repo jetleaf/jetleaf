@@ -16,6 +16,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:jetleaf_core/context.dart';
+import 'package:jetleaf_core/core.dart';
 import 'package:jetleaf_env/property.dart';
 import 'package:jetleaf_lang/lang.dart';
 import 'package:jetleaf_logging/logging.dart';
@@ -273,6 +274,8 @@ class ApplicationShutdownHandlerHook implements Runnable {
       }
 
       for (final context in contexts) {
+        AvailabilityEvent.publish(context, ReadinessState.REFUSING_TRAFFIC);
+
         final name = context.getDisplayName();
         final id = context.getId();
         

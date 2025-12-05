@@ -179,6 +179,10 @@ class EnvEnvironmentParser extends EnvParser implements EnvironmentParser {
 class JsonEnvironmentParser extends JsonParser implements EnvironmentParser {
   @override
   bool canParse(Asset asset) {
+    if (!asset.getFilePath().contains("/${Constant.RESOURCES_DIR_NAME}/")) {
+      return false;
+    }
+
     return asset.getFileName().toLowerCase().endsWith('.json');
   }
   
@@ -250,6 +254,10 @@ class JsonEnvironmentParser extends JsonParser implements EnvironmentParser {
 class PropertiesEnvironmentParser extends PropertiesParser implements EnvironmentParser {
   @override
   bool canParse(Asset asset) {
+    if (!asset.getFilePath().contains("/${Constant.RESOURCES_DIR_NAME}/")) {
+      return false;
+    }
+
     return asset.getFileName().toLowerCase().endsWith('.properties');
   }
   
@@ -321,6 +329,10 @@ class PropertiesEnvironmentParser extends PropertiesParser implements Environmen
 class YamlEnvironmentParser extends YamlParser implements EnvironmentParser {
   @override
   bool canParse(Asset asset) {
+    if (!asset.getFilePath().contains("/${Constant.RESOURCES_DIR_NAME}/")) {
+      return false;
+    }
+
     final fileName = asset.getFileName().toLowerCase();
     return fileName.endsWith('.yaml') || fileName.endsWith('.yml');
   }
@@ -328,8 +340,7 @@ class YamlEnvironmentParser extends YamlParser implements EnvironmentParser {
   @override
   ParsedEnvironmentSource load(Asset asset) {
     final profile = extractProfileFromFileName(asset.getFileName());
-    final properties = Map<String, Object>.from(parseAsset(asset));
-    
+    Map<String, Object> properties = Map<String, Object>.from(parseAsset(asset));
     return ParsedEnvironmentSource(asset.getPackageName() ?? "", profile, properties);
   }
   
@@ -394,6 +405,10 @@ class YamlEnvironmentParser extends YamlParser implements EnvironmentParser {
 class DartEnvironmentParser extends EnvironmentParser {
   @override
   bool canParse(Asset asset) {
+    if (!asset.getFilePath().contains("/${Constant.RESOURCES_DIR_NAME}/")) {
+      return false;
+    }
+    
     return asset.getFileName().endsWith('.dart') && asset.getFileName().startsWith('application');
   }
   

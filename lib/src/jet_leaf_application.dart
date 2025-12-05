@@ -13,6 +13,7 @@
 // 🔧 Powered by Hapnium — the Dart backend engine 🍃
 
 import 'package:jetleaf_core/annotation.dart';
+import 'package:jetleaf_core/core.dart';
 import 'package:jetleaf_lang/lang.dart';
 import 'package:meta/meta_meta.dart';
 
@@ -49,7 +50,10 @@ import 'entry/application_type_filter.dart';
 @EnableAutoConfiguration()
 @Target({TargetKind.classType})
 @Configuration("jetleaf_application")
-@Import([ClassType<ApplicationImportSelector>(PackageNames.MAIN)])
+@Import([
+  ClassType<ApplicationImportSelector>(PackageNames.MAIN),
+  ClassType<ApplicationAvailabilityAutoConfiguration>()
+])
 @ComponentScan(
   includeFilters: [ComponentScanFilter(FilterType.CUSTOM, typeFilter: ApplicationTypeFilter())]
 )

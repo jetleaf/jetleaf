@@ -13,6 +13,7 @@
 // 🔧 Powered by Hapnium — the Dart backend engine 🍃
 
 import 'package:jetleaf_core/context.dart';
+import 'package:jetleaf_core/core.dart';
 import 'package:jetleaf_lang/lang.dart';
 import 'package:jetleaf_logging/logging.dart';
 
@@ -20,7 +21,6 @@ import '../listener/run_listeners.dart';
 import '../shutdown/application_shutdown_handler_hook.dart';
 import '../jet_leaf_exception.dart';
 import 'application_exception_handler.dart';
-import 'exception_reporter.dart';
 
 /// {@template exception_handler}
 /// Responsible for handling exceptions thrown during the application lifecycle

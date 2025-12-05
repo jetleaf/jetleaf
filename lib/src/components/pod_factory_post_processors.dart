@@ -74,8 +74,7 @@ import 'package:jetleaf_pod/pod.dart';
 /// - [PriorityOrdered] for execution order control
 /// - [DesignRole] for pod role definitions
 /// {@endtemplate}
-final class LazyInitializationPodFactoryPostProcessor
-    implements PodFactoryPostProcessor, PriorityOrdered {
+final class LazyInitializationPodFactoryPostProcessor implements PodFactoryPostProcessor, PriorityOrdered {
   /// {@template lazy_initialization_pod_aware_processor.logger}
   /// Logger instance for tracking processor operations and debugging.
   ///
@@ -84,17 +83,16 @@ final class LazyInitializationPodFactoryPostProcessor
   /// - `TRACE`: Individual pod processing decisions
   /// - `INFO`: Configuration summary and statistics
   /// {@endtemplate}
-  final Log _logger = LogFactory.getLog(
-    LazyInitializationPodFactoryPostProcessor,
-  );
+  final Log _logger = LogFactory.getLog(LazyInitializationPodFactoryPostProcessor);
+
+  /// {@macro lazy_initialization_pod_aware_processor}
+  LazyInitializationPodFactoryPostProcessor();
 
   @override
   int getOrder() => Ordered.HIGHEST_PRECEDENCE - 2;
 
   @override
-  Future<void> postProcessFactory(
-    ConfigurableListablePodFactory podFactory,
-  ) async {
+  Future<void> postProcessFactory(ConfigurableListablePodFactory podFactory) async {
     if (_logger.getIsTraceEnabled()) {
       _logger.trace('Applying lazy initialization to all eligible pods.');
     }
@@ -102,8 +100,7 @@ final class LazyInitializationPodFactoryPostProcessor
     final names = podFactory.getDefinitionNames();
     for (final name in names) {
       final definition = podFactory.getDefinition(name);
-      bool isAlreadyLazy =
-          definition.lifecycle.isLazy != null && definition.lifecycle.isLazy!;
+      bool isAlreadyLazy = definition.lifecycle.isLazy != null && definition.lifecycle.isLazy!;
 
       // Skip infrastructure/internal pods
       if (definition.design.role == DesignRole.INFRASTRUCTURE) {
@@ -116,9 +113,7 @@ final class LazyInitializationPodFactoryPostProcessor
 
       if (isAlreadyLazy) {
         if (_logger.getIsTraceEnabled()) {
-          _logger.trace(
-            'Skipping pod $name since it is already marked as lazy',
-          );
+          _logger.trace('Skipping pod $name since it is already marked as lazy');
         }
 
         continue;
@@ -189,8 +184,7 @@ final class LazyInitializationPodFactoryPostProcessor
 /// - [GlobalEnvironment] for environment implementation
 /// - [AnnotationAwareOrderComparator] for ordering logic
 /// {@endtemplate}
-final class PropertySourceOrderingPodFactoryPostProcessor
-    implements PodFactoryPostProcessor, PriorityOrdered {
+final class PropertySourceOrderingPodFactoryPostProcessor implements PodFactoryPostProcessor, PriorityOrdered {
   /// {@template property_source_ordering_pod_aware_processor.logger}
   /// Logger instance for tracking property source ordering operations.
   ///
@@ -199,9 +193,7 @@ final class PropertySourceOrderingPodFactoryPostProcessor
   /// - `TRACE`: Individual source extraction and ordering decisions
   /// - `INFO`: Final property source order configuration
   /// {@endtemplate}
-  final Log _logger = LogFactory.getLog(
-    PropertySourceOrderingPodFactoryPostProcessor,
-  );
+  final Log _logger = LogFactory.getLog(PropertySourceOrderingPodFactoryPostProcessor);
 
   /// {@template property_source_ordering_pod_aware_processor.application_context}
   /// The application context instance provided via [ApplicationContextAware].
@@ -217,9 +209,7 @@ final class PropertySourceOrderingPodFactoryPostProcessor
   int getOrder() => Ordered.LOWEST_PRECEDENCE + 2;
 
   @override
-  Future<void> postProcessFactory(
-    ConfigurableListablePodFactory podFactory,
-  ) async {
+  Future<void> postProcessFactory(ConfigurableListablePodFactory podFactory) async {
     if (_logger.getIsTraceEnabled()) {
       _logger.trace('Applying propertySourceOrdering to pod definitions');
     }
@@ -231,42 +221,30 @@ final class PropertySourceOrderingPodFactoryPostProcessor
       final ordered = <PropertySource>[];
 
       // 1️⃣ High-priority system and command-line sources
-      final system = sources.remove(
-        GlobalEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME,
-      );
-      final envVars = sources.remove(
-        GlobalEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-      );
-      final cmdLine = sources.remove(
-        CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME,
-      );
+      final system = sources.remove(GlobalEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME);
+      final envVars = sources.remove(GlobalEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME);
+      final cmdLine = sources.remove(CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME);
 
       if (cmdLine != null) ordered.add(cmdLine);
       if (system != null) ordered.add(system);
       if (envVars != null) ordered.add(envVars);
 
       if (_logger.getIsTraceEnabled()) {
-        _logger.trace(
-          'Adding remaining sources in their existing order: ${ordered.map((s) => s.getName()).join(", ")}',
-        );
+        _logger.trace('Adding remaining sources in their existing order: ${ordered.map((s) => s.getName()).join(", ")}');
       }
 
       // 2️⃣ Add remaining sources in their existing order
       ordered.addAll(sources.toList());
 
       if (_logger.getIsTraceEnabled()) {
-        _logger.trace(
-          'Sorting and applying back: ${ordered.map((s) => s.getName()).join(", ")}',
-        );
+        _logger.trace('Sorting and applying back: ${ordered.map((s) => s.getName()).join(", ")}');
       }
 
       // 3️⃣ Sort and apply back
       AnnotationAwareOrderComparator.sort(ordered);
 
       if (_logger.getIsTraceEnabled()) {
-        _logger.trace(
-          'Applying new order back: ${ordered.map((s) => s.getName()).join(", ")}',
-        );
+        _logger.trace('Applying new order back: ${ordered.map((s) => s.getName()).join(", ")}');
       }
 
       // 3️⃣ Apply the new order back to the environment
@@ -278,9 +256,7 @@ final class PropertySourceOrderingPodFactoryPostProcessor
         final ortracest = ordered.map((s) => s.getName()).join(", ");
 
         if (_logger.getIsTraceEnabled()) {
-          _logger.trace(
-            'Applied propertySourceOrdering to pod definitions: [$ortracest]',
-          );
+          _logger.trace('Applied propertySourceOrdering to pod definitions: [$ortracest]');
         }
       }
     }

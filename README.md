@@ -615,23 +615,14 @@ JetLeaf provides CLI tools for development and deployment:
 
 ### Development
 ```bash
-# Run in development mode with hot reload
+# Run in development mode
 jl dev
-
-# Run with specific profile
-jl dev --profile=development
 ```
 
 ### Build and Deploy
 ```bash
-# Generate bootstrap file
-jl generate
-
 # Build production executable
 jl build
-
-# Generate and build
-jl serve
 
 # Run production build
 dart run build/main.dill
