@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [1.0.6]
 
+- Updated dependencies - `jetleaf_env` and `jetleaf_core`
+- Added `JetleafPropertySourceOrderRule` to match with the new api from `jetleaf_env`
+
+## [1.0.6]
+
 - Updated dependencies
 - Fixed environment listener issues with sorting of property sources
 - Moved exception reporting logic to `ExceptionReporterManager`

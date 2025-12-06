@@ -213,7 +213,7 @@ class StartupLogger {
     if (source.isNotEmpty) {
       context.write(source);
     }
-    _append(context, ' started by ', () => Platform.environment['USER'] ?? Platform.environment['USERNAME']);
+    _append(context, ' started by ', () => System.getEnvVar('USER') ?? System.getEnvVar('USERNAME'));
     _append(context, ' in ', () => Directory.current.path);
     if (context.isNotEmpty) {
       message.write(' (');

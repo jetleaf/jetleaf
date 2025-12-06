@@ -55,6 +55,6 @@ abstract class AbstractVersionedSupport extends AbstractEnvironmentProfileSuppor
       versionContent[JetApplication.JETLEAF_APPLICATION_VERSION] = applicationClass.getPackage()?.getVersion() ?? "unknown";
     }
 
-    environment.getPropertySources().addLast(PropertiesPropertySource("versioned", versionContent));
+    environment.getPropertySources().addLast(MapPropertySource("versioned", versionContent));
   }
 }
