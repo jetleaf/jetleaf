@@ -4,7 +4,6 @@ import 'package:meta/meta.dart';
 
 import 'abstract_environment_logging_support.dart';
 import 'models.dart';
-import 'property_source.dart';
 
 /// Provides the foundational mechanics for loading, normalizing, merging,
 /// ordering, and installing configuration sources into a JetLeaf
@@ -708,28 +707,10 @@ abstract class AbstractEnvironmentSupport extends AbstractEnvironmentLoggingSupp
   @protected
   void prepareEnvironmentSources(List<EnvironmentSource> sources, ConfigurableEnvironment environment) {
     final propertySources = environment.getPropertySources();
-
+    
     for (final source in sources) {
       final resolvedProperties = resolveProperties(source.properties, environment, sources);
-      DefaultPropertiesPropertySource.addOrMerge(resolvedProperties, propertySources, source.profile);
-    }
-
-    final added = <String>{};
-
-    // Prioritize the profiled and package-aware sources.
-    for (final propertySource in propertySources) {
-      final source = sources.find((src) => src.profile.equals(propertySource.getName()));
-      if (source != null) {
-        added.add(propertySource.getName());
-        environment.getPropertySources().addFirst(propertySource);
-      }
-    }
-
-    // Move other sources to the last level
-    for (final propertySource in propertySources) {
-      if (added.add(propertySource.getName())) {
-        environment.getPropertySources().addLast(propertySource);
-      }
+      propertySources.addOrMerge(resolvedProperties, source.profile);
     }
   }
 

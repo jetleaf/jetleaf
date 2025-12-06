@@ -26,11 +26,12 @@ import 'package:jetleaf_utils/utils.dart';
 
 import 'banner/banner.dart';
 import 'banner/_banner.dart';
-import 'components/pod_factory_post_processors.dart';
+import 'pod_factory_post_processor/lazy_initialization_pod_factory_post_processor.dart';
+import 'pod_factory_post_processor/property_source_ordering_pod_factory_post_processor.dart';
 import 'context/bootstrap_context.dart';
 import 'context/bootstrap_context_impl.dart';
 import 'context/context_factory.dart';
-import 'components/runner.dart';
+import 'pod_factory_post_processor/runner.dart';
 import 'context/default_context_factory.dart';
 import 'exception_handler/application_exception_handler.dart';
 import 'env/property_source.dart';
@@ -818,11 +819,11 @@ final class JetApplication {
     ConfigurableApplicationContext? context;
 
     try {
-      ApplicationArguments aargs = DefaultApplicationArguments(args);
+      final aargs = DefaultApplicationArguments(args);
       _applicationType = _detectApplicationType();
       context = _applicationContextFactory.create(_applicationType);
 
-      ConfigurableEnvironment environment = await _setupEnvironment(aargs, context.getSupportingEnvironment());
+      final environment = await _setupEnvironment(aargs, context.getSupportingEnvironment());
 
       final listener = _boostrapContext.get(
         Class<LoggingListener>(null, PackageNames.LOGGING),
@@ -844,7 +845,7 @@ final class JetApplication {
       context.setMainApplicationClass(_mainApplicationClass);
       
       // At this point, [Environment] must have been set, so we can proceed with caution.
-      context.setEnvironment(_environment!);
+      context.setEnvironment(environment);
 
       await _setupApplicationContext(context, aargs);
       

@@ -44,12 +44,7 @@ import '../jet_application.dart';
 /// {@endtemplate}
 class DefaultPropertiesPropertySource extends MapPropertySource {
   /// {@macro default_properties_property_source}
-  DefaultPropertiesPropertySource(Map<String, Object> source) : super(NAME, source);
-
-  /// {@template default_properties_property_source.name}
-  /// The constant name `"defaultProperties"` used for this property source.
-  /// {@endtemplate}
-  static final String NAME = "defaultProperties";
+  DefaultPropertiesPropertySource(Map<String, Object> source) : super(GlobalEnvironment.RESERVED_DEFAULT_PROFILE_NAME, source);
 
   /// {@template default_properties_property_source.has_matching_name}
   /// Returns `true` if the given [propertySource] is named `"defaultProperties"`.
@@ -60,7 +55,7 @@ class DefaultPropertiesPropertySource extends MapPropertySource {
   /// Returns `false` if [propertySource] is `null` or the name does not match.
   /// {@endtemplate}
   static bool hasMatchingName(PropertySource? propertySource) {
-    return (propertySource != null) && propertySource.getName().equals(NAME);
+    return (propertySource != null) && propertySource.getName().equals(GlobalEnvironment.RESERVED_DEFAULT_PROFILE_NAME);
   }
 
   /// {@template default_properties_property_source.if_not_empty}
@@ -97,7 +92,7 @@ class DefaultPropertiesPropertySource extends MapPropertySource {
   /// ```
   /// {@endtemplate}
   static void addOrMerge(Map<String, Object> source, MutablePropertySources sources, [String? name]) {
-    final resolvedName = name ?? NAME;
+    final resolvedName = name ?? GlobalEnvironment.RESERVED_DEFAULT_PROFILE_NAME;
   
     if (source.isNotEmpty) {
       final resultingSource = <String, Object>{};
@@ -145,7 +140,7 @@ class DefaultPropertiesPropertySource extends MapPropertySource {
   /// collection, preserving its values but placing it last in resolution order.
   /// {@endtemplate}
   static void moveSourcesToEnd(MutablePropertySources propertySources, [String? name]) {
-    final propertySource = propertySources.remove(name ?? NAME);
+    final propertySource = propertySources.remove(name ?? GlobalEnvironment.RESERVED_DEFAULT_PROFILE_NAME);
     if (propertySource != null) {
       propertySources.addLast(propertySource);
     }
@@ -166,7 +161,7 @@ class DefaultPropertiesPropertySource extends MapPropertySource {
   /// collection, preserving its values but placing it last in resolution order.
   /// {@endtemplate}
   static void moveSourcesToStart(MutablePropertySources propertySources, [String? name]) {
-    final propertySource = propertySources.remove(name ?? NAME);
+    final propertySource = propertySources.remove(name ?? GlobalEnvironment.RESERVED_DEFAULT_PROFILE_NAME);
     if (propertySource != null) {
       propertySources.addFirst(propertySource);
     }
@@ -245,7 +240,7 @@ class ApplicationInfoPropertySource extends MapPropertySource {
     MutablePropertySources propertySources = environment.getPropertySources();
     PropertySource? propertySource = propertySources.remove(NAME);
     if (propertySource != null) {
-      propertySources.addLast(propertySource);
+      environment.getPropertySources().addLast(propertySource);
     }
   }
 }

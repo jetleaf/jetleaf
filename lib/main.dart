@@ -56,8 +56,8 @@ library;
 export 'src/banner/banner.dart';
 export 'src/banner/_banner.dart';
 
-export 'src/components/pod_factory_post_processors.dart';
-export 'src/components/runner.dart';
+export 'src/pod_factory_post_processor/property_source_ordering_pod_factory_post_processor.dart';
+export 'src/pod_factory_post_processor/runner.dart';
 
 export 'src/context/bootstrap_context.dart';
 export 'src/context/bootstrap_context_impl.dart';
