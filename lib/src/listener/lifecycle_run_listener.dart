@@ -175,8 +175,8 @@ final class LifecycleRunListener implements ApplicationRunListener {
       final instance = !cls.isInvokable() ? null : (cls.getNoArgConstructor() ?? cls.getBestConstructor([]))?.newInstance();
       
       final arguments = ExecutableArgumentResolver()
-        .when((p) => _isAssignableFromApplicationContext(p.getClass()), context)
-        .when((p) => ClassUtils.isAssignableToError(p.getClass()), exception)
+        .when((p) => _isAssignableFromApplicationContext(p.getReturnClass()), context)
+        .when((p) => ClassUtils.isAssignableToError(p.getReturnClass()), exception)
         .resolve(method);
       
       method.invoke(instance, arguments.getNamedArguments(), arguments.getPositionalArguments());
@@ -220,8 +220,8 @@ final class LifecycleRunListener implements ApplicationRunListener {
       final instance = !cls.isInvokable() ? null : (cls.getNoArgConstructor() ?? cls.getBestConstructor([]))?.newInstance();
       
       final arguments = ExecutableArgumentResolver()
-        .when((p) => !_isAssignableFromBootstrapContext(p.getClass()), mainClass)
-        .when((p) => _isAssignableFromBootstrapContext(p.getClass()), context)
+        .when((p) => !_isAssignableFromBootstrapContext(p.getReturnClass()), mainClass)
+        .when((p) => _isAssignableFromBootstrapContext(p.getReturnClass()), context)
         .resolve(method);
       
       method.invoke(instance, arguments.getNamedArguments(), arguments.getPositionalArguments());
