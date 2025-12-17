@@ -271,6 +271,7 @@ abstract class BootstrapInstanceSupplier<T> {
 }
 
 /// Internal implementation that overrides the scope of another supplier.
+@Generic(_SIS)
 class _SIS<T> implements BootstrapInstanceSupplier<T> {
   final BootstrapInstanceSupplier<T> _delegate;
   final ScopeType _customScope;
@@ -292,6 +293,7 @@ class _SIS<T> implements BootstrapInstanceSupplier<T> {
 }
 
 /// Internal supplier that returns a constant instance every time.
+@Generic(_CIS)
 class _CIS<T> implements BootstrapInstanceSupplier<T> {
   final T _instance;
 
@@ -312,6 +314,7 @@ class _CIS<T> implements BootstrapInstanceSupplier<T> {
 }
 
 /// Internal supplier that calls a function each time to create a new instance.
+@Generic(_IS)
 class _IS<T> implements BootstrapInstanceSupplier<T> {
   final T Function() _supplier;
 

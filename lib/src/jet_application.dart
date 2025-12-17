@@ -14,6 +14,7 @@
 
 import 'dart:async';
 
+import 'package:jetleaf/lang.dart' show RuntimeProvider;
 import 'package:jetleaf_convert/convert.dart';
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_core/core.dart';
@@ -653,8 +654,11 @@ final class JetApplication {
       // Runtime is mostly null when the application did not run through the jetleaf's cli command
       RuntimeProvider? runtime = _runtimeProvider;
       if(runtime == null) {
-        final result = await runScan(forceLoadLibraries: !args.contains(Constant.JETLEAF_GENERATED_DIR_NAME));
-        runtime = result;
+        final result = await runScan(
+          args: args,
+          forceLoadLibraries: !args.contains(Constant.JETLEAF_GENERATED_DIR_NAME)
+        );
+        runtime = result.getContext();
       }
       
       _runtimeProvider = runtime;
