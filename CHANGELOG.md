@@ -6,9 +6,18 @@ This project follows a simple, human-readable changelog format inspired by
 
 ---
 
+## [1.1.0]
+
+### Changed
+
+- Updated dependencies: all.
+
+---
+
 ## [1.0.9]
 
 ### Changed
+
 - Updated dependencies: all.
 
 ---
@@ -16,6 +25,7 @@ This project follows a simple, human-readable changelog format inspired by
 ## [1.0.8]
 
 ### Changed
+
 - Updated dependencies: all.
 
 ---
@@ -23,9 +33,11 @@ This project follows a simple, human-readable changelog format inspired by
 ## [1.0.7]
 
 ### Changed
+
 - Updated dependencies: `jetleaf_env`, `jetleaf_core`.
 
 ### Added
+
 - `JetleafPropertySourceOrderRule` to match the new API from `jetleaf_env`.
 
 ---
@@ -33,9 +45,11 @@ This project follows a simple, human-readable changelog format inspired by
 ## [1.0.6]
 
 ### Changed
+
 - Updated dependencies.
 
 ### Fixed
+
 - Fixed environment listener issues with property source sorting.
 - Moved exception reporting logic to `ExceptionReporterManager`.
 - Separated internal packages into specified libraries.
@@ -45,6 +59,7 @@ This project follows a simple, human-readable changelog format inspired by
 ## [1.0.5]
 
 ### Changed
+
 - Updated dependencies.
 
 ---
@@ -52,6 +67,7 @@ This project follows a simple, human-readable changelog format inspired by
 ## [1.0.4]
 
 ### Changed
+
 - Updated dependencies.
 
 ---
@@ -59,6 +75,7 @@ This project follows a simple, human-readable changelog format inspired by
 ## [1.0.3]
 
 ### Changed
+
 - Updated dependencies.
 
 ---
@@ -66,6 +83,7 @@ This project follows a simple, human-readable changelog format inspired by
 ## [1.0.2]
 
 ### Changed
+
 - Updated dependencies.
 
 ---
@@ -75,6 +93,7 @@ This project follows a simple, human-readable changelog format inspired by
 Patch release: dependency alignment and small improvements.
 
 ### Changed
+
 - Updated package dependencies and aligned with other JetLeaf modules.
 
 ---
@@ -84,6 +103,7 @@ Patch release: dependency alignment and small improvements.
 Patch release: metadata and dependency housekeeping.
 
 ### Fixed
+
 - Metadata and dependency alignment across subpackages.
 
 ---
@@ -91,6 +111,7 @@ Patch release: metadata and dependency housekeeping.
 ## [1.0.0+1]
 
 ### Changed
+
 - Updated dependencies.
 - Updated `ApplicationImportSelector` with the new `ImportSelector` API.
 
@@ -101,6 +122,7 @@ Patch release: metadata and dependency housekeeping.
 Initial release.
 
 ### Notes
+
 - This package provides a full experience surface for JetLeaf-powered
   applications. Refer to the project `README.md` and documentation for usage
   examples and advanced configuration.
@@ -109,10 +131,10 @@ Initial release.
 
 ## Links
 
-- Homepage: https://jetleaf.hapnium.com  
-- Documentation: https://jetleaf.hapnium.com/docs  
-- Repository: https://github.com/jetleaf/jetleaf  
-- Issues: https://github.com/jetleaf/jetleaf/issues  
+- Homepage: <https://jetleaf.hapnium.com>  
+- Documentation: <https://jetleaf.hapnium.com/docs>  
+- Repository: <https://github.com/jetleaf/jetleaf>  
+- Issues: <https://github.com/jetleaf/jetleaf/issues>  
 
 ---
 
