@@ -64,7 +64,7 @@ final class ApplicationLoggingListener implements LoggingListener {
   /// {@macro application_logging_listener}
   ///
   /// Creates an [ApplicationLoggingListener] bound to the given
-  /// [applicationClass] and [environment].
+  /// [_applicationClass] and [_environment].
   ApplicationLoggingListener(this._applicationClass, this._environment);
 
   @override

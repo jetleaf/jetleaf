@@ -115,7 +115,7 @@ abstract interface class BootstrapContext {
   /// Example:
   /// ```dart
   /// final bootstrapContext = ConfigurableBootstrapContext();
-  /// bootstrapContext.setApplicationClass(Class.of(MyApplication()));
+  /// bootstrapContext.setApplicationClass(Class.forType(MyApplication()));
   /// final applicationClass = bootstrapContext.getApplicationClass();
   /// ```
   /// {@endtemplate}
@@ -130,7 +130,7 @@ abstract interface class BootstrapContext {
   /// Example:
   /// ```dart
   /// final bootstrapContext = ConfigurableBootstrapContext();
-  /// bootstrapContext.setApplicationClass(Class.of(MyApplication()));
+  /// bootstrapContext.setApplicationClass(Class.forType(MyApplication()));
   /// final applicationClass = bootstrapContext.getApplicationClass();
   /// ```
   /// {@endtemplate}
@@ -152,7 +152,7 @@ abstract interface class BootstrapContext {
 /// Example:
 /// ```dart
 /// registry.register(
-///   Class.of(Logger),
+///   Class.forType(Logger),
 ///   InstanceSupplier.from(() => Logger('bootstrap')),
 /// );
 /// ```
@@ -167,7 +167,7 @@ abstract class BootstrapRegistry {
   /// Example:
   /// ```dart
   /// registry.register(
-  ///   Class.of(MyService),
+  ///   Class.forType(MyService),
   ///   InstanceSupplier.from(() => MyService()),
   /// );
   /// ```
@@ -179,7 +179,7 @@ abstract class BootstrapRegistry {
   ///
   /// Example:
   /// ```dart
-  /// if (!registry.isRegistered(Class.of(MyService))) {
+  /// if (!registry.isRegistered(Class.forType(MyService))) {
   ///   // Safe to register
   /// }
   /// ```
@@ -192,7 +192,7 @@ abstract class BootstrapRegistry {
   ///
   /// Example:
   /// ```dart
-  /// final supplier = registry.getSupplier(Class.of(MyService));
+  /// final supplier = registry.getSupplier(Class.forType(MyService));
   /// ```
   /// {@endtemplate}
   BootstrapInstanceSupplier<T>? getSupplier<T>(Class<T> type);

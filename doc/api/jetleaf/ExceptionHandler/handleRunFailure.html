@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the handleRunFailure method from the ExceptionHandler class, for the Dart programming language.">
+  <title>handleRunFailure method - ExceptionHandler class - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf.dart</a></li>
+    <li><a href="../../jetleaf/ExceptionHandler-class.html">ExceptionHandler</a></li>
+    <li class="self-crumb">handleRunFailure method</li>
+  </ol>
+  <div class="self-name">handleRunFailure</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="jetleaf&#47;ExceptionHandler-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">handleRunFailure</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+<span class="returntype"><a href="https://pub.dev/documentation/jetleaf_build/1.1.1/jetleaf_build/RuntimeException-class.html">RuntimeException</a></span>
+<span class="name ">handleRunFailure</span>(<wbr><ol class="parameter-list"> <li><span class="parameter" id="handleRunFailure-param-context"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a>?</span> <span class="parameter-name">context</span>, </span></li>
+<li><span class="parameter" id="handleRunFailure-param-exception"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_build/1.1.1/jetleaf_build/Throwable-class.html">Throwable</a></span> <span class="parameter-name">exception</span>, </span></li>
+<li><span class="parameter" id="handleRunFailure-param-listeners"><span class="type-annotation"><a href="../../jetleaf/ApplicationRunListeners-class.html">ApplicationRunListeners</a>?</span> <span class="parameter-name">listeners</span>, </span></li>
+<li><span class="parameter" id="handleRunFailure-param-st"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/StackTrace-class.html">StackTrace</a>?</span> <span class="parameter-name">st</span>, </span></li>
+</ol>)
+
+      
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Handles an exception that occurred during application startup or runtime.</p>
+<p>Responsibilities:</p>
+<ul>
+<li>Maps the exception to an appropriate exit code via <code>_handleExitCode</code>.</li>
+<li>Notifies registered <a href="../../jetleaf/ApplicationRunListeners-class.html">ApplicationRunListeners</a> about the failure.</li>
+<li>Reports the failure via <code>_reportFailure</code> using registered <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ExceptionReporter-class.html">ExceptionReporter</a>s.</li>
+<li>Closes the <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a> safely if provided.</li>
+<li>Returns a <a href="https://pub.dev/documentation/jetleaf_build/1.1.1/jetleaf_build/RuntimeException-class.html">RuntimeException</a> for consistent rethrowing.</li>
+</ul>
+<p>If the given <code>exception</code> is already a <a href="../../jetleaf/JetLeafException-class.html">JetLeafException</a>, it is returned unchanged.
+Otherwise, it may be wrapped in an <a href="https://pub.dev/documentation/jetleaf_lang/1.1.2/jetleaf_lang/IllegalStateException-class.html">IllegalStateException</a>.</p>
+<p>References:</p>
+<ul>
+<li><code>_handleExitCode</code></li>
+<li><code>_reportFailure</code></li>
+<li><a href="../../jetleaf/ApplicationRunListeners/onFailed.html">ApplicationRunListeners.onFailed</a></li>
+</ul>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">RuntimeException handleRunFailure(ConfigurableApplicationContext? context, Throwable exception, ApplicationRunListeners? listeners, StackTrace? st) {
+  if (exception is JetLeafException) {
+    return exception;
+  }
+
+  try {
+    try {
+      _handleExitCode(context, exception);
+      if (listeners != null) {
+        listeners.onFailed(context, exception);
+      }
+    } finally {
+      _reportFailure(_exceptionReporters, exception);
+      if (context != null) {
+        context.close();
+        _shutdownHook.unregisterFailedApplicationContext(context);
+      }
+    }
+  } on Exception catch (ex) {
+    if (_logger.getIsInfoEnabled()) {
+      _logger.info(&quot;Unable to close ApplicationContext ${context?.getId()}&quot;, error: ex, stacktrace: st);
+    }
+  }
+
+  return (exception is RuntimeException)
+      ? exception
+      : IllegalStateException(exception.toString(), cause: exception);
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf</a></li>
+    <li><a href="../../jetleaf/ExceptionHandler-class.html">ExceptionHandler</a></li>
+    <li class="self-crumb">handleRunFailure method</li>
+</ol>
+
+    <h5>ExceptionHandler class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.1.1
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

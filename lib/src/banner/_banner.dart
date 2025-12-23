@@ -118,7 +118,7 @@ final class DefaultBanner implements Banner {
   /// Replace placeholders like #{jetleaf.version} or ${jetleaf.application.version}.
   String _interpolateBanner(String banner, Environment env, Class<Object> sourceClass) {
     String version = env.getProperty(JetApplication.JETLEAF_VERSION) ?? JetLeafVersion.getVersion();
-    String applicationVersion = env.getProperty(JetApplication.JETLEAF_APPLICATION_VERSION) ?? sourceClass.getPackage()?.getVersion() ?? "unknown";
+    String applicationVersion = env.getProperty(JetApplication.JETLEAF_APPLICATION_VERSION) ?? sourceClass.getPackage().getVersion();
 
     banner = env.resolvePlaceholders(banner);
 

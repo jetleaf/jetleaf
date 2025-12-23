@@ -65,9 +65,7 @@ abstract class ApplicationContextFactory {
   /// var factory = ApplicationContextFactory.of(() => MyCustomContext());
   /// var ctx = factory.create(ApplicationType.NONE);
   /// ```
-  static ApplicationContextFactory of(Supplier<ConfigurableApplicationContext> supplier) {
-    return _ApplicationContextFactory(supplier);
-  }
+  factory ApplicationContextFactory.of(Supplier<ConfigurableApplicationContext> supplier) = _ApplicationContextFactory;
 }
 
 /// {@template supplier_application_context_factory}

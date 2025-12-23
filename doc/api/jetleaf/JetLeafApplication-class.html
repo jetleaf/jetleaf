@@ -58,9 +58,9 @@
 root application class.</p>
 <p>When applied to a class, this annotation signals Jetleaf to:</p>
 <ul>
-<li>Perform component scanning via <a href="../jetleaf/ComponentScan-class.html">ComponentScan</a>.</li>
-<li>Apply the <a href="../jetleaf/Configuration-class.html">Configuration</a> with identifier <code>jetleaf_application</code>.</li>
-<li>Import additional selectors, such as <code>ApplicationImportSelector</code>.</li>
+<li>Perform component scanning via <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ComponentScan-class.html">ComponentScan</a>.</li>
+<li>Apply the <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Configuration-class.html">Configuration</a> with identifier <code>jetleaf_application</code>.</li>
+<li>Import additional selectors, such as <a href="../jetleaf/ApplicationImportSelector-class.html">ApplicationImportSelector</a>.</li>
 </ul>
 <p>This annotation plays a central role in defining the application entry point
 and enabling auto-configuration features.</p>
@@ -88,7 +88,7 @@ class MyApplication {
   <dd>
     <ul class="gt-separated dark clazz-relationships">
       <li><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></li>
-        <li><a href="../jetleaf/ReflectableAnnotation-class.html">ReflectableAnnotation</a></li>
+        <li><a href="https://pub.dev/documentation/jetleaf_build/1.1.1/jetleaf_build/ReflectableAnnotation-class.html">ReflectableAnnotation</a></li>
       <li>JetLeafApplication</li>
     </ul>
   </dd>
@@ -104,9 +104,9 @@ class MyApplication {
     <ul class="annotation-list clazz-relationships">
         <li>@<a href="../jetleaf/EnableAutoConfiguration-class.html">EnableAutoConfiguration</a>()</li>
         <li>@<a href="https://pub.dev/documentation/meta/1.17.0/meta_meta/Target-class.html">Target</a>({TargetKind.classType})</li>
-        <li>@<a href="../jetleaf/Configuration-class.html">Configuration</a>(&quot;jetleaf_application&quot;)</li>
-        <li>@<a href="../jetleaf/Import-class.html">Import</a>([ClassType&lt;ApplicationImportSelector&gt;(package: PackageNames.MAIN)])</li>
-        <li>@<a href="../jetleaf/ComponentScan-class.html">ComponentScan</a>(includeFilters: [ComponentScanFilter(type: FilterType.CUSTOM, typeFilter: ApplicationTypeFilter())])</li>
+        <li>@<a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Configuration-class.html">Configuration</a>(&quot;jetleaf_application&quot;)</li>
+        <li>@<a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Import-class.html">Import</a>([ClassType&lt;ApplicationImportSelector&gt;(PackageNames.MAIN), ClassType&lt;ApplicationAvailabilityAutoConfiguration&gt;()])</li>
+        <li>@<a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ComponentScan-class.html">ComponentScan</a>(includeFilters: [ComponentScanFilter(FilterType.CUSTOM, typeFilter: ApplicationTypeFilter())])</li>
     </ul>
   </dd>
 
@@ -147,7 +147,7 @@ reflection system to recognize and process it.
 </dd>
 
         <dt id="hashCode" class="property inherited">
-  <span class="name"><a href="../jetleaf/ReflectableAnnotation/hashCode.html">hashCode</a></span>
+  <span class="name"><a href="https://pub.dev/documentation/jetleaf_build/1.1.1/jetleaf_build/ReflectableAnnotation/hashCode.html">hashCode</a></span>
   <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
   
 
@@ -180,7 +180,7 @@ reflection system to recognize and process it.
     <h2>Methods</h2>
     <dl class="callables">
         <dt id="equals" class="callable inherited">
-  <span class="name"><a href="../jetleaf/ReflectableAnnotation/equals.html">equals</a></span><span class="signature">(<wbr><span class="parameter" id="equals-param-other"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+  <span class="name"><a href="https://pub.dev/documentation/jetleaf_build/1.1.1/jetleaf_build/ReflectableAnnotation/equals.html">equals</a></span><span class="signature">(<wbr><span class="parameter" id="equals-param-other"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
   </span>
   
@@ -206,7 +206,7 @@ reflection system to recognize and process it.
 </dd>
 
         <dt id="toString" class="callable inherited">
-  <span class="name"><a href="../jetleaf/ReflectableAnnotation/toString.html">toString</a></span><span class="signature">(<wbr>)
+  <span class="name"><a href="https://pub.dev/documentation/jetleaf_build/1.1.1/jetleaf_build/ReflectableAnnotation/toString.html">toString</a></span><span class="signature">(<wbr>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
   </span>
   
@@ -227,7 +227,7 @@ reflection system to recognize and process it.
     <h2>Operators</h2>
     <dl class="callables">
         <dt id="operator ==" class="callable inherited">
-  <span class="name"><a href="../jetleaf/ReflectableAnnotation/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+  <span class="name"><a href="https://pub.dev/documentation/jetleaf_build/1.1.1/jetleaf_build/ReflectableAnnotation/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
   </span>
   
@@ -297,7 +297,7 @@ reflection system to recognize and process it.
 <footer>
   <span class="no-break">
     jetleaf
-      1.0.0
+      1.1.1
   </span>
   
 </footer>

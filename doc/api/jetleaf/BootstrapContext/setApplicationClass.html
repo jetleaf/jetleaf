@@ -55,7 +55,7 @@
     <section class="multi-line-signature">
       
 <span class="returntype">void</span>
-<span class="name ">setApplicationClass</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="setApplicationClass-param-applicationClass"><span class="type-annotation"><a href="../../jetleaf/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span>&gt;</span></span> <span class="parameter-name">applicationClass</span></span></li>
+<span class="name ">setApplicationClass</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="setApplicationClass-param-applicationClass"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_lang/1.1.2/jetleaf_lang/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span>&gt;</span></span> <span class="parameter-name">applicationClass</span></span></li>
 </ol>)
 
       
@@ -68,7 +68,7 @@
 Mostly, it is the class used to bootstrap the application.</p>
 <p>Example:</p>
 <pre class="language-dart"><code class="language-dart">final bootstrapContext = ConfigurableBootstrapContext();
-bootstrapContext.setApplicationClass(Class.of(MyApplication()));
+bootstrapContext.setApplicationClass(Class.forType(MyApplication()));
 final applicationClass = bootstrapContext.getApplicationClass();
 </code></pre>
 </section>
@@ -105,7 +105,7 @@ final applicationClass = bootstrapContext.getApplicationClass();
 <footer>
   <span class="no-break">
     jetleaf
-      1.0.0
+      1.1.1
   </span>
   
 </footer>

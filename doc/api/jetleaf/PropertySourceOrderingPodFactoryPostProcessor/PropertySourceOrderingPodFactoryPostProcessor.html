@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the PropertySourceOrderingPodFactoryPostProcessor.new constructor from Class PropertySourceOrderingPodFactoryPostProcessor from the jetleaf library, for the Dart programming language.">
+  <title>PropertySourceOrderingPodFactoryPostProcessor.new constructor - PropertySourceOrderingPodFactoryPostProcessor - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf.dart</a></li>
+    <li><a href="../../jetleaf/PropertySourceOrderingPodFactoryPostProcessor-class.html">PropertySourceOrderingPodFactoryPostProcessor</a></li>
+    <li class="self-crumb">PropertySourceOrderingPodFactoryPostProcessor.new constructor</li>
+  </ol>
+  <div class="self-name">PropertySourceOrderingPodFactoryPostProcessor.new</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="jetleaf&#47;PropertySourceOrderingPodFactoryPostProcessor-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-constructor">PropertySourceOrderingPodFactoryPostProcessor</span> constructor 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+      <span class="name ">PropertySourceOrderingPodFactoryPostProcessor</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="-param-_applicationContext"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContext-class.html">ApplicationContext</a></span> <span class="parameter-name">_applicationContext</span></span></li>
+</ol>)
+    </section>
+    
+<section class="desc markdown">
+  <p>🔄 Post-processor that reorders property sources for optimal resolution.</p>
+<p>The <a href="../../jetleaf/PropertySourceOrderingPodFactoryPostProcessor-class.html">PropertySourceOrderingPodFactoryPostProcessor</a> ensures property sources
+are ordered with the correct precedence for property resolution, following
+the principle that more specific sources should override more general ones.</p>
+<h3 id="property-source-precedence-highest-to-lowest">Property Source Precedence (Highest to Lowest):</h3>
+<ol>
+<li><strong>Command Line Arguments</strong>: <code>--property=value</code> (most specific)</li>
+<li><strong>System Properties</strong>: DVM/Dart VM system properties</li>
+<li><strong>Environment Variables</strong>: OS-level environment variables</li>
+<li><strong>Application Properties</strong>: application.properties/.yaml files</li>
+<li><strong>Default Properties</strong>: Framework defaults (least specific)</li>
+</ol>
+<h3 id="key-features">Key Features:</h3>
+<ul>
+<li><strong>Standard Ordering</strong>: Implements conventional property source precedence</li>
+<li><strong>Annotation Awareness</strong>: Respects <code>@Order</code> annotations on custom sources</li>
+<li><strong>Framework Integration</strong>: Aware of standard framework property sources</li>
+<li><strong>Dynamic Reordering</strong>: Adjusts ordering based on detected environment</li>
+</ul>
+<h3 id="processing-logic">Processing Logic:</h3>
+<ol>
+<li><strong>Extracts</strong> high-priority sources (command line, system, environment)</li>
+<li><strong>Preserves</strong> remaining sources in existing order</li>
+<li><strong>Applies</strong> annotation-aware sorting</li>
+<li><strong>Reinserts</strong> sources in correct precedence order</li>
+</ol>
+<h3 id="usage-example">Usage Example:</h3>
+<pre class="language-dart"><code class="language-dart">@Configuration
+class PropertyConfig {
+  @Pod
+  PropertySourceOrderingPodProcessor propertyOrdering() {
+    return PropertySourceOrderingPodProcessor();
+  }
+}
+</code></pre>
+<h3 id="integration-points">Integration Points:</h3>
+<ul>
+<li>Implements <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContextAware-class.html">ApplicationContextAware</a> for environment access</li>
+<li>Implements <a href="https://pub.dev/documentation/jetleaf_lang/1.1.2/jetleaf_lang/PriorityOrdered-class.html">PriorityOrdered</a> with <code>HIGHEST_PRECEDENCE - 1</code></li>
+<li>Executes after infrastructure setup but before application processing</li>
+<li>Requires <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/GlobalEnvironment-class.html">GlobalEnvironment</a> for proper operation</li>
+</ul>
+<p>See also:</p>
+<ul>
+<li><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/PodFactoryPostProcessor-class.html">PodFactoryPostProcessor</a> for the base post-processor interface</li>
+<li><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContextAware-class.html">ApplicationContextAware</a> for application context access</li>
+<li><a href="https://pub.dev/documentation/jetleaf_lang/1.1.2/jetleaf_lang/PriorityOrdered-class.html">PriorityOrdered</a> for execution order control</li>
+<li><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/GlobalEnvironment-class.html">GlobalEnvironment</a> for environment implementation</li>
+<li><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AnnotationAwareOrderComparator-class.html">AnnotationAwareOrderComparator</a> for ordering logic</li>
+</ul>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">PropertySourceOrderingPodFactoryPostProcessor(this._applicationContext);</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf</a></li>
+    <li><a href="../../jetleaf/PropertySourceOrderingPodFactoryPostProcessor-class.html">PropertySourceOrderingPodFactoryPostProcessor</a></li>
+    <li class="self-crumb">PropertySourceOrderingPodFactoryPostProcessor.new constructor</li>
+</ol>
+
+    <h5>PropertySourceOrderingPodFactoryPostProcessor class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-left-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.1.1
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

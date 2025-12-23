@@ -62,12 +62,12 @@ the <a href="../jetleaf/BootstrapContext-class.html">BootstrapContext</a>. This 
 of pods.</p>
 <p>Suppliers can be registered with different scopes:</p>
 <ul>
-<li><a href="../jetleaf/ScopeType.html">ScopeType.SINGLETON</a> (default)</li>
-<li><a href="../jetleaf/ScopeType.html">ScopeType.PROTOTYPE</a></li>
+<li><a href="https://pub.dev/documentation/jetleaf_pod/1.1.2/jetleaf_pod/ScopeType.html">ScopeType.SINGLETON</a> (default)</li>
+<li><a href="https://pub.dev/documentation/jetleaf_pod/1.1.2/jetleaf_pod/ScopeType.html">ScopeType.PROTOTYPE</a></li>
 </ul>
 <p>Example:</p>
 <pre class="language-dart"><code class="language-dart">registry.register(
-  Class.of(Logger),
+  Class.forType(Logger),
   InstanceSupplier.from(() =&gt; Logger('bootstrap')),
 );
 </code></pre>
@@ -145,21 +145,21 @@ of pods.</p>
     <h2>Methods</h2>
     <dl class="callables">
         <dt id="addCloseListener" class="callable">
-  <span class="name"><a href="../jetleaf/BootstrapRegistry/addCloseListener.html">addCloseListener</a></span><span class="signature">(<wbr><span class="parameter" id="addCloseListener-param-listener"><span class="type-annotation"><a href="../jetleaf/ApplicationEventListener-class.html">ApplicationEventListener</a><span class="signature">&lt;<wbr><span class="type-parameter">BootstrapContextClosedEvent</span>&gt;</span></span> <span class="parameter-name">listener</span></span>)
+  <span class="name"><a href="../jetleaf/BootstrapRegistry/addCloseListener.html">addCloseListener</a></span><span class="signature">(<wbr><span class="parameter" id="addCloseListener-param-listener"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationEventListener-class.html">ApplicationEventListener</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../jetleaf/BootstrapContextClosedEvent-class.html">BootstrapContextClosedEvent</a></span>&gt;</span></span> <span class="parameter-name">listener</span></span>)
     <span class="returntype parameter">&#8594; void</span>
   </span>
   
 
 </dt>
 <dd>
-  Adds an <a href="../jetleaf/ApplicationEventListener-class.html">ApplicationEventListener</a> that is called when the <a href="../jetleaf/BootstrapContext-class.html">BootstrapContext</a>
-is closed and the <a href="../jetleaf/ApplicationContext-class.html">ApplicationContext</a> has been fully prepared.
+  Adds an <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationEventListener-class.html">ApplicationEventListener</a> that is called when the <a href="../jetleaf/BootstrapContext-class.html">BootstrapContext</a>
+is closed and the <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContext-class.html">ApplicationContext</a> has been fully prepared.
   
 
 </dd>
 
         <dt id="getSupplier" class="callable">
-  <span class="name"><a href="../jetleaf/BootstrapRegistry/getSupplier.html">getSupplier</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="getSupplier-param-type"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> <span class="parameter-name">type</span></span>)
+  <span class="name"><a href="../jetleaf/BootstrapRegistry/getSupplier.html">getSupplier</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="getSupplier-param-type"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_lang/1.1.2/jetleaf_lang/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> <span class="parameter-name">type</span></span>)
     <span class="returntype parameter">&#8594; <a href="../jetleaf/BootstrapInstanceSupplier-class.html">BootstrapInstanceSupplier</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span>?</span>
   </span>
   
@@ -173,7 +173,7 @@ or <code>null</code> if not registered.
 </dd>
 
         <dt id="isRegistered" class="callable">
-  <span class="name"><a href="../jetleaf/BootstrapRegistry/isRegistered.html">isRegistered</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="isRegistered-param-type"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> <span class="parameter-name">type</span></span>)
+  <span class="name"><a href="../jetleaf/BootstrapRegistry/isRegistered.html">isRegistered</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="isRegistered-param-type"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_lang/1.1.2/jetleaf_lang/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> <span class="parameter-name">type</span></span>)
     <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
   </span>
   
@@ -199,7 +199,7 @@ or <code>null</code> if not registered.
 </dd>
 
         <dt id="register" class="callable">
-  <span class="name"><a href="../jetleaf/BootstrapRegistry/register.html">register</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="register-param-type"><span class="type-annotation"><a href="../jetleaf/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> <span class="parameter-name">type</span>, </span><span class="parameter" id="register-param-supplier"><span class="type-annotation"><a href="../jetleaf/BootstrapInstanceSupplier-class.html">BootstrapInstanceSupplier</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> <span class="parameter-name">supplier</span></span>)
+  <span class="name"><a href="../jetleaf/BootstrapRegistry/register.html">register</a></span><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span><span class="signature">(<wbr><span class="parameter" id="register-param-type"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_lang/1.1.2/jetleaf_lang/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> <span class="parameter-name">type</span>, </span><span class="parameter" id="register-param-supplier"><span class="type-annotation"><a href="../jetleaf/BootstrapInstanceSupplier-class.html">BootstrapInstanceSupplier</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> <span class="parameter-name">supplier</span></span>)
     <span class="returntype parameter">&#8594; void</span>
   </span>
   
@@ -274,7 +274,7 @@ or <code>null</code> if not registered.
 <footer>
   <span class="no-break">
     jetleaf
-      1.0.0
+      1.1.1
   </span>
   
 </footer>

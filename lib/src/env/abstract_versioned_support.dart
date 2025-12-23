@@ -52,7 +52,7 @@ abstract class AbstractVersionedSupport extends AbstractEnvironmentProfileSuppor
     }
 
     if (environment.getProperty(JetApplication.JETLEAF_APPLICATION_VERSION) == null) {
-      versionContent[JetApplication.JETLEAF_APPLICATION_VERSION] = applicationClass.getPackage()?.getVersion() ?? "unknown";
+      versionContent[JetApplication.JETLEAF_APPLICATION_VERSION] = applicationClass.getPackage().getVersion();
     }
 
     environment.getPropertySources().addLast(MapPropertySource("versioned", versionContent));

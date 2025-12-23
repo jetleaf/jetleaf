@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the LifecycleRunListener.new constructor from Class LifecycleRunListener from the jetleaf library, for the Dart programming language.">
+  <title>LifecycleRunListener.new constructor - LifecycleRunListener - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf.dart</a></li>
+    <li><a href="../../jetleaf/LifecycleRunListener-class.html">LifecycleRunListener</a></li>
+    <li class="self-crumb">LifecycleRunListener.new constructor</li>
+  </ol>
+  <div class="self-name">LifecycleRunListener.new</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="jetleaf&#47;LifecycleRunListener-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-constructor">LifecycleRunListener</span> constructor 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+      <span class="name ">LifecycleRunListener</span>(<wbr>)
+    </section>
+    
+<section class="desc markdown">
+  <p>A reflection-driven JetLeaf <a href="../../jetleaf/ApplicationRunListener-class.html">ApplicationRunListener</a> that automatically
+discovers and invokes lifecycle-annotated methods across all loaded types.</p>
+<p>The <a href="../../jetleaf/LifecycleRunListener-class.html">LifecycleRunListener</a> scans all runtime-visible methods annotated with
+JetLeaf lifecycle annotations such as:</p>
+<ul>
+<li><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnApplicationStarting-class.html">OnApplicationStarting</a></li>
+<li><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnApplicationStarted-class.html">OnApplicationStarted</a></li>
+<li><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnApplicationReady-class.html">OnApplicationReady</a></li>
+<li><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnApplicationFailed-class.html">OnApplicationFailed</a></li>
+<li><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnEnvironmentPrepared-class.html">OnEnvironmentPrepared</a></li>
+<li><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnContextPrepared-class.html">OnContextPrepared</a></li>
+<li><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnContextLoaded-class.html">OnContextLoaded</a></li>
+</ul>
+<p>Once discovered, JetLeaf automatically calls these annotated methods at
+the appropriate point during the application lifecycle without requiring
+explicit listener registration.</p>
+<h3 id="example">Example</h3>
+<pre class="language-dart"><code class="language-dart">class StartupHooks {
+  @OnApplicationStarting()
+  void beforeStart(ConfigurableBootstrapContext context, Class&lt;Object&gt; mainClass) {
+    print('JetLeaf application starting: ${mainClass.getName()}');
+  }
+
+  @OnApplicationReady()
+  void afterReady(ConfigurableApplicationContext context, Duration startupTime) {
+    print('Application ready in ${startupTime.inMilliseconds} ms');
+  }
+}
+
+// JetLeaf detects and invokes StartupHooks automatically.
+</code></pre>
+<h3 id="features">Features</h3>
+<ul>
+<li>Zero-configuration discovery of lifecycle methods using reflection.</li>
+<li>Automatic dependency injection for context, environment, duration, and exceptions.</li>
+<li>Prevents duplicate invocations using identity-based deduplication.</li>
+<li>Supports abstract and concrete classes with no-arg or inferred constructors.</li>
+<li>Enables concise, annotation-driven lifecycle logic in JetLeaf applications.</li>
+</ul>
+<p>This class is an integral part of JetLeaf’s reflective runtime and typically
+runs automatically during framework initialization.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">LifecycleRunListener() {
+  _onStartingMethods = MethodUtils.collectMethods&lt;OnApplicationStarting&gt;().toSet();
+  _onStartedMethods = MethodUtils.collectMethods&lt;OnApplicationStarted&gt;().toSet();
+  _onReadyMethods = MethodUtils.collectMethods&lt;OnApplicationReady&gt;().toSet();
+  _onFailedMethods = MethodUtils.collectMethods&lt;OnApplicationFailed&gt;().toSet();
+  _onEnvironmentPreparedMethods = MethodUtils.collectMethods&lt;OnEnvironmentPrepared&gt;().toSet();
+  _onContextPreparedMethods = MethodUtils.collectMethods&lt;OnContextPrepared&gt;().toSet();
+  _onContextLoadedMethods = MethodUtils.collectMethods&lt;OnContextLoaded&gt;().toSet();
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf</a></li>
+    <li><a href="../../jetleaf/LifecycleRunListener-class.html">LifecycleRunListener</a></li>
+    <li class="self-crumb">LifecycleRunListener.new constructor</li>
+</ol>
+
+    <h5>LifecycleRunListener class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-left-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.1.1
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

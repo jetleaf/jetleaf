@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="env library API docs, for the Dart programming language.">
+  <title>env library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li class="self-crumb">env.dart</li>
+  </ol>
+  <div class="self-name">env</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar=""
+    data-below-sidebar="env&#47;env-library-sidebar.html">
+  
+    <div>
+      
+
+      <h1>
+        <span class="kind-library">env</span>
+        library 
+ 
+
+      </h1>
+    </div>
+
+    
+
+
+    <section class="summary offset-anchor" id="classes">
+      <h2>Classes</h2>
+      <dl>
+          <dt id="AbstractEnvironment">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/AbstractEnvironment-class.html">AbstractEnvironment</a></span> 
+
+</dt>
+<dd>
+  Base class for creating environment implementations in JetLeaf.
+</dd>
+
+          <dt id="AbstractPropertyResolver">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/AbstractPropertyResolver-class.html">AbstractPropertyResolver</a></span> 
+
+</dt>
+<dd>
+  An abstract base implementation of <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/ConfigurablePropertyResolver-class.html">ConfigurablePropertyResolver</a> that provides
+common functionality for resolving property placeholders, type conversion,
+and required property validation.
+</dd>
+
+          <dt id="AlphabeticalRule">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/AlphabeticalRule-class.html">AlphabeticalRule</a></span> 
+
+</dt>
+<dd>
+  A <strong>property source ordering rule</strong> that sorts sources alphabetically by name.
+</dd>
+
+          <dt id="ApplicationArguments">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/ApplicationArguments-class.html">ApplicationArguments</a></span> 
+
+</dt>
+<dd>
+  Defines the contract for accessing and parsing command-line arguments passed to an application.
+</dd>
+
+          <dt id="ApplicationConfigurationProperties">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/ApplicationConfigurationProperties-class.html">ApplicationConfigurationProperties</a></span> 
+
+</dt>
+<dd>
+  ConfigurationProperties is a class for defining application configuration in a typed and expressive way,
+similar to defining settings in <code>application.yaml</code>, but directly in Dart.
+</dd>
+
+          <dt id="ApplicationConfigurationProperty">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/ApplicationConfigurationProperty-class.html">ApplicationConfigurationProperty</a></span> 
+
+</dt>
+<dd>
+  A base class for defining structured and strongly typed configuration classes
+in the JetLeaf framework.
+</dd>
+
+          <dt id="BeforeRule">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/BeforeRule-class.html">BeforeRule</a></span> 
+
+</dt>
+<dd>
+  Represents a <strong>reordering rule</strong> for property sources that ensures
+one source appears <strong>before</strong> another within a list of <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/PropertySource-class.html">PropertySource</a>s.
+</dd>
+
+          <dt id="CommandLinePropertySource">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/CommandLinePropertySource-class.html">CommandLinePropertySource</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  A base class for property sources that are backed by command line arguments.
+</dd>
+
+          <dt id="ComparatorRule">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/ComparatorRule-class.html">ComparatorRule</a></span> 
+
+</dt>
+<dd>
+  A <strong>property source ordering rule</strong> that sorts sources using a custom <a href="https://pub.dev/documentation/jetleaf_lang/1.1.2/jetleaf_lang/OrderComparator-class.html">OrderComparator</a>.
+</dd>
+
+          <dt id="CompositePropertySource">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/CompositePropertySource-class.html">CompositePropertySource</a></span> 
+
+</dt>
+<dd>
+  A composite implementation of <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/ListablePropertySource-class.html">ListablePropertySource</a> that aggregates multiple <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/PropertySource-class.html">PropertySource</a> instances.
+</dd>
+
+          <dt id="ConfigurableEnvironment">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/ConfigurableEnvironment-class.html">ConfigurableEnvironment</a></span> 
+
+</dt>
+<dd>
+  A configurable extension of the <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/Environment-class.html">Environment</a> interface that allows mutation
+of environment internals such as active profiles and property sources.
+</dd>
+
+          <dt id="ConfigurablePropertyResolver">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/ConfigurablePropertyResolver-class.html">ConfigurablePropertyResolver</a></span> 
+
+</dt>
+<dd>
+  A specialized <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/PropertyResolver-class.html">PropertyResolver</a> that allows full control over property
+placeholder behavior and type conversion logic using a configurable
+<a href="https://pub.dev/documentation/jetleaf_convert/1.1.2/jetleaf_convert/ConfigurableConversionService-class.html">ConfigurableConversionService</a>.
+</dd>
+
+          <dt id="DefaultApplicationArguments">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/DefaultApplicationArguments-class.html">DefaultApplicationArguments</a></span> 
+
+</dt>
+<dd>
+  Default implementation of <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/ApplicationArguments-class.html">ApplicationArguments</a> that wraps command-line arguments
+and exposes them via a <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/PropertySource-class.html">PropertySource</a>-based backing system.
+</dd>
+
+          <dt id="Env">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/Env-class.html">Env</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  A generic configuration property accessor for environment variables.
+</dd>
+
+          <dt id="Environment">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/Environment-class.html">Environment</a></span> 
+
+</dt>
+<dd>
+  <strong>Environment Contract</strong>
+</dd>
+
+          <dt id="GlobalEnvironment">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/GlobalEnvironment-class.html">GlobalEnvironment</a></span> 
+
+</dt>
+<dd>
+  A concrete implementation of <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/AbstractEnvironment-class.html">AbstractEnvironment</a> that represents the
+default runtime environment for most applications.
+</dd>
+
+          <dt id="JetProperty">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/JetProperty-class.html">JetProperty</a></span> 
+
+</dt>
+<dd>
+  Base class for all Jet framework configuration properties.
+</dd>
+
+          <dt id="ListablePropertySource">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/ListablePropertySource-class.html">ListablePropertySource</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  A specialized <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/PropertySource-class.html">PropertySource</a> capable of enumerating all available property keys,
+allowing efficient lookup operations.
+</dd>
+
+          <dt id="MapPropertySource">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/MapPropertySource-class.html">MapPropertySource</a></span> 
+
+</dt>
+<dd>
+  A <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/PropertySource-class.html">PropertySource</a> implementation backed by a <a href="https://api.dart.dev/stable/3.9.2/dart-core/Map-class.html">Map</a> of key-value pairs.
+</dd>
+
+          <dt id="MutablePropertySources">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/MutablePropertySources-class.html">MutablePropertySources</a></span> 
+
+</dt>
+<dd>
+  A mutable container for managing an ordered list of <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/PropertySource-class.html">PropertySource</a> objects.
+</dd>
+
+          <dt id="PriorityRule">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/PriorityRule-class.html">PriorityRule</a></span> 
+
+</dt>
+<dd>
+  A <strong>reordering rule</strong> for property sources based on explicit numeric priorities.
+</dd>
+
+          <dt id="Profiles">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/Profiles-class.html">Profiles</a></span> 
+
+</dt>
+<dd>
+  A profile predicate used by <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/Environment-class.html">Environment</a> to determine if given profile
+expressions match the active/default profiles.
+</dd>
+
+          <dt id="PropertyResolver">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/PropertyResolver-class.html">PropertyResolver</a></span> 
+
+</dt>
+<dd>
+  A service abstraction for resolving application properties and configuration values.
+</dd>
+
+          <dt id="PropertySource">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/PropertySource-class.html">PropertySource</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  A base abstraction representing a source of key-value properties, such as
+maps, environment variables, or configuration files.
+</dd>
+
+          <dt id="PropertySourceOrderRule">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/PropertySourceOrderRule-class.html">PropertySourceOrderRule</a></span> 
+
+</dt>
+<dd>
+  Defines a user-supplied rule that determines the ordering of
+<code>`PropertySource`</code> objects within JetLeaf’s configuration system.
+</dd>
+
+          <dt id="PropertySources">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/PropertySources-class.html">PropertySources</a></span> 
+
+</dt>
+<dd>
+  A collection of <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/PropertySource-class.html">PropertySource</a>s that provides lookup and stream support.
+</dd>
+
+          <dt id="PropertySourcesPropertyResolver">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/PropertySourcesPropertyResolver-class.html">PropertySourcesPropertyResolver</a></span> 
+
+</dt>
+<dd>
+  A concrete implementation of <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/AbstractPropertyResolver-class.html">AbstractPropertyResolver</a> that retrieves
+property values from a collection of <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/PropertySource-class.html">PropertySource</a>s managed by a
+<a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/MutablePropertySources-class.html">MutablePropertySources</a> container.
+</dd>
+
+          <dt id="SimpleCommandLinePropertySource">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/SimpleCommandLinePropertySource-class.html">SimpleCommandLinePropertySource</a></span> 
+
+</dt>
+<dd>
+  A <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/CommandLinePropertySource-class.html">CommandLinePropertySource</a> that adapts <code>CommandLineArgs</code> into a resolvable
+<a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/PropertySource-class.html">PropertySource</a>.
+</dd>
+
+          <dt id="SystemEnvironmentPropertySource">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/SystemEnvironmentPropertySource-class.html">SystemEnvironmentPropertySource</a></span> 
+
+</dt>
+<dd>
+  A <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/MapPropertySource-class.html">MapPropertySource</a> that exposes system environment variables as a property source.
+</dd>
+
+      </dl>
+    </section>
+
+
+    <section class="summary offset-anchor" id="mixins">
+      <h2>Mixins</h2>
+      <dl>
+          <dt id="ConfigurationPropertySource">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/ConfigurationPropertySource-mixin.html">ConfigurationPropertySource</a></span> 
+
+</dt>
+<dd>
+  A mixin that provides access to a globally attached <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/Environment-class.html">Environment</a>.
+</dd>
+
+      </dl>
+    </section>
+
+
+
+
+    <section class="summary offset-anchor" id="properties">
+      <h2>Properties</h2>
+      <dl class="properties">
+          <dt id="environmentLoggingListener" class="property">
+  <span class="name"><a href="../env/environmentLoggingListener.html">environmentLoggingListener</a></span>
+  <span class="signature">&#8594; <a href="https://pub.dev/documentation/jetleaf_lang/1.1.2/jetleaf_lang/Obs-class.html">Obs</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://pub.dev/documentation/jetleaf_logging/1.1.2/jetleaf_logging/LogLevel.html">LogLevel</a></span>, <span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>&gt;</span></span>&gt;</span></span>
+  
+
+</dt>
+<dd>
+  A reactive listener that holds environment-specific logging configuration.
+  <div class="features"><span class="feature">final</span></div>
+
+</dd>
+
+      </dl>
+    </section>
+
+
+
+    <section class="summary offset-anchor" id="exceptions">
+      <h2>Exceptions / Errors</h2>
+      <dl>
+          <dt id="DartLoadingException">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/DartLoadingException-class.html">DartLoadingException</a></span> 
+
+</dt>
+<dd>
+  Exception thrown when Dart file loading fails.
+</dd>
+
+          <dt id="EnvironmentParsingException">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/EnvironmentParsingException-class.html">EnvironmentParsingException</a></span> 
+
+</dt>
+<dd>
+  An <a href="https://api.dart.dev/stable/3.9.2/dart-core/Exception-class.html">Exception</a> thrown when an error occurs during environment property parsing.
+</dd>
+
+          <dt id="MissingRequiredEnvironmentException">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/MissingRequiredEnvironmentException-class.html">MissingRequiredEnvironmentException</a></span> 
+
+</dt>
+<dd>
+  Exception thrown when a required environment variable is not found.
+</dd>
+
+          <dt id="MissingRequiredPropertiesException">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/MissingRequiredPropertiesException-class.html">MissingRequiredPropertiesException</a></span> 
+
+</dt>
+<dd>
+  Exception thrown when required properties are not found.
+</dd>
+
+      </dl>
+    </section>
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li class="self-crumb">env.dart</li>
+</ol>
+
+    <h5><span class="package-name">jetleaf</span> <span class="package-kind">package</span></h5>
+    <ol>
+      <li class="section-title">Libraries</li>
+      <li><a href="../convert/">convert</a></li>
+      <li><a href="../core/">core</a></li>
+      <li><a href="../env/">env</a></li>
+      <li><a href="../lang/">lang</a></li>
+      <li><a href="../logging/">logging</a></li>
+      <li><a href="../pod/">pod</a></li>
+      <li><a href="../utils/">utils</a></li>
+      <li class="section-subtitle">JetLeaf</li>
+        <li class="section-subitem"><a href="../jetleaf/">jetleaf</a></li>
+        <li class="section-subitem"><a href="../main/">main</a></li>
+</ol>
+
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+    <h5>env library</h5>
+  </div><!--/sidebar-offcanvas-right-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.1.1
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

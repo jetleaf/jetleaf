@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="main library API docs, for the Dart programming language.">
+  <title>main library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li class="self-crumb">main.dart</li>
+  </ol>
+  <div class="self-name">main</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar=""
+    data-below-sidebar="main&#47;main-library-sidebar.html">
+  
+    <div>
+      
+
+      <h1>
+        <span class="kind-library">main</span>
+        library 
+ 
+
+      </h1>
+    </div>
+
+    
+<section class="desc markdown">
+  <p>🍃 <strong>JetLeaf Framework</strong></p>
+<p>The main entry point for the JetLeaf ecosystem. This library aggregates
+the core modules, utilities, and packages required to bootstrap and
+run a JetLeaf application. It provides access to context management,
+configuration, logging, environment handling, dependency injection,
+type conversion, interception, messaging, and shutdown handling.</p>
+<h2 id="-key-features">🔑 Key Features</h2>
+<ul>
+<li><strong>Application Bootstrapping:</strong> <code>JetLeafApplication</code> and <code>JetApplication</code>
+manage lifecycle, startup, and shutdown.</li>
+<li><strong>Context Management:</strong> Core and bootstrap contexts with factories,
+environment parsing, and property sources.</li>
+<li><strong>Dependency Injection:</strong> Pod factories, post-processors, and type filtering.</li>
+<li><strong>Logging &amp; Monitoring:</strong> Logging listeners, startup logging, and
+configurable logging properties.</li>
+<li><strong>Exception Handling:</strong> Application-level exception handlers and reporters.</li>
+<li><strong>Environment &amp; Configuration:</strong> Parsing and management of environment
+properties, Dart config files, and runtime listeners.</li>
+<li><strong>Lifecycle &amp; Listeners:</strong> Run listeners and lifecycle management hooks.</li>
+<li><strong>Shutdown Handling:</strong> Hooks and handlers for graceful application shutdown.</li>
+<li><strong>Messaging &amp; Interception:</strong> Core interceptable mechanisms and message sources.</li>
+<li><strong>Conversion Utilities:</strong> Integration with JetLeaf Convert for type conversions.</li>
+</ul>
+<h2 id="-intended-usage">🎯 Intended Usage</h2>
+<pre class="language-dart"><code class="language-dart">import 'package:jetleaf/jetleaf.dart';
+
+void main(List&lt;String&gt; args) {
+  JetApplication.run(Application(), args);
+}
+</code></pre>
+<p>This provides a unified entry point to all essential JetLeaf features,
+making it easy to build, configure, and run modular Dart applications.</p>
+</section>
+
+
+    <section class="summary offset-anchor" id="classes">
+      <h2>Classes</h2>
+      <dl>
+          <dt id="ApplicationContextFactory">
+  <span class="name "><a href="../jetleaf/ApplicationContextFactory-class.html">ApplicationContextFactory</a></span> 
+
+</dt>
+<dd>
+  A factory for creating JetLeaf application context and environment instances.
+</dd>
+
+          <dt id="ApplicationExceptionHandler">
+  <span class="name "><a href="../jetleaf/ApplicationExceptionHandler-class.html">ApplicationExceptionHandler</a></span> 
+
+</dt>
+<dd>
+  A global, thread-safe handler for uncaught exceptions in JetLeaf applications.
+</dd>
+
+          <dt id="ApplicationHook">
+  <span class="name "><a href="../jetleaf/ApplicationHook-class.html">ApplicationHook</a></span> 
+
+</dt>
+<dd>
+  A hook interface for integrating with the lifecycle of a <code>Application</code>.
+</dd>
+
+          <dt id="ApplicationImportSelector">
+  <span class="name "><a href="../jetleaf/ApplicationImportSelector-class.html">ApplicationImportSelector</a></span> 
+
+</dt>
+<dd>
+  🫘 Default <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ImportSelector-class.html">ImportSelector</a> implementation for JetLeaf.
+</dd>
+
+          <dt id="ApplicationInfoPropertySource">
+  <span class="name "><a href="../jetleaf/ApplicationInfoPropertySource-class.html">ApplicationInfoPropertySource</a></span> 
+
+</dt>
+<dd>
+  A <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/MapPropertySource-class.html">MapPropertySource</a> that exposes JetLeaf application metadata such as
+version and process ID (<code>pid</code>) to the environment system.
+</dd>
+
+          <dt id="ApplicationLoggingListener">
+  <span class="name "><a href="../jetleaf/ApplicationLoggingListener-class.html">ApplicationLoggingListener</a></span> 
+
+</dt>
+<dd>
+  JetLeaf's application-level <a href="https://pub.dev/documentation/jetleaf_logging/1.1.2/jetleaf_logging/LoggingListener-class.html">LoggingListener</a> implementation.
+</dd>
+
+          <dt id="ApplicationRunListener">
+  <span class="name "><a href="../jetleaf/ApplicationRunListener-class.html">ApplicationRunListener</a></span> 
+
+</dt>
+<dd>
+  A listener for JetLeaf application lifecycle events during startup.
+</dd>
+
+          <dt id="ApplicationRunListeners">
+  <span class="name "><a href="../jetleaf/ApplicationRunListeners-class.html">ApplicationRunListeners</a></span> 
+
+</dt>
+<dd>
+  Coordinates the execution of multiple <a href="../jetleaf/ApplicationRunListener-class.html">ApplicationRunListener</a> instances
+during the JetLeaf application lifecycle.
+</dd>
+
+          <dt id="ApplicationRunner">
+  <span class="name "><a href="../jetleaf/ApplicationRunner-class.html">ApplicationRunner</a></span> 
+
+</dt>
+<dd>
+  A runner that receives parsed <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/ApplicationArguments-class.html">ApplicationArguments</a>.
+</dd>
+
+          <dt id="ApplicationShutdownHandler">
+  <span class="name "><a href="../jetleaf/ApplicationShutdownHandler-class.html">ApplicationShutdownHandler</a></span> 
+
+</dt>
+<dd>
+  Represents a registry of shutdown actions (tasks) that are executed when
+the application is in the process of shutting down.
+</dd>
+
+          <dt id="ApplicationShutdownHandlerHook">
+  <span class="name "><a href="../jetleaf/ApplicationShutdownHandlerHook-class.html">ApplicationShutdownHandlerHook</a></span> 
+
+</dt>
+<dd>
+  The <code>ApplicationShutdownHandlerHook</code> is responsible for managing the <strong>graceful
+shutdown</strong> of a JetLeaf application, ensuring that all registered
+<a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a> instances and shutdown handlers are executed
+in a predictable and safe order when the Dart process exits or receives a
+termination signal.
+</dd>
+
+          <dt id="ApplicationTypeFilter">
+  <span class="name "><a href="../jetleaf/ApplicationTypeFilter-class.html">ApplicationTypeFilter</a></span> 
+
+</dt>
+<dd>
+  A Jetleaf-specific <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/TypeFilter-class.html">TypeFilter</a> implementation that determines
+whether a given class qualifies as an <strong>auto-configuration candidate</strong>.
+</dd>
+
+          <dt id="Banner">
+  <span class="name "><a href="../jetleaf/Banner-class.html">Banner</a></span> 
+
+</dt>
+<dd>
+  A contract for printing a custom application banner during JetLeaf startup.
+</dd>
+
+          <dt id="BootstrapContext">
+  <span class="name "><a href="../jetleaf/BootstrapContext-class.html">BootstrapContext</a></span> 
+
+</dt>
+<dd>
+  A context used during JetLeaf's bootstrapping phase for accessing and managing
+lazily-created instances by their reflected <a href="https://pub.dev/documentation/jetleaf_lang/1.1.2/jetleaf_lang/Class-class.html">Class</a> types.
+</dd>
+
+          <dt id="BootstrapContextClosedEvent">
+  <span class="name "><a href="../jetleaf/BootstrapContextClosedEvent-class.html">BootstrapContextClosedEvent</a></span> 
+
+</dt>
+<dd>
+  An <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationEvent-class.html">ApplicationEvent</a> published when the <a href="../jetleaf/BootstrapContext-class.html">BootstrapContext</a> is closed,
+typically just before or during the early phase of starting a full
+<a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a>.
+</dd>
+
+          <dt id="BootstrapInstanceSupplier">
+  <span class="name "><a href="../jetleaf/BootstrapInstanceSupplier-class.html">BootstrapInstanceSupplier</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  A supplier that can create instances based on a <a href="../jetleaf/BootstrapContext-class.html">BootstrapContext</a>,
+with optional scoping support.
+</dd>
+
+          <dt id="BootstrapRegistry">
+  <span class="name "><a href="../jetleaf/BootstrapRegistry-class.html">BootstrapRegistry</a></span> 
+
+</dt>
+<dd>
+  A registry interface for bootstrapping components during early
+phases of application startup.
+</dd>
+
+          <dt id="BootstrapRegistryInitializer">
+  <span class="name "><a href="../jetleaf/BootstrapRegistryInitializer-class.html">BootstrapRegistryInitializer</a></span> 
+
+</dt>
+<dd>
+  Strategy interface used to programmatically register bootstrap instances
+into a <a href="../jetleaf/BootstrapRegistry-class.html">BootstrapRegistry</a> before the application context is refreshed.
+</dd>
+
+          <dt id="CommandLineRunner">
+  <span class="name "><a href="../jetleaf/CommandLineRunner-class.html">CommandLineRunner</a></span> 
+
+</dt>
+<dd>
+  A runner that receives raw command-line arguments.
+</dd>
+
+          <dt id="ConfigurableBootstrapContext">
+  <span class="name "><a href="../jetleaf/ConfigurableBootstrapContext-class.html">ConfigurableBootstrapContext</a></span> 
+
+</dt>
+<dd>
+  A configurable bootstrap context that acts as both a <a href="../jetleaf/BootstrapRegistry-class.html">BootstrapRegistry</a>
+and a <a href="../jetleaf/BootstrapContext-class.html">BootstrapContext</a>.
+</dd>
+
+          <dt id="DartConfigParser">
+  <span class="name "><a href="../jetleaf/DartConfigParser-class.html">DartConfigParser</a></span> 
+
+</dt>
+<dd>
+  DartConfigParser - improved to accept any constructor/static factory that
+produces a JetProperty (heuristic-based), not only JetProperty.custom.
+</dd>
+
+          <dt id="DartEnvironmentParser">
+  <span class="name "><a href="../jetleaf/DartEnvironmentParser-class.html">DartEnvironmentParser</a></span> 
+
+</dt>
+<dd>
+  Environment parser for .dart configuration files.
+</dd>
+
+          <dt id="DefaultApplicationContextFactory">
+  <span class="name "><a href="../jetleaf/DefaultApplicationContextFactory-class.html">DefaultApplicationContextFactory</a></span> 
+
+</dt>
+<dd>
+  The default implementation of <a href="../jetleaf/ApplicationContextFactory-class.html">ApplicationContextFactory</a> in JetLeaf.
+</dd>
+
+          <dt id="DefaultApplicationHook">
+  <span class="name "><a href="../jetleaf/DefaultApplicationHook-class.html">DefaultApplicationHook</a></span> 
+
+</dt>
+<dd>
+  Default implementation of <a href="../jetleaf/ApplicationHook-class.html">ApplicationHook</a> in JetLeaf.
+</dd>
+
+          <dt id="DefaultBanner">
+  <span class="name "><a href="../jetleaf/DefaultBanner-class.html">DefaultBanner</a></span> 
+
+</dt>
+<dd>
+  A fallback <a href="../jetleaf/Banner-class.html">Banner</a> implementation that attempts to load a custom banner
+from the application environment, but defaults to another banner if none
+is found.
+</dd>
+
+          <dt id="DefaultBootstrapContext">
+  <span class="name "><a href="../jetleaf/DefaultBootstrapContext-class.html">DefaultBootstrapContext</a></span> 
+
+</dt>
+<dd>
+  The default implementation of <a href="../jetleaf/ConfigurableBootstrapContext-class.html">ConfigurableBootstrapContext</a> in JetLeaf.
+</dd>
+
+          <dt id="DefaultPropertiesPropertySource">
+  <span class="name "><a href="../jetleaf/DefaultPropertiesPropertySource-class.html">DefaultPropertiesPropertySource</a></span> 
+
+</dt>
+<dd>
+  A specialized <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/MapPropertySource-class.html">MapPropertySource</a> representing a default set of properties
+that can be added to or merged with an existing <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/Environment-class.html">Environment</a>.
+</dd>
+
+          <dt id="EnableAutoConfiguration">
+  <span class="name "><a href="../jetleaf/EnableAutoConfiguration-class.html">EnableAutoConfiguration</a></span> 
+
+</dt>
+<dd>
+  Core framework annotations for Jet
+</dd>
+
+          <dt id="EnvEnvironmentParser">
+  <span class="name "><a href="../jetleaf/EnvEnvironmentParser-class.html">EnvEnvironmentParser</a></span> 
+
+</dt>
+<dd>
+  Environment parser for .env configuration files.
+</dd>
+
+          <dt id="EnvironmentListener">
+  <span class="name "><a href="../jetleaf/EnvironmentListener-class.html">EnvironmentListener</a></span> 
+
+</dt>
+<dd>
+  A listener that prepares and configures the application environment.
+</dd>
+
+          <dt id="EnvironmentParser">
+  <span class="name "><a href="../jetleaf/EnvironmentParser-class.html">EnvironmentParser</a></span> 
+
+</dt>
+<dd>
+  Base interface for parsing configuration files into environment data.
+</dd>
+
+          <dt id="ExceptionHandler">
+  <span class="name "><a href="../jetleaf/ExceptionHandler-class.html">ExceptionHandler</a></span> 
+
+</dt>
+<dd>
+  Responsible for handling exceptions thrown during the application lifecycle
+(startup or runtime) in JetLeaf applications.
+</dd>
+
+          <dt id="JetApplication">
+  <span class="name "><a href="../jetleaf/JetApplication-class.html">JetApplication</a></span> 
+
+</dt>
+<dd>
+  Main entry point for JetLeaf framework applications.
+</dd>
+
+          <dt id="JetLeafApplication">
+  <span class="name "><a href="../jetleaf/JetLeafApplication-class.html">JetLeafApplication</a></span> 
+
+</dt>
+<dd>
+  A <strong>meta-annotation</strong> in Jetleaf used to bootstrap and configure the
+root application class.
+</dd>
+
+          <dt id="JetLeafBanner">
+  <span class="name "><a href="../jetleaf/JetLeafBanner-class.html">JetLeafBanner</a></span> 
+
+</dt>
+<dd>
+  A <a href="../jetleaf/Banner-class.html">Banner</a> implementation that displays a simple text-based banner
+with the JetLeaf logo and version information.
+</dd>
+
+          <dt id="JetLeafConfigParser">
+  <span class="name "><a href="../jetleaf/JetLeafConfigParser-class.html">JetLeafConfigParser</a></span> 
+
+</dt>
+<dd>
+  Parser for JetLeaf configuration files with strict validation.
+</dd>
+
+          <dt id="JetLeafVersion">
+  <span class="name "><a href="../jetleaf/JetLeafVersion-class.html">JetLeafVersion</a></span> 
+
+</dt>
+<dd>
+  A utility class for retrieving the current version of the JetLeaf framework.
+</dd>
+
+          <dt id="JetLoggingProperty">
+  <span class="name "><a href="../jetleaf/JetLoggingProperty-class.html">JetLoggingProperty</a></span> 
+
+</dt>
+<dd>
+  Defines all Jet framework logging-related configuration keys.
+</dd>
+
+          <dt id="JsonEnvironmentParser">
+  <span class="name "><a href="../jetleaf/JsonEnvironmentParser-class.html">JsonEnvironmentParser</a></span> 
+
+</dt>
+<dd>
+  Environment parser for JSON configuration files.
+</dd>
+
+          <dt id="LifecycleRunListener">
+  <span class="name "><a href="../jetleaf/LifecycleRunListener-class.html">LifecycleRunListener</a></span> 
+
+</dt>
+<dd>
+  A reflection-driven JetLeaf <a href="../jetleaf/ApplicationRunListener-class.html">ApplicationRunListener</a> that automatically
+discovers and invokes lifecycle-annotated methods across all loaded types.
+</dd>
+
+          <dt id="PropertiesEnvironmentParser">
+  <span class="name "><a href="../jetleaf/PropertiesEnvironmentParser-class.html">PropertiesEnvironmentParser</a></span> 
+
+</dt>
+<dd>
+  Environment parser for .properties configuration files.
+</dd>
+
+          <dt id="PropertySourceOrderingPodFactoryPostProcessor">
+  <span class="name "><a href="../jetleaf/PropertySourceOrderingPodFactoryPostProcessor-class.html">PropertySourceOrderingPodFactoryPostProcessor</a></span> 
+
+</dt>
+<dd>
+  🔄 Post-processor that reorders property sources for optimal resolution.
+</dd>
+
+          <dt id="Runner">
+  <span class="name "><a href="../jetleaf/Runner-class.html">Runner</a></span> 
+
+</dt>
+<dd>
+  Base contract for application runners in JetLeaf.
+</dd>
+
+          <dt id="StartupLogger">
+  <span class="name "><a href="../jetleaf/StartupLogger-class.html">StartupLogger</a></span> 
+
+</dt>
+<dd>
+  Logs application startup events in a structured and user-friendly format.
+</dd>
+
+          <dt id="YamlEnvironmentParser">
+  <span class="name "><a href="../jetleaf/YamlEnvironmentParser-class.html">YamlEnvironmentParser</a></span> 
+
+</dt>
+<dd>
+  Environment parser for YAML configuration files.
+</dd>
+
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="enums">
+      <h2>Enums</h2>
+      <dl>
+          <dt id="BannerMode">
+  <span class="name "><a href="../jetleaf/BannerMode.html">BannerMode</a></span> 
+
+</dt>
+<dd>
+  An enumeration of possible values for configuring the Banner.
+</dd>
+
+      </dl>
+    </section>
+
+
+
+    <section class="summary offset-anchor" id="extensions">
+      <h2>Extensions</h2>
+      <dl>
+          <dt id="ThrowingConsumerX">
+  <span class="name "><a href="../jetleaf/ThrowingConsumerX.html">ThrowingConsumerX</a></span>
+  on <a href="../jetleaf/ThrowingConsumer.html">ThrowingConsumer</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span>
+  
+
+</dt>
+<dd>
+  Extension methods for <a href="../jetleaf/ThrowingConsumer.html">ThrowingConsumer</a> providing safe execution.
+</dd>
+
+      </dl>
+    </section>
+
+
+
+
+    <section class="summary offset-anchor" id="typedefs">
+      <h2>Typedefs</h2>
+      <dl>
+          
+  <dt id="ThrowingConsumer" class="callable">
+    <span class="name"><a href="../jetleaf/ThrowingConsumer.html">ThrowingConsumer</a></span>&lt;<wbr><span class="type-parameter">T</span>&gt;<span class="signature">
+      <span class="returntype parameter">= void Function<span class="signature">(<span class="parameter" id="param-value"><span class="type-annotation">T</span> <span class="parameter-name">value</span></span>)</span></span>
+    </span>
+    
+
+  </dt>
+  <dd>
+    A consumer function that can throw exceptions.
+    
+
+  </dd>
+
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="exceptions">
+      <h2>Exceptions / Errors</h2>
+      <dl>
+          <dt id="JetLeafException">
+  <span class="name "><a href="../jetleaf/JetLeafException-class.html">JetLeafException</a></span> 
+
+</dt>
+<dd>
+  A <a href="https://pub.dev/documentation/jetleaf_build/1.1.1/jetleaf_build/RuntimeException-class.html">RuntimeException</a> thrown when the application context is considered
+"abandoned" during startup or shutdown.
+</dd>
+
+      </dl>
+    </section>
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li class="self-crumb">main.dart</li>
+</ol>
+
+    <h5><span class="package-name">jetleaf</span> <span class="package-kind">package</span></h5>
+    <ol>
+      <li class="section-title">Libraries</li>
+      <li><a href="../convert/">convert</a></li>
+      <li><a href="../core/">core</a></li>
+      <li><a href="../env/">env</a></li>
+      <li><a href="../lang/">lang</a></li>
+      <li><a href="../logging/">logging</a></li>
+      <li><a href="../pod/">pod</a></li>
+      <li><a href="../utils/">utils</a></li>
+      <li class="section-subtitle">JetLeaf</li>
+        <li class="section-subitem"><a href="../jetleaf/">jetleaf</a></li>
+        <li class="section-subitem"><a href="../main/">main</a></li>
+</ol>
+
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+    <h5>main library</h5>
+  </div><!--/sidebar-offcanvas-right-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.1.1
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

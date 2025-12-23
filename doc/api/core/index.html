@@ -1,0 +1,1572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="core library API docs, for the Dart programming language.">
+  <title>core library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li class="self-crumb">core.dart</li>
+  </ol>
+  <div class="self-name">core</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar=""
+    data-below-sidebar="core&#47;core-library-sidebar.html">
+  
+    <div>
+      
+
+      <h1>
+        <span class="kind-library">core</span>
+        library 
+ 
+
+      </h1>
+    </div>
+
+    
+
+
+    <section class="summary offset-anchor" id="classes">
+      <h2>Classes</h2>
+      <dl>
+          <dt id="AbstractApplicationContext">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AbstractApplicationContext-class.html">AbstractApplicationContext</a></span> 
+
+</dt>
+<dd>
+  The base implementation of a configurable <strong>Jetleaf Application Context</strong>.
+</dd>
+
+          <dt id="AbstractExceptionDiagnoser">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AbstractExceptionDiagnoser-class.html">AbstractExceptionDiagnoser</a><span class="signature">&lt;<wbr><span class="type-parameter">E extends <a href="https://api.dart.dev/stable/3.9.2/dart-core/Exception-class.html">Exception</a></span>&gt;</span></span> 
+
+</dt>
+<dd>
+  Base class for creating typed exception diagnosers that target a
+specific exception type <code>E</code>.
+</dd>
+
+          <dt id="AbstractMessageSource">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AbstractMessageSource-class.html">AbstractMessageSource</a></span> 
+
+</dt>
+<dd>
+  Base implementation of MessageSource providing common functionality.
+</dd>
+
+          <dt id="AbstractMethodDispatcher">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AbstractMethodDispatcher-class.html">AbstractMethodDispatcher</a></span> 
+
+</dt>
+<dd>
+  A foundational implementation of <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/MethodInterceptorDispatcher-class.html">MethodInterceptorDispatcher</a> and <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/MethodInterceptor-class.html">MethodInterceptor</a>
+providing a unified interception pipeline for JetLeaf's runtime and AOP subsystems.
+</dd>
+
+          <dt id="AfterInvocationInterceptor">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AfterInvocationInterceptor-class.html">AfterInvocationInterceptor</a></span> 
+
+</dt>
+<dd>
+  Defines an interceptor that executes <strong>after method completion</strong>,
+regardless of whether the invocation succeeded or failed.
+</dd>
+
+          <dt id="AfterReturningInterceptor">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AfterReturningInterceptor-class.html">AfterReturningInterceptor</a></span> 
+
+</dt>
+<dd>
+  An interceptor that executes <strong>after a method successfully returns</strong> a value,
+without throwing an exception.
+</dd>
+
+          <dt id="AfterThrowingInterceptor">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AfterThrowingInterceptor-class.html">AfterThrowingInterceptor</a></span> 
+
+</dt>
+<dd>
+  An interceptor triggered when a target method <strong>throws an exception</strong>.
+</dd>
+
+          <dt id="AnnotatedScopeMetadataResolver">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AnnotatedScopeMetadataResolver-class.html">AnnotatedScopeMetadataResolver</a></span> 
+
+</dt>
+<dd>
+  A Jetleaf-provided implementation of <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ScopeMetadataResolver-class.html">ScopeMetadataResolver</a> that
+determines scope metadata based on the presence of the <code>@Scope</code> annotation.
+</dd>
+
+          <dt id="AnnotationAwareOrderComparator">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AnnotationAwareOrderComparator-class.html">AnnotationAwareOrderComparator</a></span> 
+
+</dt>
+<dd>
+  A Jetleaf-provided <a href="https://pub.dev/documentation/jetleaf_lang/1.1.2/jetleaf_lang/OrderComparator-class.html">OrderComparator</a> implementation that determines ordering
+based on the presence of the <code>@Order</code> annotation or the <a href="https://pub.dev/documentation/jetleaf_lang/1.1.2/jetleaf_lang/Ordered-class.html">Ordered</a> interface.
+</dd>
+
+          <dt id="AnnotationConfigApplicationContext">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AnnotationConfigApplicationContext-class.html">AnnotationConfigApplicationContext</a></span> 
+
+</dt>
+<dd>
+  ApplicationContext implementation that supports annotation-based configuration.
+</dd>
+
+          <dt id="AnnotationConfigRegistry">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AnnotationConfigRegistry-class.html">AnnotationConfigRegistry</a></span> 
+
+</dt>
+<dd>
+  <strong>Annotation-Based Configuration Registry</strong>
+</dd>
+
+          <dt id="AnnotationTypeFilter">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AnnotationTypeFilter-class.html">AnnotationTypeFilter</a></span> 
+
+</dt>
+<dd>
+  A <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/TypeFilter-class.html">TypeFilter</a> that matches classes based on the presence of specific annotations.
+</dd>
+
+          <dt id="ApplicationAnnotatedLifecycleProcessor">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationAnnotatedLifecycleProcessor-class.html">ApplicationAnnotatedLifecycleProcessor</a></span> 
+
+</dt>
+<dd>
+  Processor for application lifecycle annotations that discovers and invokes
+methods annotated with <code>@OnApplicationStopping</code> and <code>@OnApplicationStopped</code>.
+</dd>
+
+          <dt id="ApplicationAvailability">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationAvailability-class.html">ApplicationAvailability</a></span> 
+
+</dt>
+<dd>
+  Defines the contract for accessing and tracking an application's
+<strong>availability information</strong>, including both its <strong>liveness</strong> and
+<strong>readiness</strong> states.
+</dd>
+
+          <dt id="ApplicationAvailabilityAutoConfiguration">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationAvailabilityAutoConfiguration-class.html">ApplicationAvailabilityAutoConfiguration</a></span> 
+
+</dt>
+<dd>
+  Provides the default auto-configuration for managing and tracking
+application <strong>availability states</strong>—including both liveness and readiness.
+</dd>
+
+          <dt id="ApplicationContext">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContext-class.html">ApplicationContext</a></span> 
+
+</dt>
+<dd>
+  The central interface for a JetLeaf application context.
+</dd>
+
+          <dt id="ApplicationContextAware">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContextAware-class.html">ApplicationContextAware</a></span> 
+
+</dt>
+<dd>
+  🫘 Interface for components that need access to the <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContext-class.html">ApplicationContext</a>.
+</dd>
+
+          <dt id="ApplicationContextEvent">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContextEvent-class.html">ApplicationContextEvent</a></span> 
+
+</dt>
+<dd>
+  A base class for all events that are published within the context of an <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContext-class.html">ApplicationContext</a>.
+</dd>
+
+          <dt id="ApplicationContextInitializer">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContextInitializer-class.html">ApplicationContextInitializer</a><span class="signature">&lt;<wbr><span class="type-parameter">T extends <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a></span>&gt;</span></span> 
+
+</dt>
+<dd>
+  Strategy interface for initializing an <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContext-class.html">ApplicationContext</a> before it is
+refreshed.
+</dd>
+
+          <dt id="ApplicationConversionService">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationConversionService-class.html">ApplicationConversionService</a></span> 
+
+</dt>
+<dd>
+  A JetLeaf-managed, application-wide <strong>conversion service</strong> responsible for
+managing and coordinating all registered type converters.
+</dd>
+
+          <dt id="ApplicationDiagnostics">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationDiagnostics-class.html">ApplicationDiagnostics</a></span> 
+
+</dt>
+<dd>
+  High-level diagnostics orchestrator combining both:
+</dd>
+
+          <dt id="ApplicationEnvironment">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationEnvironment-class.html">ApplicationEnvironment</a></span> 
+
+</dt>
+<dd>
+  A concrete environment for standard JetLeaf applications.
+</dd>
+
+          <dt id="ApplicationEvent">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationEvent-class.html">ApplicationEvent</a></span> 
+
+</dt>
+<dd>
+  A base class for application-specific events within the JetLeaf framework.
+</dd>
+
+          <dt id="ApplicationEventBus">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationEventBus-class.html">ApplicationEventBus</a></span> 
+
+</dt>
+<dd>
+  Defines the contract for an event multicaster that manages the registration,
+removal, and dispatching of <code>ApplicationEvent</code>s to <code>ApplicationListener</code>s.
+</dd>
+
+          <dt id="ApplicationEventBusAware">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationEventBusAware-class.html">ApplicationEventBusAware</a></span> 
+
+</dt>
+<dd>
+  🫘 Interface for components that need access to the <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationEventBus-class.html">ApplicationEventBus</a>.
+</dd>
+
+          <dt id="ApplicationEventListener">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationEventListener-class.html">ApplicationEventListener</a><span class="signature">&lt;<wbr><span class="type-parameter">E extends <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationEvent-class.html">ApplicationEvent</a></span>&gt;</span></span> 
+
+</dt>
+<dd>
+  A listener for a specific type of <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationEvent-class.html">ApplicationEvent</a>.
+</dd>
+
+          <dt id="ApplicationEventMethodAdapter">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationEventMethodAdapter-class.html">ApplicationEventMethodAdapter</a></span> 
+
+</dt>
+<dd>
+  An <strong>adapter class</strong> in Jetleaf that bridges <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationEvent-class.html">ApplicationEvent</a>s with listener methods.
+</dd>
+
+          <dt id="ApplicationModule">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationModule-class.html">ApplicationModule</a></span> 
+
+</dt>
+<dd>
+  An <strong>interface</strong> in Jetleaf that defines a configurable application module.
+</dd>
+
+          <dt id="AroundMethodInterceptor">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AroundMethodInterceptor-class.html">AroundMethodInterceptor</a></span> 
+
+</dt>
+<dd>
+  A <strong>comprehensive interceptor</strong> that wraps the entire method invocation process,
+allowing developers to control <strong>when and how</strong> the target method executes.
+</dd>
+
+          <dt id="AssignableTypeFilter">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AssignableTypeFilter-class.html">AssignableTypeFilter</a></span> 
+
+</dt>
+<dd>
+  A <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/TypeFilter-class.html">TypeFilter</a> that matches classes assignable to a specific target type.
+</dd>
+
+          <dt id="AutoConfiguration">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AutoConfiguration-class.html">AutoConfiguration</a></span> 
+
+</dt>
+<dd>
+  Declares a class as a source of <strong>automatic configuration</strong>.
+</dd>
+
+          <dt id="Autowired">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Autowired-class.html">Autowired</a></span> 
+
+</dt>
+<dd>
+  Autowired annotation for dependency injection
+</dd>
+
+          <dt id="AutowiredIgnore">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AutowiredIgnore-class.html">AutowiredIgnore</a></span> 
+
+</dt>
+<dd>
+  An annotation used to mark a field as <strong>ignored</strong> by the
+dependency injection container.
+</dd>
+
+          <dt id="AvailabilityEvent">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AvailabilityEvent-class.html">AvailabilityEvent</a><span class="signature">&lt;<wbr><span class="type-parameter">Available extends <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AvailabilityState-class.html">AvailabilityState</a></span>&gt;</span></span> 
+
+</dt>
+<dd>
+  Represents an application-level event that conveys a change or report
+regarding an application's <strong>availability state</strong>.
+</dd>
+
+          <dt id="AvailabilityState">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AvailabilityState-class.html">AvailabilityState</a></span> 
+
+</dt>
+<dd>
+  A marker interface representing any <strong>application availability state</strong>.
+</dd>
+
+          <dt id="Cleanup">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Cleanup-class.html">Cleanup</a></span> 
+
+</dt>
+<dd>
+  Marks a method to be invoked <strong>after a pod is destroyed</strong>.
+</dd>
+
+          <dt id="CompletedInitializationEvent">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/CompletedInitializationEvent-class.html">CompletedInitializationEvent</a></span> 
+
+</dt>
+<dd>
+  Event published when the <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContext-class.html">ApplicationContext</a> has completed its initialization phase.
+</dd>
+
+          <dt id="Component">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Component-class.html">Component</a></span> 
+
+</dt>
+<dd>
+  Component annotation for generic Jet components
+</dd>
+
+          <dt id="ComponentScan">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ComponentScan-class.html">ComponentScan</a></span> 
+
+</dt>
+<dd>
+  Annotation for <strong>Jetleaf component scanning</strong>.
+</dd>
+
+          <dt id="ComponentScanFilter">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ComponentScanFilter-class.html">ComponentScanFilter</a></span> 
+
+</dt>
+<dd>
+  Represents a filter definition for component scanning.
+</dd>
+
+          <dt id="Condition">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Condition-class.html">Condition</a></span> 
+
+</dt>
+<dd>
+  The base interface for all <strong>JetLeaf condition evaluators</strong>.
+</dd>
+
+          <dt id="Conditional">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Conditional-class.html">Conditional</a></span> 
+
+</dt>
+<dd>
+  An annotation that conditionally enables or disables JetLeaf-managed
+constructs such as <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Component-class.html">Component</a>, <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Pod-class.html">Pod</a>, or configuration classes based
+on one or more declarative <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Condition-class.html">Condition</a> evaluators.
+</dd>
+
+          <dt id="ConditionalContext">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConditionalContext-class.html">ConditionalContext</a></span> 
+
+</dt>
+<dd>
+  Represents the conditional evaluation context in <strong>JetLeaf</strong> applications.
+</dd>
+
+          <dt id="ConditionalOnAsset">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConditionalOnAsset-class.html">ConditionalOnAsset</a></span> 
+
+</dt>
+<dd>
+  An annotation that conditionally activates a <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Component-class.html">Component</a>, <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Pod-class.html">Pod</a>, or
+configuration class based on the presence of a specific asset in the
+application's resources.
+</dd>
+
+          <dt id="ConditionalOnClass">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConditionalOnClass-class.html">ConditionalOnClass</a></span> 
+
+</dt>
+<dd>
+  An annotation that conditionally activates a <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Component-class.html">Component</a>, <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Pod-class.html">Pod</a>, or
+configuration class <strong>only if specific classes are present</strong> in the Dart
+runtime or compilation environment.
+</dd>
+
+          <dt id="ConditionalOnDart">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConditionalOnDart-class.html">ConditionalOnDart</a></span> 
+
+</dt>
+<dd>
+  An annotation that conditionally activates a <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Component-class.html">Component</a>, <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Pod-class.html">Pod</a>, or
+configuration class based on the current Dart SDK version.
+</dd>
+
+          <dt id="ConditionalOnExpression">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConditionalOnExpression-class.html">ConditionalOnExpression</a></span> 
+
+</dt>
+<dd>
+  An annotation that conditionally activates a <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Component-class.html">Component</a>, <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Pod-class.html">Pod</a>, or
+configuration class based on the evaluation of a custom expression.
+</dd>
+
+          <dt id="ConditionalOnMissingClass">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConditionalOnMissingClass-class.html">ConditionalOnMissingClass</a></span> 
+
+</dt>
+<dd>
+  An annotation that conditionally activates a <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Component-class.html">Component</a>, <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Pod-class.html">Pod</a>, or
+configuration class <strong>only if certain classes are absent</strong> from the Dart
+runtime or compilation environment.
+</dd>
+
+          <dt id="ConditionalOnMissingPod">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConditionalOnMissingPod-class.html">ConditionalOnMissingPod</a></span> 
+
+</dt>
+<dd>
+  An annotation that activates a component <strong>only when specific pods are absent</strong>
+from the <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConditionalContext-class.html">ConditionalContext</a>.
+</dd>
+
+          <dt id="ConditionalOnPod">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConditionalOnPod-class.html">ConditionalOnPod</a></span> 
+
+</dt>
+<dd>
+  An annotation that conditionally activates a <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Component-class.html">Component</a>, <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Pod-class.html">Pod</a>, or
+configuration class <strong>based on the presence</strong> of other pods within the
+current <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConditionalContext-class.html">ConditionalContext</a>.
+</dd>
+
+          <dt id="ConditionalOnProfile">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConditionalOnProfile-class.html">ConditionalOnProfile</a></span> 
+
+</dt>
+<dd>
+  An annotation that conditionally activates a <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Component-class.html">Component</a>, <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Pod-class.html">Pod</a>, or
+configuration class based on the currently active profiles in the
+<a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConditionalContext-class.html">ConditionalContext</a>.
+</dd>
+
+          <dt id="ConditionalOnProperty">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConditionalOnProperty-class.html">ConditionalOnProperty</a></span> 
+
+</dt>
+<dd>
+  An annotation that conditionally enables a <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Component-class.html">Component</a>, <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Pod-class.html">Pod</a>, or
+configuration class based on the value(s) of one or more properties.
+</dd>
+
+          <dt id="ConditionEvaluator">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConditionEvaluator-class.html">ConditionEvaluator</a></span> 
+
+</dt>
+<dd>
+  The <code>ConditionEvaluator</code> in <strong>Jetleaf</strong> is responsible for evaluating
+conditional annotations (e.g., <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Conditional-class.html">Conditional</a>, <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConditionalOnClass-class.html">ConditionalOnClass</a>,
+<a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConditionalOnPod-class.html">ConditionalOnPod</a>) and determining whether a given source (class, method,
+or configuration) should be included in the Jetleaf application context.
+</dd>
+
+          <dt id="ConfigurableApplicationContext">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a></span> 
+
+</dt>
+<dd>
+  A specialized <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContext-class.html">ApplicationContext</a> that allows for full configuration
+and lifecycle management.
+</dd>
+
+          <dt id="ConfigurableMessageSource">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConfigurableMessageSource-class.html">ConfigurableMessageSource</a></span> 
+
+</dt>
+<dd>
+  Main implementation of MessageSource that supports loading messages
+from multiple resources and formats.
+</dd>
+
+          <dt id="Configuration">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Configuration-class.html">Configuration</a></span> 
+
+</dt>
+<dd>
+  Configuration annotation for configuration classes
+</dd>
+
+          <dt id="ConfigurationProperty">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConfigurationProperty-class.html">ConfigurationProperty</a></span> 
+
+</dt>
+<dd>
+  Annotation used to bind externalized configuration properties
+from the <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/Environment-class.html">Environment</a> into a Dart object.
+</dd>
+
+          <dt id="ContextClosedEvent">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ContextClosedEvent-class.html">ContextClosedEvent</a></span> 
+
+</dt>
+<dd>
+  Event published when an <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContext-class.html">ApplicationContext</a> is closed.
+</dd>
+
+          <dt id="ContextFailedEvent">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ContextFailedEvent-class.html">ContextFailedEvent</a></span> 
+
+</dt>
+<dd>
+  Event published when the <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContext-class.html">ApplicationContext</a> fails to start or refresh.
+</dd>
+
+          <dt id="ContextReadyEvent">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ContextReadyEvent-class.html">ContextReadyEvent</a></span> 
+
+</dt>
+<dd>
+  Event published when the <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContext-class.html">ApplicationContext</a> is ready.
+</dd>
+
+          <dt id="ContextRestartedEvent">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ContextRestartedEvent-class.html">ContextRestartedEvent</a></span> 
+
+</dt>
+<dd>
+  Event published when the <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContext-class.html">ApplicationContext</a> is restarted.
+</dd>
+
+          <dt id="ContextSetupEvent">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ContextSetupEvent-class.html">ContextSetupEvent</a></span> 
+
+</dt>
+<dd>
+  Event published when the <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContext-class.html">ApplicationContext</a> is refreshed or initialized.
+</dd>
+
+          <dt id="ContextStartedEvent">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ContextStartedEvent-class.html">ContextStartedEvent</a></span> 
+
+</dt>
+<dd>
+  Event published when the <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContext-class.html">ApplicationContext</a> is started or restarted.
+</dd>
+
+          <dt id="ContextStoppedEvent">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ContextStoppedEvent-class.html">ContextStoppedEvent</a></span> 
+
+</dt>
+<dd>
+  Event published when the <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContext-class.html">ApplicationContext</a> is explicitly stopped.
+</dd>
+
+          <dt id="ConversionServiceAware">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConversionServiceAware-class.html">ConversionServiceAware</a></span> 
+
+</dt>
+<dd>
+  🫘 Interface for components that need access to a <a href="https://pub.dev/documentation/jetleaf_convert/1.1.2/jetleaf_convert/ConversionService-class.html">ConversionService</a>.
+</dd>
+
+          <dt id="ConversionServiceConfigurer">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConversionServiceConfigurer-class.html">ConversionServiceConfigurer</a></span> 
+
+</dt>
+<dd>
+  A JetLeaf <strong>extension interface</strong> for programmatically configuring
+type conversion within the application’s <a href="https://pub.dev/documentation/jetleaf_convert/1.1.2/jetleaf_convert/ConversionService-class.html">ConversionService</a>.
+</dd>
+
+          <dt id="DefaultMethodInterceptor">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/DefaultMethodInterceptor-class.html">DefaultMethodInterceptor</a></span> 
+
+</dt>
+<dd>
+  Default implementation of <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/MethodInterceptorRegistry-class.html">MethodInterceptorRegistry</a> and related intercept processing.
+</dd>
+
+          <dt id="DependsOn">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/DependsOn-class.html">DependsOn</a></span> 
+
+</dt>
+<dd>
+  A Jetleaf annotation that declares <strong>explicit dependencies</strong>
+between pods.
+</dd>
+
+          <dt id="Description">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Description-class.html">Description</a></span> 
+
+</dt>
+<dd>
+  Provides a <strong>human-readable description</strong> of a class or method.
+</dd>
+
+          <dt id="EntryApplicationAware">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/EntryApplicationAware-class.html">EntryApplicationAware</a></span> 
+
+</dt>
+<dd>
+  🚀 Interface for components that need access to the entry application class.
+</dd>
+
+          <dt id="EnvironmentAware">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/EnvironmentAware-class.html">EnvironmentAware</a></span> 
+
+</dt>
+<dd>
+  🫘 Interface for components that can be configured with an <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/Environment-class.html">Environment</a>.
+</dd>
+
+          <dt id="EventListener">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/EventListener-class.html">EventListener</a></span> 
+
+</dt>
+<dd>
+  Annotation to mark a method that should run when the application is
+<strong>listening</strong> to a specific type of <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationEvent-class.html">ApplicationEvent</a>.
+</dd>
+
+          <dt id="EventObject">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/EventObject-class.html">EventObject</a></span> 
+
+</dt>
+<dd>
+  A base class for all framework-level events.
+</dd>
+
+          <dt id="EventType">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/EventType-class.html">EventType</a><span class="signature">&lt;<wbr><span class="type-parameter">T extends <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationEvent-class.html">ApplicationEvent</a></span>&gt;</span></span> 
+
+</dt>
+<dd>
+  🫘 Represents a typed application event associated with a specific package.
+</dd>
+
+          <dt id="ExceptionDiagnoser">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ExceptionDiagnoser-class.html">ExceptionDiagnoser</a></span> 
+
+</dt>
+<dd>
+  Defines the contract for components capable of <strong>analyzing exceptions</strong> and
+producing structured diagnostic information.
+</dd>
+
+          <dt id="ExceptionDiagnosis">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ExceptionDiagnosis-class.html">ExceptionDiagnosis</a></span> 
+
+</dt>
+<dd>
+  Represents a <strong>structured diagnostic report</strong> for an exception, providing
+human-readable context, optional recommended actions, and the originating
+exception itself.
+</dd>
+
+          <dt id="ExceptionDiagnosisReporter">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ExceptionDiagnosisReporter-class.html">ExceptionDiagnosisReporter</a></span> 
+
+</dt>
+<dd>
+  Defines the contract for components responsible for <strong>handling and reporting</strong>
+structured exception diagnoses.
+</dd>
+
+          <dt id="ExceptionReporter">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ExceptionReporter-class.html">ExceptionReporter</a></span> 
+
+</dt>
+<dd>
+  Provides an abstraction for <strong>reporting, logging, or forwarding exceptions</strong>
+that occur within the application.
+</dd>
+
+          <dt id="ExitCodeEvent">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ExitCodeEvent-class.html">ExitCodeEvent</a></span> 
+
+</dt>
+<dd>
+  An <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationEvent-class.html">ApplicationEvent</a> that signals the application should exit
+with a specific exit code.
+</dd>
+
+          <dt id="ExitCodeExceptionHandler">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ExitCodeExceptionHandler-class.html">ExitCodeExceptionHandler</a></span> 
+
+</dt>
+<dd>
+  A strategy interface for mapping a specific <a href="https://api.dart.dev/stable/3.9.2/dart-core/Exception-class.html">Exception</a> to a process
+exit code.
+</dd>
+
+          <dt id="ExitCodeGenerator">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ExitCodeGenerator-class.html">ExitCodeGenerator</a></span> 
+
+</dt>
+<dd>
+  Strategy interface for determining the exit code returned from a JetLeaf
+application or a process.
+</dd>
+
+          <dt id="ExitCodeGenerators">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ExitCodeGenerators-class.html">ExitCodeGenerators</a></span> 
+
+</dt>
+<dd>
+  A container and manager for multiple <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ExitCodeGenerator-class.html">ExitCodeGenerator</a> instances.
+</dd>
+
+          <dt id="GenericApplicationContext">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/GenericApplicationContext-class.html">GenericApplicationContext</a></span> 
+
+</dt>
+<dd>
+  Generic ApplicationContext implementation that holds a single internal
+<a href="https://pub.dev/documentation/jetleaf_pod/1.1.2/jetleaf_pod/DefaultListablePodFactory-class.html">DefaultListablePodFactory</a> instance and does not assume a specific pod
+definition format.
+</dd>
+
+          <dt id="Import">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Import-class.html">Import</a></span> 
+
+</dt>
+<dd>
+  The <code>Import</code> annotation in <strong>Jetleaf</strong> is used to import other configuration classes.
+</dd>
+
+          <dt id="ImportClass">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ImportClass-class.html">ImportClass</a></span> 
+
+</dt>
+<dd>
+  🫘 Represents an import entry with optional qualification metadata.
+</dd>
+
+          <dt id="ImportSelector">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ImportSelector-class.html">ImportSelector</a></span> 
+
+</dt>
+<dd>
+  🫘 A strategy interface for selecting which imports should be applied.
+</dd>
+
+          <dt id="Interceptable">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Interceptable-class.html">Interceptable</a></span> 
+
+</dt>
+<dd>
+  Provides runtime interception support for method invocations within
+JetLeaf-managed components.
+</dd>
+
+          <dt id="KeepAlive">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/KeepAlive-class.html">KeepAlive</a></span> 
+
+</dt>
+<dd>
+  A lifecycle-aware component that keeps the Dart VM alive as long as
+the <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContext-class.html">ApplicationContext</a> is running.
+</dd>
+
+          <dt id="KeyValueOf">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/KeyValueOf-class.html">KeyValueOf</a><span class="signature">&lt;<wbr><span class="type-parameter">K</span>, <span class="type-parameter">V</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  <strong>KeyValueOf Annotation</strong>
+</dd>
+
+          <dt id="Lazy">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Lazy-class.html">Lazy</a></span> 
+
+</dt>
+<dd>
+  Indicates that a pod should be lazily initialized.
+</dd>
+
+          <dt id="Lifecycle">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Lifecycle-class.html">Lifecycle</a></span> 
+
+</dt>
+<dd>
+  A common interface defining methods for start/stop lifecycle control.
+</dd>
+
+          <dt id="LifecycleProcessor">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/LifecycleProcessor-class.html">LifecycleProcessor</a></span> 
+
+</dt>
+<dd>
+  Defines a contract for components that participate in the application lifecycle.
+</dd>
+
+          <dt id="LoggableExceptionDiagnosisReporter">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/LoggableExceptionDiagnosisReporter-class.html">LoggableExceptionDiagnosisReporter</a></span> 
+
+</dt>
+<dd>
+  An implementation of <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ExceptionDiagnosisReporter-class.html">ExceptionDiagnosisReporter</a> that outputs
+structured exception diagnosis information using the JetLeaf logging system.
+</dd>
+
+          <dt id="MessageSource">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/MessageSource-class.html">MessageSource</a></span> 
+
+</dt>
+<dd>
+  Interface for resolving messages, with support for parameterization and
+internationalization.
+</dd>
+
+          <dt id="MessageSourceAware">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/MessageSourceAware-class.html">MessageSourceAware</a></span> 
+
+</dt>
+<dd>
+  🫘 Interface for components that need access to a <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/MessageSource-class.html">MessageSource</a>.
+</dd>
+
+          <dt id="MessageSourceLoader">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/MessageSourceLoader-class.html">MessageSourceLoader</a></span> 
+
+</dt>
+<dd>
+  Interface for loading messages from different resource formats.
+</dd>
+
+          <dt id="MethodBeforeInterceptor">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/MethodBeforeInterceptor-class.html">MethodBeforeInterceptor</a></span> 
+
+</dt>
+<dd>
+  Defines an <strong>interceptor</strong> that executes logic <em>before</em> the target method
+invocation begins.
+</dd>
+
+          <dt id="MethodInterceptor">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/MethodInterceptor-class.html">MethodInterceptor</a></span> 
+
+</dt>
+<dd>
+  Defines the <strong>core interception contract</strong> for JetLeaf’s AOP (Aspect-Oriented Programming)
+framework, allowing runtime interception and augmentation of method invocations.
+</dd>
+
+          <dt id="MethodInterceptorConfigurer">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/MethodInterceptorConfigurer-class.html">MethodInterceptorConfigurer</a></span> 
+
+</dt>
+<dd>
+  Strategy interface for configuring method interceptors in JetLeaf intercept.
+</dd>
+
+          <dt id="MethodInterceptorDispatcher">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/MethodInterceptorDispatcher-class.html">MethodInterceptorDispatcher</a></span> 
+
+</dt>
+<dd>
+  Defines an advanced interception dispatcher that coordinates multiple method interceptors.
+</dd>
+
+          <dt id="MethodInterceptorRegistry">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/MethodInterceptorRegistry-class.html">MethodInterceptorRegistry</a></span> 
+
+</dt>
+<dd>
+  Central registry for managing method-level interceptors and their dispatching.
+</dd>
+
+          <dt id="MethodInvocation">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/MethodInvocation-class.html">MethodInvocation</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  Represents a reflective method invocation within the interception pipeline.
+</dd>
+
+          <dt id="Named">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Named-class.html">Named</a></span> 
+
+</dt>
+<dd>
+  Explicitly specifies a name for a Pod (Dependency Injection component) that overrides
+all other naming mechanisms in the Jetleaf framework.
+</dd>
+
+          <dt id="OnApplicationFailed">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnApplicationFailed-class.html">OnApplicationFailed</a></span> 
+
+</dt>
+<dd>
+  Annotation to mark a method that should run when the application
+<strong>fails to start or refresh</strong>.
+</dd>
+
+          <dt id="OnApplicationReady">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnApplicationReady-class.html">OnApplicationReady</a></span> 
+
+</dt>
+<dd>
+  Annotation to mark a method that should run when the application is
+<strong>fully ready</strong> to serve requests.
+</dd>
+
+          <dt id="OnApplicationStarted">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnApplicationStarted-class.html">OnApplicationStarted</a></span> 
+
+</dt>
+<dd>
+  Annotation to mark a method that should run when the application has
+<strong>started</strong>, meaning the context is refreshed but the app is not yet
+fully ready.
+</dd>
+
+          <dt id="OnApplicationStarting">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnApplicationStarting-class.html">OnApplicationStarting</a></span> 
+
+</dt>
+<dd>
+  Annotation to mark a method that should run when the application is
+<strong>starting</strong>, before the context refresh occurs.
+</dd>
+
+          <dt id="OnApplicationStopped">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnApplicationStopped-class.html">OnApplicationStopped</a></span> 
+
+</dt>
+<dd>
+  Annotation to mark a method that should run when the application has
+<strong>fully stopped</strong>.
+</dd>
+
+          <dt id="OnApplicationStopping">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnApplicationStopping-class.html">OnApplicationStopping</a></span> 
+
+</dt>
+<dd>
+  Annotation to mark a method that should run when the application is
+<strong>stopping</strong>.
+</dd>
+
+          <dt id="OnAssetCondition">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnAssetCondition-class.html">OnAssetCondition</a></span> 
+
+</dt>
+<dd>
+  A <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Condition-class.html">Condition</a> implementation that determines whether an annotated component,
+configuration, or pod should be activated based on the presence of a
+specific asset within the application's resource path.
+</dd>
+
+          <dt id="OnClassCondition">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnClassCondition-class.html">OnClassCondition</a></span> 
+
+</dt>
+<dd>
+  A <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Condition-class.html">Condition</a> implementation that evaluates the presence or absence of
+classes in the current runtime to determine if a component, pod, or
+configuration should be activated.
+</dd>
+
+          <dt id="OnContextLoaded">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnContextLoaded-class.html">OnContextLoaded</a></span> 
+
+</dt>
+<dd>
+  Annotation to mark a method that should run when the application
+<strong>context has been loaded</strong>, but before it is fully refreshed.
+</dd>
+
+          <dt id="OnContextPrepared">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnContextPrepared-class.html">OnContextPrepared</a></span> 
+
+</dt>
+<dd>
+  Annotation to mark a method that should run when the application
+<strong>context has been prepared</strong>.
+</dd>
+
+          <dt id="OnDartCondition">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnDartCondition-class.html">OnDartCondition</a></span> 
+
+</dt>
+<dd>
+  A <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Condition-class.html">Condition</a> implementation that evaluates the current Dart SDK version
+to determine whether an annotated component, configuration, or pod
+should be activated.
+</dd>
+
+          <dt id="OnEnvironmentPrepared">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnEnvironmentPrepared-class.html">OnEnvironmentPrepared</a></span> 
+
+</dt>
+<dd>
+  Annotation to mark a method that should run when the application
+<strong>environment has been prepared</strong>, but before the context is loaded.
+</dd>
+
+          <dt id="OnExpressionCondition">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnExpressionCondition-class.html">OnExpressionCondition</a></span> 
+
+</dt>
+<dd>
+  A <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Condition-class.html">Condition</a> implementation that dynamically evaluates an expression to
+determine whether a component, configuration, or pod should be activated.
+</dd>
+
+          <dt id="OnPodCondition">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnPodCondition-class.html">OnPodCondition</a></span> 
+
+</dt>
+<dd>
+  A <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Condition-class.html">Condition</a> implementation that evaluates the presence or absence of
+pods in the current <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConditionalContext-class.html">ConditionalContext</a> to determine whether a component,
+configuration, or definition should be activated.
+</dd>
+
+          <dt id="OnProfileCondition">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnProfileCondition-class.html">OnProfileCondition</a></span> 
+
+</dt>
+<dd>
+  A <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Condition-class.html">Condition</a> implementation that evaluates the application's currently
+active profiles to determine whether a component, configuration, or pod
+should be activated.
+</dd>
+
+          <dt id="OnPropertyCondition">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/OnPropertyCondition-class.html">OnPropertyCondition</a></span> 
+
+</dt>
+<dd>
+  A <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Condition-class.html">Condition</a> implementation that evaluates whether a component or pod
+should be activated based on the presence and value of properties
+in the current <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConditionalContext/environment.html">ConditionalContext.environment</a>.
+</dd>
+
+          <dt id="Order">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Order-class.html">Order</a></span> 
+
+</dt>
+<dd>
+  Specifies the <strong>order of precedence</strong> for a class when processed by
+the framework or runtime system.
+</dd>
+
+          <dt id="Phased">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Phased-class.html">Phased</a></span> 
+
+</dt>
+<dd>
+  Interface for objects that may participate in a phased process
+such as lifecycle management.
+</dd>
+
+          <dt id="Pod">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Pod-class.html">Pod</a></span> 
+
+</dt>
+<dd>
+  Marks a method as a <strong>pod provider</strong>, enabling it to participate in the
+dependency injection (DI) lifecycle of the application.
+</dd>
+
+          <dt id="PodFactoryAware">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/PodFactoryAware-class.html">PodFactoryAware</a></span> 
+
+</dt>
+<dd>
+  🫘 Interface for components that need access to the <a href="https://pub.dev/documentation/jetleaf_pod/1.1.2/jetleaf_pod/PodFactory-class.html">PodFactory</a>.
+</dd>
+
+          <dt id="PodFactoryCustomizer">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/PodFactoryCustomizer-class.html">PodFactoryCustomizer</a><span class="signature">&lt;<wbr><span class="type-parameter">T extends <a href="https://pub.dev/documentation/jetleaf_pod/1.1.2/jetleaf_pod/ConfigurablePodFactory-class.html">ConfigurablePodFactory</a></span>&gt;</span></span> 
+
+</dt>
+<dd>
+  A lifecycle hook interface for customizing the <a href="https://pub.dev/documentation/jetleaf_pod/1.1.2/jetleaf_pod/PodFactory-class.html">PodFactory</a> <strong>before</strong>
+it is fully initialized or configured within the JetLeaf framework.
+</dd>
+
+          <dt id="PodFactoryPostProcessor">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/PodFactoryPostProcessor-class.html">PodFactoryPostProcessor</a></span> 
+
+</dt>
+<dd>
+  Factory hook that allows for custom modification of an application
+context's pod definitions, adapting the pod property values of
+the context's underlying pod factory.
+</dd>
+
+          <dt id="PodNameAware">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/PodNameAware-class.html">PodNameAware</a></span> 
+
+</dt>
+<dd>
+  🫘 Interface for components that need to know their assigned pod name.
+</dd>
+
+          <dt id="PodPostProcessorManager">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/PodPostProcessorManager-class.html">PodPostProcessorManager</a></span> 
+
+</dt>
+<dd>
+  Manager for coordinating pod factory post-processors and pod-aware processors
+with proper ordering and lifecycle management.
+</dd>
+
+          <dt id="PodRegistrar">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/PodRegistrar-class.html">PodRegistrar</a></span> 
+
+</dt>
+<dd>
+  A contract in <strong>JetLeaf</strong> for components that can register pods
+into the application’s dependency container.
+</dd>
+
+          <dt id="PodRegistry">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/PodRegistry-class.html">PodRegistry</a></span> 
+
+</dt>
+<dd>
+  A contract in <strong>JetLeaf</strong> that provides methods for managing pods
+in the container.
+</dd>
+
+          <dt id="PodSpec">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/PodSpec-class.html">PodSpec</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  A concrete implementation of the <code>`Spec`</code> API in <strong>Jetleaf</strong>.
+</dd>
+
+          <dt id="PodSpecContext">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/PodSpecContext-class.html">PodSpecContext</a></span> 
+
+</dt>
+<dd>
+  An implementation of <code>`SpecContext`</code> in <strong>Jetleaf</strong> that resolves
+dependencies during pod creation and supplier evaluation.
+</dd>
+
+          <dt id="PostConstruct">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/PostConstruct-class.html">PostConstruct</a></span> 
+
+</dt>
+<dd>
+  Marks a method to be invoked <strong>after a pod has been fully constructed
+and its dependencies injected</strong>, but <strong>before it is made available
+for use in the context</strong>.
+</dd>
+
+          <dt id="PreConstruct">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/PreConstruct-class.html">PreConstruct</a></span> 
+
+</dt>
+<dd>
+  Marks a method to be invoked <strong>before a pod has been fully constructed
+and its dependencies injected</strong>, but <strong>before it is made available
+for use in the context</strong>.
+</dd>
+
+          <dt id="PreDestroy">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/PreDestroy-class.html">PreDestroy</a></span> 
+
+</dt>
+<dd>
+  Marks a method to be invoked <strong>before a pod is destroyed</strong>.
+</dd>
+
+          <dt id="Primary">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Primary-class.html">Primary</a></span> 
+
+</dt>
+<dd>
+  Primary annotation for marking a primary pod
+</dd>
+
+          <dt id="Profile">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Profile-class.html">Profile</a></span> 
+
+</dt>
+<dd>
+  Profile annotation for profile-specific pods
+</dd>
+
+          <dt id="Qualifier">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Qualifier-class.html">Qualifier</a></span> 
+
+</dt>
+<dd>
+  A Jetleaf annotation used to disambiguate injection targets
+when multiple candidate pods of the same type exist.
+</dd>
+
+          <dt id="RegexPatternTypeFilter">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/RegexPatternTypeFilter-class.html">RegexPatternTypeFilter</a></span> 
+
+</dt>
+<dd>
+  A <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/TypeFilter-class.html">TypeFilter</a> that matches classes based on regular expression patterns against class names.
+</dd>
+
+          <dt id="RequiredAll">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/RequiredAll-class.html">RequiredAll</a></span> 
+
+</dt>
+<dd>
+  An annotation used for dependency injection that automatically
+injects all eligible fields into a class.
+</dd>
+
+          <dt id="Resource">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Resource-class.html">Resource</a><span class="signature">&lt;<wbr><span class="type-parameter">Key</span>, <span class="type-parameter">Value</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  A generic abstraction for JetLeaf-compatible resource.
+</dd>
+
+          <dt id="Role">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Role-class.html">Role</a></span> 
+
+</dt>
+<dd>
+  Declares the <strong>design role</strong> of a class or method within a Jetleaf
+application.
+</dd>
+
+          <dt id="RunAfter">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/RunAfter-class.html">RunAfter</a></span> 
+
+</dt>
+<dd>
+  A reflective annotation that declares that the annotated
+<strong>interceptor, filter, or handler</strong> should execute <strong>after</strong>
+one or more specified targets within the JetLeaf request
+processing pipeline.
+</dd>
+
+          <dt id="RunBefore">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/RunBefore-class.html">RunBefore</a></span> 
+
+</dt>
+<dd>
+  A reflective annotation that declares that the annotated
+<strong>interceptor, filter, or handler</strong> should execute <strong>before</strong>
+one or more specified targets within the JetLeaf request
+processing pipeline.
+</dd>
+
+          <dt id="Scope">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Scope-class.html">Scope</a></span> 
+
+</dt>
+<dd>
+  Annotation that specifies the scope of a pod within the JetLeaf container.
+</dd>
+
+          <dt id="ScopeMetadataResolver">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ScopeMetadataResolver-class.html">ScopeMetadataResolver</a></span> 
+
+</dt>
+<dd>
+  Strategy interface for resolving <strong>scope metadata</strong> for a given class in Jetleaf.
+</dd>
+
+          <dt id="Service">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Service-class.html">Service</a></span> 
+
+</dt>
+<dd>
+  Service annotation for service layer components
+</dd>
+
+          <dt id="SimpleApplicationEventBus">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/SimpleApplicationEventBus-class.html">SimpleApplicationEventBus</a></span> 
+
+</dt>
+<dd>
+  A straightforward implementation of <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationEventBus-class.html">ApplicationEventBus</a> that manages application event listeners.
+</dd>
+
+          <dt id="SimpleMethodInvocation">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/SimpleMethodInvocation-class.html">SimpleMethodInvocation</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  Represents a reflective invocation of a method on a target object,
+forming the core join point within JetLeaf’s interception system.
+</dd>
+
+          <dt id="SmartLifecycle">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/SmartLifecycle-class.html">SmartLifecycle</a></span> 
+
+</dt>
+<dd>
+  An extension of the <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Lifecycle-class.html">Lifecycle</a> interface for those objects that require
+to be started upon ApplicationContext refresh and/or shutdown in a
+particular order.
+</dd>
+
+          <dt id="Spec">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Spec-class.html">Spec</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  A <strong>Jetleaf</strong> definition describing how a pod should be instantiated,
+configured, and managed inside the container.
+</dd>
+
+          <dt id="SpecContext">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/SpecContext-class.html">SpecContext</a></span> 
+
+</dt>
+<dd>
+  A context object in <strong>Jetleaf</strong> provided to suppliers and pod
+definitions for resolving dependencies at runtime.
+</dd>
+
+          <dt id="StartupEvent">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/StartupEvent-class.html">StartupEvent</a></span> 
+
+</dt>
+<dd>
+  An application–level event signaling that the JetLeaf application
+has completed its startup sequence.
+</dd>
+
+          <dt id="TargetType">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/TargetType-class.html">TargetType</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> 
+
+</dt>
+<dd>
+  <strong>TargetType Annotation</strong>
+</dd>
+
+          <dt id="ToJsonFactory">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ToJsonFactory-class.html">ToJsonFactory</a></span> 
+
+</dt>
+<dd>
+  A lightweight serialization contract for objects that can be converted
+into a JSON-compatible <code>Map&lt;String, Object&gt;</code>.
+</dd>
+
+          <dt id="TypeFilter">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/TypeFilter-class.html">TypeFilter</a></span> 
+
+</dt>
+<dd>
+  Abstract base class for type filtering strategies used in component scanning.
+</dd>
+
+          <dt id="Value">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/Value-class.html">Value</a></span> 
+
+</dt>
+<dd>
+  Value annotation for property injection
+</dd>
+
+          <dt id="WhenConditional">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/WhenConditional-class.html">WhenConditional</a></span> 
+
+</dt>
+<dd>
+  The base class for all annotations that are eligible for conditional
+evaluation in the JetLeaf framework.
+</dd>
+
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="enums">
+      <h2>Enums</h2>
+      <dl>
+          <dt id="ApplicationType">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationType.html">ApplicationType</a></span> 
+
+</dt>
+<dd>
+  Enumeration of types of applications that can be run in a JetLeaf
+environment.
+</dd>
+
+          <dt id="FilterType">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/FilterType.html">FilterType</a></span> 
+
+</dt>
+<dd>
+  Enumeration of supported filter types for component scanning.
+</dd>
+
+          <dt id="LivenessState">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/LivenessState.html">LivenessState</a></span> 
+
+</dt>
+<dd>
+  Represents the <strong>liveness state</strong> of an application.
+</dd>
+
+          <dt id="ReadinessState">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ReadinessState.html">ReadinessState</a></span> 
+
+</dt>
+<dd>
+  Represents the <strong>readiness state</strong> of an application.
+</dd>
+
+      </dl>
+    </section>
+
+
+
+
+
+
+
+    <section class="summary offset-anchor" id="typedefs">
+      <h2>Typedefs</h2>
+      <dl>
+          
+  <dt id="AsyncMethodInvocator" class="callable">
+    <span class="name"><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AsyncMethodInvocator.html">AsyncMethodInvocator</a></span>&lt;<wbr><span class="type-parameter">T</span>&gt;<span class="signature">
+      <span class="returntype parameter">= <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span> Function<span class="signature">()</span></span>
+    </span>
+    
+
+  </dt>
+  <dd>
+    Represents a deferred executable function that performs a method invocation.
+    
+
+  </dd>
+
+      </dl>
+    </section>
+
+    <section class="summary offset-anchor" id="exceptions">
+      <h2>Exceptions / Errors</h2>
+      <dl>
+          <dt id="CircularDependencyException">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/CircularDependencyException-class.html">CircularDependencyException</a></span> 
+
+</dt>
+<dd>
+  Thrown when a <strong>circular dependency</strong> is detected within the framework's
+dependency graph, interceptor ordering, or initialization process.
+</dd>
+
+          <dt id="MessageSourceException">
+  <span class="name "><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/MessageSourceException-class.html">MessageSourceException</a></span> 
+
+</dt>
+<dd>
+  An exception that occurs when resolving messages from a <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/MessageSource-class.html">MessageSource</a>.
+</dd>
+
+      </dl>
+    </section>
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li class="self-crumb">core.dart</li>
+</ol>
+
+    <h5><span class="package-name">jetleaf</span> <span class="package-kind">package</span></h5>
+    <ol>
+      <li class="section-title">Libraries</li>
+      <li><a href="../convert/">convert</a></li>
+      <li><a href="../core/">core</a></li>
+      <li><a href="../env/">env</a></li>
+      <li><a href="../lang/">lang</a></li>
+      <li><a href="../logging/">logging</a></li>
+      <li><a href="../pod/">pod</a></li>
+      <li><a href="../utils/">utils</a></li>
+      <li class="section-subtitle">JetLeaf</li>
+        <li class="section-subitem"><a href="../jetleaf/">jetleaf</a></li>
+        <li class="section-subitem"><a href="../main/">main</a></li>
+</ol>
+
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+    <h5>core library</h5>
+  </div><!--/sidebar-offcanvas-right-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.1.1
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

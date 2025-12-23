@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the mergePreserveExisting method from the EnvironmentListener class, for the Dart programming language.">
+  <title>mergePreserveExisting method - EnvironmentListener class - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf.dart</a></li>
+    <li><a href="../../jetleaf/EnvironmentListener-class.html">EnvironmentListener</a></li>
+    <li class="self-crumb">mergePreserveExisting method</li>
+  </ol>
+  <div class="self-name">mergePreserveExisting</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="jetleaf&#47;EnvironmentListener-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">mergePreserveExisting</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+  <div>
+    <ol class="annotation-list">
+        <li>@<a href="https://pub.dev/documentation/meta/1.17.0/meta/protected-constant.html">protected</a></li>
+    </ol>
+  </div>
+<span class="returntype"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span>
+<span class="name ">mergePreserveExisting</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="mergePreserveExisting-param-existing"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a>?</span> <span class="parameter-name">existing</span>, </span></li>
+<li><span class="parameter" id="mergePreserveExisting-param-incoming"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a>?</span> <span class="parameter-name">incoming</span></span></li>
+</ol>)
+
+      <div class="features"><span class="feature">inherited</span></div>
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Merges two values while <em>preserving the existing value's precedence</em>.</p>
+<p>This method is used to combine configuration values coming from different
+sources (profiles, files, overrides, etc.) in a predictable, stable way.
+It favors the semantics:</p>
+<p><strong>existing value wins; incoming value augments.</strong></p>
+<p>The merge rules are:</p>
+<ol>
+<li>
+<p><strong>If <code>existing</code> is <code>null</code></strong><br>
+→ Return <code>incoming</code> directly.</p>
+</li>
+<li>
+<p><strong>If <code>existing</code> and <code>incoming</code> are deeply equal</strong><br>
+→ Keep <code>existing</code> as-is (no structural changes).</p>
+</li>
+<li>
+<p><strong>If both values are lists</strong><br>
+→ Return a list that preserves all items in <code>existing</code> first, then appends
+  only the <em>unique</em> items from <code>incoming</code> (deep comparison).</p>
+</li>
+<li>
+<p><strong>If <code>existing</code> is a list and <code>incoming</code> is a scalar</strong><br>
+→ Append <code>incoming</code> only if it is not already present.</p>
+</li>
+<li>
+<p><strong>If <code>existing</code> is a scalar and <code>incoming</code> is a list</strong><br>
+→ Produce a new list that begins with <code>existing</code>, followed by unique items
+  from <code>incoming</code>.</p>
+</li>
+<li>
+<p><strong>If both are scalars but not equal</strong><br>
+→ Keep <code>existing</code>; user-provided or earlier-loaded value takes precedence.</p>
+</li>
+</ol>
+<p>Deep comparisons for uniqueness are performed using <code>_deepEquals</code>, ensuring
+nested lists or maps are compared structurally, not by identity.</p>
+<h3 id="returns">Returns</h3>
+<p>The merged value, following the rules above.</p>
+<h3 id="example">Example</h3>
+<pre class="language-dart"><code class="language-dart">mergePreserveExisting([1, 2], [2, 3]); 
+// → [1, 2, 3]
+
+mergePreserveExisting('a', ['a', 'b']); 
+// → ['a', 'b']
+
+mergePreserveExisting('x', 'y'); 
+// → 'x'   (existing wins)
+</code></pre>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">@protected
+Object mergePreserveExisting(Object? existing, Object? incoming) {
+  &#47;&#47; If no existing, incoming becomes the value
+  if (existing == null) return incoming as Object;
+
+  &#47;&#47; If equal, keep existing
+  if (_deepEquals(existing, incoming)) return existing;
+
+  final exIsList = existing is List;
+  final inIsList = incoming is List;
+
+  &#47;&#47; Both lists -&gt; existing&#39;s items first, then append unique incoming items
+  if (exIsList &amp;&amp; inIsList) {
+    final result = List&lt;Object&gt;.from(existing);
+    for (final item in incoming) {
+      if (!_containsDeep(result, item)) result.add(item as Object);
+    }
+    return result;
+  }
+
+  &#47;&#47; existing list, incoming scalar -&gt; add incoming if not present (existing order preserved)
+  if (exIsList &amp;&amp; !inIsList) {
+    final result = List&lt;Object&gt;.from(existing);
+    if (!_containsDeep(result, incoming)) result.add(incoming as Object);
+    return result;
+  }
+
+  &#47;&#47; existing scalar, incoming list -&gt; prefer existing first, then append missing incoming items
+  if (!exIsList &amp;&amp; inIsList) {
+    final result = &lt;Object&gt;[];
+    result.add(existing);
+    for (final item in incoming) {
+      if (!_containsDeep(result, item)) result.add(item as Object);
+    }
+    return result;
+  }
+
+  &#47;&#47; both scalars but different -&gt; keep existing (user-first)
+  return existing;
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf</a></li>
+    <li><a href="../../jetleaf/EnvironmentListener-class.html">EnvironmentListener</a></li>
+    <li class="self-crumb">mergePreserveExisting method</li>
+</ol>
+
+    <h5>EnvironmentListener class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.1.1
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+
