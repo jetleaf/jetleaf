@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the onLog method from the ApplicationLoggingListener class, for the Dart programming language.">
+  <title>onLog method - ApplicationLoggingListener class - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf.dart</a></li>
+    <li><a href="../../jetleaf/ApplicationLoggingListener-class.html">ApplicationLoggingListener</a></li>
+    <li class="self-crumb">onLog method</li>
+  </ol>
+  <div class="self-name">onLog</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="jetleaf&#47;ApplicationLoggingListener-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">onLog</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+  <div>
+    <ol class="annotation-list">
+        <li>@<a href="https://api.dart.dev/stable/3.9.2/dart-core/override-constant.html">override</a></li>
+    </ol>
+  </div>
+<span class="returntype">void</span>
+<span class="name ">onLog</span>(<wbr><ol class="parameter-list"> <li><span class="parameter" id="onLog-param-level"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_logging/1.1.2/jetleaf_logging/LogLevel.html">LogLevel</a></span> <span class="parameter-name">level</span>, </span></li>
+<li><span class="parameter" id="onLog-param-message"><span class="type-annotation">dynamic</span> <span class="parameter-name">message</span>, {</span></li>
+<li><span class="parameter" id="onLog-param-tag"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a>?</span> <span class="parameter-name">tag</span>, </span></li>
+<li><span class="parameter" id="onLog-param-error"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a>?</span> <span class="parameter-name">error</span>, </span></li>
+<li><span class="parameter" id="onLog-param-stackTrace"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/StackTrace-class.html">StackTrace</a>?</span> <span class="parameter-name">stackTrace</span>, </span></li>
+</ol>})
+
+      <div class="features"><span class="feature">override</span></div>
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Called when a new log entry is emitted by a logger.</p>
+<p>This method provides complete context about the log event, including:</p>
+<ul>
+<li><code>level</code>: the severity or type of the log (e.g., info, error, debug)</li>
+<li><code>timestamp</code>: the exact time the log entry was recorded</li>
+<li><code>message</code>: the textual content of the log</li>
+<li><code>tag</code>: the name or label of the logger that emitted the message</li>
+</ul>
+<p>This method is called immediately after the message is stored in the logger’s
+internal buffer, allowing real-time response.</p>
+<h3 id="example">Example</h3>
+<pre class="language-dart"><code class="language-dart">void onLog(LogLevel level, DateTime timestamp, String message, String tag) {
+  sendToRemoteServer({
+    'level': level.name,
+    'time': timestamp.toIso8601String(),
+    'source': tag,
+    'log': message,
+  });
+}
+</code></pre>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">@override
+void onLog(LogLevel level, message, {String? tag, Object? error, StackTrace? stackTrace}) async {
+  final name = tag ?? _applicationClass.getName();
+  final type = _getLogType(tag);
+  final config = _getLogConfig(tag);
+  final logger = _loggers[name] ?? Logger(name: name, type: type, config: config);
+  final loggingFile = _get(_key(JetLoggingProperty.FILE, tag)) ?? _get(_key(JetLoggingProperty.FILE));
+  final shouldLogToConsole = loggingFile == null || loggingFile.isEmpty;
+
+  &#47;&#47; 1. Get global level
+  final gl = _getConfiguredLevel(null) ?? _getConfiguredLevel(tag);
+  final isEnabled = _get(_key(JetLoggingProperty.ENABLED, tag))?.toBool() ?? _get(_key(JetLoggingProperty.ENABLED))?.toBool() ?? true;
+
+  &#47;&#47; 2. Check if this log should be printed
+  final shouldLog = gl == null || gl.isEnabledFor(level);
+  _loggers[name] = logger;
+
+  &#47;&#47; 3. Log if enabled
+  if (shouldLog &amp;&amp; isEnabled) {
+    final record = LogRecord(
+      level,
+      message.toString(),
+      loggerName: name.replaceAll(&quot;[&quot;, &quot;&quot;).replaceAll(&quot;]&quot;, &quot;&quot;),
+      error: error,
+      stackTrace: stackTrace,
+    );
+    final printer = LogPrinter.get(type, config);
+    final lines = printer.log(record);
+
+    if(shouldLogToConsole) {
+      for (final line in lines) {
+        System.out.println(_getMsg(line, config));
+      }
+    } else {
+      try {
+        final logFile = File(loggingFile);
+
+        &#47;&#47; Ensure directory exists
+        await logFile.parent.create(recursive: true);
+
+        &#47;&#47; Append each line to the file
+        final sink = logFile.openWrite(mode: FileMode.append);
+        for (final line in lines) {
+          sink.writeln(_getMsg(line, config));
+        }
+
+        await sink.flush();
+        await sink.close();
+      } catch (e) {
+        System.err.println(&quot;[LOG ERROR] Could not write log to file: $e&quot;);
+
+        &#47;&#47; Fallback to console if file write fails
+        for (final line in lines) {
+          System.out.println(_getMsg(line, config));
+        }
+      }
+    }
+  }
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf</a></li>
+    <li><a href="../../jetleaf/ApplicationLoggingListener-class.html">ApplicationLoggingListener</a></li>
+    <li class="self-crumb">onLog method</li>
+</ol>
+
+    <h5>ApplicationLoggingListener class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.1.1
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

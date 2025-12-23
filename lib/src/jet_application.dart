@@ -14,7 +14,7 @@
 
 import 'dart:async';
 
-import 'package:jetleaf/lang.dart' show RuntimeProvider;
+import 'package:jetleaf/lang.dart' show RuntimeScannerConfiguration;
 import 'package:jetleaf_convert/convert.dart';
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_core/core.dart';
@@ -343,14 +343,6 @@ final class JetApplication {
   /// {@endtemplate}
   late ConfigurableConversionService _conversionService;
 
-  /// {@template jet_application.runtime_provider}
-  /// Runtime provider for environment detection and system interaction.
-  ///
-  /// Provides information about the runtime environment and handles
-  /// system-level operations.
-  /// {@endtemplate}
-  RuntimeProvider? _runtimeProvider;
-
   /// {@template jet_application.pod_name_generator}
   /// Custom pod name generator for pod naming strategy.
   ///
@@ -524,7 +516,7 @@ final class JetApplication {
   /// Used to detect information about the runtime environment,
   /// including AOT vs JIT compilation mode.
   /// {@endtemplate}
-  final SystemDetector _detector = StandardSystemDetector();
+  final SystemDetector _detector = SystemDetector();
 
   /// {@template jet_application.logger}
   /// Logger instance for JetApplication operations.
@@ -584,20 +576,19 @@ final class JetApplication {
   /// final context = await app.create(args, null);
   /// ```
   /// {@endtemplate}
-  Future<ConfigurableApplicationContext?> create(List<String> args, RuntimeProvider? provider) async {
+  Future<ConfigurableApplicationContext?> create(List<String> args, RuntimeScannerConfiguration? scanConfiguration) async {
     final system = _detector.detect(args);
-    _runtimeProvider = provider ?? GLOBAL_RUNTIME_PROVIDER;
 
     /// As at v1.0.0, we have two different ways of running the `JetLeaf` application.
     /// 
     /// 1. Running from a built application:
     ///    Here, the application has been built and contains all that it needs to run.
     ///    This is mostly seen when the developer is done building and wants to deploy the application.
-    ///    At this point, Jetleaf enforces the check of AOT and RuntimeProvider since it is crucial to
+    ///    At this point, Jetleaf enforces the check of AOT and RuntimeScannerConfiguration since it is crucial to
     ///    providing the maximum experience the user needs.
     /// 
     /// 2. Running on development or JIT:
-    ///    This does not require the RuntimeProvider to be present at the time of running the application,
+    ///    This does not require the RuntimeScannerConfiguration to be present at the time of running the application,
     ///    because Jetleaf since has its authority over the application, it can automatically build
     ///    the application and run it.
     /// 
@@ -605,7 +596,7 @@ final class JetApplication {
     /// Since we cannot control how the run method executes from the user's IDE, we simulate such experience
     /// by detecting where the application is running from, in order to decide what to level with.
 
-    if(system.isRunningAot() && _runtimeProvider == null) {
+    if(system.isRunningAot()) {
       /// Since the build pipeline failed, we can't proceed with the application startup.
       /// At this point, nothing has been initialized, so we will exit the application gracefully with
       /// just [System.out.println].
@@ -630,7 +621,7 @@ final class JetApplication {
     /// compiled and ready to execute fully functional .dill file, .dart file, .exe file.
     /// 
     /// So, we will just go ahead to create the [ConfigurableApplicationContext] and start the application.
-    return _create(args);
+    return _create(args, scanConfiguration);
   }
 
   /// {@template jet_application._create}
@@ -643,7 +634,7 @@ final class JetApplication {
   ///
   /// Returns the created application context
   /// {@endtemplate}
-  Future<ConfigurableApplicationContext?> _create(List<String> args) async {
+  Future<ConfigurableApplicationContext?> _create(List<String> args, RuntimeScannerConfiguration? scanConfiguration) async {
     return await runZonedGuarded<Future<ConfigurableApplicationContext?>>(() async {
       /// [Startup] is `JetLeaf`'s way of having control over the application's lifecycle as it pertains
       /// to the application startup process.
@@ -652,18 +643,12 @@ final class JetApplication {
       _startup = StartupTracker.create();
 
       // Runtime is mostly null when the application did not run through the jetleaf's cli command
-      RuntimeProvider? runtime = _runtimeProvider;
-      if(runtime == null) {
-        final result = await runScan(
-          args: args,
-          forceLoadLibraries: !args.contains(Constant.JETLEAF_GENERATED_DIR_NAME)
-        );
-        runtime = result.getContext();
-      }
+      await runScan(
+        args: args,
+        config: scanConfiguration,
+        forceLoadLibraries: !args.contains(Constant.JETLEAF_GENERATED_DIR_NAME)
+      );
       
-      _runtimeProvider = runtime;
-      GLOBAL_RUNTIME_PROVIDER = runtime;
-      Runtime.register(runtime);
       _mainApplicationClass = Class.forObject(_primarySource);
 
       /// We use the [JetApplicationShutdownHook] to register a shutdown hook with the system.
@@ -839,7 +824,6 @@ final class JetApplication {
       }
       
       _banner = _printBanner(environment);
-
 
       if(_logger.getIsInfoEnabled()) {
         _logger.info("Launching ${_mainApplicationClass.getName()} with application type: ${_applicationType.getEmoji()} ${_applicationType.getName()}");
@@ -1326,12 +1310,12 @@ final class JetApplication {
   ///
   /// [primarySource] the primary source (typically main application class)
   /// [args] command line arguments
-  /// [provider] optional runtime provider
+  /// [scanConfiguration] optional runtime scanner configuration to be applied to [runScan]
   ///
   /// Returns the created application context
   /// {@endtemplate}
-  static Future<ConfigurableApplicationContext?> run(Object primarySource, List<String> args, [RuntimeProvider? provider]) {
-    return JetApplication(primarySource).create(args, provider);
+  static Future<ConfigurableApplicationContext?> run(Object primarySource, List<String> args, [RuntimeScannerConfiguration? scanConfiguration]) {
+    return JetApplication(primarySource).create(args, scanConfiguration);
   }
 
   // ============================== HOOKS ============================== 

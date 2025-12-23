@@ -151,10 +151,7 @@ class StartupLogger {
   /// and Dart runtime versions.
   String _getRunningMessage() {
     final message = StringBuffer('Running with JetLeaf');
-    _appendVersion(
-      message,
-      environment.getProperty(JetApplication.JETLEAF_APPLICATION_VERSION) ?? getClass(null, PackageNames.CORE).getPackage()?.getVersion(),
-    );
+    _appendVersion(message, getClass(null, PackageNames.CORE).getPackage().getVersion());
     message.write(', Dart');
     _appendVersion(message, Platform.version);
     return message.toString();
@@ -200,7 +197,7 @@ class StartupLogger {
   }
 
   void _appendApplicationVersion(StringBuffer message) {
-    _append(message, 'v', () => environment.getProperty(JetApplication.JETLEAF_APPLICATION_VERSION) ?? sourceClass?.getPackage()?.getVersion());
+    _append(message, 'v', () => environment.getProperty(JetApplication.JETLEAF_APPLICATION_VERSION) ?? sourceClass?.getPackage().getVersion());
   }
 
   void _appendPid(StringBuffer message) {

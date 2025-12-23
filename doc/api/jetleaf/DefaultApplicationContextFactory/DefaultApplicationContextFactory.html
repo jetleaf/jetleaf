@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the DefaultApplicationContextFactory.new constructor from Class DefaultApplicationContextFactory from the jetleaf library, for the Dart programming language.">
+  <title>DefaultApplicationContextFactory.new constructor - DefaultApplicationContextFactory - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf.dart</a></li>
+    <li><a href="../../jetleaf/DefaultApplicationContextFactory-class.html">DefaultApplicationContextFactory</a></li>
+    <li class="self-crumb">DefaultApplicationContextFactory.new constructor</li>
+  </ol>
+  <div class="self-name">DefaultApplicationContextFactory.new</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="jetleaf&#47;DefaultApplicationContextFactory-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-constructor">DefaultApplicationContextFactory</span> constructor 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+      <span class="name ">DefaultApplicationContextFactory</span>(<wbr>)
+    </section>
+    
+<section class="desc markdown">
+  <p>Default constructor for the application context factory.</p>
+<p>Typically, no configuration is needed. Logging is automatically enabled
+via <code>_logger</code>.</p>
+<p>The default implementation of <a href="../../jetleaf/ApplicationContextFactory-class.html">ApplicationContextFactory</a> in JetLeaf.</p>
+<p>This factory serves as the primary mechanism for creating fully configured
+application contexts and environments during the startup of a JetLeaf
+application. Its primary responsibilities are discovery, instantiation,
+and selection of the appropriate context for the application's runtime
+type.</p>
+<h3 id="key-responsibilities">Key Responsibilities</h3>
+<ol>
+<li>
+<p><strong>Discovery of Context Subclasses</strong></p>
+<ul>
+<li>Scans the core package for all non-abstract subclasses of
+<a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a>.</li>
+<li>Ensures that only classes that can be instantiated are considered.</li>
+</ul>
+</li>
+<li>
+<p><strong>Instantiation of Contexts</strong></p>
+<ul>
+<li>Attempts to use the no-argument constructor if available.</li>
+<li>If no no-arg constructor exists, falls back to the "best" constructor
+with default parameters.</li>
+<li>Logs instantiation attempts and warnings for missing constructors.</li>
+</ul>
+</li>
+<li>
+<p><strong>Selection of the Appropriate Context</strong></p>
+<ul>
+<li>Evaluates all instantiated candidates for support of the requested
+<a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationType.html">ApplicationType</a>.</li>
+<li>Returns the first matching context found.</li>
+<li>If no supporting context is available, falls back to
+<a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AnnotationConfigApplicationContext-class.html">AnnotationConfigApplicationContext</a> as a generic, default context.</li>
+</ul>
+</li>
+<li>
+<p><strong>Environment Resolution</strong></p>
+<ul>
+<li>Determines the environment type based on the application type:
+<ul>
+<li><code>ApplicationType.NONE</code> → <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/GlobalEnvironment-class.html">GlobalEnvironment</a></li>
+<li><code>ApplicationType.WEB</code> → <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationEnvironment-class.html">ApplicationEnvironment</a></li>
+</ul>
+</li>
+<li>Can create a new environment instance tailored to the application type,
+falling back to <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/GlobalEnvironment-class.html">GlobalEnvironment</a> if necessary.</li>
+</ul>
+</li>
+</ol>
+<h3 id="logging-and-debugging">Logging and Debugging</h3>
+<ul>
+<li>Uses <a href="https://pub.dev/documentation/jetleaf_logging/1.1.2/jetleaf_logging/Log-class.html">Log</a> to provide informational messages about which classes are
+being inspected, which constructors are used, and any warnings
+encountered during instantiation.</li>
+<li>Logs are emitted at the info and warn levels, allowing developers to
+trace the factory’s behavior without changing runtime code.</li>
+</ul>
+<h3 id="usage-scenario">Usage Scenario</h3>
+<ul>
+<li>When a JetLeaf application is launched, this factory is called
+internally to produce the appropriate <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a>.</li>
+<li>Custom application contexts can be discovered automatically if they
+extend <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a> and provide a no-arg constructor
+or a constructor that can be satisfied with default arguments.</li>
+<li>Provides a consistent and centralized mechanism for environment creation
+and context selection, reducing boilerplate across different
+application types.</li>
+</ul>
+<h3 id="example">Example</h3>
+<pre class="language-dart"><code class="language-dart">final factory = DefaultApplicationContextFactory();
+final context = factory.create(ApplicationType.WEB);
+</code></pre>
+<p>This ensures that the application has a fully initialized context and
+environment suitable for runtime operations.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">DefaultApplicationContextFactory();</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf</a></li>
+    <li><a href="../../jetleaf/DefaultApplicationContextFactory-class.html">DefaultApplicationContextFactory</a></li>
+    <li class="self-crumb">DefaultApplicationContextFactory.new constructor</li>
+</ol>
+
+    <h5>DefaultApplicationContextFactory class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-left-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.1.1
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

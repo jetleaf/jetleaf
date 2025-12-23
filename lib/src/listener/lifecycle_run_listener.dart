@@ -70,53 +70,53 @@ final class LifecycleRunListener implements ApplicationRunListener {
   ///
   /// These methods are invoked after the JetLeaf [ConfigurableApplicationContext]
   /// has completed loading all pods and configuration sources.
-  final Set<Method> _onContextLoadedMethods = {};
+  Set<Method> _onContextLoadedMethods = {};
 
   /// A collection of methods annotated with [OnContextPrepared].
   ///
   /// Invoked when the [ConfigurableApplicationContext] is initialized
   /// but not yet refreshed, allowing customization before component scanning.
-  final Set<Method> _onContextPreparedMethods = {};
+  Set<Method> _onContextPreparedMethods = {};
 
   /// A collection of methods annotated with [OnEnvironmentPrepared].
   ///
   /// These methods run after the environment and property sources have been
   /// loaded but before the application context is created.
-  final Set<Method> _onEnvironmentPreparedMethods = {};
+  Set<Method> _onEnvironmentPreparedMethods = {};
 
   /// A collection of methods annotated with [OnApplicationFailed].
   ///
   /// Invoked whenever an unhandled exception occurs during JetLeaf startup
   /// or shutdown, allowing for cleanup or diagnostic reporting.
-  final Set<Method> _onFailedMethods = {};
+  Set<Method> _onFailedMethods = {};
 
   /// A collection of methods annotated with [OnApplicationReady].
   ///
   /// These run once the application context has started successfully
   /// and the application is considered ready to serve.
-  final Set<Method> _onReadyMethods = {};
+  Set<Method> _onReadyMethods = {};
 
   /// A collection of methods annotated with [OnApplicationStarted].
   ///
   /// Called after the JetLeaf application context has been refreshed
   /// but before [OnApplicationReady] is fired.
-  final Set<Method> _onStartedMethods = {};
+  Set<Method> _onStartedMethods = {};
 
   /// A collection of methods annotated with [OnApplicationStarting].
   ///
   /// Fired at the earliest possible phase in JetLeaf’s startup lifecycle,
   /// before the environment or context are initialized.
-  final Set<Method> _onStartingMethods = {};
+  Set<Method> _onStartingMethods = {};
 
   /// {@macro jet_lifecycle_run_listener}
   LifecycleRunListener() {
-    MethodUtils.collectMethods<OnApplicationStarting>(_onStartingMethods);
-    MethodUtils.collectMethods<OnApplicationStarted>(_onStartedMethods);
-    MethodUtils.collectMethods<OnApplicationReady>(_onReadyMethods);
-    MethodUtils.collectMethods<OnApplicationFailed>(_onFailedMethods);
-    MethodUtils.collectMethods<OnEnvironmentPrepared>(_onEnvironmentPreparedMethods);
-    MethodUtils.collectMethods<OnContextPrepared>(_onContextPreparedMethods);
-    MethodUtils.collectMethods<OnContextLoaded>(_onContextLoadedMethods);
+    _onStartingMethods = MethodUtils.collectMethods<OnApplicationStarting>().toSet();
+    _onStartedMethods = MethodUtils.collectMethods<OnApplicationStarted>().toSet();
+    _onReadyMethods = MethodUtils.collectMethods<OnApplicationReady>().toSet();
+    _onFailedMethods = MethodUtils.collectMethods<OnApplicationFailed>().toSet();
+    _onEnvironmentPreparedMethods = MethodUtils.collectMethods<OnEnvironmentPrepared>().toSet();
+    _onContextPreparedMethods = MethodUtils.collectMethods<OnContextPrepared>().toSet();
+    _onContextLoadedMethods = MethodUtils.collectMethods<OnContextLoaded>().toSet();
   }
 
   /// Checks if the given [clazz] is assignable to [ConfigurableBootstrapContext]

@@ -258,7 +258,7 @@ class ApplicationShutdownHandlerHook implements Runnable {
       _inProgress = true;
       contexts = Set.from(_contexts);
       closed = Set.from(_closedContexts);
-      handlers = Set.from(_handlers.getActions().toList().reversed.toSet());
+      handlers = Set.from(_handlers.actions.toList().reversed.toSet());
     });
 
     // ---------------------------------------------------------------------------
@@ -458,10 +458,6 @@ class _Handlers implements ApplicationShutdownHandler, Runnable {
       _hook.assertNotInProgress();
       actions.remove(_Handler(action));
     });
-  }
-
-  Set<_Handler> getActions() {
-    return actions;
   }
 
   @override

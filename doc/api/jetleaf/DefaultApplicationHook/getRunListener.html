@@ -59,11 +59,11 @@
         <li>@<a href="https://api.dart.dev/stable/3.9.2/dart-core/override-constant.html">override</a></li>
     </ol>
   </div>
-<span class="returntype">ApplicationRunListener</span>
+<span class="returntype"><a href="../../jetleaf/ApplicationRunListener-class.html">ApplicationRunListener</a></span>
 <span class="name ">getRunListener</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="getRunListener-param-jetApplication"><span class="type-annotation"><a href="../../jetleaf/JetApplication-class.html">JetApplication</a></span> <span class="parameter-name">jetApplication</span></span></li>
 </ol>)
 
-      
+      <div class="features"><span class="feature">override</span></div>
 
     </section>
     
@@ -82,7 +82,7 @@ application bootstrap process without modifying the application code.</p>
   }
 }
 </code></pre>
-<p>Returns a <code>ApplicationRunListener</code> that will be attached to the
+<p>Returns a <a href="../../jetleaf/ApplicationRunListener-class.html">ApplicationRunListener</a> that will be attached to the
 lifecycle of the given <code>jetApplication</code>.</p>
 </section>
 
@@ -92,6 +92,7 @@ lifecycle of the given <code>jetApplication</code>.</p>
   <h2><span>Implementation</span></h2>
   <pre class="language-dart"><code class="language-dart">@override
 ApplicationRunListener getRunListener(JetApplication jetApplication) {
+  &#47;&#47; Returns a composite listener that delegates events to all registered listeners.
   return ApplicationRunListeners(_listeners, _applicationStartup);
 }</code></pre>
 </section>
@@ -121,7 +122,7 @@ ApplicationRunListener getRunListener(JetApplication jetApplication) {
 <footer>
   <span class="no-break">
     jetleaf
-      1.0.0
+      1.1.1
   </span>
   
 </footer>

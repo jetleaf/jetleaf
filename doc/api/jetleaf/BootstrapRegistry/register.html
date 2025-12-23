@@ -55,7 +55,7 @@
     <section class="multi-line-signature">
       
 <span class="returntype">void</span>
-<span class="name ">register</span>&lt;<wbr><span class="type-parameter">T</span>&gt;(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="register-param-type"><span class="type-annotation"><a href="../../jetleaf/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> <span class="parameter-name">type</span>, </span></li>
+<span class="name ">register</span>&lt;<wbr><span class="type-parameter">T</span>&gt;(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="register-param-type"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_lang/1.1.2/jetleaf_lang/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> <span class="parameter-name">type</span>, </span></li>
 <li><span class="parameter" id="register-param-supplier"><span class="type-annotation"><a href="../../jetleaf/BootstrapInstanceSupplier-class.html">BootstrapInstanceSupplier</a><span class="signature">&lt;<wbr><span class="type-parameter">T</span>&gt;</span></span> <span class="parameter-name">supplier</span></span></li>
 </ol>)
 
@@ -69,7 +69,7 @@
 singleton or has not been resolved yet, it will be replaced.</p>
 <p>Example:</p>
 <pre class="language-dart"><code class="language-dart">registry.register(
-  Class.of(MyService),
+  Class.forType(MyService),
   InstanceSupplier.from(() =&gt; MyService()),
 );
 </code></pre>
@@ -107,7 +107,7 @@ singleton or has not been resolved yet, it will be replaced.</p>
 <footer>
   <span class="no-break">
     jetleaf
-      1.0.0
+      1.1.1
   </span>
   
 </footer>

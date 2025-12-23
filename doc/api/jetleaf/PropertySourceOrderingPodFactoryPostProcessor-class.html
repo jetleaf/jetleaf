@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the PropertySourceOrderingPodFactoryPostProcessor class from the jetleaf library, for the Dart programming language.">
+  <title>PropertySourceOrderingPodFactoryPostProcessor class - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li><a href="../jetleaf/">jetleaf.dart</a></li>
+    <li class="self-crumb">PropertySourceOrderingPodFactoryPostProcessor class</li>
+  </ol>
+  <div class="self-name">PropertySourceOrderingPodFactoryPostProcessor</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="jetleaf&#47;jetleaf-library-sidebar.html"
+    data-below-sidebar="jetleaf&#47;PropertySourceOrderingPodFactoryPostProcessor-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">PropertySourceOrderingPodFactoryPostProcessor</span> class 
+    <a href="https://dart.dev/language/class-modifiers#final" class="feature feature-final" title="This class can neither be extended, implemented, nor mixed in.">final</a>
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>🔄 Post-processor that reorders property sources for optimal resolution.</p>
+<p>The <a href="../jetleaf/PropertySourceOrderingPodFactoryPostProcessor-class.html">PropertySourceOrderingPodFactoryPostProcessor</a> ensures property sources
+are ordered with the correct precedence for property resolution, following
+the principle that more specific sources should override more general ones.</p>
+<h3 id="property-source-precedence-highest-to-lowest">Property Source Precedence (Highest to Lowest):</h3>
+<ol>
+<li><strong>Command Line Arguments</strong>: <code>--property=value</code> (most specific)</li>
+<li><strong>System Properties</strong>: DVM/Dart VM system properties</li>
+<li><strong>Environment Variables</strong>: OS-level environment variables</li>
+<li><strong>Application Properties</strong>: application.properties/.yaml files</li>
+<li><strong>Default Properties</strong>: Framework defaults (least specific)</li>
+</ol>
+<h3 id="key-features">Key Features:</h3>
+<ul>
+<li><strong>Standard Ordering</strong>: Implements conventional property source precedence</li>
+<li><strong>Annotation Awareness</strong>: Respects <code>@Order</code> annotations on custom sources</li>
+<li><strong>Framework Integration</strong>: Aware of standard framework property sources</li>
+<li><strong>Dynamic Reordering</strong>: Adjusts ordering based on detected environment</li>
+</ul>
+<h3 id="processing-logic">Processing Logic:</h3>
+<ol>
+<li><strong>Extracts</strong> high-priority sources (command line, system, environment)</li>
+<li><strong>Preserves</strong> remaining sources in existing order</li>
+<li><strong>Applies</strong> annotation-aware sorting</li>
+<li><strong>Reinserts</strong> sources in correct precedence order</li>
+</ol>
+<h3 id="usage-example">Usage Example:</h3>
+<pre class="language-dart"><code class="language-dart">@Configuration
+class PropertyConfig {
+  @Pod
+  PropertySourceOrderingPodProcessor propertyOrdering() {
+    return PropertySourceOrderingPodProcessor();
+  }
+}
+</code></pre>
+<h3 id="integration-points">Integration Points:</h3>
+<ul>
+<li>Implements <a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContextAware-class.html">ApplicationContextAware</a> for environment access</li>
+<li>Implements <a href="https://pub.dev/documentation/jetleaf_lang/1.1.2/jetleaf_lang/PriorityOrdered-class.html">PriorityOrdered</a> with <code>HIGHEST_PRECEDENCE - 1</code></li>
+<li>Executes after infrastructure setup but before application processing</li>
+<li>Requires <a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/GlobalEnvironment-class.html">GlobalEnvironment</a> for proper operation</li>
+</ul>
+<p>See also:</p>
+<ul>
+<li><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/PodFactoryPostProcessor-class.html">PodFactoryPostProcessor</a> for the base post-processor interface</li>
+<li><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContextAware-class.html">ApplicationContextAware</a> for application context access</li>
+<li><a href="https://pub.dev/documentation/jetleaf_lang/1.1.2/jetleaf_lang/PriorityOrdered-class.html">PriorityOrdered</a> for execution order control</li>
+<li><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/GlobalEnvironment-class.html">GlobalEnvironment</a> for environment implementation</li>
+<li><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/AnnotationAwareOrderComparator-class.html">AnnotationAwareOrderComparator</a> for ordering logic</li>
+</ul>
+</section>
+
+
+    <section>
+      <dl class="dl-horizontal">
+        
+
+        
+  <dt>Implemented types</dt>
+  <dd>
+    <ul class="comma-separated clazz-relationships">
+        <li><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/PodFactoryPostProcessor-class.html">PodFactoryPostProcessor</a></li>
+        <li><a href="https://pub.dev/documentation/jetleaf_lang/1.1.2/jetleaf_lang/PriorityOrdered-class.html">PriorityOrdered</a></li>
+    </ul>
+  </dd>
+        
+
+
+        
+        
+
+
+      </dl>
+    </section>
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+    <dl class="constructor-summary-list">
+        <dt id="PropertySourceOrderingPodFactoryPostProcessor.new" class="callable">
+          <span class="name"><a href="../jetleaf/PropertySourceOrderingPodFactoryPostProcessor/PropertySourceOrderingPodFactoryPostProcessor.html">PropertySourceOrderingPodFactoryPostProcessor.new</a></span><span class="signature">(<span class="parameter" id="-param-_applicationContext"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ApplicationContext-class.html">ApplicationContext</a></span> <span class="parameter-name">_applicationContext</span></span>)</span>
+        </dt>
+        <dd>
+          🔄 Post-processor that reorders property sources for optimal resolution.
+        </dd>
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  The hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Type-class.html">Type</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="getOrder" class="callable">
+  <span class="name"><a href="../jetleaf/PropertySourceOrderingPodFactoryPostProcessor/getOrder.html">getOrder</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  </span>
+  
+
+</dt>
+<dd>
+  A contract for objects that are assigned an order or precedence value.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="postProcessFactory" class="callable">
+  <span class="name"><a href="../jetleaf/PropertySourceOrderingPodFactoryPostProcessor/postProcessFactory.html">postProcessFactory</a></span><span class="signature">(<wbr><span class="parameter" id="postProcessFactory-param-podFactory"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_pod/1.1.2/jetleaf_pod/ConfigurableListablePodFactory-class.html">ConfigurableListablePodFactory</a></span> <span class="parameter-name">podFactory</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Factory hook that allows for custom modification of an application
+context's pod definitions, adapting the pod property values of
+the context's underlying pod factory.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+    
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li><a href="../jetleaf/">jetleaf</a></li>
+    <li class="self-crumb">PropertySourceOrderingPodFactoryPostProcessor class</li>
+</ol>
+
+    <h5>jetleaf library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.1.1
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

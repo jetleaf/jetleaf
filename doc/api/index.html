@@ -51,6 +51,7 @@
 <li>Repository: <a href="https://github.com/jetleaf/jetleaf">https://github.com/jetleaf/jetleaf</a></li>
 <li>License: See <code>LICENSE</code></li>
 </ul>
+<p><strong>NOTE</strong> For quick start, visit <a href="https://jetleaf.hapnium.com">https://jetleaf.hapnium.com</a></p>
 <h2 id="contents">Contents</h2>
 <ul>
 <li><strong><a href="#features">Features</a></strong></li>
@@ -114,9 +115,7 @@
 <h2 id="install">Install</h2>
 <p>Add to your <code>pubspec.yaml</code>:</p>
 <pre class="language-yaml"><code class="language-yaml">dependencies:
-  jetleaf:
-    hosted: https://onepub.dev/api/fahnhnofly/
-    version: ^1.0.0
+  jetleaf: ^1.0.0
 </code></pre>
 <p>Minimum SDK: Dart ^3.9.0</p>
 <p>Import:</p>
@@ -582,21 +581,12 @@ database.password=secret
 <h2 id="cli-tools">CLI Tools</h2>
 <p>JetLeaf provides CLI tools for development and deployment:</p>
 <h3 id="development">Development</h3>
-<pre class="language-bash"><code class="language-bash"># Run in development mode with hot reload
+<pre class="language-bash"><code class="language-bash"># Run in development mode
 jl dev
-
-# Run with specific profile
-jl dev --profile=development
 </code></pre>
 <h3 id="build-and-deploy">Build and Deploy</h3>
-<pre class="language-bash"><code class="language-bash"># Generate bootstrap file
-jl generate
-
-# Build production executable
+<pre class="language-bash"><code class="language-bash"># Build production executable
 jl build
-
-# Generate and build
-jl serve
 
 # Run production build
 dart run build/main.dill
@@ -707,11 +697,68 @@ class ScheduledTaskService {
       <section class="summary">
           <h2>Libraries</h2>
         <dl>
-          <dt id="jetleaf">
-  <span class="name"><a href="jetleaf/">jetleaf</a></span> 
+          <dt id="convert">
+  <span class="name"><a href="convert/">convert</a></span> 
 
 </dt>
 <dd>
+</dd>
+
+          <dt id="core">
+  <span class="name"><a href="core/">core</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="env">
+  <span class="name"><a href="env/">env</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="lang">
+  <span class="name"><a href="lang/">lang</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="logging">
+  <span class="name"><a href="logging/">logging</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="pod">
+  <span class="name"><a href="pod/">pod</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <dt id="utils">
+  <span class="name"><a href="utils/">utils</a></span> 
+
+</dt>
+<dd>
+</dd>
+
+          <h3>JetLeaf</h3>
+            <dt id="jetleaf">
+  <span class="name"><a href="jetleaf/">jetleaf</a></span> 
+
+</dt>
+<dd>🍃 <strong>JetLeaf Framework</strong>
+</dd>
+
+            <dt id="main">
+  <span class="name"><a href="main/">main</a></span> 
+
+</dt>
+<dd>🍃 <strong>JetLeaf Framework</strong>
 </dd>
 
         </dl>
@@ -731,7 +778,16 @@ class ScheduledTaskService {
     <h5 class="hidden-xs"><span class="package-name">jetleaf</span> <span class="package-kind">package</span></h5>
     <ol>
       <li class="section-title">Libraries</li>
-      <li><a href="jetleaf/">jetleaf</a></li>
+      <li><a href="convert/">convert</a></li>
+      <li><a href="core/">core</a></li>
+      <li><a href="env/">env</a></li>
+      <li><a href="lang/">lang</a></li>
+      <li><a href="logging/">logging</a></li>
+      <li><a href="pod/">pod</a></li>
+      <li><a href="utils/">utils</a></li>
+      <li class="section-subtitle">JetLeaf</li>
+        <li class="section-subitem"><a href="jetleaf/">jetleaf</a></li>
+        <li class="section-subitem"><a href="main/">main</a></li>
 </ol>
 
   </div>
@@ -741,7 +797,7 @@ class ScheduledTaskService {
 <footer>
   <span class="no-break">
     jetleaf
-      1.0.0
+      1.1.1
   </span>
   
 </footer>

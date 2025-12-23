@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the ApplicationExceptionHandler.new constructor from Class ApplicationExceptionHandler from the jetleaf library, for the Dart programming language.">
+  <title>ApplicationExceptionHandler.new constructor - ApplicationExceptionHandler - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf.dart</a></li>
+    <li><a href="../../jetleaf/ApplicationExceptionHandler-class.html">ApplicationExceptionHandler</a></li>
+    <li class="self-crumb">ApplicationExceptionHandler.new constructor</li>
+  </ol>
+  <div class="self-name">ApplicationExceptionHandler.new</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+  <div
+      id="dartdoc-main-content"
+      class="main-content"
+      data-above-sidebar="jetleaf&#47;ApplicationExceptionHandler-class-sidebar.html"
+      data-below-sidebar="">
+      <div>
+<h1><span class="kind-constructor">ApplicationExceptionHandler</span> constructor 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+      <span class="name ">ApplicationExceptionHandler</span>(<wbr>[<ol class="parameter-list single-line"> <li><span class="parameter" id="-param-_parentHandler"><span class="type-annotation">void</span> <span class="parameter-name">_parentHandler</span>(<ol class="parameter-list single-line"> <li><span class="parameter" id="param-error"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">error</span>, </span></li>
+<li><span class="parameter" id="param-stack"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/StackTrace-class.html">StackTrace</a></span> <span class="parameter-name">stack</span></span></li>
+</ol>)?</span></li>
+</ol>])
+    </section>
+    
+<section class="desc markdown">
+  <p>A global, thread-safe handler for uncaught exceptions in JetLeaf applications.</p>
+<p>The <a href="../../jetleaf/ApplicationExceptionHandler-class.html">ApplicationExceptionHandler</a> is responsible for intercepting all uncaught
+exceptions thrown during the execution of the application, either synchronously
+or asynchronously (within <a href="https://api.dart.dev/stable/3.9.2/dart-async/Zone-class.html">Zone</a>s). It ensures that exceptions are:</p>
+<ol>
+<li><strong>Wrapped consistently</strong>: Non-<a href="https://pub.dev/documentation/jetleaf_build/1.1.1/jetleaf_build/Throwable-class.html">Throwable</a> objects (e.g., <a href="https://api.dart.dev/stable/3.9.2/dart-core/Exception-class.html">Exception</a>, <a href="https://api.dart.dev/stable/3.9.2/dart-core/Error-class.html">Error</a>)
+are wrapped into <a href="https://pub.dev/documentation/jetleaf_build/1.1.1/jetleaf_build/RuntimeException-class.html">RuntimeException</a> for uniform handling.</li>
+<li><strong>De-duplicated</strong>: Exceptions are tracked internally to avoid logging the
+same exception multiple times, including nested causes.</li>
+<li><strong>Delegated</strong>: Optionally forwarded to a parent handler provided via the
+constructor for integration with external logging or error handling frameworks.</li>
+<li><strong>Terminating gracefully</strong>: Supports registering a custom exit code that
+terminates the application when a critical exception occurs.</li>
+<li><strong>Recognized</strong>: Known logging-related errors (see <code>_logConfigurationMessages</code>)
+are detected and treated specially.</li>
+</ol>
+<p>Thread-local storage (<code>_handlerLocal</code>) ensures that each Dart isolate can
+maintain its own handler, providing isolated exception handling per execution
+context. Use <a href="../../jetleaf/ApplicationExceptionHandler/current.html">current</a> to access the handler in the current isolate.</p>
+<h2 id="example-usage">Example Usage</h2>
+<pre class="language-dart"><code class="language-dart">void main() {
+  final handler = ApplicationExceptionHandler.current;
+  
+  runZonedGuarded(() {
+    throw Exception("Something went wrong!");
+  }, handler.uncaughtException);
+}
+</code></pre>
+<p>References:</p>
+<ul>
+<li>
+<p><a href="https://pub.dev/documentation/jetleaf_build/1.1.1/jetleaf_build/Throwable-class.html">Throwable</a>: Base class for exceptions in JetLeaf.</p>
+</li>
+<li>
+<p><a href="https://pub.dev/documentation/jetleaf_build/1.1.1/jetleaf_build/RuntimeException-class.html">RuntimeException</a>: Wrapper for non-Throwable objects.</p>
+</li>
+<li>
+<p><a href="https://api.dart.dev/stable/3.9.2/dart-async/Zone-class.html">Zone</a>: Dart class for asynchronous exception handling.</p>
+</li>
+<li>
+<p><code>_logConfigurationMessages</code>: Recognized log configuration error messages.</p>
+</li>
+<li>
+<p><code>parentHandler</code>: Optional function that receives uncaught exceptions
+after internal handling.</p>
+</li>
+</ul>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">ApplicationExceptionHandler([this._parentHandler]);</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf</a></li>
+    <li><a href="../../jetleaf/ApplicationExceptionHandler-class.html">ApplicationExceptionHandler</a></li>
+    <li class="self-crumb">ApplicationExceptionHandler.new constructor</li>
+</ol>
+
+    <h5>ApplicationExceptionHandler class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-left-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.1.1
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

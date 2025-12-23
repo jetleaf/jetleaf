@@ -97,30 +97,18 @@ final class DefaultApplicationContextFactory implements ApplicationContextFactor
   @override
   ConfigurableApplicationContext create(ApplicationType applicationType) {
     final cac = Class<ConfigurableApplicationContext>(null, PackageNames.CORE);
-    final sources = <ConfigurableApplicationContext>[];
     final classes = cac.getSubClasses().where((cl) => !cl.isAbstract());
 
     for(final cls in classes) {
       try {
         final source = ExecutableInstantiator.of(cls).newInstance();
-        if (source is ConfigurableApplicationContext) {
-          sources.add(source);
+        if (source is ConfigurableApplicationContext && source.supports(applicationType)) {
+          return source;
         } else if(_logger.getIsWarnEnabled()) {
           _logger.warn("${cls.getName()} does not have a no-arg constructor or not a type of configurable application context");
         }
       } catch (_) {
         // No-op
-      }
-    }
-
-    if(sources.isNotEmpty) {
-      if(_logger.getIsInfoEnabled()) {
-        _logger.info("Checking for application context that supports application type [$applicationType]");
-      }
-
-      final cac = sources.find((c) => c.supports(applicationType));
-      if(cac != null) {
-        return cac;
       }
     }
 

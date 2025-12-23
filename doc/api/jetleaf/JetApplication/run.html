@@ -54,10 +54,10 @@
 
     <section class="multi-line-signature">
       
-<span class="returntype"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="../../jetleaf/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a>?</span>&gt;</span></span>
+<span class="returntype"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Future-class.html">Future</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a>?</span>&gt;</span></span>
 <span class="name ">run</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="run-param-primarySource"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">primarySource</span>, </span></li>
 <li><span class="parameter" id="run-param-args"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>&gt;</span></span> <span class="parameter-name">args</span>, [</span></li>
-<li><span class="parameter" id="run-param-provider"><span class="type-annotation"><a href="../../jetleaf/RuntimeProvider-class.html">RuntimeProvider</a>?</span> <span class="parameter-name">provider</span></span></li>
+<li><span class="parameter" id="run-param-scanConfiguration"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_build/1.1.1/jetleaf_build/RuntimeScannerConfiguration-class.html">RuntimeScannerConfiguration</a>?</span> <span class="parameter-name">scanConfiguration</span></span></li>
 </ol>])
 
       
@@ -74,7 +74,7 @@
 </code></pre>
 <p><code>primarySource</code> the primary source (typically main application class)
 <code>args</code> command line arguments
-<code>provider</code> optional runtime provider</p>
+<code>scanConfiguration</code> optional runtime scanner configuration to be applied to <a href="https://pub.dev/documentation/jetleaf_build/1.1.1/jetleaf_build/runScan.html">runScan</a></p>
 <p>Returns the created application context</p>
 </section>
 
@@ -82,8 +82,8 @@
     
 <section class="summary source-code" id="source">
   <h2><span>Implementation</span></h2>
-  <pre class="language-dart"><code class="language-dart">static Future&lt;ConfigurableApplicationContext?&gt; run(Object primarySource, List&lt;String&gt; args, [RuntimeProvider? provider]) {
-  return runSources(primarySource, [], args, provider);
+  <pre class="language-dart"><code class="language-dart">static Future&lt;ConfigurableApplicationContext?&gt; run(Object primarySource, List&lt;String&gt; args, [RuntimeScannerConfiguration? scanConfiguration]) {
+  return JetApplication(primarySource).create(args, scanConfiguration);
 }</code></pre>
 </section>
 
@@ -112,7 +112,7 @@
 <footer>
   <span class="no-break">
     jetleaf
-      1.0.0
+      1.1.1
   </span>
   
 </footer>

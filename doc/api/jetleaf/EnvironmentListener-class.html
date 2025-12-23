@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the EnvironmentListener class from the jetleaf library, for the Dart programming language.">
+  <title>EnvironmentListener class - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../static-assets/styles.css?v1">
+  <link rel="icon" href="../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li><a href="../jetleaf/">jetleaf.dart</a></li>
+    <li class="self-crumb">EnvironmentListener class</li>
+  </ol>
+  <div class="self-name">EnvironmentListener</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="jetleaf&#47;jetleaf-library-sidebar.html"
+    data-below-sidebar="jetleaf&#47;EnvironmentListener-class-sidebar.html">
+    <div>
+<h1><span class="kind-class">EnvironmentListener</span> class 
+    <a href="https://dart.dev/language/class-modifiers#final" class="feature feature-final" title="This class can neither be extended, implemented, nor mixed in.">final</a>
+ 
+</h1></div>
+
+    
+<section class="desc markdown">
+  <p>A listener that prepares and configures the application environment.</p>
+<p>The <a href="../jetleaf/EnvironmentListener-class.html">EnvironmentListener</a> is responsible for:</p>
+<ul>
+<li>Parsing environment configuration files (JSON, YAML, properties, env)</li>
+<li>Handling Dart-based configuration sources</li>
+<li>Fallback to <code>ConfigurationProperty</code> subclasses for backward compatibility</li>
+<li>Registering property sources into the environment</li>
+<li>Determining active and default profiles</li>
+</ul>
+<p>This ensures that when your application starts, the environment is
+properly populated with all available configuration sources.</p>
+<h3 id="example">Example</h3>
+<pre class="language-dart"><code class="language-dart">void main() {
+  final context = ConfigurableBootstrapContext();
+  final environment = ConfigurableEnvironment();
+
+  final listener = EnvironmentListener();
+  listener.onEnvironmentPrepared(context, environment);
+
+  // After execution, environment contains all parsed property sources.
+  print(environment.getPropertySources());
+}
+</code></pre>
+</section>
+
+
+    <section>
+      <dl class="dl-horizontal">
+        
+  <dt>Inheritance</dt>
+  <dd>
+    <ul class="gt-separated dark clazz-relationships">
+      <li><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></li>
+        <li><a href="../jetleaf/ApplicationRunListener-class.html">ApplicationRunListener</a></li>
+      <li>EnvironmentListener</li>
+    </ul>
+  </dd>
+
+        
+        
+
+
+        
+        
+
+
+      </dl>
+    </section>
+
+    
+  <section class="summary offset-anchor" id="constructors">
+    <h2>Constructors</h2>
+    <dl class="constructor-summary-list">
+        <dt id="EnvironmentListener.new" class="callable">
+          <span class="name"><a href="../jetleaf/EnvironmentListener/EnvironmentListener.html">EnvironmentListener.new</a></span><span class="signature">()</span>
+        </dt>
+        <dd>
+          A listener that prepares and configures the application environment.
+        </dd>
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="instance-properties">
+    <h2>Properties</h2>
+    <dl class="properties">
+        <dt id="hashCode" class="property inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/hashCode.html">hashCode</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/int-class.html">int</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  The hash code for this object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="logger" class="property inherited">
+  <span class="name"><a href="../jetleaf/EnvironmentListener/logger.html">logger</a></span>
+  <span class="signature">&#8594; <a href="https://pub.dev/documentation/jetleaf_logging/1.1.2/jetleaf_logging/Log-class.html">Log</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  The logger to use
+  <div class="features"><span class="feature">final</span><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="runtimeType" class="property inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/runtimeType.html">runtimeType</a></span>
+  <span class="signature">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Type-class.html">Type</a></span>
+  
+
+</dt>
+<dd class="inherited">
+  A representation of the runtime type of the object.
+  <div class="features"><span class="feature">no setter</span><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+
+    
+  <section
+      class="summary offset-anchor"
+      id="instance-methods">
+    <h2>Methods</h2>
+    <dl class="callables">
+        <dt id="addVersionedPropertySource" class="callable inherited">
+  <span class="name"><a href="../jetleaf/EnvironmentListener/addVersionedPropertySource.html">addVersionedPropertySource</a></span><span class="signature">(<wbr><span class="parameter" id="addVersionedPropertySource-param-environment"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/ConfigurableEnvironment-class.html">ConfigurableEnvironment</a></span> <span class="parameter-name">environment</span>, </span><span class="parameter" id="addVersionedPropertySource-param-applicationClass"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_lang/1.1.2/jetleaf_lang/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span>&gt;</span></span> <span class="parameter-name">applicationClass</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Registers a property source containing framework and application version
+information.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="configureEnvironmentProfile" class="callable inherited">
+  <span class="name"><a href="../jetleaf/EnvironmentListener/configureEnvironmentProfile.html">configureEnvironmentProfile</a></span><span class="signature">(<wbr><span class="parameter" id="configureEnvironmentProfile-param-environment"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/ConfigurableEnvironment-class.html">ConfigurableEnvironment</a></span> <span class="parameter-name">environment</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Initializes the active and default profiles for the given environment.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="flattenAndNormalizeMap" class="callable inherited">
+  <span class="name"><a href="../jetleaf/EnvironmentListener/flattenAndNormalizeMap.html">flattenAndNormalizeMap</a></span><span class="signature">(<wbr><span class="parameter" id="flattenAndNormalizeMap-param-source"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>, <span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a>?</span>&gt;</span></span> <span class="parameter-name">source</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>, <span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Recursively flattens and normalizes a nested configuration map into a
+single-level map using dotted keys.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="getEnvironmentSources" class="callable inherited">
+  <span class="name"><a href="../jetleaf/EnvironmentListener/getEnvironmentSources.html">getEnvironmentSources</a></span><span class="signature">(<wbr><span class="parameter" id="getEnvironmentSources-param-parsedSources"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">ParsedEnvironmentSource</span>&gt;</span></span> <span class="parameter-name">parsedSources</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">EnvironmentSource</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Constructs and merges environment sources by profile from a list of parsed
+environment assets.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="getParsedEnvironmentSources" class="callable">
+  <span class="name"><a href="../jetleaf/EnvironmentListener/getParsedEnvironmentSources.html">getParsedEnvironmentSources</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">ParsedEnvironmentSource</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd>
+  Discovers and parses all environment definition assets available at runtime,
+returning them as a list of normalized <code>ParsedEnvironmentSource</code> instances.
+  
+
+</dd>
+
+        <dt id="mergePreserveExisting" class="callable inherited">
+  <span class="name"><a href="../jetleaf/EnvironmentListener/mergePreserveExisting.html">mergePreserveExisting</a></span><span class="signature">(<wbr><span class="parameter" id="mergePreserveExisting-param-existing"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a>?</span> <span class="parameter-name">existing</span>, </span><span class="parameter" id="mergePreserveExisting-param-incoming"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a>?</span> <span class="parameter-name">incoming</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Merges two values while <em>preserving the existing value's precedence</em>.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="noSuchMethod" class="callable inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/noSuchMethod.html">noSuchMethod</a></span><span class="signature">(<wbr><span class="parameter" id="noSuchMethod-param-invocation"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Invocation-class.html">Invocation</a></span> <span class="parameter-name">invocation</span></span>)
+    <span class="returntype parameter">&#8594; dynamic</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Invoked when a nonexistent method or property is accessed.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onContextLoaded" class="callable inherited">
+  <span class="name"><a href="../jetleaf/ApplicationRunListener/onContextLoaded.html">onContextLoaded</a></span><span class="signature">(<wbr><span class="parameter" id="onContextLoaded-param-context"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a></span> <span class="parameter-name">context</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-async/FutureOr-class.html">FutureOr</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Called when the application context has loaded all configurations.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onContextPrepared" class="callable inherited">
+  <span class="name"><a href="../jetleaf/ApplicationRunListener/onContextPrepared.html">onContextPrepared</a></span><span class="signature">(<wbr><span class="parameter" id="onContextPrepared-param-context"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a></span> <span class="parameter-name">context</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-async/FutureOr-class.html">FutureOr</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Called after the application context has been created but not yet loaded.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onEnvironmentPrepared" class="callable">
+  <span class="name"><a href="../jetleaf/EnvironmentListener/onEnvironmentPrepared.html">onEnvironmentPrepared</a></span><span class="signature">(<wbr><span class="parameter" id="onEnvironmentPrepared-param-context"><span class="type-annotation"><a href="../jetleaf/ConfigurableBootstrapContext-class.html">ConfigurableBootstrapContext</a></span> <span class="parameter-name">context</span>, </span><span class="parameter" id="onEnvironmentPrepared-param-environment"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/ConfigurableEnvironment-class.html">ConfigurableEnvironment</a></span> <span class="parameter-name">environment</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd>
+  Called once the application environment has been prepared.
+  <div class="features"><span class="feature">override</span></div>
+
+</dd>
+
+        <dt id="onFailed" class="callable inherited">
+  <span class="name"><a href="../jetleaf/ApplicationRunListener/onFailed.html">onFailed</a></span><span class="signature">(<wbr><span class="parameter" id="onFailed-param-context"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a>?</span> <span class="parameter-name">context</span>, </span><span class="parameter" id="onFailed-param-exception"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">exception</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-async/FutureOr-class.html">FutureOr</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Called if the application fails to start.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onReady" class="callable inherited">
+  <span class="name"><a href="../jetleaf/ApplicationRunListener/onReady.html">onReady</a></span><span class="signature">(<wbr><span class="parameter" id="onReady-param-context"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a></span> <span class="parameter-name">context</span>, </span><span class="parameter" id="onReady-param-timeTaken"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Duration-class.html">Duration</a></span> <span class="parameter-name">timeTaken</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-async/FutureOr-class.html">FutureOr</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Called when the application is fully ready to service requests.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onStarted" class="callable inherited">
+  <span class="name"><a href="../jetleaf/ApplicationRunListener/onStarted.html">onStarted</a></span><span class="signature">(<wbr><span class="parameter" id="onStarted-param-context"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_core/1.1.3/jetleaf_core/ConfigurableApplicationContext-class.html">ConfigurableApplicationContext</a></span> <span class="parameter-name">context</span>, </span><span class="parameter" id="onStarted-param-timeTaken"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Duration-class.html">Duration</a></span> <span class="parameter-name">timeTaken</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-async/FutureOr-class.html">FutureOr</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Called after the application context has been refreshed and started.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="onStarting" class="callable inherited">
+  <span class="name"><a href="../jetleaf/ApplicationRunListener/onStarting.html">onStarting</a></span><span class="signature">(<wbr><span class="parameter" id="onStarting-param-context"><span class="type-annotation"><a href="../jetleaf/ConfigurableBootstrapContext-class.html">ConfigurableBootstrapContext</a></span> <span class="parameter-name">context</span>, </span><span class="parameter" id="onStarting-param-mainClass"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_lang/1.1.2/jetleaf_lang/Class-class.html">Class</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span>&gt;</span></span> <span class="parameter-name">mainClass</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-async/FutureOr-class.html">FutureOr</a><span class="signature">&lt;<wbr><span class="type-parameter">void</span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Called immediately when the application starts.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="prepareEnvironmentSources" class="callable inherited">
+  <span class="name"><a href="../jetleaf/EnvironmentListener/prepareEnvironmentSources.html">prepareEnvironmentSources</a></span><span class="signature">(<wbr><span class="parameter" id="prepareEnvironmentSources-param-sources"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">EnvironmentSource</span>&gt;</span></span> <span class="parameter-name">sources</span>, </span><span class="parameter" id="prepareEnvironmentSources-param-environment"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/ConfigurableEnvironment-class.html">ConfigurableEnvironment</a></span> <span class="parameter-name">environment</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Prepares and registers all resolved <code>EnvironmentSource</code> instances into the
+given <code>environment</code>'s <code>PropertySources</code> collection.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="resolveProperties" class="callable inherited">
+  <span class="name"><a href="../jetleaf/EnvironmentListener/resolveProperties.html">resolveProperties</a></span><span class="signature">(<wbr><span class="parameter" id="resolveProperties-param-properties"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>, <span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span>&gt;</span></span> <span class="parameter-name">properties</span>, </span><span class="parameter" id="resolveProperties-param-environment"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/ConfigurableEnvironment-class.html">ConfigurableEnvironment</a></span> <span class="parameter-name">environment</span>, </span><span class="parameter" id="resolveProperties-param-sources"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">EnvironmentSource</span>&gt;</span></span> <span class="parameter-name">sources</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/Map-class.html">Map</a><span class="signature">&lt;<wbr><span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>, <span class="type-parameter"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span>&gt;</span></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="setupLoggingProperties" class="callable inherited">
+  <span class="name"><a href="../jetleaf/EnvironmentListener/setupLoggingProperties.html">setupLoggingProperties</a></span><span class="signature">(<wbr><span class="parameter" id="setupLoggingProperties-param-environment"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/ConfigurableEnvironment-class.html">ConfigurableEnvironment</a></span> <span class="parameter-name">environment</span>, </span><span class="parameter" id="setupLoggingProperties-param-sources"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">EnvironmentSource</span>&gt;</span></span> <span class="parameter-name">sources</span></span>)
+    <span class="returntype parameter">&#8594; void</span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  Collects and merges logging-related configuration from all provided
+<code>EnvironmentSource</code> instances and persists them into the global
+<a href="https://pub.dev/documentation/jetleaf_logging/1.1.2/jetleaf_logging/LogProperties-class.html">LogProperties</a> registry.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+        <dt id="toString" class="callable inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/toString.html">toString</a></span><span class="signature">(<wbr>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/String-class.html">String</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  A string representation of this object.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+  <section
+      class="summary offset-anchor inherited"
+      id="operators">
+    <h2>Operators</h2>
+    <dl class="callables">
+        <dt id="operator ==" class="callable inherited">
+  <span class="name"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object/operator_equals.html">operator ==</a></span><span class="signature">(<wbr><span class="parameter" id="==-param-other"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/Object-class.html">Object</a></span> <span class="parameter-name">other</span></span>)
+    <span class="returntype parameter">&#8594; <a href="https://api.dart.dev/stable/3.9.2/dart-core/bool-class.html">bool</a></span>
+  </span>
+  
+
+</dt>
+<dd class="inherited">
+  The equality operator.
+  <div class="features"><span class="feature">inherited</span></div>
+
+</dd>
+
+    </dl>
+  </section>
+    
+    
+    
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../index.html">jetleaf</a></li>
+    <li><a href="../jetleaf/">jetleaf</a></li>
+    <li class="self-crumb">EnvironmentListener class</li>
+</ol>
+
+    <h5>jetleaf library</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div>
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+  </div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.1.1
+  </span>
+  
+</footer>
+
+
+<script src="../static-assets/highlight.pack.js?v1"></script>
+<script src="../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

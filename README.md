@@ -8,6 +8,8 @@ JetLeaf provides a complete foundation for building scalable, maintainable backe
 - Repository: https://github.com/jetleaf/jetleaf
 - License: See `LICENSE`
 
+**NOTE** For quick start, visit https://jetleaf.hapnium.com
+
 ## Contents
 - **[Features](#features)**
 - **[Install](#install)**

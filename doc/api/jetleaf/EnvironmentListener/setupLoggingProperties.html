@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, user-scalable=no">
+  <meta name="description" content="API docs for the setupLoggingProperties method from the EnvironmentListener class, for the Dart programming language.">
+  <title>setupLoggingProperties method - EnvironmentListener class - jetleaf library - Dart API</title>
+
+
+  
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet">
+  
+  <link rel="stylesheet" href="../../static-assets/github.css?v1">
+  <link rel="stylesheet" href="../../static-assets/styles.css?v1">
+  <link rel="icon" href="../../static-assets/favicon.png?v1">
+  
+</head>
+
+<body data-base-href="../../" data-using-base-href="false" class="light-theme">
+<div id="overlay-under-drawer"></div>
+<header id="title">
+  <span id="sidenav-left-toggle" class="material-symbols-outlined" role="button" tabindex="0">menu</span>
+  <ol class="breadcrumbs gt-separated dark hidden-xs">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf.dart</a></li>
+    <li><a href="../../jetleaf/EnvironmentListener-class.html">EnvironmentListener</a></li>
+    <li class="self-crumb">setupLoggingProperties method</li>
+  </ol>
+  <div class="self-name">setupLoggingProperties</div>
+  <form class="search navbar-right" role="search">
+    <input type="text" id="search-box" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+  <button class="toggle" id="theme-button" title="Toggle between light and dark mode" aria-label="Light and dark mode toggle">
+    <span id="dark-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      dark_mode
+    </span>
+    <span id="light-theme-button" class="material-symbols-outlined" aria-hidden="true">
+      light_mode
+    </span>
+  </button>
+</header>
+<main>
+<div
+    id="dartdoc-main-content"
+    class="main-content"
+    data-above-sidebar="jetleaf&#47;EnvironmentListener-class-sidebar.html"
+    data-below-sidebar="">
+    <div>
+<h1><span class="kind-method">setupLoggingProperties</span> method 
+</h1></div>
+
+    <section class="multi-line-signature">
+      
+  <div>
+    <ol class="annotation-list">
+        <li>@<a href="https://pub.dev/documentation/meta/1.17.0/meta/protected-constant.html">protected</a></li>
+    </ol>
+  </div>
+<span class="returntype">void</span>
+<span class="name ">setupLoggingProperties</span>(<wbr><ol class="parameter-list single-line"> <li><span class="parameter" id="setupLoggingProperties-param-environment"><span class="type-annotation"><a href="https://pub.dev/documentation/jetleaf_env/1.1.3/jetleaf_env/ConfigurableEnvironment-class.html">ConfigurableEnvironment</a></span> <span class="parameter-name">environment</span>, </span></li>
+<li><span class="parameter" id="setupLoggingProperties-param-sources"><span class="type-annotation"><a href="https://api.dart.dev/stable/3.9.2/dart-core/List-class.html">List</a><span class="signature">&lt;<wbr><span class="type-parameter">EnvironmentSource</span>&gt;</span></span> <span class="parameter-name">sources</span></span></li>
+</ol>)
+
+      <div class="features"><span class="feature">inherited</span></div>
+
+    </section>
+    
+<section class="desc markdown">
+  <p>Collects and merges logging-related configuration from all provided
+<code>EnvironmentSource</code> instances and persists them into the global
+<a href="https://pub.dev/documentation/jetleaf_logging/1.1.2/jetleaf_logging/LogProperties-class.html">LogProperties</a> registry.</p>
+<p>The merge behavior is profile-aware and follows a defined precedence:</p>
+<h3 id="1-non-active-profiles">1. Non-active profiles</h3>
+<p>All sources whose profile is <em>not</em> active are processed first.<br>
+Only keys beginning with <code>"logging."</code> are considered.<br>
+If multiple non-active profiles define the same key, the first encountered
+value is retained.</p>
+<h3 id="2-active-profiles">2. Active profiles</h3>
+<p>Active profiles are processed in their declared order from the environment.
+Logging keys from active profiles override previously collected values,
+ensuring that active profiles always take precedence.</p>
+<h3 id="3-persisting">3. Persisting</h3>
+<p>The final merged logging configuration is written into
+<a href="https://pub.dev/documentation/jetleaf_logging/1.1.2/jetleaf_logging/LogProperties/instance.html">LogProperties.instance</a>, replacing any existing entries (<code>overwrite: true</code>).</p>
+<p>A debug log entry is emitted when logging configuration is successfully
+loaded.</p>
+</section>
+
+
+    
+<section class="summary source-code" id="source">
+  <h2><span>Implementation</span></h2>
+  <pre class="language-dart"><code class="language-dart">@protected
+void setupLoggingProperties(ConfigurableEnvironment environment, List&lt;EnvironmentSource&gt; sources) {
+  &#47;&#47; --- COPY logging.* properties into shared LogProperties (profile-aware) ----
+
+  final activeProfiles = environment.getActiveProfiles();
+  final activeSet = activeProfiles.toSet();
+
+  &#47;&#47; Collector for stringified logging props
+  final Map&lt;String, String&gt; collected = {};
+
+  &#47;&#47; 1) Apply non-active profiles first (preserve entries)
+  for (final source in sources) {
+    final profile = source.profile;
+    final props = source.properties;
+
+    if (activeSet.contains(profile)) continue; &#47;&#47; skip active for now
+
+    &#47;&#47; iterate keys and take only logging.* keys
+    props.forEach((key, value) {
+      if (!key.startsWith(&#39;logging.&#39;)) return;
+      &#47;&#47; preserve existing (first wins for non-active block)
+      collected.putIfAbsent(key, () =&gt; value.toString());
+    });
+  }
+
+  &#47;&#47; 2) Apply active profiles in the order the environment declares them (override)
+  for (final profile in activeProfiles) {
+    final source = sources.find((source) =&gt; source.profile.equals(profile));
+    if (source == null) continue;
+    source.properties.forEach((key, value) {
+      if (!key.startsWith(&#39;logging.&#39;)) return;
+      &#47;&#47; active profile always wins (overwrites previous)
+      collected[key] = value.toString();
+    });
+  }
+
+  &#47;&#47; 3) Persist into LogProperties (global registry)
+  LogProperties.instance.setProperties(collected, overwrite: true);
+
+  if (logger.getIsDebugEnabled()) {
+    logger.debug(&#39;Loaded ${collected.length} logging properties from environment: ${collected.keys.toList()}&#39;);
+  }
+}</code></pre>
+</section>
+
+
+  </div> <!-- /.main-content -->
+  <div id="dartdoc-sidebar-left" class="sidebar sidebar-offcanvas-left">
+    <!-- The search input and breadcrumbs below are only responsively visible at low resolutions. -->
+<header id="header-search-sidebar" class="hidden-l">
+  <form class="search-sidebar" role="search">
+    <input type="text" id="search-sidebar" autocomplete="off" disabled class="form-control typeahead" placeholder="Loading search...">
+  </form>
+</header>
+<ol class="breadcrumbs gt-separated dark hidden-l" id="sidebar-nav">
+    <li><a href="../../index.html">jetleaf</a></li>
+    <li><a href="../../jetleaf/">jetleaf</a></li>
+    <li><a href="../../jetleaf/EnvironmentListener-class.html">EnvironmentListener</a></li>
+    <li class="self-crumb">setupLoggingProperties method</li>
+</ol>
+
+    <h5>EnvironmentListener class</h5>
+    <div id="dartdoc-sidebar-left-content"></div>
+  </div><!--/.sidebar-offcanvas-->
+  <div id="dartdoc-sidebar-right" class="sidebar sidebar-offcanvas-right">
+</div><!--/.sidebar-offcanvas-->
+</main>
+<footer>
+  <span class="no-break">
+    jetleaf
+      1.1.1
+  </span>
+  
+</footer>
+
+
+<script src="../../static-assets/highlight.pack.js?v1"></script>
+<script src="../../static-assets/docs.dart.js"></script>
+
+</body>
+</html>
+

@@ -47,12 +47,12 @@ Class<Object>? _entryApplication;
 /// class MyApp {}
 ///
 /// void main() {
-///   final appClass = Class.of(MyApp);
+///   final appClass = Class.forType(MyApp);
 ///   final filter = ApplicationTypeFilter();
 ///
 ///   filter.setEntryApplication(appClass);
 ///
-///   final candidate = Class.of(DatabaseConfig);
+///   final candidate = Class.forType(DatabaseConfig);
 ///   final isIncluded = filter.matches(candidate);
 ///
 ///   print(isIncluded ? "Config included" : "Config excluded");
@@ -81,7 +81,7 @@ final class ApplicationTypeFilter implements TypeFilter {
 
       return hasAuto(cls) && excludeClasses.none((c) => c.getQualifiedName().equals(cls.getQualifiedName()) || c == cls) && excludeNames.none((n) => n.equalsIgnoreCase(cls.getName()));
     } else if (_entryApplication!.hasDirectAnnotation<JetLeafApplication>()) {
-      final jl = _entryApplication!.getAllDirectAnnotations().find((a) => a.getClass() == Class<JetLeafApplication>(null, PackageNames.MAIN))?.getClass();
+      final jl = _entryApplication!.getAllDirectAnnotations().find((a) => a.getDeclaringClass() == Class<JetLeafApplication>(null, PackageNames.MAIN))?.getDeclaringClass();
       final config = jl?.getDirectAnnotation<EnableAutoConfiguration>();
       final excludeClasses = config?.exclude.map((c) => c.toClass()).toList() ?? [];
       final excludeNames = config?.excludeName ?? [];
@@ -99,5 +99,5 @@ final class ApplicationTypeFilter implements TypeFilter {
   /// This is used internally by [matches] to determine whether
   /// a class represents an auto-configuration candidate.
   /// {@endtemplate}
-  bool hasAuto(Class cls) => cls.getAllAnnotations().any((a) => a.getClass() == Class<AutoConfiguration>(null, PackageNames.CORE));
+  bool hasAuto(Class cls) => cls.getAllAnnotations().any((a) => a.getDeclaringClass() == Class<AutoConfiguration>(null, PackageNames.CORE));
 }
