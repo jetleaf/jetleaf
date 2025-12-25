@@ -6,6 +6,14 @@ This project follows a simple, human-readable changelog format inspired by
 
 ---
 
+## [1.1.3]
+
+### Changed
+
+- Updated dependencies: all.
+
+---
+
 ## [1.1.2]
 
 ### Changed
