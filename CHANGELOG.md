@@ -6,6 +6,16 @@ This project follows a simple, human-readable changelog format inspired by
 
 ---
 
+## [1.2.0]
+
+### Changed
+
+- Updated dependencies: all.
+
+**NOTE** This is the current stable version of jetleaf recommended for all environments.
+
+---
+
 ## [1.1.2]
 
 ### Changed

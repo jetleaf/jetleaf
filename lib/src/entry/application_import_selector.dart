@@ -12,6 +12,7 @@
 // 
 // 🔧 Powered by Hapnium — the Dart backend engine 🍃
 
+import 'package:jetleaf/lang.dart' show ClassNotFoundException, RuntimeProvider;
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_lang/lang.dart';
 
@@ -28,7 +29,7 @@ import 'jet_leaf_config_parser.dart';
 ///
 /// ## How it works
 ///
-/// - Uses [Runtime.getAllPackages] from `jetleaf_lang`.
+/// - Uses [RuntimeProvider.getAllPackages] from `jetleaf_lang`.
 /// - Iterates through each package and retrieves its name via [package.getName].
 /// - Returns a list of package names as strings.
 ///
@@ -68,64 +69,52 @@ final class ApplicationImportSelector implements ImportSelector {
   List<ImportClass> selects() {
     final list = <ImportClass>[];
 
-    final packages = Runtime.getAllPackages();
-    final userPackage = packages.find((package) => package.getIsRootPackage());
-
-    if (userPackage != null) {
+    if (Runtime.getAllPackages().firstWhereOrNull((package) => package.getIsRootPackage()) case final userPackage?) {
       list.add(ImportClass.package(userPackage.getName()));
     }
 
+    // Load all assets
+    bool isConfig(String path) => path.contains("meta-inf/") || path.contains("meta_config/") || path.contains("meta_inf/");
+    final assets = Runtime.getAllAssets().where((asset) => isConfig(asset.getFilePath().toLowerCase()));
     List<Map<String, List<String>>> configurations = [];
 
-    // Load all assets
-    final assets = Runtime.getAllAssets();
-
-    bool isConfig(String path) => path.contains("meta-inf/") || path.contains("meta_config/") || path.contains("meta_inf/");
-
-    // Filter assets to only include meta-inf
-    List<Asset> importAssets = assets.where((asset) => isConfig(asset.getFilePath().toLowerCase())).toList();
-
-    for (final asset in importAssets) {
+    for (final asset in assets) {
       final parser = JetLeafConfigParser();
       configurations.add(parser.parseAsset(asset));
     }
 
-    if (configurations.isNotEmpty) {
-      for (final configuration in configurations) {
-        final enableConfiguration = configuration[JetLeafApplication.ENABLE_AUTO_CONFIGURATION_PROPERTY];
-        final disableConfiguration = configuration[JetLeafApplication.DISABLE_AUTO_CONFIGURATION_PROPERTY];
+    for (final configuration in configurations) {
+      final enableConfiguration = configuration[JetLeafApplication.ENABLE_AUTO_CONFIGURATION_PROPERTY];
+      final disableConfiguration = configuration[JetLeafApplication.DISABLE_AUTO_CONFIGURATION_PROPERTY];
 
-        if (enableConfiguration != null) {
-          for (final item in enableConfiguration) {
-            if (item.contains(".")) {
-              try {
-                Class.fromQualifiedName(item);
-                list.add(ImportClass.qualified(item, false));
-              } catch (_) {
-                // Extract package name
-                final packageName = _extractPackageName(item);
-                list.add(ImportClass.package(packageName, false));
-              }
-            } else {
-              list.add(ImportClass.package(item, false));
+      if (enableConfiguration != null) {
+        for (final item in enableConfiguration) {
+          if (item.contains(".")) {
+            try {
+              list.add(ImportClass.forClass(Class.fromQualifiedName(item), false));
+            } on ClassNotFoundException catch (_) {
+              // Extract package name
+              final packageName = _extractPackageName(item);
+              list.add(ImportClass.package(packageName, false));
             }
+          } else {
+            list.add(ImportClass.package(item, false));
           }
         }
+      }
 
-        if (disableConfiguration != null) {
-          for (final item in disableConfiguration) {
-            if (item.contains(".")) {
-              try {
-                Class.fromQualifiedName(item);
-                list.add(ImportClass.qualified(item, true));
-              } catch (_) {
-                // Extract package name
-                final packageName = _extractPackageName(item);
-                list.add(ImportClass.package(packageName, true));
-              }
-            } else {
-              list.add(ImportClass.package(item, true));
+      if (disableConfiguration != null) {
+        for (final item in disableConfiguration) {
+          if (item.contains(".")) {
+            try {
+              list.add(ImportClass.forClass(Class.fromQualifiedName(item), true));
+            } catch (_) {
+              // Extract package name
+              final packageName = _extractPackageName(item);
+              list.add(ImportClass.package(packageName, true));
             }
+          } else {
+            list.add(ImportClass.package(item, true));
           }
         }
       }
