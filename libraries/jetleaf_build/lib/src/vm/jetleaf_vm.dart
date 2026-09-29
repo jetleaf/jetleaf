@@ -23,6 +23,77 @@ part 'discoverable.dart';
 part 'entry_state.dart';
 part 'entry_writer.dart';
 
+/// Severity of a Jetleaf build/runtime log record.
+enum JetleafLogLevel { debug, info, warning, error }
+
+/// Structured log data emitted by the manager and resident entry VMs.
+///
+/// The [message] is deliberately kept separate from [formatted]. Consumers
+/// such as `jetleaf_devtool` can render the record in their own style while
+/// the CLI uses [formatted] for a compact human-readable line.
+final class JetleafLogRecord {
+  /// Creates a structured log record.
+  const JetleafLogRecord({
+    required this.timestamp,
+    required this.level,
+    required this.message,
+    required this.source,
+    this.entry,
+    this.stream,
+    this.phase,
+    this.banner = false,
+  });
+
+  /// Time at which the record was produced.
+  final DateTime timestamp;
+
+  /// Record severity.
+  final JetleafLogLevel level;
+
+  /// Unmodified log message.
+  final String message;
+
+  /// Origin, normally `manager` or `vm`.
+  final String source;
+
+  /// Entry file associated with the record.
+  final String? entry;
+
+  /// Child process stream, when applicable.
+  final String? stream;
+
+  /// Lifecycle phase, when applicable.
+  final String? phase;
+
+  /// True for the startup banner, which is intentionally unprefixed.
+  final bool banner;
+
+  /// Human-readable one-line rendering used by the CLI.
+  String get formatted {
+    if (banner) return message;
+    final time = timestamp.toLocal().toIso8601String().substring(11, 19);
+    final details = <String>[source];
+    if (entry != null) details.add(entry!);
+    if (phase != null) details.add(phase!);
+    final suffix = details.map((value) => '[$value]').join(' ');
+    return '[$time] [${level.name.toUpperCase()}] $suffix $message';
+  }
+
+  /// Serializes this record for the control/event protocol.
+  Map<String, Object?> toEvent() => {
+        'type': 'log',
+        'timestamp': timestamp.toIso8601String(),
+        'level': level.name,
+        'source': source,
+        if (entry != null) 'entry': entry,
+        if (stream != null) 'stream': stream,
+        if (phase != null) 'phase': phase,
+        'banner': banner,
+        'message': message,
+        'formatted': formatted,
+      };
+}
+
 /// {@template vm_paths}
 /// Centralized paths and package-config resolution for [JetleafVM].
 ///
@@ -48,8 +119,7 @@ abstract final class JetleafVmPaths {
       '.dart_tool/jetleaf_build/manager.json';
 
   /// Per-entry incremental snapshots live here.
-  static const String entrySnapshotDir =
-      '.dart_tool/jetleaf_build/entries';
+  static const String entrySnapshotDir = '.dart_tool/jetleaf_build/entries';
 
   /// Resolves the `package_config.json` for [root], searching upward so
   /// workspace members (which keep no local
@@ -64,16 +134,18 @@ abstract final class JetleafVmPaths {
   static String resolvePackagesJson(Directory root) {
     var dir = root;
     while (true) {
-      final candidate =
-          File(p.join(dir.path, '.dart_tool', 'package_config.json'));
+      final candidate = File(
+        p.join(dir.path, '.dart_tool', 'package_config.json'),
+      );
       if (candidate.existsSync()) return candidate.absolute.path;
       final parent = dir.parent;
       if (parent.path == dir.path) break;
       dir = parent;
     }
     throw StateError(
-        'No .dart_tool/package_config.json found from ${root.path} upward. '
-        'Run `dart pub get` in the workspace root.');
+      'No .dart_tool/package_config.json found from ${root.path} upward. '
+      'Run `dart pub get` in the workspace root.',
+    );
   }
 }
 
@@ -147,6 +219,18 @@ final class _LiveEntry {
   /// True while a run occupies this backend.
   bool busy = false;
 
+  /// True after the generated runtime has been initialized in this isolate.
+  bool runtimeReady = false;
+
+  /// Completes when the parked entry reports that its runtime scan finished.
+  final Completer<void> runtimeReadySignal = Completer<void>();
+
+  /// Completes when the resident VM exposes its command socket.
+  final Completer<int> commandPortReady = Completer<int>();
+
+  /// Receives child output for the active control request.
+  void Function(Map<String, Object?> event)? activeEmit;
+
   /// Completes when the boot that created this backend finishes
   /// (success or failure). Lets runs wait instead of racing the boot.
   Completer<void>? boot;
@@ -189,6 +273,9 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
   /// (`[scan] …` lines) instead of staying silent.
   bool _verbose = false;
 
+  /// When false, human output uses the raw message without log prefixes.
+  bool _prettyLogs = true;
+
   /// Scoped entry allowlist from `--path` (null = full discovery).
   /// Persists across rewarm so rescans never pick up other entries.
   List<String>? _only;
@@ -227,6 +314,17 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
   /// True while the initial boot or a rewarm owns the cache/VMs.
   bool _warming = false;
 
+  /// Completes when initial discovery, cache warming, and eager VM boots are
+  /// finished. Control requests wait for this before running entries.
+  final Completer<void> _startupReady = Completer<void>();
+
+  /// Startup failure surfaced to control clients after the manager finishes
+  /// its initial sequence.
+  String? _startupError;
+
+  /// Human/machine-readable manager lifecycle state.
+  String _managerState = 'starting';
+
   /// ISO-8601 manager start time, published via the manager sidecar.
   String? _startedAt;
 
@@ -247,13 +345,20 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
   ///   what did it do".
   ///
   /// **Returns:** the process exit code.
-  Future<int> serve(Directory root,
-      {bool machine = false, bool lazy = false, List<String>? only, bool verbose = false}) {
+  Future<int> serve(
+    Directory root, {
+    bool machine = false,
+    bool lazy = false,
+    List<String>? only,
+    bool verbose = false,
+    bool prettyLogs = true,
+  }) {
     _root = root;
     _machine = machine;
     _lazy = lazy;
     _only = only;
     _verbose = verbose;
+    _prettyLogs = prettyLogs;
     return start();
   }
 
@@ -268,35 +373,42 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
   /// **Returns:** the process exit code (0 ok, 1 failed).
   Future<int> warmOnce(Directory root, {required bool machine}) async {
     try {
-      final registry = await discoverEntries(root,
-          onWarning: (message) {
-        if (machine) {
-          print(jsonEncode({'type': 'warning', 'message': message}));
-        } else {
-          print('Warning: $message');
-        }
-      });
+      final registry = await discoverEntries(
+        root,
+        onWarning: (message) {
+          if (machine) {
+            print(jsonEncode({'type': 'warning', 'message': message}));
+          } else {
+            print('Warning: $message');
+          }
+        },
+      );
       if (!machine) {
         for (final entry in registry.entries) {
           print('${entry.kind.name}  ${entry.file}::main');
         }
-        print('found ${registry.entries.length} '
-            'entr${registry.entries.length == 1 ? 'y' : 'ies'} '
-            '(${registry.appCount} app, ${registry.testCount} test)');
+        print(
+          'found ${registry.entries.length} '
+          'entr${registry.entries.length == 1 ? 'y' : 'ies'} '
+          '(${registry.appCount} app, ${registry.testCount} test)',
+        );
       } else {
-        print(jsonEncode(
-            {'type': 'entries', 'entries': registry.toJson()}));
+        print(jsonEncode({'type': 'entries', 'entries': registry.toJson()}));
       }
       final summary = await _warmProject(root);
       if (!machine) {
-        print('Warmed ${summary.componentCount} components, '
-            '${summary.libraryCount} libraries.');
+        print(
+          'Warmed ${summary.componentCount} components, '
+          '${summary.libraryCount} libraries.',
+        );
       } else {
-        print(jsonEncode({
-          'type': 'warm_complete',
-          'components': summary.componentCount,
-          'libraries': summary.libraryCount,
-        }));
+        print(
+          jsonEncode({
+            'type': 'warm_complete',
+            'components': summary.componentCount,
+            'libraries': summary.libraryCount,
+          }),
+        );
       }
       return 0;
     } catch (e) {
@@ -320,8 +432,10 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
   Future<int> start() async {
     _startedAt = DateTime.now().toIso8601String();
     if (!RuntimeUtils.isJetLeafBuildProject(_root)) {
-      _log('Error: not a jetleaf_build project: ${_root.path} '
-          '(expected `jetleaf_build:` in pubspec.yaml or .dart_tool/package_config.json)');
+      _log(
+        'Error: not a jetleaf_build project: ${_root.path} '
+        '(expected `jetleaf_build:` in pubspec.yaml or .dart_tool/package_config.json)',
+      );
       return 1;
     }
 
@@ -334,13 +448,11 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
     // Machine-detectable readiness (used by the VS Code `jl dev`
     // background task matcher). Printed after the port is bound.
     _log('manager listening on 127.0.0.1:$_controlPort');
+    _managerState = 'warming';
     _writeManagerFile();
     _writeVmFile();
 
-    _watcher = JetleafWatcher(
-      projectRoot: _root,
-      onChanged: _onFilesChanged,
-    );
+    _watcher = JetleafWatcher(projectRoot: _root, onChanged: _onFilesChanged);
     await _watcher!.start();
 
     _warming = true;
@@ -361,7 +473,7 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
     buf.writeln('project  $packageName');
     buf.writeln('root     ${_root.path}');
     buf.write('state    ./${JetleafVmPaths.vmFileName}');
-    _log(buf.toString());
+    _log(buf.toString(), banner: true);
   }
 
   /// Runs the full warm pipeline for [dir]:
@@ -386,12 +498,15 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
     onEvent?.call({
       'type': 'warm_started',
       'projectRoot': dir.path,
-      'package': packageName
+      'package': packageName,
     });
 
     // 1. Discovery
-    onEvent?.call(
-        {'type': 'warm_progress', 'phase': 'discovery', 'status': 'scanning'});
+    onEvent?.call({
+      'type': 'warm_progress',
+      'phase': 'discovery',
+      'status': 'scanning',
+    });
     final discovery = FileDiscovery(dir);
     final files = await discovery.discover(
       skipTests: false,
@@ -413,8 +528,10 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
       'current': 0,
       'total': fileCount,
     });
-    final components = await DeclarationBuilder()
-        .build(files: files, packageName: packageName);
+    final components = await DeclarationBuilder().build(
+      files: files,
+      packageName: packageName,
+    );
     onEvent?.call({
       'type': 'warm_progress',
       'phase': 'analysis',
@@ -424,8 +541,11 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
     });
 
     // 3. Write cache (prod + test, same layout as the old indexer daemon)
-    onEvent?.call(
-        {'type': 'warm_progress', 'phase': 'cache', 'status': 'writing'});
+    onEvent?.call({
+      'type': 'warm_progress',
+      'phase': 'cache',
+      'status': 'writing',
+    });
     final cacheWriter = CacheWriter(dir);
 
     final prodFingerprint = CacheManager.generateFingerprint(skipTests: true);
@@ -450,8 +570,10 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
       packageName: packageName,
       fileCount: fileCount,
       componentCount: testSummary.components.length,
-      libraryCount:
-          components.map((c) => c.getLibrary().getUri()).toSet().length,
+      libraryCount: components
+          .map((c) => c.getLibrary().getUri())
+          .toSet()
+          .length,
       packageCount: testSummary.packages.length,
       assetCount: testSummary.assets.length,
       fingerprint: prodFingerprint,
@@ -511,8 +633,10 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
       for (final status in _states.values) {
         status.fingerprint = summary.fingerprint;
       }
-      _log('Warmed ${summary.componentCount} components, '
-          '${summary.libraryCount} libraries.');
+      _log(
+        'Warmed ${summary.componentCount} components, '
+        '${summary.libraryCount} libraries.',
+      );
       _writeVmFile();
 
       if (_lazy) {
@@ -524,10 +648,14 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
         }
       }
     } catch (e) {
+      _startupError = e.toString();
       _emit({'type': 'daemon_error', 'error': e.toString()});
       _log('Failed to boot: $e');
     } finally {
       _warming = false;
+      _managerState = _startupError == null ? 'ready' : 'failed';
+      _writeManagerFile();
+      if (!_startupReady.isCompleted) _startupReady.complete();
     }
   }
 
@@ -538,9 +666,11 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
   ///
   /// **Returns:** when the registry, statuses and `Jetleaf.VM` are updated.
   Future<void> _rediscover({required bool log}) async {
-    final registry = await discoverEntries(_root,
-        only: _only,
-        onWarning: (message) => _log('Warning: $message'));
+    final registry = await discoverEntries(
+      _root,
+      only: _only,
+      onWarning: (message) => _log('Warning: $message'),
+    );
     final seen = <String>{};
     for (final record in registry.entries) {
       seen.add(record.file);
@@ -548,10 +678,13 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
         _entries[record.file] = record;
         _states[record.file] = EntryStatus(record: record);
         if (log) {
-          final tag =
-              record.kind == EntryKind.test ? '@JetleafTest' : '@JetleafEntry';
-          _log('${record.kind == EntryKind.test ? 'test  ' : 'entry '} '
-              '${record.file}::main  [$tag]');
+          final tag = record.kind == EntryKind.test
+              ? '@JetleafTest'
+              : '@JetleafEntry';
+          _log(
+            '${record.kind == EntryKind.test ? 'test  ' : 'entry '} '
+            '${record.file}::main  [$tag]',
+          );
         }
       } else {
         _entries[record.file] = record;
@@ -569,9 +702,11 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
     if (log) {
       final apps = registry.appCount;
       final tests = registry.testCount;
-      _log('found ${registry.entries.length} '
-          'entr${registry.entries.length == 1 ? 'y' : 'ies'} '
-          '($apps app, $tests test)');
+      _log(
+        'found ${registry.entries.length} '
+        'entr${registry.entries.length == 1 ? 'y' : 'ies'} '
+        '($apps app, $tests test)',
+      );
     }
     _writeVmFile();
   }
@@ -615,7 +750,13 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
     live.boot = Completer<void>();
     _live[key] = live;
     try {
-      await writeParkedEntryStub(_root, key, forTests: record.forTests, verbose: _verbose);
+      await writeParkedEntryStub(
+        _root,
+        key,
+        forTests: record.forTests,
+        entryFile: File(p.join(_root.path, key)),
+        verbose: _verbose,
+      );
 
       final snapshotPath = snapshotPathFor(_root, key);
       await Directory(p.dirname(snapshotPath)).create(recursive: true);
@@ -644,8 +785,10 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
         fileSystemRoots: [_root.path],
         fileSystemScheme: 'org-dartlang-root',
         packagesJson: packagesPath,
-        verbose:
-            const bool.fromEnvironment('JL_FE_VERBOSE', defaultValue: false),
+        verbose: const bool.fromEnvironment(
+          'JL_FE_VERBOSE',
+          defaultValue: false,
+        ),
       );
 
       final compilation = await live.frontend!.compile();
@@ -655,13 +798,18 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
           _log('  compile: $line');
         }
         throw StateError(
-            'Frontend compile failed (${compilation.errorCount} errors)');
+          'Frontend compile failed (${compilation.errorCount} errors)',
+        );
       }
       live.frontend!.accept();
       live.snapshotPath = compiled;
       status.snapshot = compiled;
 
       await _startVmProcess(key, live, compiled);
+
+      // Populate the runtime while the manager is warming. Subsequent test
+      // requests reuse this isolate and only reload the test driver.
+      await _warmEntryRuntime(key, live);
 
       status.state = EntryState.parked;
       status.pid = live.process?.pid;
@@ -693,46 +841,86 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
   ///
   /// **Returns:** when the debugger connection is established.
   Future<void> _startVmProcess(
-      String key, _LiveEntry live, String dillPath) async {
+    String key,
+    _LiveEntry live,
+    String dillPath,
+  ) async {
     final ready = Completer<VmService>();
-    final process = await Process.start(
-      Platform.resolvedExecutable,
-      ['--enable-vm-service=0', dillPath],
-      workingDirectory: _root.path,
-    );
+    final process = await Process.start(Platform.resolvedExecutable, [
+      '--enable-asserts',
+      '--enable-vm-service=0',
+      dillPath,
+    ], workingDirectory: _root.path);
     live.process = process;
 
     process.stdout
         .transform(utf8.decoder)
         .transform(const LineSplitter())
         .listen(
-      (line) {
-        _emit({'type': 'log', 'entry': key, 'message': line});
-        if (!_machine) print(line);
-        if (!ready.isCompleted && _isVmServiceLine(line)) {
-          final wsUri =
-              '${line.split(' ').last.replaceFirst('http', 'ws').replaceFirst('/ws', '')}ws';
-          live.vmServiceUri = wsUri;
-          vmServiceConnectUri(wsUri).then(ready.complete,
-              onError: ready.completeError);
-        }
-      },
-      onError: (Object e) {
-        if (!ready.isCompleted) ready.completeError(e);
-      },
-    );
+          (line) {
+            _vmLog(key, line);
+            if (line == '[jl] runtime ready' &&
+                !live.runtimeReadySignal.isCompleted) {
+              live.runtimeReadySignal.complete();
+            }
+            if (line.startsWith('[jl] runtime error:') &&
+                !live.runtimeReadySignal.isCompleted) {
+              live.runtimeReadySignal.completeError(
+                StateError(line.substring('[jl] runtime error:'.length).trim()),
+              );
+            }
+            if (line.startsWith('[jl] control port:') &&
+                !live.commandPortReady.isCompleted) {
+              final port = int.tryParse(
+                line.substring('[jl] control port:'.length).trim(),
+              );
+              if (port == null) {
+                live.commandPortReady.completeError(
+                  StateError('Invalid control port for $key'),
+                );
+              } else {
+                live.commandPortReady.complete(port);
+              }
+            }
+            if (!ready.isCompleted && _isVmServiceLine(line)) {
+              final wsUri =
+                  '${line.split(' ').last.replaceFirst('http', 'ws').replaceFirst('/ws', '')}ws';
+              live.vmServiceUri = wsUri;
+              vmServiceConnectUri(
+                wsUri,
+              ).then(ready.complete, onError: ready.completeError);
+            }
+          },
+          onError: (Object e) {
+            if (!ready.isCompleted) ready.completeError(e);
+          },
+        );
     process.stderr
         .transform(utf8.decoder)
         .transform(const LineSplitter())
         .listen((line) {
-      _emit({'type': 'log', 'entry': key, 'stream': 'stderr', 'message': line});
-      if (!_machine) print(line);
-    });
+          _vmLog(key, line, stream: 'stderr');
+        });
 
-    unawaited(process.exitCode.then((code) {
-      if (live.process == process) live.process = null;
-      _log('vm exited for $key ($code)');
-    }));
+    unawaited(
+      process.exitCode.then((code) {
+        if (live.process == process) live.process = null;
+        _log('vm exited for $key ($code)');
+        if (!_stopping && identical(_live[key], live)) {
+          unawaited(() async {
+            await _disposeLive(key);
+            final status = _states[key];
+            if (status != null) {
+              status.state = EntryState.failed;
+              status.pid = null;
+              status.vmServiceUri = null;
+              status.lastError = 'VM exited with code $code';
+            }
+            _writeVmFile();
+          }());
+        }
+      }),
+    );
 
     live.service = await ready.future.timeout(
       const Duration(seconds: 60),
@@ -741,6 +929,18 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
         throw TimeoutException('Timed out waiting for VM service ($key)');
       },
     );
+  }
+
+  /// Initializes the generated runtime helper in a freshly booted isolate.
+  /// VM-service evaluation returns before an async helper completes, so the
+  /// generated completion flags are polled here.
+  Future<void> _warmEntryRuntime(String key, _LiveEntry live) async {
+    try {
+      await live.runtimeReadySignal.future.timeout(const Duration(minutes: 10));
+    } on TimeoutException {
+      throw TimeoutException('Timed out warming runtime for $key');
+    }
+    live.runtimeReady = true;
   }
 
   /// Waits for a stub completion flag to turn true.
@@ -783,8 +983,7 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
       final ready = await service.evaluate(isolateId, rootLibId, flag);
       if (ready is InstanceRef && ready.valueAsString == 'true') return;
       if (errorFlag != null) {
-        final failure =
-            await service.evaluate(isolateId, rootLibId, errorFlag);
+        final failure = await service.evaluate(isolateId, rootLibId, errorFlag);
         if (failure is InstanceRef &&
             failure.classRef?.name != 'Null' &&
             (failure.valueAsString?.isNotEmpty ?? false)) {
@@ -829,8 +1028,13 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
     void Function(Map<String, Object?> event)? emit,
   ) async {
     final stubRootUri = stubRootUriFor(_root, key);
-    await writeRunnerEntryStub(_root, key, entryFile,
-        forTests: record.forTests, verbose: _verbose);
+    await writeRunnerEntryStub(
+      _root,
+      key,
+      entryFile,
+      forTests: record.forTests,
+      verbose: _verbose,
+    );
 
     final frontend = live.frontend;
     final service = live.service;
@@ -845,7 +1049,7 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
     ]);
     emit?.call({
       'type': 'run_step',
-      'step': 'recompile:done errors=${compilation.errorCount}'
+      'step': 'recompile:done errors=${compilation.errorCount}',
     });
     _log('recompiled $key (errors=${compilation.errorCount})');
     if (compilation.errorCount > 0) {
@@ -855,8 +1059,7 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
     }
     final dillOutput = compilation.dillOutput;
     if (dillOutput == null) {
-      throw StateError(
-          'Recompile failed (${compilation.errorCount} errors)');
+      throw StateError('Recompile failed (${compilation.errorCount} errors)');
     }
     frontend.accept();
 
@@ -864,13 +1067,14 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
     final isolateCount = vmInfo.isolates?.length ?? 0;
     _log('reloading $isolateCount isolate(s) for $key ...');
     final rootLibUri = Uri.file(dillOutput).toString();
-    final argLiteral =
-        '[${args.map((a) => "'${a.replaceAll("'", "\\'")}'").join(', ')}]';
     for (final isolateRef in vmInfo.isolates ?? []) {
       final id = isolateRef.id;
       if (id == null) continue;
-      final report = await service.reloadSources(id,
-          pause: false, rootLibUri: rootLibUri);
+      final report = await service.reloadSources(
+        id,
+        pause: false,
+        rootLibUri: rootLibUri,
+      );
       _log('reload $key isolate $id: success=${report.success}');
       if (report.success != true) {
         throw StateError('Reload rejected for $key isolate $id');
@@ -883,108 +1087,87 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
         throw StateError('Isolate $id has no root library');
       }
 
-      // Populate the JetLeaf runtime inside the warm isolate first
-      // (cache fast path after the first run), then invoke user main.
-      // NOTE: debugger evaluation returns async futures *uncompleted*,
-      // so the scan is triggered here and completion is polled via the
-      // `_jlRuntimeReady` / `_jlRuntimeError` flags — never awaited.
-      emit?.call({'type': 'run_step', 'step': 'ensure-runtime:start'});
-      final ensureCall = await service
-          .evaluate(id, rootLibId, '_ensureJetleafRuntime()')
-          .timeout(const Duration(seconds: 60));
-      if (ensureCall is ErrorRef) {
-        throw StateError(
-            'Failed to ensure runtime: ${ensureCall.message}');
-      }
-      await _awaitFlagTrue(
-        service: service,
-        isolateId: id,
-        rootLibId: rootLibId,
-        key: key,
-        flag: '_jlRuntimeReady',
-        errorFlag: '_jlRuntimeError',
-        timeout: const Duration(minutes: 10),
-        timeoutMessage: 'Timed out waiting for runtime for $key',
-        progressStep: 'ensure-runtime:warming',
-        emit: emit,
-      );
-      emit?.call({'type': 'run_step', 'step': 'ensure-runtime:done'});
-
-      if (record.forTests) {
-        emit?.call({'type': 'run_step', 'step': 'run-tests:start'});
-        final driverCall = await service
-            .evaluate(id, rootLibId, 'runJetleafTests($argLiteral)')
+      // The manager warms the runtime before publishing readiness. Reloading
+      // the runner stub must not trigger a second full test scan.
+      if (!live.runtimeReady) {
+        emit?.call({'type': 'run_step', 'step': 'ensure-runtime:start'});
+        final ensureCall = await service
+            .evaluate(id, rootLibId, '_ensureJetleafRuntime()')
             .timeout(const Duration(seconds: 60));
-        if (driverCall is ErrorRef) {
-          throw StateError(
-              'Test driver failed for $key: ${driverCall.message}');
+        if (ensureCall is ErrorRef) {
+          throw StateError('Failed to ensure runtime: ${ensureCall.message}');
         }
         await _awaitFlagTrue(
           service: service,
           isolateId: id,
           rootLibId: rootLibId,
           key: key,
-          flag: '_jlTestsDone',
-          timeout: Duration(seconds: record.timeoutSeconds),
-          timeoutMessage:
-              'Tests timed out for $key after ${record.timeoutSeconds}s',
-          progressStep: 'run-tests:running',
+          flag: '_jlRuntimeReady',
+          errorFlag: '_jlRuntimeError',
+          timeout: const Duration(minutes: 10),
+          timeoutMessage: 'Timed out waiting for runtime for $key',
+          progressStep: 'ensure-runtime:warming',
           emit: emit,
         );
-        final passed =
-            await service.evaluate(id, rootLibId, '_jlTestsPassed');
-        if (passed is! InstanceRef || passed.valueAsString != 'true') {
+        live.runtimeReady = true;
+        emit?.call({'type': 'run_step', 'step': 'ensure-runtime:done'});
+      } else {
+        emit?.call({'type': 'run_step', 'step': 'ensure-runtime:skipped'});
+        _log(
+          'runtime already warm; skipping scan',
+          phase: 'runtime',
+        );
+      }
+
+      if (record.forTests) {
+        emit?.call({'type': 'run_step', 'step': 'run-tests:start'});
+        final passed = await _sendEntryCommand(key, live, {
+          'type': 'test',
+          'args': args,
+        }, timeout: Duration(seconds: record.timeoutSeconds));
+        if (!passed) {
           throw StateError('Tests failed for $key');
         }
         emit?.call({'type': 'run_step', 'step': 'run-tests:done'});
       } else {
-        final Response result =
-            await _invokeUserMain(service, id, rootLibId, argLiteral);
-        if (result is ErrorRef) {
-          throw StateError(
-              'Failed to invoke entry main: ${result.message}');
-        }
+        final ok = await _sendEntryCommand(key, live, {
+          'type': 'app',
+          'args': args,
+        }, timeout: const Duration(minutes: 10));
+        if (!ok) throw StateError('Entry main failed for $key');
       }
     }
   }
 
-  /// Invokes an app entry `main`, retrying bare on signature mismatch.
-  ///
-  /// Tries `entry.main(args)` first, then `entry.main()`
-  /// when the entry rejects the args call — either as an [ErrorRef]
-  /// result or as a thrown expression-compilation error naming the
-  /// mismatch (`Too many positional arguments`). Timeouts always
-  /// propagate (a hanging `main` is not a mismatch).
-  ///
-  /// **Parameters:**
-  /// - [service]: debugger connection of the entry VM.
-  /// - [isolateId]: target isolate.
-  /// - [rootLibId]: reloaded root library (the runner stub).
-  /// - [argLiteral]: Dart list literal of CLI args.
-  /// - [timeout]: per-call deadline (test entries).
-  ///
-  /// **Returns:** the evaluation response (never an args-mismatch).
-  Future<Response> _invokeUserMain(
-    VmService service,
-    String isolateId,
-    String rootLibId,
-    String argLiteral, {
-    Duration? timeout,
+  /// Sends a command to the resident generated entry stub.
+  Future<bool> _sendEntryCommand(
+    String key,
+    _LiveEntry live,
+    Map<String, Object?> command, {
+    required Duration timeout,
   }) async {
-    Future<Response> call(String expression) {
-      var future = service.evaluate(isolateId, rootLibId, expression);
-      if (timeout != null) future = future.timeout(timeout);
-      return future;
-    }
-
+    final port = await live.commandPortReady.future.timeout(timeout);
+    final socket = await Socket.connect(
+      InternetAddress.loopbackIPv4,
+      port,
+    ).timeout(const Duration(seconds: 10));
     try {
-      final first = await call('entry.main($argLiteral)');
-      if (first is! ErrorRef) return first;
-    } catch (e) {
-      if (e is TimeoutException) rethrow;
-      if (!'$e'.contains('Too many positional arguments')) rethrow;
+      socket.writeln(jsonEncode(command));
+      await socket.flush();
+      final line = await socket
+          .cast<List<int>>()
+          .transform(utf8.decoder)
+          .transform(const LineSplitter())
+          .first
+          .timeout(timeout);
+      final response = jsonDecode(line) as Map<String, dynamic>;
+      if (response['error'] != null) {
+        throw StateError('Entry command failed for $key: ${response['error']}');
+      }
+      return response['ok'] == true;
+    } finally {
+      await socket.close();
     }
-    return call('entry.main()');
   }
 
   /// True when [e] is the stale-root failure: the isolate's root library
@@ -999,8 +1182,7 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
   /// - [e]: run failure to classify.
   ///
   /// **Returns:** true when a reboot-and-retry applies.
-  bool _isStaleEnsureError(Object e) =>
-      '$e'.contains('_ensureJetleafRuntime');
+  bool _isStaleEnsureError(Object e) => '$e'.contains('_ensureJetleafRuntime');
 
   /// `name pid=… ws://…` identity used across all VM logs.
   ///
@@ -1056,13 +1238,16 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
       // Ad-hoc entry: any file can run even without an annotation.
       final test = forTests ?? key.startsWith('test/');
       record = EntryRecord(
-          file: key, kind: test ? EntryKind.test : EntryKind.entry);
+        file: key,
+        kind: test ? EntryKind.test : EntryKind.entry,
+      );
       _entries[key] = record;
       _states[key] = EntryStatus(record: record);
       _log('discovered ad-hoc ${test ? 'test' : 'entry'} $key');
     }
 
     final status = _states[key]!;
+    final effectiveArgs = args.isEmpty ? record.args : args;
     var live = _live[key];
     final ongoing = live?.boot;
     if (ongoing != null && !ongoing.isCompleted) {
@@ -1073,8 +1258,10 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
       try {
         await ongoing.future.timeout(const Duration(minutes: 5));
       } on TimeoutException {
-        emit?.call(
-            {'type': 'error', 'error': 'Timed out waiting for $key boot'});
+        emit?.call({
+          'type': 'error',
+          'error': 'Timed out waiting for $key boot',
+        });
         return;
       }
       live = _live[key];
@@ -1097,27 +1284,30 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
       return;
     }
 
-    final entryFile = File(p.isAbsolute(file)
-        ? file
-        : p.join(_root.path, file));
+    final entryFile = File(
+      p.isAbsolute(file) ? file : p.join(_root.path, file),
+    );
     if (!await entryFile.exists()) {
       emit?.call({'type': 'error', 'error': 'Entry not found: $file'});
       return;
     }
 
     live.busy = true;
+    live.activeEmit = emit;
     status.state = EntryState.running;
     status.lastRunAt = DateTime.now().toIso8601String();
     _writeVmFile();
     final started = {'type': 'run_started', 'entry': key};
     _emit(started);
     emit?.call(started);
-    _log('running $key${args.isEmpty ? '' : ' ${args.join(' ')}'} ...');
+    _log(
+      'running $key${effectiveArgs.isEmpty ? '' : ' ${effectiveArgs.join(' ')}'} ...',
+    );
 
     _LiveEntry? current = live;
     try {
       try {
-        await _invokeEntry(key, record, live, entryFile, args, emit);
+        await _invokeEntry(key, record, live, entryFile, effectiveArgs, emit);
       } catch (e) {
         if (!_isStaleEnsureError(e)) rethrow;
         // The isolate's root library predates the on-disk stub (stale
@@ -1129,12 +1319,15 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
         await _bootEntry(key);
         final fresh = _live[key];
         if (fresh == null) {
-          throw StateError('Reboot failed for $key '
-              '(${_states[key]?.lastError ?? 'unknown error'})');
+          throw StateError(
+            'Reboot failed for $key '
+            '(${_states[key]?.lastError ?? 'unknown error'})',
+          );
         }
         fresh.busy = true;
+        fresh.activeEmit = emit;
         current = fresh;
-        await _invokeEntry(key, record, fresh, entryFile, args, emit);
+        await _invokeEntry(key, record, fresh, entryFile, effectiveArgs, emit);
       }
 
       final done = {'type': 'run_complete', 'entry': key};
@@ -1154,6 +1347,7 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
     } finally {
       current?.busy = false;
       live.busy = false;
+      if (identical(live.activeEmit, emit)) live.activeEmit = null;
       if (_live.containsKey(key)) status.state = EntryState.parked;
       _writeVmFile();
     }
@@ -1214,6 +1408,18 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
       await live.service?.dispose();
     } catch (_) {}
     live.service = null;
+
+    // Close the frontend command pipe before killing the VM. Once the child
+    // process is gone, FrontendServerClient.shutdown() can fail while writing
+    // its final command and surface an unhandled broken-pipe error.
+    final frontend = live.frontend;
+    live.frontend = null;
+    if (frontend != null) {
+      try {
+        await frontend.shutdown().timeout(const Duration(seconds: 10));
+      } catch (_) {}
+    }
+
     final process = live.process;
     live.process = null;
     if (process != null) {
@@ -1225,35 +1431,6 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
           process.kill(ProcessSignal.sigkill);
         } catch (_) {}
       }
-    }
-    final frontend = live.frontend;
-    live.frontend = null;
-    if (frontend != null) {
-      // The frontend server may already be gone: its broken pipe then
-      // surfaces through stream callbacks in the zone, outside normal
-      // try/catch reach. Shut down detached inside a guarded zone that
-      // swallows transport errors but logs anything else. Detached on
-      // purpose: a hung shutdown must never block stop/dispose
-      // (`runZonedGuarded` is synchronous; completion is not observed).
-      try {
-        runZonedGuarded<void>(
-          () {
-            // Returned-future errors land in the chain below; stream-zone
-            // errors land in the guarded-zone handler. Both swallowed.
-            // ignore: discarded_futures
-            frontend.shutdown().timeout(const Duration(seconds: 10)).then(
-                  (_) {},
-                  // ignore: avoid_types_on_closure_parameters
-                  onError: (Object _) {},
-                );
-          },
-          (Object error, StackTrace stack) {
-            if (error is! SocketException) {
-              _log('frontend shutdown error for $key: $error');
-            }
-          },
-        );
-      } catch (_) {}
     }
   }
 
@@ -1272,12 +1449,15 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
   Future<void> _onFilesChanged(List<String> changedPaths) async {
     if (_stopping || _warming) return;
     _warming = true;
-    final displayPaths =
-        changedPaths.map((abs) => p.relative(abs, from: _root.path)).toList();
+    final displayPaths = changedPaths
+        .map((abs) => p.relative(abs, from: _root.path))
+        .toList();
     try {
-      _log('changed ${displayPaths.length} '
-          'file${displayPaths.length == 1 ? '' : 's'}: '
-          '${displayPaths.join(', ')}');
+      _log(
+        'changed ${displayPaths.length} '
+        'file${displayPaths.length == 1 ? '' : 's'}: '
+        '${displayPaths.join(', ')}',
+      );
       await _rediscover(log: false);
       await _warmProject(_root);
       final uris = changedPaths.map(_rootUriFor).toList();
@@ -1302,7 +1482,10 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
             final id = isolateRef.id;
             if (id == null) continue;
             await service.reloadSources(
-                id, pause: false, rootLibUri: rootLibUri);
+              id,
+              pause: false,
+              rootLibUri: rootLibUri,
+            );
           }
           reloaded.add(_vmIdentity(entry.key, live));
         } catch (e) {
@@ -1312,8 +1495,10 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
       if (reloaded.isEmpty) {
         _log('updated, no vms reloaded');
       } else {
-        _log('updated, reloaded ${reloaded.length} '
-            'vm${reloaded.length == 1 ? '' : 's'}:');
+        _log(
+          'updated, reloaded ${reloaded.length} '
+          'vm${reloaded.length == 1 ? '' : 's'}:',
+        );
         for (final identity in reloaded) {
           _log('  reloaded vm $identity');
         }
@@ -1333,8 +1518,7 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
   ///
   /// **Returns:** when listening (port published via manager sidecar).
   Future<void> _bindControl() async {
-    _control =
-        await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+    _control = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
     _controlPort = _control!.port;
     _control!.listen(_serveControl);
   }
@@ -1364,8 +1548,9 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
           });
           if (done) break;
         } catch (e) {
-          socket.writeln(jsonEncode(
-              {'type': 'error', 'error': 'Invalid message: $e'}));
+          socket.writeln(
+            jsonEncode({'type': 'error', 'error': 'Invalid message: $e'}),
+          );
         }
       }
     } catch (_) {
@@ -1387,8 +1572,22 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
   /// - [emit]: per-connection response sink.
   ///
   /// **Returns:** true when the connection is finished.
-  Future<bool> _handleControl(Map<String, dynamic> message,
-      void Function(Map<String, Object?> event) emit) async {
+  Future<bool> _handleControl(
+    Map<String, dynamic> message,
+    void Function(Map<String, Object?> event) emit,
+  ) async {
+    final type = message['type'];
+    if (type == 'runApp' || type == 'runTest' || type == 'boot') {
+      await _startupReady.future;
+      if (_startupError != null) {
+        emit({
+          'type': 'error',
+          'error': 'Manager startup failed: $_startupError',
+        });
+        emit({'type': 'done', 'ok': false});
+        return true;
+      }
+    }
     switch (message['type']) {
       case 'runApp':
         final entry = message['entry'] as String?;
@@ -1397,12 +1596,13 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
           emit({'type': 'done', 'ok': false});
           return true;
         }
-        final args =
-            (message['args'] as List?)?.cast<String>() ?? const [];
+        final args = (message['args'] as List?)?.cast<String>() ?? const [];
         emit({
           'type': 'done',
           'ok': await _runGuarded(
-              emit, (e) => runEntry(entry, args: args, forTests: false, emit: e))
+            emit,
+            (e) => runEntry(entry, args: args, forTests: false, emit: e),
+          ),
         });
         return true;
       case 'runTest':
@@ -1415,7 +1615,9 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
         emit({
           'type': 'done',
           'ok': await _runGuarded(
-              emit, (e) => runEntry(entry, forTests: true, emit: e))
+            emit,
+            (e) => runEntry(entry, forTests: true, emit: e),
+          ),
         });
         return true;
       case 'status':
@@ -1453,7 +1655,7 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
       default:
         emit({
           'type': 'error',
-          'error': 'Unknown message type: ${message['type']}'
+          'error': 'Unknown message type: ${message['type']}',
         });
         emit({'type': 'done', 'ok': false});
         return true;
@@ -1473,8 +1675,7 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
   /// **Returns:** true when no `run_error` frame was observed.
   Future<bool> _runGuarded(
     void Function(Map<String, Object?> event) emit,
-    Future<void> Function(void Function(Map<String, Object?> event) emit)
-        run,
+    Future<void> Function(void Function(Map<String, Object?> event) emit) run,
   ) async {
     var ok = true;
     void guardedEmit(Map<String, Object?> event) {
@@ -1498,10 +1699,11 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
   ///
   /// **Returns:** `{pid, projectRoot, entries}`.
   Map<String, Object?> status() => {
-        'pid': pid,
-        'projectRoot': _root.path,
-        'entries': _states.values.map((s) => s.toJson()).toList(),
-      };
+    'pid': pid,
+    'projectRoot': _root.path,
+    'managerState': _managerState,
+    'entries': _states.values.map((s) => s.toJson()).toList(),
+  };
 
   /// Human-readable status table (`jl status`): one
   /// `state  file  pid=… ws://…` line per entry.
@@ -1515,8 +1717,10 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
         if (status.vmServiceUri != null) status.vmServiceUri!,
         if (status.lastError != null) 'error=${status.lastError}',
       ].join(' ');
-      buf.writeln('  ${status.state.name.padRight(10)} ${status.file}'
-          '${detail.isEmpty ? '' : '  $detail'}');
+      buf.writeln(
+        '  ${status.state.name.padRight(10)} ${status.file}'
+        '${detail.isEmpty ? '' : '  $detail'}',
+      );
     }
     return buf.toString();
   }
@@ -1529,7 +1733,8 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
       final file = File(p.join(_root.path, JetleafVmPaths.vmFileName));
       final data = _states.values.map((s) => s.toJson()).toList();
       file.writeAsStringSync(
-          '${const JsonEncoder.withIndent('    ').convert(data)}\n');
+        '${const JsonEncoder.withIndent('    ').convert(data)}\n',
+      );
     } catch (_) {}
   }
 
@@ -1542,12 +1747,15 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
     try {
       final file = File(p.join(_root.path, JetleafVmPaths.managerRelativePath));
       file.parent.createSync(recursive: true);
-      file.writeAsStringSync(jsonEncode({
-        'pid': pid,
-        'projectRoot': _root.path,
-        'controlPort': _controlPort,
-        'startedAt': _startedAt,
-      }));
+      file.writeAsStringSync(
+        jsonEncode({
+          'pid': pid,
+          'projectRoot': _root.path,
+          'controlPort': _controlPort,
+          'state': _managerState,
+          'startedAt': _startedAt,
+        }),
+      );
     } catch (_) {}
   }
 
@@ -1574,12 +1782,13 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
       final existing = file.existsSync() ? file.readAsStringSync() : '';
       final lines = existing.split('\n').map((l) => l.trim()).toSet();
       final missing = <String>[];
-      if (!lines.contains(JetleafVmPaths.vmFileName)) missing.add(JetleafVmPaths.vmFileName);
+      if (!lines.contains(JetleafVmPaths.vmFileName)) {
+        missing.add(JetleafVmPaths.vmFileName);
+      }
       if (!lines.contains('_jetleaf/')) missing.add('_jetleaf/');
       if (missing.isNotEmpty) {
         final prefix = existing.isEmpty || existing.endsWith('\n') ? '' : '\n';
-        file.writeAsStringSync(
-            '$existing$prefix${missing.join('\n')}\n');
+        file.writeAsStringSync('$existing$prefix${missing.join('\n')}\n');
       }
     } catch (_) {}
   }
@@ -1591,10 +1800,12 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
   /// Survives platforms without a given signal (subscription skipped).
   void _watchSignals() {
     for (final signal in [ProcessSignal.sigint, ProcessSignal.sigterm]) {
-      _signalSubs.add(signal.watch().listen((_) {
-        _log('Received $signal, stopping.');
-        stop(0);
-      }));
+      _signalSubs.add(
+        signal.watch().listen((_) {
+          _log('Received $signal, stopping.');
+          stop(0);
+        }),
+      );
     }
   }
 
@@ -1680,14 +1891,50 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
     if (!_events.isClosed) _events.add(event);
   }
 
-  /// Human log line (suppressed in `--machine` mode, where the
-  /// event alone is printed). VM child output bypasses this and is
-  /// printed directly so app/test output stays verbatim.
+  /// Publishes a structured manager log and renders it for human terminals.
   ///
   /// **Parameters:**
   /// - [message]: line to log (also emitted as a `log` event).
-  void _log(String message) {
-    _emit({'type': 'log', 'message': message});
-    if (!_machine) print(message);
+  void _log(
+    String message, {
+    JetleafLogLevel level = JetleafLogLevel.info,
+    String? phase,
+    bool banner = false,
+  }) {
+    final event = JetleafLogRecord(
+      timestamp: DateTime.now(),
+      level: level,
+      message: message,
+      source: 'manager',
+      phase: phase,
+      banner: banner,
+    ).toEvent();
+    _emit(event);
+    if (!_machine) print(_prettyLogs ? event['formatted'] : message);
+  }
+
+  /// Publishes one resident-VM line globally and to the active run client.
+  /// The raw [message] stays available for consumers that render their own UI.
+  void _vmLog(
+    String key,
+    String message, {
+    String? stream,
+  }) {
+    final level = stream == 'stderr' || message.startsWith('[jl] runtime error:')
+        ? JetleafLogLevel.error
+        : JetleafLogLevel.info;
+    final event = JetleafLogRecord(
+      timestamp: DateTime.now(),
+      level: level,
+      message: message,
+      source: 'vm',
+      entry: key,
+      stream: stream,
+    ).toEvent();
+    _emit(event);
+    _live[key]?.activeEmit?.call(event);
+    if (!_machine) {
+      print(_prettyLogs ? event['formatted'] : message);
+    }
   }
 }

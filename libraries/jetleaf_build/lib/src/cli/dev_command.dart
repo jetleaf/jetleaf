@@ -42,6 +42,7 @@ Options:
   --root <dir>     Project root (default: current directory).
   --path <file>    Scoped run: only boot this entry file (repeatable).
   --verbose        Stream in-isolate scan logs ([scan] …) to the terminal.
+  --plain          Do not add timestamps and source prefixes to log lines.
   --once           Warm once and exit (no VMs, for CI).
   --lazy           Discover + warm now, boot entry VMs on first run.
   --machine        Emit JSON lines instead of human-readable output.
@@ -104,6 +105,7 @@ Examples:
       lazy: args.contains('--lazy'),
       only: only.isEmpty ? null : only,
       verbose: _verbose(args),
+      prettyLogs: !args.contains('--plain'),
     );
   }
 

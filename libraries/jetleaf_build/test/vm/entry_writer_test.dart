@@ -14,16 +14,27 @@ void main() {
     test('parked stub never completes and exposes ensure', () async {
       final dir = await Directory.systemTemp.createTemp('jl_stub');
       try {
-        await JetleafVM.instance.writeParkedEntryStub(dir, 'lib/main.dart',
-            forTests: false);
+        await JetleafVM.instance.writeParkedEntryStub(
+          dir,
+          'lib/main.dart',
+          forTests: false,
+        );
         final content = await File(
-                '${dir.path}/_jetleaf/entries/lib__main.dart')
-            .readAsString();
-        expect(content, contains('Completer<void>().future'));
-        // Regression: an outstanding future alone does not hold the event
-        // loop (the VM exits once the queue drains), so the stub must keep
-        // an active timer alive.
+          '${dir.path}/_jetleaf/entries/lib__main.dart',
+        ).readAsString();
+        // Regression: the resident isolate must keep an active timer and a
+        // command socket alive between warm-up and the next run.
         expect(content, contains('Timer.periodic'));
+        expect(content, contains('_jlCommandServer'));
+        expect(content, contains('ServerSocket.bind'));
+        expect(
+          content.indexOf('AUTO-GENERATED entry stub'),
+          lessThan(content.indexOf("import 'dart:async';")),
+        );
+        expect(
+          content.indexOf("import 'dart:async';"),
+          lessThan(content.indexOf("import 'dart:convert';")),
+        );
         expect(content, contains('ensureJetleafRuntime'));
         expect(content, isNot(contains('as entry;')));
         // App entries ensure the production runtime.
@@ -37,11 +48,13 @@ void main() {
       final dir = await Directory.systemTemp.createTemp('jl_stub');
       try {
         await JetleafVM.instance.writeParkedEntryStub(
-            dir, 'test/app_test.dart',
-            forTests: true);
+          dir,
+          'test/app_test.dart',
+          forTests: true,
+        );
         final content = await File(
-                '${dir.path}/_jetleaf/entries/test__app_test.dart')
-            .readAsString();
+          '${dir.path}/_jetleaf/entries/test__app_test.dart',
+        ).readAsString();
         expect(content, contains('jl.runTestScan'));
       } finally {
         await dir.delete(recursive: true);
@@ -51,17 +64,21 @@ void main() {
     test('runner stub imports and invokes entry main with args', () async {
       final dir = await Directory.systemTemp.createTemp('jl_stub');
       try {
-        await File('${dir.path}/pubspec.yaml')
-            .writeAsString('name: demo_app\n');
+        await File(
+          '${dir.path}/pubspec.yaml',
+        ).writeAsString('name: demo_app\n');
         final lib = Directory('${dir.path}/lib')..createSync();
         final entry = File('${lib.path}/main.dart')
           ..writeAsString('void main(List<String> args) async {}\n');
         await JetleafVM.instance.writeRunnerEntryStub(
-            dir, 'lib/main.dart', entry,
-            forTests: false);
+          dir,
+          'lib/main.dart',
+          entry,
+          forTests: false,
+        );
         final content = await File(
-                '${dir.path}/_jetleaf/entries/lib__main.dart')
-            .readAsString();
+          '${dir.path}/_jetleaf/entries/lib__main.dart',
+        ).readAsString();
         expect(content, contains('package:demo_app/main.dart'));
         expect(content, contains('entry.main(args)'));
         expect(content, contains('ensureJetleafRuntime'));
@@ -76,17 +93,21 @@ void main() {
     test('test runner stub drives the engine, not main()', () async {
       final dir = await Directory.systemTemp.createTemp('jl_stub');
       try {
-        await File('${dir.path}/pubspec.yaml')
-            .writeAsString('name: demo_app\n');
+        await File(
+          '${dir.path}/pubspec.yaml',
+        ).writeAsString('name: demo_app\n');
         final testDir = Directory('${dir.path}/test')..createSync();
         final entry = File('${testDir.path}/app_test.dart')
           ..writeAsString('void main() {}\n');
         await JetleafVM.instance.writeRunnerEntryStub(
-            dir, 'test/app_test.dart', entry,
-            forTests: true);
+          dir,
+          'test/app_test.dart',
+          entry,
+          forTests: true,
+        );
         final content = await File(
-                '${dir.path}/_jetleaf/entries/test__app_test.dart')
-            .readAsString();
+          '${dir.path}/_jetleaf/entries/test__app_test.dart',
+        ).readAsString();
         // Evaluating main() alone only registers tests; the driver runs
         // the engine and reports success. The VM persists (timer kept).
         expect(content, contains('runJetleafTests'));
@@ -94,11 +115,12 @@ void main() {
         expect(content, contains('Function.apply(entry.main'));
         expect(content, contains('ExpandedReporter'));
         expect(content, contains('Timer.periodic'));
-        // Completion flags polled by the manager (debugger evaluation
-        // returns async futures uncompleted).
-        expect(content, contains('_jlRuntimeReady'));
-        expect(content, contains('_jlTestsDone'));
+        // The test runner is commanded through the resident VM socket, so it
+        // only needs the returned pass flag, not the old polling state.
+        expect(content, isNot(contains('_ensureJetleafRuntime')));
         expect(content, contains('_jlTestsPassed'));
+        expect(content, contains('_jlTestsPassed = false'));
+        expect(content, contains('Function.apply(entry.main, [args])'));
       } finally {
         await dir.delete(recursive: true);
       }
@@ -107,17 +129,21 @@ void main() {
     test('test driver handles async void entries', () async {
       final dir = await Directory.systemTemp.createTemp('jl_stub');
       try {
-        await File('${dir.path}/pubspec.yaml')
-            .writeAsString('name: demo_app\n');
+        await File(
+          '${dir.path}/pubspec.yaml',
+        ).writeAsString('name: demo_app\n');
         final testDir = Directory('${dir.path}/test')..createSync();
         final entry = File('${testDir.path}/async_test.dart')
           ..writeAsString('void main() async {}\n');
         await JetleafVM.instance.writeRunnerEntryStub(
-            dir, 'test/async_test.dart', entry,
-            forTests: true);
+          dir,
+          'test/async_test.dart',
+          entry,
+          forTests: true,
+        );
         final content = await File(
-                '${dir.path}/_jetleaf/entries/test__async_test.dart')
-            .readAsString();
+          '${dir.path}/_jetleaf/entries/test__async_test.dart',
+        ).readAsString();
         // Dynamic apply covers every main signature, sync or async.
         expect(content, contains('Function.apply(entry.main'));
         expect(content, contains('runJetleafTests'));
@@ -129,17 +155,21 @@ void main() {
     test('runner stub uses bare statement for sync void main', () async {
       final dir = await Directory.systemTemp.createTemp('jl_stub');
       try {
-        await File('${dir.path}/pubspec.yaml')
-            .writeAsString('name: demo_app\n');
+        await File(
+          '${dir.path}/pubspec.yaml',
+        ).writeAsString('name: demo_app\n');
         final lib = Directory('${dir.path}/lib')..createSync();
         final entry = File('${lib.path}/tool.dart')
           ..writeAsString('void main() {}\n');
         await JetleafVM.instance.writeRunnerEntryStub(
-            dir, 'lib/tool.dart', entry,
-            forTests: false);
-        final content =
-            await File('${dir.path}/_jetleaf/entries/lib__tool.dart')
-                .readAsString();
+          dir,
+          'lib/tool.dart',
+          entry,
+          forTests: false,
+        );
+        final content = await File(
+          '${dir.path}/_jetleaf/entries/lib__tool.dart',
+        ).readAsString();
         // A `void` value can neither be `is`-checked nor awaited.
         expect(content, contains('entry.main();'));
         expect(content, isNot(contains('is Future')));
@@ -151,17 +181,21 @@ void main() {
     test('stubs carry the shared generated header', () async {
       final dir = await Directory.systemTemp.createTemp('jl_stub');
       try {
-        await File('${dir.path}/pubspec.yaml')
-            .writeAsString('name: demo_app\n');
+        await File(
+          '${dir.path}/pubspec.yaml',
+        ).writeAsString('name: demo_app\n');
         final lib = Directory('${dir.path}/lib')..createSync();
         final entry = File('${lib.path}/main.dart')
           ..writeAsString('void main(List<String> args) async {}\n');
         await JetleafVM.instance.writeRunnerEntryStub(
-            dir, 'lib/main.dart', entry,
-            forTests: false);
+          dir,
+          'lib/main.dart',
+          entry,
+          forTests: false,
+        );
         final content = await File(
-                '${dir.path}/_jetleaf/entries/lib__main.dart')
-            .readAsString();
+          '${dir.path}/_jetleaf/entries/lib__main.dart',
+        ).readAsString();
         expect(content, contains('AUTO-GENERATED entry stub'));
         expect(content, contains('Do not edit manually'));
         expect(content, contains('Copyright (c)'));
@@ -174,8 +208,9 @@ void main() {
     test('entry outside lib/ uses encoded file import', () async {
       final dir = await Directory.systemTemp.createTemp('jl_stub');
       try {
-        await File('${dir.path}/pubspec.yaml')
-            .writeAsString('name: demo_app\n');
+        await File(
+          '${dir.path}/pubspec.yaml',
+        ).writeAsString('name: demo_app\n');
         final bin = Directory('${dir.path}/bin')..createSync();
         final entry = File('${bin.path}/tool.dart')
           ..writeAsString('void main() {}\n');
@@ -192,17 +227,21 @@ void main() {
     test('prefixes stay lint-clean (no leading underscores)', () async {
       final dir = await Directory.systemTemp.createTemp('jl_stub');
       try {
-        await File('${dir.path}/pubspec.yaml')
-            .writeAsString('name: demo_app\n');
+        await File(
+          '${dir.path}/pubspec.yaml',
+        ).writeAsString('name: demo_app\n');
         final lib = Directory('${dir.path}/lib')..createSync();
         final entry = File('${lib.path}/main.dart')
           ..writeAsString('void main(List<String> args) async {}\n');
         await JetleafVM.instance.writeRunnerEntryStub(
-            dir, 'lib/main.dart', entry,
-            forTests: false);
+          dir,
+          'lib/main.dart',
+          entry,
+          forTests: false,
+        );
         final content = await File(
-                '${dir.path}/_jetleaf/entries/lib__main.dart')
-            .readAsString();
+          '${dir.path}/_jetleaf/entries/lib__main.dart',
+        ).readAsString();
         expect(content, contains('as jl;'));
         expect(content, contains('as entry;'));
         expect(content, isNot(contains('_user_entry')));
@@ -213,4 +252,3 @@ void main() {
     });
   });
 }
-

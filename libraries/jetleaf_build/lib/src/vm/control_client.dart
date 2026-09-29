@@ -118,7 +118,7 @@ abstract final class JetleafControlClient {
   static int _printEvent(Map<String, dynamic> event, int code) {
     switch (event['type']) {
       case 'log':
-        final message = event['message'];
+        final message = event['formatted'] ?? event['message'];
         if (message != null) print(message);
         return code;
       case 'run_step':

@@ -91,8 +91,14 @@ abstract final class EntryWriter {
   ///
   /// **Returns:** `_jetleaf/entries/<slug>.dart`.
   @protected
-  File stubFileFor(Directory projectRoot, String entryKey) => File(p.join(
-      projectRoot.path, '_jetleaf', 'entries', '${stubSlugFor(entryKey)}.dart'));
+  File stubFileFor(Directory projectRoot, String entryKey) => File(
+    p.join(
+      projectRoot.path,
+      '_jetleaf',
+      'entries',
+      '${stubSlugFor(entryKey)}.dart',
+    ),
+  );
 
   /// File-system-root-relative URI of the stub, used with
   /// `FrontendServerClient` (same `org-dartlang-root` scheme as boot).
@@ -115,11 +121,12 @@ abstract final class EntryWriter {
   /// **Returns:** `.dart_tool/jetleaf_build/entries/<slug>.dill`.
   @protected
   String snapshotPathFor(Directory projectRoot, String entryKey) => p.join(
-      projectRoot.path,
-      '.dart_tool',
-      'jetleaf_build',
-      'entries',
-      '${stubSlugFor(entryKey)}.dill');
+    projectRoot.path,
+    '.dart_tool',
+    'jetleaf_build',
+    'entries',
+    '${stubSlugFor(entryKey)}.dill',
+  );
 
   /// Writes the parked stub for [entryKey].
   ///
@@ -141,18 +148,22 @@ abstract final class EntryWriter {
     Directory projectRoot,
     String entryKey, {
     required bool forTests,
+    File? entryFile,
     bool verbose = false,
-  }) =>
-      _writeStub(
-        projectRoot,
-        entryKey,
-        '''
+  }) {
+    final entryImport = entryFile == null
+        ? ''
+        : "import '${resolveEntryImport(projectRoot, entryFile)}' as warm_entry;";
+    return _writeStub(projectRoot, entryKey, '''
 ${_generatedHeader(entryKey, forTests, 'Parked mode: keeps the prewarmed VM alive with zero user code running.')}
 ${_ensureImport()}
+${_commandImports()}
+$entryImport
 ${_ensureFunction(forTests, verbose: verbose)}
+${_commandServer()}
 ${_parkedMain()}
-''',
-      );
+''');
+  }
 
   /// Rewrites the stub for [entryKey] to import and invoke [entryFile].
   ///
@@ -179,8 +190,11 @@ ${_parkedMain()}
   }) async {
     final import = resolveEntryImport(projectRoot, entryFile);
     if (forTests) {
-      await _writeStub(projectRoot, entryKey,
-          _testDriverStub(entryKey, import, verbose: verbose));
+      await _writeStub(
+        projectRoot,
+        entryKey,
+        _testDriverStub(entryKey, import),
+      );
       return;
     }
     final shape = await entryMainShapeFor(entryFile);
@@ -189,10 +203,7 @@ ${_parkedMain()}
     final tail = shape.returnsVoid
         ? '$call;'
         : 'final result = $call;\n  if (result is Future) await result;';
-    await _writeStub(
-      projectRoot,
-      entryKey,
-      '''
+    await _writeStub(projectRoot, entryKey, '''
 ${_generatedHeader(entryKey, forTests, 'Runner mode: executes ${entryFile.path} inside the prewarmed isolate.')}
 ${_ensureImport()}
 import '$import' as entry;
@@ -206,11 +217,19 @@ Future<void> main(List<String> args) async {
   // Keep the isolate alive after user main completes so the VM
   // survives for the next run (see parked main above).
   Timer.periodic(const Duration(hours: 1), (_) {});
+  await _jlHandleCommand({'type': 'app', 'args': args});
+}
+
+Future<bool> _jlHandleCommand(Map<String, dynamic> message) async {
+  if (message['type'] != 'app') return false;
+  final args = ((message['args'] as List?) ?? const [])
+      .map((value) => value.toString())
+      .toList();
   await _ensureJetleafRuntime();
   $tail
+  return true;
 }
-''',
-    );
+''');
   }
 
   /// Runner stub for test entries: drives the entry tests in this isolate
@@ -236,10 +255,10 @@ Future<void> main(List<String> args) async {
   ///   instead of silencing them.
   ///
   /// **Returns:** the runner stub source.
-  String _testDriverStub(String entryKey, String import,
-      {bool verbose = false}) => '''
+  String _testDriverStub(String entryKey, String import) =>
+      '''
 ${_generatedHeader(entryKey, true, 'Test-driver mode: executes the entry tests with the test engine in this isolate.')}
-${_ensureImport()}
+import 'dart:async';
 import 'package:test_api/backend.dart' show Runtime, SuitePlatform;
 import 'package:test_api/scaffolding.dart' show pumpEventQueue;
 import 'package:test_api/src/backend/declarer.dart' show Declarer;
@@ -253,12 +272,11 @@ import 'package:test_core/src/util/os.dart' show currentOSGuess;
 import 'package:test_core/src/util/print_sink.dart' show PrintSink;
 import '$import' as entry;
 
-${_ensureFunction(true, verbose: verbose)}
-
-bool _jlTestsDone = false;
 bool _jlTestsPassed = false;
 
 Future<bool> runJetleafTests([List<String> args = const []]) async {
+  _jlTestsPassed = false;
+  try {
   final declarer = Declarer(isStandalone: true);
   final dynamic registration = declarer.declare(() {
     try {
@@ -293,12 +311,24 @@ Future<bool> runJetleafTests([List<String> args = const []]) async {
   final success = await Invoker.guard(engine.run);
   print('[jl] engine done: \$success');
   _jlTestsPassed = success == true;
-  _jlTestsDone = true;
+  } catch (e) {
+    print('[jl] engine error: \$e');
+  } finally {
+    print('[jl] tests done: \$_jlTestsPassed');
+  }
   return _jlTestsPassed;
 }
 
+Future<bool> _jlHandleCommand(Map<String, dynamic> message) async {
+  if (message['type'] != 'test') return false;
+  final args = ((message['args'] as List?) ?? const [])
+      .map((value) => value.toString())
+      .toList();
+  return runJetleafTests(args);
+}
+
 Future<void> main() async {
-  // Idles warm: the manager evaluates `runJetleafTests` per run.
+  // Idles warm: the manager sends test commands through the loopback socket.
   // Never completes so the VM survives between runs.
   Timer.periodic(const Duration(hours: 1), (_) {});
   await Completer<void>().future;
@@ -321,7 +351,8 @@ Future<void> main() async {
   /// **Returns:** `(takesArgs, returnsVoid)`.
   @protected
   Future<({bool takesArgs, bool returnsVoid})> entryMainShapeFor(
-      File entryFile) async {
+    File entryFile,
+  ) async {
     try {
       final content = await entryFile.readAsString();
       final result = parseString(content: content, throwIfDiagnostics: false);
@@ -330,10 +361,10 @@ Future<void> main() async {
         if (declaration.name.lexeme != 'main') continue;
         final params =
             declaration.functionExpression.parameters?.parameters ?? [];
-        final takesArgs = params.any((param) =>
-            param.isRequiredPositional || param.isOptionalPositional);
-        final returnsVoid =
-            declaration.returnType?.toString().trim() == 'void';
+        final takesArgs = params.any(
+          (param) => param.isRequiredPositional || param.isOptionalPositional,
+        );
+        final returnsVoid = declaration.returnType?.toString().trim() == 'void';
         return (takesArgs: takesArgs, returnsVoid: returnsVoid);
       }
     } catch (_) {}
@@ -408,7 +439,13 @@ ${Constant.BANNER_ART.trim()}
   ///
   /// **Returns:** the `jl` import line.
   String _ensureImport() =>
-      "import 'package:jetleaf_build/jetleaf_build.dart' as jl;";
+      "import 'dart:async';\n"
+      "import 'package:jetleaf_build/jetleaf_build.dart' as jl;\n"
+      "import 'package:jetleaf_build/src/runtime/scanner/runtime_scanner_configuration.dart' "
+      "show RuntimeScannerConfiguration;";
+
+  /// Imports used by the parked VM command server.
+  String _commandImports() => "import 'dart:convert';\nimport 'dart:io';";
 
   /// Populates the JetLeaf runtime inside the warm isolate.
   ///
@@ -436,8 +473,12 @@ ${Constant.BANNER_ART.trim()}
       onWarning: (_, __) {},
       onError: (_, __) {},''';
     final String scanCall = forTests
-        ? 'await jl.runTestScan($logCallbacks\n    );'
-        : 'await jl.runScan($logCallbacks\n    );';
+        ? 'await jl.runTestScan(\n'
+              '      config: RuntimeScannerConfiguration(forceLoadLibraries: true),\n'
+              '      $logCallbacks\n    );'
+        : 'await jl.runScan(\n'
+              '      config: RuntimeScannerConfiguration(forceLoadLibraries: true),\n'
+              '      $logCallbacks\n    );';
     final String kind = forTests ? 'test runtime' : 'production runtime';
     return '''
 bool _jlRuntimeReady = false;
@@ -451,10 +492,12 @@ Future<void> _ensureJetleafRuntime() async {
   try {
     $scanCall
     _jlRuntimeReady = true;
+    print('[jl] runtime ready');
   } catch (e) {
     // Recorded for the manager poll; rethrowing here would surface as
     // untracked isolate noise instead of a proper run failure.
     _jlRuntimeError = e.toString();
+    print('[jl] runtime error: \$_jlRuntimeError');
   }
 }''';
   }
@@ -471,7 +514,37 @@ Future<void> main() async {
   // exits once the queue drains), so keep a dummy periodic timer alive.
   // Hot restart replaces this root entirely.
   Timer.periodic(const Duration(hours: 1), (_) {});
-  await Completer<void>().future;
+  await _ensureJetleafRuntime();
+  await _jlCommandServer();
+}''';
+
+  /// Keeps the resident isolate available for reload-and-run commands.
+  String _commandServer() => '''
+Future<bool> _jlHandleCommand(Map<String, dynamic> message) async => false;
+
+Future<void> _jlCommandServer() async {
+  final server = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);
+  print('[jl] control port: \${server.port}');
+  await for (final socket in server) {
+    unawaited(() async {
+      try {
+        final line = await socket
+            .cast<List<int>>()
+            .transform(utf8.decoder)
+            .transform(const LineSplitter())
+            .first;
+        final message = jsonDecode(line) as Map<String, dynamic>;
+        final ok = await _jlHandleCommand(message);
+        socket.writeln(jsonEncode({'ok': ok}));
+        await socket.flush();
+      } catch (e) {
+        socket.writeln(jsonEncode({'ok': false, 'error': e.toString()}));
+        await socket.flush();
+      } finally {
+        await socket.close();
+      }
+    }());
+  }
 }''';
 
   /// Writes stub [content] for [entryKey], prepending `dart:async`
@@ -490,9 +563,14 @@ Future<void> main() async {
   ) async {
     final file = stubFileFor(projectRoot, entryKey);
     await file.parent.create(recursive: true);
+    // Built-in templates place imports after the generated header. Keep this
+    // fallback for future templates without moving imports above the header.
     final withImport = content.contains('dart:async')
         ? content
-        : "import 'dart:async';\n$content";
+        : content.replaceFirst(
+            RegExp(r'(?=import )'),
+            "import 'dart:async';\n",
+          );
     await file.writeAsString(withImport);
   }
 }

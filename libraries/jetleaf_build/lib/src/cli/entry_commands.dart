@@ -38,7 +38,7 @@ Options:
 
 Examples:
   jl run lib/main.dart
-  jl run lib/main.dart --port 8080
+  jl run lib/main.dart -- --port 8080
 ''';
 
   /// Validates args and forwards a `runApp` request for `<file>`.
@@ -55,9 +55,7 @@ Examples:
     }
     final root = _flagValue(args, '--root') ?? Directory.current.path;
     final dir = Directory(root);
-    final positional = args
-        .where((a) => !a.startsWith('-') && a != _flagValue(args, '--root'))
-        .toList();
+    final positional = _commandPositionals(args);
     if (positional.isEmpty) {
       stderr.writeln('Error: missing <file>. See `jl run --help`.');
       return 1;
@@ -67,7 +65,7 @@ Examples:
       return 1;
     }
     final entry = positional.first;
-    final entryArgs = positional.skip(1).toList();
+    final entryArgs = _applicationArguments(args);
     return JetleafControlClient.sendControlRequest(dir, {
       'type': 'runApp',
       'entry': entry,
@@ -147,14 +145,18 @@ Examples:
     }
     if (args.contains('--all')) {
       final manager = JetleafControlClient.readManagerFile(dir);
-      final entries = (manager == null)
-          ? const <String>[]
-          : await _testEntries(dir);
+      if (manager == null) {
+        stderr.writeln('Error: jl dev is not running for ${dir.path}.');
+        return 1;
+      }
+      final entries = await _testEntries(dir);
+      final testArgs = _applicationArguments(args);
       var code = 0;
       for (final entry in entries) {
         final c = await JetleafControlClient.sendControlRequest(dir, {
           'type': 'runTest',
           'entry': entry,
+          'args': testArgs,
         });
         if (c != 0) code = c;
       }
@@ -163,9 +165,7 @@ Examples:
       }
       return code;
     }
-    final positional = args
-        .where((a) => !a.startsWith('-') && a != _flagValue(args, '--root'))
-        .toList();
+    final positional = _commandPositionals(args);
     if (positional.isEmpty) {
       stderr.writeln('Error: missing <file> (or use --all).');
       return 1;
@@ -173,6 +173,7 @@ Examples:
     return JetleafControlClient.sendControlRequest(dir, {
       'type': 'runTest',
       'entry': positional.first,
+      'args': _applicationArguments(args),
     });
   }
 
@@ -215,6 +216,40 @@ Examples:
     }
     return null;
   }
+}
+
+/// Returns positional command arguments before the `--` application delimiter.
+List<String> _commandPositionals(List<String> args) {
+  final end = args.indexOf('--');
+  final commandArgs = end == -1 ? args : args.sublist(0, end);
+  final values = <String>[];
+  final rootValue = _readFlagValue(commandArgs, '--root');
+  for (var i = 0; i < commandArgs.length; i++) {
+    final value = commandArgs[i];
+    if (value == '--root') {
+      i++;
+      continue;
+    }
+    if (value.startsWith('--root=')) continue;
+    if (!value.startsWith('-') && value != rootValue) values.add(value);
+  }
+  return values;
+}
+
+/// Returns arguments after the `--` application delimiter unchanged.
+List<String> _applicationArguments(List<String> args) {
+  final separator = args.indexOf('--');
+  return separator == -1 ? const [] : args.sublist(separator + 1);
+}
+
+String? _readFlagValue(List<String> args, String flag) {
+  for (var i = 0; i < args.length; i++) {
+    if (args[i] == flag && i + 1 < args.length) return args[i + 1];
+    if (args[i].startsWith('$flag=')) {
+      return args[i].substring(flag.length + 1);
+    }
+  }
+  return null;
 }
 
 /// {@template status_command}
