@@ -1,0 +1,36 @@
+name: jetleaf_monitor
+version: 1.0.0
+keywords:
+  - jetleaf
+  - health-check
+  - metrics
+  - diagnostics
+  - performance-monitoring
+topics:
+  - monitoring
+  - health
+  - metrics
+  - diagnostics
+  - jetleaf
+description: Actuator module for Jetleaf — provides health checks, performance metrics, diagnostics, and runtime monitoring.
+
+publish_to: 'none'
+
+environment:
+  sdk: ^3.9.0
+
+resolution: workspace
+
+dependencies:
+  jetleaf_lang: any
+  jetleaf_logging: any
+  jetleaf_pod: any
+  jetleaf_core: any
+  jetleaf_env: any
+  jetson:
+    path: ../jetson
+
+dev_dependencies:
+  test: ^1.29.0
+  meta: ^1.18.0
+  lints: ^6.0.0

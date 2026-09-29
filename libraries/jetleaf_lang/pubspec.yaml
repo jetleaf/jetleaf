@@ -1,0 +1,33 @@
+name: jetleaf_lang
+version: 1.0.0
+keywords:
+  - jetleaf
+  - language
+  - primitives
+  - collections
+  - utilities
+topics:
+  - language
+  - primitives
+  - collections
+  - jetleaf
+  - utilities
+description: Language utilities for Jetleaf — provides extended Dart primitives, collections, I/O, date/time, math, and regex types.
+
+publish_to: 'none'
+
+environment:
+  sdk: ^3.9.0
+
+resolution: workspace
+
+dependencies:
+  dart_internal:
+    path: ../dart_internal
+  path: ^1.9.1
+  jetleaf_build: any
+
+dev_dependencies:
+  test: ^1.29.0
+  meta: ^1.18.0
+  lints: ^6.0.0

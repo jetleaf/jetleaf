@@ -1,0 +1,86 @@
+import 'runtime_scanner_summary.dart';
+
+/// {@template default_runtime_scan_summary}
+/// A default implementation of [ConfigurableRuntimeScannerSummary] that
+/// holds the results of a Runtime scan including the build context,
+/// timestamp, and all reported messages (errors, warnings, and info).
+///
+/// This class is typically used as a container during or after a Runtime
+/// scan to collect and access scanning results.
+///
+/// ## Example:
+/// ```dart
+/// final summary = DefaultRuntimeScannerSummary();
+/// summary.setContext(context);
+/// summary.setBuildTime(DateTime.now());
+/// summary.addError("Missing annotation on class Foo");
+/// summary.addWarning("Deprecated API used in Bar");
+/// summary.addInfo("Scan completed in 120ms");
+///
+/// print(summary.getErrors()); // ["Missing annotation on class Foo"]
+/// ```
+/// {@endtemplate}
+class DefaultRuntimeScannerSummary extends ConfigurableRuntimeScannerSummary {
+  late DateTime _buildTime;
+  late List<String> _errors;
+  late List<String> _warnings;
+  late List<String> _infos;
+  final List<String> _all = [];
+  late Map<String, String> _generatedFiles;
+
+  /// {@macro default_runtime_scan_summary}
+  DefaultRuntimeScannerSummary() {
+    _errors = <String>[];
+    _warnings = <String>[];
+    _infos = <String>[];
+    _generatedFiles = <String, String>{};
+  }
+
+  @override
+  DateTime getBuildTime() => _buildTime;
+
+  @override
+  List<String> getErrors() => _errors;
+
+  @override
+  List<String> getWarnings() => _warnings;
+
+  @override
+  List<String> getInfos() => _infos;
+
+  @override
+  void setBuildTime(DateTime buildTime) {
+    _buildTime = buildTime;
+  }
+
+  @override
+  void addErrors(List<String> errors) {
+    _errors.addAll(errors);
+  }
+
+  @override
+  void addAll(List<String> logs) {
+    _all.addAll(logs);
+  }
+
+  @override
+  List<String> getLogsAsIs() => _all;
+
+  @override
+  void addWarnings(List<String> warnings) {
+    _warnings.addAll(warnings);
+  }
+
+  @override
+  void addInfos(List<String> infos) {
+    _infos.addAll(infos);
+  }
+
+  @override
+  void addGeneratedFiles(Map<String, String> files) {
+    _generatedFiles.addAll(files);
+  }
+
+  @override
+  Map<String, String> getGeneratedFiles() => _generatedFiles;
+}

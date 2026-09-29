@@ -1,0 +1,34 @@
+name: jetleaf_env
+version: 1.0.0
+keywords:
+  - environment
+  - configuration
+  - properties
+  - profiles
+  - jetleaf
+topics:
+  - environment
+  - configuration
+  - properties
+  - profiles
+  - jetleaf
+description: Provides environment configuration, property access, and profile activation.
+
+publish_to: 'none'
+
+environment:
+  sdk: ^3.9.0
+
+resolution: workspace
+
+dependencies:
+  jetleaf_lang: any
+  jetleaf_logging: any
+  jetleaf_convert: any
+  jetleaf_utils: any
+  jetleaf_build: any
+
+dev_dependencies:
+  test: ^1.29.0
+  meta: ^1.18.0
+  lints: ^6.0.0

@@ -1,0 +1,39 @@
+name: jetleaf_devtool
+version: 1.0.0
+keywords:
+  - jetleaf
+  - devtools
+  - debugging
+  - automation
+  - inspection
+topics:
+  - devtools
+  - debugging
+  - automation
+  - jetleaf
+  - inspection
+description: Development tooling module for Jetleaf — provides utilities for debugging, runtime inspection, and project automation.
+
+publish_to: 'none'
+
+environment:
+  sdk: ^3.9.0
+
+resolution: workspace
+
+dependencies:
+  source_gen: ^4.2.0
+  analyzer: ^10.0.1
+  build: ^4.0.4
+  frontend_server_client: ^4.0.0
+  path: ^1.9.1
+  vm_service: ^15.0.2
+  jetleaf_core: any
+  jetleaf_lang: any
+  jetleaf_logging: any
+  jetleaf_utils: any
+
+dev_dependencies:
+  test: ^1.29.0
+  meta: ^1.18.0
+  lints: ^6.0.0

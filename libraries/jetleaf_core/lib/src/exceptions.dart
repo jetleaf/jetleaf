@@ -1,0 +1,61 @@
+import 'package:jetleaf_lang/lang.dart';
+
+// ========================================= MESSAGE SOURCE EXCEPTION ========================================
+
+/// {@template message_source_exception}
+/// An exception that occurs when resolving messages from a [MessageSource].
+///
+/// This exception provides additional context beyond a simple error message:
+/// - [code]: the message key that failed to resolve.
+/// - [locale]: the locale that was requested when the error occurred.
+/// - [resource]: the underlying resource (e.g., file, bundle, or database) involved.
+/// - [cause]: the original exception that triggered this error, if any.
+///
+/// This is especially useful in internationalization (i18n) and configuration
+/// systems where message lookup may fail due to missing keys, unsupported locales,
+/// or inaccessible resources.
+///
+/// ### Example
+/// ```dart
+/// void loadMessage(String key, Locale locale) {
+///   throw MessageSourceException(
+///     "Message key not found",
+///     code: key,
+///     locale: locale,
+///     resource: "messages_en.properties",
+///   );
+/// }
+///
+/// try {
+///   loadMessage("missing.key", Locale("en"));
+/// } catch (e) {
+///   print(e);
+///   // Output:
+///   // MessageSourceException: Message key not found [code=missing.key] [locale=en] [resource=messages_en.properties]
+/// }
+/// ```
+/// {@endtemplate}
+class MessageSourceException extends RuntimeException {
+  /// The message code (key) that failed to resolve.
+  final String? code;
+
+  /// The locale in which the message was being resolved.
+  final Locale? locale;
+
+  /// The resource (e.g., properties file, database, etc.)
+  /// that was queried during resolution.
+  final String? resource;
+
+  /// {@macro message_source_exception}
+  MessageSourceException(super.message, {this.code, this.locale, this.resource, super.cause});
+
+  @override
+  String toString() {
+    final buf = StringBuffer('MessageSourceException: $message');
+    if (code != null) buf.write(' [code=$code]');
+    if (locale != null) buf.write(' [locale=$locale]');
+    if (resource != null) buf.write(' [resource=$resource]');
+    if (cause != null) buf.write(' (cause=$cause)');
+    return buf.toString();
+  }
+}

@@ -1,0 +1,33 @@
+name: jetleaf_utils
+version: 1.0.0
+keywords:
+  - utils
+  - helper
+  - extensions
+  - toolkit
+  - jetleaf
+topics:
+  - utils
+  - helper
+  - extensions
+  - toolkit
+  - jetleaf
+description: High-level utilities and helpers for Jetleaf applications.
+
+publish_to: 'none'
+
+environment:
+  sdk: ^3.9.0
+
+resolution: workspace
+
+dependencies:
+  stack_trace: ^1.12.1
+  jetleaf_lang: any
+  jetleaf_logging: any
+  yaml: ^3.1.3
+
+dev_dependencies:
+  test: ^1.29.0
+  meta: ^1.18.0
+  lints: ^6.0.0

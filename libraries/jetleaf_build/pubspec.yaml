@@ -1,0 +1,36 @@
+name: jetleaf_build
+version: 1.0.0
+keywords:
+  - jetleaf
+  - build
+  - codegen
+  - generator
+  - tooling
+topics:
+  - build
+  - codegen
+  - jetleaf
+  - generator
+  - tooling
+description: Build module for Jetleaf — generates application libraries and runtime declarations.
+
+publish_to: 'none'
+
+environment:
+  sdk: ^3.9.0
+
+resolution: workspace
+
+executables:
+  jl: jl
+
+dependencies:
+  analyzer: ^10.2.0
+  frontend_server_client: ^4.0.0
+  path: ^1.9.1
+  vm_service: ^15.0.2
+
+dev_dependencies:
+  test: ^1.31.1
+  lints: ^6.1.0
+  meta: ^1.18.3

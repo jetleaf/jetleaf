@@ -1,0 +1,9 @@
+banner:
+  location: resources/banners/production.txt
+jetleaf:
+  profiles:
+    active: production
+server:
+  port: 8080
+database:
+  url: "www.google.com"

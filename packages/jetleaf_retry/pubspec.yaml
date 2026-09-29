@@ -1,0 +1,33 @@
+name: jetleaf_retry
+version: 1.0.0
+keywords:
+  - jetleaf
+  - retry
+  - resilience
+  - fault-tolerance
+  - backoff
+topics:
+  - resilience
+  - retry
+  - fault-tolerance
+  - jetleaf
+  - circuit-breaker
+description: Resilience module for Jetleaf — provides retry, circuit breaker, and fault tolerance patterns.
+
+publish_to: 'none'
+
+environment:
+  sdk: ^3.9.0
+
+resolution: workspace
+
+dependencies:
+  jetleaf_lang: any
+  jetleaf_logging: any
+  jetleaf_pod: any
+  jetleaf_core: any
+
+dev_dependencies:
+  test: ^1.29.0
+  meta: ^1.18.0
+  lints: ^6.0.0

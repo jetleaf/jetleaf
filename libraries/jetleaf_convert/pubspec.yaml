@@ -1,0 +1,31 @@
+name: jetleaf_convert
+version: 1.0.0
+keywords:
+  - conversion
+  - converters
+  - adapters
+  - serialization
+  - jetleaf
+topics:
+  - conversion
+  - mapping
+  - serialization
+  - jetleaf
+  - adapters
+description: Provides dynamic type conversion utilities for Jetleaf applications.
+
+publish_to: 'none'
+
+environment:
+  sdk: ^3.9.0
+
+resolution: workspace
+
+dependencies:
+  jetleaf_build: any
+  jetleaf_lang: any
+
+dev_dependencies:
+  test: ^1.29.0
+  meta: ^1.18.0
+  lints: ^6.0.0
