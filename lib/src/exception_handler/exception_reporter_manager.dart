@@ -8,7 +8,7 @@ import 'package:jetleaf_logging/logging.dart';
 /// [ExceptionReporter] within the application's classpath.
 ///
 /// This class acts as the **central registry and factory** for exception-reporting
-/// components. It uses JetLeaf's reflection system to:
+/// components. It uses Jetleaf's reflection system to:
 ///
 /// 1. Locate all non-abstract subclasses of [ExceptionReporter]  
 /// 2. Automatically construct each instance using:

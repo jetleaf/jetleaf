@@ -1,29 +1,15 @@
-// ---------------------------------------------------------------------------
-// 🍃 JetLeaf Framework - https://jetleaf.hapnium.com
-//
-// Copyright © 2025 Hapnium & JetLeaf Contributors. All rights reserved.
-//
-// This source file is part of the JetLeaf Framework and is protected
-// under copyright law. You may not copy, modify, or distribute this file
-// except in compliance with the JetLeaf license.
-//
-// For licensing terms, see the LICENSE file in the root of this project.
-// ---------------------------------------------------------------------------
-// 
-// 🔧 Powered by Hapnium — the Dart backend engine 🍃
-
 import 'package:jetleaf/lang.dart' show ClassNotFoundException, RuntimeProvider;
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_lang/lang.dart';
 
-import '../jet_leaf_application.dart';
-import 'jet_leaf_config_parser.dart';
+import '../jetleaf_application_starter.dart';
+import 'jetleaf_config_parser.dart';
 
 /// {@template jetleaf_import_selector}
-/// 🫘 Default [ImportSelector] implementation for JetLeaf.
+/// 🫘 Default [ImportSelector] implementation for Jetleaf.
 ///
-/// `JetLeafImportSelector` scans the runtime environment for all available
-/// JetLeaf packages and selects their names as imports. This allows the
+/// `JetleafImportSelector` scans the runtime environment for all available
+/// Jetleaf packages and selects their names as imports. This allows the
 /// framework to automatically discover and register modules without
 /// requiring manual import lists.
 ///
@@ -37,11 +23,11 @@ import 'jet_leaf_config_parser.dart';
 ///
 /// ```dart
 /// void main() {
-///   const selector = JetLeafImportSelector();
+///   const selector = JetleafImportSelector();
 ///   final imports = selector.selects();
 ///
 ///   for (final pkg in imports) {
-///     print('Discovered JetLeaf package: $pkg');
+///     print('Discovered Jetleaf package: $pkg');
 ///   }
 /// }
 /// ```
@@ -49,7 +35,7 @@ import 'jet_leaf_config_parser.dart';
 /// ## Notes
 ///
 /// - Always returns a list, which may be empty if no packages are available.
-/// - Intended for use by JetLeaf’s startup and dependency resolution process.
+/// - Intended for use by Jetleaf’s startup and dependency resolution process.
 ///
 /// See also:
 /// - [ImportSelector] 🫘 for the interface contract.
@@ -59,8 +45,8 @@ import 'jet_leaf_config_parser.dart';
 final class ApplicationImportSelector implements ImportSelector {
   /// Creates a constant [ApplicationImportSelector].
   /// 
-  /// This selector is used by JetLeaf to automatically discover and register
-  /// all available JetLeaf packages.
+  /// This selector is used by Jetleaf to automatically discover and register
+  /// all available Jetleaf packages.
   /// 
   /// {@macro jetleaf_import_selector}
   const ApplicationImportSelector();
@@ -79,13 +65,13 @@ final class ApplicationImportSelector implements ImportSelector {
     List<Map<String, List<String>>> configurations = [];
 
     for (final asset in assets) {
-      final parser = JetLeafConfigParser();
+      final parser = JetleafConfigParser();
       configurations.add(parser.parseAsset(asset));
     }
 
     for (final configuration in configurations) {
-      final enableConfiguration = configuration[JetLeafApplication.ENABLE_AUTO_CONFIGURATION_PROPERTY];
-      final disableConfiguration = configuration[JetLeafApplication.DISABLE_AUTO_CONFIGURATION_PROPERTY];
+      final enableConfiguration = configuration[JetleafApplicationStarter.ENABLE_AUTO_CONFIGURATION_PROPERTY];
+      final disableConfiguration = configuration[JetleafApplicationStarter.DISABLE_AUTO_CONFIGURATION_PROPERTY];
 
       if (enableConfiguration != null) {
         for (final item in enableConfiguration) {

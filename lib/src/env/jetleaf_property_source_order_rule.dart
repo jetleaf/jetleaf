@@ -1,7 +1,7 @@
 import 'package:jetleaf/env.dart';
 
 /// {@template jetleaf_property_source_order_rule}
-/// A JetLeaf–specific ordering rule that sorts property sources according to
+/// A Jetleaf–specific ordering rule that sorts property sources according to
 /// the official environmental precedence rules.
 ///
 /// ### Precedence Table

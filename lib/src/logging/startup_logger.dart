@@ -1,17 +1,3 @@
-// ---------------------------------------------------------------------------
-// 🍃 JetLeaf Framework - https://jetleaf.hapnium.com
-//
-// Copyright © 2025 Hapnium & JetLeaf Contributors. All rights reserved.
-//
-// This source file is part of the JetLeaf Framework and is protected
-// under copyright law. You may not copy, modify, or distribute this file
-// except in compliance with the JetLeaf license.
-//
-// For licensing terms, see the LICENSE file in the root of this project.
-// ---------------------------------------------------------------------------
-// 
-// 🔧 Powered by Hapnium — the Dart backend engine 🍃
-
 import 'dart:io';
 
 import 'package:jetleaf_core/context.dart';
@@ -20,7 +6,7 @@ import 'package:jetleaf_logging/logging.dart';
 import 'package:jetleaf_env/env.dart';
 import 'package:jetleaf_pod/pod.dart';
 
-import '../jet_application.dart';
+import '../jetleaf_application.dart';
 
 /// {@template startup_info_logger}
 /// Logs application startup events in a structured and user-friendly format.
@@ -46,15 +32,15 @@ import '../jet_application.dart';
 /// logger.logStarting(log);
 ///
 /// // After startup
-/// final startup = Startup('Started JetLeafApplication', Duration(seconds: 2));
+/// final startup = Startup('Started JetleafApplicationStarter', Duration(seconds: 2));
 /// logger.logStarted(log, startup);
 /// ```
 ///
 /// Example output:
 /// ```text
 /// Starting AOT MyApp v1.0.0 using Dart 3.5.0 with PID 12345 (bin/my_app.dart started by alice in /workspace)
-/// Running with JetLeaf v1.0.0, Dart v3.5.0
-/// Started JetLeafApplication in 2.003 seconds (process running for 2.003)
+/// Running with Jetleaf v1.0.0, Dart v3.5.0
+/// Started JetleafApplicationStarter in 2.003 seconds (process running for 2.003)
 /// ```
 /// {@endtemplate}
 class StartupLogger {
@@ -63,7 +49,7 @@ class StartupLogger {
   ///
   /// Typically, this is the class passed to:
   /// ```dart
-  /// JetApplication.run(MyApp);
+  /// JetleafApplication.run(MyApp);
   /// ```
   ///
   /// Used when generating startup messages like:
@@ -87,11 +73,11 @@ class StartupLogger {
   StartupLogger(this.sourceClass, this.environment);
 
   /// {@template startup_info_logger.log_starting}
-  /// Logs the initial **"Starting ..."** and **"Running with JetLeaf ..."**
+  /// Logs the initial **"Starting ..."** and **"Running with Jetleaf ..."**
   /// messages.
   ///
   /// - `"Starting ..."` includes compiler mode, app name, version, Dart version, PID, and context
-  /// - `"Running with JetLeaf ..."` shows JetLeaf version and Dart version
+  /// - `"Running with Jetleaf ..."` shows Jetleaf version and Dart version
   ///
   /// Example:
   /// ```dart
@@ -101,7 +87,7 @@ class StartupLogger {
   /// Output:
   /// ```text
   /// Starting AOT MyApp v1.0.0 using Dart 3.5.0 with PID 12345 (bin/my_app.dart started by alice in /workspace)
-  /// Running with JetLeaf v1.0.0, Dart v3.5.0
+  /// Running with Jetleaf v1.0.0, Dart v3.5.0
   /// ```
   /// {@endtemplate}
   void logStarting(Log log) {
@@ -119,13 +105,13 @@ class StartupLogger {
   ///
   /// Example:
   /// ```dart
-  /// final startup = Startup('Started JetLeafApplication', Duration(milliseconds: 1500));
+  /// final startup = Startup('Started JetleafApplicationStarter', Duration(milliseconds: 1500));
   /// logger.logStarted(log, startup);
   /// ```
   ///
   /// Output:
   /// ```text
-  /// Started JetLeafApplication in 1.500 seconds (process running for 1.502)
+  /// Started JetleafApplicationStarter in 1.500 seconds (process running for 1.502)
   /// ```
   /// {@endtemplate}
   void logStarted(Log log, StartupTracker startup) {
@@ -147,10 +133,10 @@ class StartupLogger {
     return message.toString();
   }
 
-  /// Returns the **"Running with JetLeaf ..."** message showing JetLeaf
+  /// Returns the **"Running with Jetleaf ..."** message showing Jetleaf
   /// and Dart runtime versions.
   String _getRunningMessage() {
-    final message = StringBuffer('Running with JetLeaf');
+    final message = StringBuffer('Running with Jetleaf');
     _appendVersion(message, getClass(null, PackageNames.CORE).getPackage().getVersion());
     message.write(', Dart');
     _appendVersion(message, Platform.version);
@@ -197,11 +183,11 @@ class StartupLogger {
   }
 
   void _appendApplicationVersion(StringBuffer message) {
-    _append(message, 'v', () => environment.getProperty(JetApplication.JETLEAF_APPLICATION_VERSION) ?? sourceClass?.getPackage().getVersion());
+    _append(message, 'v', () => environment.getProperty(JetleafApplication.JETLEAF_APPLICATION_VERSION) ?? sourceClass?.getPackage().getVersion());
   }
 
   void _appendPid(StringBuffer message) {
-    _append(message, 'with PID ', () => environment.getProperty(JetApplication.JETLEAF_APPLICATION_PID) ?? '$pid');
+    _append(message, 'with PID ', () => environment.getProperty(JetleafApplication.JETLEAF_APPLICATION_PID) ?? '$pid');
   }
 
   void _appendContext(StringBuffer message) {

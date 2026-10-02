@@ -15,8 +15,11 @@ include: package:lints/recommended.yaml
 analyzer:
   errors:
     constant_identifier_names: ignore
+    depend_on_referenced_packages: ignore
+    deprecated_member_use: ignore
     library_private_types_in_public_api: ignore
     non_constant_identifier_names: ignore
+    unintended_html_in_doc_comment: ignore
 
 # Uncomment the following section to specify additional rules.
 

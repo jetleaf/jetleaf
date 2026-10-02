@@ -1,23 +1,9 @@
-// ---------------------------------------------------------------------------
-// 🍃 JetLeaf Framework - https://jetleaf.hapnium.com
-//
-// Copyright © 2025 Hapnium & JetLeaf Contributors. All rights reserved.
-//
-// This source file is part of the JetLeaf Framework and is protected
-// under copyright law. You may not copy, modify, or distribute this file
-// except in compliance with the JetLeaf license.
-//
-// For licensing terms, see the LICENSE file in the root of this project.
-// ---------------------------------------------------------------------------
-// 
-// 🔧 Powered by Hapnium — the Dart backend engine 🍃
-
 import 'dart:async';
 
 import 'package:jetleaf_lang/lang.dart';
 
 /// {@template application_exception_handler}
-/// A global, thread-safe handler for uncaught exceptions in JetLeaf applications.
+/// A global, thread-safe handler for uncaught exceptions in Jetleaf applications.
 ///
 /// The [ApplicationExceptionHandler] is responsible for intercepting all uncaught
 /// exceptions thrown during the execution of the application, either synchronously
@@ -50,7 +36,7 @@ import 'package:jetleaf_lang/lang.dart';
 /// ```
 ///
 /// References:
-/// - [Throwable]: Base class for exceptions in JetLeaf.
+/// - [Throwable]: Base class for exceptions in Jetleaf.
 /// - [RuntimeException]: Wrapper for non-Throwable objects.
 /// - [Zone]: Dart class for asynchronous exception handling.
 /// - [_logConfigurationMessages]: Recognized log configuration error messages.
@@ -102,7 +88,7 @@ class ApplicationExceptionHandler {
   ///
   /// ### Example
   /// ```dart
-  /// final handler = JetLeafExceptionHandler.current;
+  /// final handler = JetleafExceptionHandler.current;
   /// handler.registerLoggedException(someThrowable);
   /// ```
   void registerLoggedException(Throwable exception) {
@@ -116,7 +102,7 @@ class ApplicationExceptionHandler {
   ///
   /// ### Example
   /// ```dart
-  /// JetLeafExceptionHandler.current.registerExitCode(1);
+  /// JetleafExceptionHandler.current.registerExitCode(1);
   /// ```
   void registerExitCode(int code) {
     _exitCode = code;
@@ -128,7 +114,7 @@ class ApplicationExceptionHandler {
   ///
   /// ### Example
   /// ```dart
-  /// JetLeafExceptionHandler handler = JetLeafExceptionHandler.current;
+  /// JetleafExceptionHandler handler = JetleafExceptionHandler.current;
   /// ```
   static ApplicationExceptionHandler get current {
     ApplicationExceptionHandler? handler = _handlerLocal.get();
@@ -150,7 +136,7 @@ class ApplicationExceptionHandler {
   /// ```dart
   /// runZonedGuarded(() {
   ///   throw 'Critical error!';
-  /// }, JetLeafExceptionHandler.current.uncaughtException);
+  /// }, JetleafExceptionHandler.current.uncaughtException);
   /// ```
   void uncaughtException(Object exception, StackTrace stackTrace) {
     Throwable? th;

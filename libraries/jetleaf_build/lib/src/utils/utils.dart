@@ -1,0 +1,615 @@
+import 'dart:collection';
+import 'dart:io';
+import 'dart:isolate';
+
+import 'package:meta/meta.dart';
+import 'package:path/path.dart' as p;
+
+import '../runtime/scanner/runtime_scanner_configuration.dart';
+
+/// {@template reflect_utils}
+/// Utility class for reflection-related operations in Jetleaf.
+///
+/// Provides helper methods for:
+/// - URI and package resolution
+/// - File exclusion/inclusion checks
+/// - Source code analysis
+/// - Jetleaf-specific filtering
+///
+/// {@template reflect_utils_example}
+/// Example usage:
+/// ```dart
+/// final utils = ReflectUtils();
+///
+/// // Check if a URI should be excluded
+/// final shouldExclude = await ReflectUtils.shouldNotIncludeLibrary(
+///   Uri.parse('package:some_pkg/file.dart'),
+///   loader,
+///   print,
+/// );
+///
+/// // Get package name from URI
+/// final pkgName = ReflectUtils.getPackageNameFromUri('package:html/html.dart');
+/// ```
+/// {@endtemplate}
+/// {@endtemplate}
+class RuntimeUtils {
+  /// {@macro reflect_utils}
+  RuntimeUtils._();
+
+  /// Regular expression to identify Jetleaf packages that should be skipped.
+  ///
+  /// Matches internal Jetleaf packages like:
+  /// - `package:jetleaf_lang/src/lang`
+  /// - `package:jetleaf_lang/test`
+  /// - `package:jetleaf_lang/src/utils`
+  static final RegExp _jetLeafPackagesToSkip = RegExp(
+    r'^package:jetleaf_(?:build|lang)/(?:'
+    r'src/lang/reflect/(?:runtime_provider|runtime_scanner|runtime_resolver|declaration|generators)|'
+    r'src/(?:runtime|meta|utils|cli|mock|test|logging|lang)|'
+    r'test'
+    r')(?:/|$)',
+  );
+
+  /// Regular expression to identify Jetleaf folders that should be skipped.
+  ///
+  /// Matches internal Jetleaf directories like:
+  /// - `jetleaf_lang/bin`
+  /// - `jetleaf_lang/tool`
+  /// - `jetleaf_lang/src/runtime`
+  static final RegExp _jetLeafFoldersToSkip = RegExp(
+    r'jetleaf_(?:build|lang)/(?:'
+    r'bin|'
+    r'tool|'
+    r'src/lang/reflect/(?:runtime_provider|runtime_scanner|runtime_resolver|declaration|generators)|'
+    r'src/(?:runtime|meta|utils|cli|mock|test|logging|lang)|'
+    r'test'
+    r')(?:/|$)',
+  );
+
+  /// Determines if a Jetleaf file should not be loaded.
+  ///
+  /// {@template non_loadable_check}
+  /// Checks if the file matches any of the excluded Jetleaf internal paths.
+  ///
+  /// Parameters:
+  /// - [uri]: The URI to check
+  ///
+  /// Returns `true` if the file is:
+  /// - In Jetleaf's internal implementation directories
+  /// - In Jetleaf's test directories
+  /// - In Jetleaf's tooling directories
+  ///
+  /// Example:
+  /// ```dart
+  /// final shouldSkip = ReflectUtils.isNonLoadableJetleafFile(
+  ///   Uri.parse('package:jetleaf_lang/src/lang/parser.dart'),
+  /// ); // returns true
+  /// ```
+  /// {@endtemplate}
+  static bool isNonLoadableJetleafFile(Uri uri) {
+    final path = uri.toString();
+    return _jetLeafFoldersToSkip.hasMatch(path);
+  }
+
+  /// Checks if a [uri] points to a built-in Dart library.
+  ///
+  /// Built-in libraries have the `dart:` scheme, e.g., `dart:core`, `dart:io`.
+  ///
+  /// - [uri]: The URI to check.
+  /// - Returns: `true` if the URI represents a built-in Dart library.
+  static bool isBuiltInDartLibrary(Uri uri) => uri.scheme == 'dart';
+
+  /// Determines if a Jetleaf package should be skipped during scanning.
+  ///
+  /// {@macro non_loadable_check}
+  /// 
+  /// Example:
+  /// ```dart
+  /// final shouldSkip = ReflectUtils.isSkippableJetleafPackage(
+  ///   Uri.parse('package:jetleaf_lang/test/utils_test.dart'),
+  /// ); // returns true
+  /// ```
+  static bool isSkippableJetleafPackage(Uri identifier) {
+    final path = identifier.toString();
+    return _jetLeafPackagesToSkip.hasMatch(path);
+  }
+
+  /// Extracts the package name from a URI, handling both Dart core and pub packages.
+  ///
+  /// {@template package_name_extraction}
+  /// Parameters:
+  /// - [uri]: Either a String or Uri representing the package location
+  ///
+  /// Returns:
+  /// - The package name for `package:` URIs (e.g., 'html' for 'package:html')
+  /// - `null` for Dart core libraries or invalid URIs
+  ///
+  /// Example:
+  /// ```dart
+  /// final pkg1 = ReflectUtils.getPackageNameFromUri('package:http/http.dart'); // 'http'
+  /// final pkg2 = ReflectUtils.getPackageNameFromUri('dart:core'); // null
+  /// ```
+  /// {@endtemplate}
+  static String? getPackageNameFromUri(dynamic uri) {
+    Uri? parsedUri;
+    
+    if (uri is String) {
+      parsedUri = Uri.tryParse(uri);
+    } else if (uri is Uri) {
+      parsedUri = uri;
+    }
+
+    if (parsedUri == null || parsedUri.scheme == 'dart') {
+      return null;
+    }
+
+    // Handle standard 'package:' URIs
+    if (parsedUri.scheme == 'package') {
+      if (parsedUri.pathSegments.isEmpty || parsedUri.pathSegments.first.isEmpty) {
+        return null;
+      }
+
+      return parsedUri.pathSegments.first;
+    }
+
+    // Handle 'file:' URIs (e.g., file:///Users/mac/Documents/.../class_test.dart)
+    if (parsedUri.scheme == 'file') {
+      File file = File.fromUri(parsedUri);
+      Directory? currentDir = file.parent;
+
+      // Search upward for the nearest pubspec.yaml
+      while (currentDir != null && currentDir.path != currentDir.parent.path) {
+        final pubspecFile = File('${currentDir.path}${Platform.pathSeparator}pubspec.yaml');
+        
+        if (pubspecFile.existsSync()) {
+          try {
+            // Read lines to find "name: package_name" without needing a YAML parser
+            final lines = pubspecFile.readAsLinesSync();
+            for (var line in lines) {
+              if (line.trim().startsWith('name:')) {
+                return line.replaceFirst('name:', '').trim();
+              }
+            }
+          } catch (_) {
+            return null; // File access or read error
+          }
+        }
+        currentDir = currentDir.parent;
+      }
+    }
+
+    return null;
+  }
+
+  /// Resolves a package URI to its file system location.
+  ///
+  /// {@template uri_resolution}
+  /// Parameters:
+  /// - [uri]: The URI to resolve
+  ///
+  /// Returns:
+  /// - The resolved file URI for `package:` URIs
+  /// - The original URI for `file:` URIs
+  /// - `null` for `dart:` URIs or unresolvable URIs
+  ///
+  /// Example:
+  /// ```dart
+  /// final resolved = await ReflectUtils.resolveUri(
+  ///   Uri.parse('package:path/path.dart'),
+  /// );
+  /// ```
+  /// {@endtemplate}
+  static Future<Uri?> resolveUri(Uri uri) async {
+    // 1. Direct file URIs
+    if (uri.scheme == "file") {
+      return uri;
+    }
+
+    // 2. Resolve package: URIs using Isolate API
+    if (uri.scheme == "package") {
+      return await Isolate.resolvePackageUri(uri);
+    }
+
+    // 3. Resolve dart: URIs (e.g., dart:core/string.dart)
+    if (uri.scheme == "dart") {
+      // Platform.resolvedExecutable gives path/to/sdk/bin/dart
+      // The libraries are located in path/to/sdk/lib/
+      final sdkPath = p.dirname(p.dirname(Platform.resolvedExecutable));
+      final libDir = p.join(sdkPath, 'lib');
+      
+      // Convert 'dart:core/string.dart' to 'core/string.dart'
+      String internalPath = uri.path;
+      
+      // If the path is just 'core', Dart usually maps it to 'core/core.dart'
+      if (!internalPath.contains('/')) {
+        internalPath = '$internalPath/$internalPath.dart';
+      }
+
+      final file = File(p.join(libDir, internalPath));
+      return file.existsSync() ? file.uri : null;
+    }
+
+    return null;
+  }
+
+  /// Determines if a library should be excluded based on loader configuration.
+  ///
+  /// {@template library_exclusion}
+  /// Parameters:
+  /// - [uri]: The library URI to check
+  /// - [loader]: The [RuntimeScannerConfiguration] configuration
+  /// - [onError]: Error callback function
+  ///
+  /// Returns `true` if the library should be excluded because:
+  /// - It's a Dart core library
+  /// - It matches exclusion patterns
+  /// - It doesn't match inclusion patterns (when specified)
+  ///
+  /// Example:
+  /// ```dart
+  /// final exclude = await ReflectUtils.shouldNotIncludeLibrary(
+  ///   uri,
+  ///   loader,
+  ///   (error) => print('Error: $error'),
+  /// );
+  /// ```
+  /// {@endtemplate}
+  static Future<bool> shouldNotIncludeLibrary(Uri uri, RuntimeScannerConfiguration loader) async {
+    if (uri.pathSegments.isNotEmpty && uri.pathSegments.first.equalsAny([
+      'analyzer',
+      '_fe_analyzer_shared',
+    ])) {
+      return true;
+    }
+
+    final packageName = getPackageNameFromUri(uri);
+    final filePath = (await resolveUri(uri))?.toFilePath();
+
+    // 🚫 Skip unwanted common folders
+    const excludedDirs = [
+      '/example/',
+      '/benchmark/',
+      '/tool/',
+      '/build/',
+      '/.dart_tool/',
+    ];
+    if (excludedDirs.any((dir) => packageName != null && uri.toString().contains("$packageName$dir"))) {
+      return true;
+    }
+
+    if (matchesAnyPattern(uri.toString(), loader.packagesToExclude) || (packageName != null && matchesAnyPattern(packageName, loader.packagesToExclude))) {
+      return true;
+    }
+    if (filePath != null && matchesAnyFile(filePath, loader.filesToExclude)) {
+      return true;
+    }
+
+    if (loader.packagesToScan.isNotEmpty || loader.filesToScan.isNotEmpty) {
+      final packageMatch = loader.packagesToScan.isEmpty || 
+          matchesAnyPattern(uri.toString(), loader.packagesToScan) ||
+          (packageName != null && matchesAnyPattern(packageName, loader.packagesToScan));
+
+      final fileMatch = filePath != null && (loader.filesToScan.isEmpty || matchesAnyFile(filePath, loader.filesToScan));
+
+      return !(packageMatch || fileMatch);
+    }
+
+    return false;
+  }
+
+  // Regular expressions for source code analysis
+  static final RegExp _partOfDirectiveRegex = RegExp(
+    r'''^\s*part\s+of\s+(['"])[\w.]+\1\s*;''',
+    multiLine: true,
+    caseSensitive: false,
+  );
+
+  static final RegExp _mirrorImportRegex = RegExp(
+    r'''^\s*import\s+(['"])dart:mirrors\1\s*(?:as\s+\w+)?\s*(?:show\s+[^;]+)?\s*(?:hide\s+[^;]+)?\s*;''',
+    multiLine: true,
+    caseSensitive: false,
+  );
+
+  static final RegExp _testImportRegex = RegExp(
+    r'''^\s*(?:import|export)\s+(['"])package:test/[\w/]*\.dart\1\s*;''',
+    multiLine: true,
+    caseSensitive: false,
+  );
+
+  /// Checks if content contains a `part of` directive.
+  ///
+  /// {@template is_part_of}
+  /// Parameters:
+  /// - [content]: The Dart source code to check
+  ///
+  /// Returns `true` if the content contains a valid `part of` directive.
+  ///
+  /// Example:
+  /// ```dart
+  /// final isPart = ReflectUtils.isPartOf('part of my_library;');
+  /// ```
+  /// {@endtemplate}
+  static bool isPartOf(String content) => _partOfDirectiveRegex.hasMatch(content);
+
+  /// {@template is_mirror_import}
+  /// Checks if content imports `dart:mirrors`.
+  /// 
+  /// Returns `true` if the content imports the mirrors library.
+  /// {@endtemplate}
+  static bool hasMirrorImport(String content) => _mirrorImportRegex.hasMatch(content);
+
+  /// {@template is_test}
+  /// Checks if content is a test file.
+  ///
+  /// Returns `true` if the content imports the test package.
+  /// {@endtemplate}
+  static bool isTest(String content) => _testImportRegex.hasMatch(content);
+
+  /// Matches input against a list of patterns.
+  ///
+  /// {@template pattern_matching}
+  /// Parameters:
+  /// - [input]: The string to match against
+  /// - [patterns]: List of patterns (strings or regex patterns prefixed with 'r:')
+  ///
+  /// Returns `true` if any pattern matches the input.
+  ///
+  /// Example:
+  /// ```dart
+  /// final matches = ReflectUtils.matchesAnyPattern(
+  ///   'package:http/http.dart',
+  ///   ['http', 'r:package:http/.*'],
+  /// );
+  /// ```
+  /// {@endtemplate}
+  static bool matchesAnyPattern(String input, List<String> patterns) {
+    return patterns.any((pattern) {
+      if (pattern.startsWith('r:')) {
+        try {
+          return RegExp(pattern.substring(2)).hasMatch(input);
+        } catch (e) {
+          return false;
+        }
+      } else if (pattern.startsWith("r'")) {
+        try {
+          return RegExp(pattern).hasMatch(input);
+        } catch (e) {
+          return false;
+        }
+      }
+      // Exact match or prefix match (e.g. 'package:html' matches 'package:html/parser.dart')
+      return input == pattern || input.startsWith('$pattern/');
+    });
+  }
+
+  /// {@template should_not_include_path}
+  /// Determines if a path should be excluded based on loader configuration.
+  ///
+  /// {@endtemplate}
+  static Future<bool> shouldNotIncludePath(Uri uri, File file, RuntimeScannerConfiguration loader) async {
+    if (uri.pathSegments.isNotEmpty && uri.pathSegments.first.equalsAny(['analyzer', '_fe_analyzer_shared'])) {
+      return true;
+    }
+
+    final packageName = getPackageNameFromUri(uri);
+    final filePath = file.path;
+
+    if (matchesAnyPattern(filePath, loader.packagesToExclude) || (packageName != null && matchesAnyPattern(packageName, loader.packagesToExclude))) {
+      return true;
+    }
+
+    if (matchesAnyFile(filePath, loader.filesToExclude)) {
+      return true;
+    }
+
+    if (loader.packagesToScan.isNotEmpty || loader.filesToScan.isNotEmpty) {
+      final packageMatch = loader.packagesToScan.isEmpty || 
+          matchesAnyPattern(uri.toString(), loader.packagesToScan) ||
+          (packageName != null && matchesAnyPattern(packageName, loader.packagesToScan));
+
+      final fileMatch = (loader.filesToScan.isEmpty || matchesAnyFile(filePath, loader.filesToScan));
+
+      return !(packageMatch || fileMatch);
+    }
+
+    return false;
+  }
+
+  /// Matches a file path against a list of files.
+  ///
+  /// {@macro pattern_matching}
+  /// Parameters:
+  /// - [filePath]: The path to check
+  /// - [files]: List of [File] objects to match against
+  ///
+  /// Returns `true` if the normalized path matches any file.
+  static bool matchesAnyFile(String filePath, List<File> files) {
+    final normalizedPath = p.normalize(filePath);
+    return files.any((file) => p.normalize(file.absolute.path) == normalizedPath);
+  }
+
+  /// Determines if the type is a list type.
+  /// 
+  /// This method determines if the type is a list type.
+  /// It handles complex type relationships and source code analysis to provide
+  /// accurate reflection information.
+  /// 
+  /// **Parameters:**
+  /// - [type]: The type to process
+  /// 
+  /// **Returns:** True if the type is a list type, false otherwise
+  static bool isListType(Type type) {
+    return isStringAListType(type.toString())
+      || type == List 
+      || type == Iterable 
+      || type is Iterable
+      || type == Queue
+      || type == HashSet;
+  }
+
+  /// Determines if the type is a list type.
+  /// 
+  /// This method determines if the type is a list type.
+  /// It handles complex type relationships and source code analysis to provide
+  /// accurate reflection information.
+  /// 
+  /// **Parameters:**
+  /// - [type]: The type to process
+  /// 
+  /// **Returns:** True if the type is a list type, false otherwise
+  static bool isStringAListType(String type) {
+    return type.startsWith('List<')
+      || type.startsWith('ArrayList<')
+      || type.startsWith('LinkedList<')
+      || type.startsWith('Stack<')
+      || type.startsWith('Queue<')
+      || type.startsWith('LinkedQueue<')
+      || type.startsWith('LinkedStack<')
+      || type.startsWith('HashSet<');
+  }
+
+  /// Determines if the type is a map type or a generic key-value container type.
+  /// 
+  /// This method checks if the type is either:
+  /// - A Map/HashMap type
+  /// - A generic class with at least two type parameters (potential key-value container)
+  /// 
+  /// **Parameters:**
+  /// - [type]: The type to process
+  /// 
+  /// **Returns:** True if the type is a map or key-value container type, false otherwise
+  static bool isMapType(Type type) {
+    return isStringAMapType(type.toString())
+      || type == Map 
+      || type == HashMap
+      || type is Map
+      || _isKeyValueContainerType(type);
+  }
+
+  /// Determines if the type string represents a map or key-value container type.
+  /// 
+  /// This checks for:
+  /// - Standard Map types (Map<..., ...>, HashMap<..., ...>)
+  /// - Generic types with two type parameters (e.g., `Repository<String, User>`)
+  /// 
+  /// **Parameters:**
+  /// - [type]: The type string to process
+  /// 
+  /// **Returns:** True if the type string matches a map or key-value pattern
+  static bool isStringAMapType(String type) {
+    return type.startsWith('Map<') 
+      || type.startsWith('HashMap<')
+      || _isGenericKeyValueTypeString(type);
+  }
+
+  /// Checks if a Type represents a generic class with at least two type parameters
+  static bool _isKeyValueContainerType(Type type) {
+    final typeString = type.toString();
+    return _isGenericKeyValueTypeString(typeString);
+  }
+
+  /// Checks if a type string represents a generic with at least two type parameters
+  static bool _isGenericKeyValueTypeString(String typeString) {
+    // Pattern for generic types with at least two type parameters
+    final genericPattern = RegExp(r'^[^<]+<[^,]+,[^>]+>');
+    return genericPattern.hasMatch(typeString);
+  }
+
+  /// Strip comments from source code
+  static String stripComments(String code) {
+    final commentPattern = RegExp(
+      r'(//.*?$)|(/\*\*?[\s\S]*?\*/)|(^///.*?$)',
+      multiLine: true,
+      dotAll: true,
+    );
+    return code.replaceAll(commentPattern, '');
+  }
+
+  /// Determines whether [root] is a `jetleaf_build` project.
+  ///
+  /// Rule (no yaml dependency — manual line parsing on purpose):
+  /// 1. `pubspec.yaml` has `jetleaf_build:` under `dependencies:` or
+  ///    `dev_dependencies:`, or the package itself is named `jetleaf_build`
+  ///    (self-hosting), OR
+  /// 2. `.dart_tool/package_config.json` lists a `jetleaf_build` package.
+  static bool isJetLeafBuildProject([Directory? root]) {
+    final dir = root ?? Directory.current;
+    // The low-level VM is also the runtime engine for a user-facing Jetleaf
+    // application. A root Jetleaf state file is the strongest signal; the
+    // dependency check keeps freshly created projects usable before `init`.
+    if (File('${dir.path}/Jetleaf').existsSync()) return true;
+    if (_hasJetLeafStarterDep(File('${dir.path}/pubspec.yaml'))) return true;
+    if (_hasJetLeafBuildDep(File('${dir.path}/pubspec.yaml'))) return true;
+    if (_hasJetLeafBuildPackage(
+        File('${dir.path}/.dart_tool/package_config.json'))) {
+      return true;
+    }
+    return false;
+  }
+
+  static bool _hasJetLeafStarterDep(File pubspec) {
+    try {
+      if (!pubspec.existsSync()) return false;
+      for (final raw in pubspec.readAsLinesSync()) {
+        final trimmed = raw.trim();
+        if (trimmed.startsWith('jetleaf:') ||
+            trimmed.startsWith('jetleaf_core:')) {
+          return true;
+        }
+      }
+    } catch (_) {}
+    return false;
+  }
+
+  static bool _hasJetLeafBuildDep(File pubspec) {
+    try {
+      if (!pubspec.existsSync()) return false;
+      var inDeps = false;
+      for (final raw in pubspec.readAsLinesSync()) {
+        final trimmed = raw.trim();
+        // Self-hosting: running from inside jetleaf_build itself.
+        if (trimmed == 'name: jetleaf_build') return true;
+        if (trimmed == 'dependencies:' || trimmed == 'dev_dependencies:') {
+          inDeps = true;
+          continue;
+        }
+        if (inDeps) {
+          // A new top-level key ends the deps section.
+          if (raw.isNotEmpty &&
+              !raw.startsWith(' ') &&
+              !raw.startsWith('\t')) {
+            if (trimmed.endsWith(':') && !trimmed.startsWith('#')) {
+              inDeps = false;
+            }
+            continue;
+          }
+          if (trimmed.startsWith('jetleaf_build:')) return true;
+        }
+      }
+    } catch (_) {}
+    return false;
+  }
+
+  static bool _hasJetLeafBuildPackage(File packageConfig) {
+    try {
+      if (!packageConfig.existsSync()) return false;
+      final content = packageConfig.readAsStringSync();
+      return content.contains('"name": "jetleaf_build"') ||
+          content.contains('"name":"jetleaf_build"');
+    } catch (_) {
+      return false;
+    }
+  }
+}
+
+@internal
+extension StringX on String {
+  bool equalsAny(List<String> values, {bool isLowerCase = false, bool isUpperCase = false, bool isIgnoreCase = false}) {
+    if(isUpperCase) {
+      return values.any((v) => v.toUpperCase() == toUpperCase());
+    }
+
+    return values.any((v) => toLowerCase() == v.toLowerCase());
+  }
+}

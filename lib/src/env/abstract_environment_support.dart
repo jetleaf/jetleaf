@@ -6,10 +6,10 @@ import 'abstract_environment_logging_support.dart';
 import 'models.dart';
 
 /// Provides the foundational mechanics for loading, normalizing, merging,
-/// ordering, and installing configuration sources into a JetLeaf
+/// ordering, and installing configuration sources into a Jetleaf
 /// [ConfigurableEnvironment].
 ///
-/// `AbstractEnvironmentSupport` forms the core of JetLeaf’s environment
+/// `AbstractEnvironmentSupport` forms the core of Jetleaf’s environment
 /// processing pipeline. It implements a structured, deterministic sequence for
 /// turning raw, parsed environment assets—YAML, JSON, `.properties`, Dart maps,
 /// package-embedded configs, and others—into final property sources that the
@@ -23,7 +23,7 @@ import 'models.dart';
 /// ### **1. Profile-Aware Source Construction**
 /// Using [getEnvironmentSources], parsed environment assets are:
 /// - grouped by profile
-/// - sorted by package precedence (root → JetLeaf → Dart → others)
+/// - sorted by package precedence (root → Jetleaf → Dart → others)
 /// - flattened into dotted-key maps
 /// - normalized (comma-splitting, list flattening, deduplication)
 /// - merged using user-first semantics  
@@ -31,9 +31,9 @@ import 'models.dart';
 ///
 ///
 /// ### **2. Deterministic Source Ordering**
-/// Through [_ordered], the class enforces JetLeaf’s package-based precedence:
+/// Through [_ordered], the class enforces Jetleaf’s package-based precedence:
 /// - root package overrides all
-/// - JetLeaf system config next
+/// - Jetleaf system config next
 /// - Dart and other library configs last  
 /// This ensures configuration layering is predictable and stable across
 /// environments.
@@ -62,7 +62,7 @@ import 'models.dart';
 /// ---
 /// ## 🔹 Intended Usage
 ///
-/// This class is extended internally by JetLeaf environment loaders and can be
+/// This class is extended internally by Jetleaf environment loaders and can be
 /// used by framework integrators who need custom environment semantics.
 /// Typical subclasses:
 /// - load configuration from custom file formats  
@@ -106,7 +106,7 @@ import 'models.dart';
 /// - This class is **not** meant for direct instantiation.
 /// - All key operations are `@protected` to guide subclassing while preventing
 ///   misuse.
-/// - The design mirrors JetLeaf’s philosophy of *user-first configuration
+/// - The design mirrors Jetleaf’s philosophy of *user-first configuration
 ///   precedence with deterministic behavior*.
 ///
 ///
@@ -130,8 +130,8 @@ abstract class AbstractEnvironmentSupport extends AbstractEnvironmentLoggingSupp
   ///    Within each profile, sources are sorted using [_ordered] to ensure a
   ///    deterministic merge order:
   ///    - Root (user) package entries first
-  ///    - JetLeaf main package
-  ///    - JetLeaf subpackages
+  ///    - Jetleaf main package
+  ///    - Jetleaf subpackages
   ///    - Dart packages
   ///    - All others last
   ///
@@ -211,8 +211,8 @@ abstract class AbstractEnvironmentSupport extends AbstractEnvironmentLoggingSupp
   /// | Order | Description                                      | Criteria                                                 |
   /// |-------|--------------------------------------------------|-----------------------------------------------------------|
   /// | **0** | Root package                                     | `package.getIsRootPackage()`                              |
-  /// | **1** | JetLeaf main package                              | `name == PackageNames.MAIN`                               |
-  /// | **2** | JetLeaf subpackages                               | `name.startsWith(PackageNames.MAIN)`                      |
+  /// | **1** | Jetleaf main package                              | `name == PackageNames.MAIN`                               |
+  /// | **2** | Jetleaf subpackages                               | `name.startsWith(PackageNames.MAIN)`                      |
   /// | **3** | Dart core or Dart-prefixed packages               | `name == "dart"` or `name.startsWith("dart")`             |
   /// | **4** | All other packages                                | Everything not matching above                             |
   ///
@@ -698,7 +698,7 @@ abstract class AbstractEnvironmentSupport extends AbstractEnvironmentLoggingSupp
   /// ### Notes
   /// - The method assumes that [sources] have already been grouped and merged by
   ///   profile using `getEnvironmentSources`.
-  /// - The ordering strategy mirrors JetLeaf's package-aware configuration loading
+  /// - The ordering strategy mirrors Jetleaf's package-aware configuration loading
   ///   model.
   ///
   /// ### Internal Use

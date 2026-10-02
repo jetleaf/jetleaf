@@ -1,32 +1,18 @@
-// ---------------------------------------------------------------------------
-// 🍃 JetLeaf Framework - https://jetleaf.hapnium.com
-//
-// Copyright © 2025 Hapnium & JetLeaf Contributors. All rights reserved.
-//
-// This source file is part of the JetLeaf Framework and is protected
-// under copyright law. You may not copy, modify, or distribute this file
-// except in compliance with the JetLeaf license.
-//
-// For licensing terms, see the LICENSE file in the root of this project.
-// ---------------------------------------------------------------------------
-// 
-// 🔧 Powered by Hapnium — the Dart backend engine 🍃
-
 import 'dart:io';
 
 import 'package:jetleaf_env/env.dart';
 import 'package:jetleaf_logging/logging.dart';
 import 'package:jetleaf_lang/lang.dart';
 
-import 'jet_logging_property.dart';
+import 'jetleaf_logging_property.dart';
 
 /// {@template application_logging_listener}
-/// JetLeaf's application-level [LoggingListener] implementation.
+/// Jetleaf's application-level [LoggingListener] implementation.
 ///
-/// This listener acts as a bridge between the JetLeaf logging system and
+/// This listener acts as a bridge between the Jetleaf logging system and
 /// the active [Environment]. It configures a [Logger] instance per
 /// application or per log `tag`, using environment-driven settings from
-/// [JetLoggingProperty].
+/// [JetleafLoggingProperty].
 ///
 /// Features:
 /// - Creates a lazily-initialized [Logger] per tag.
@@ -73,12 +59,12 @@ final class ApplicationLoggingListener implements LoggingListener {
     final type = _getLogType(tag);
     final config = _getLogConfig(tag);
     final logger = _loggers[name] ?? Logger(name: name, type: type, config: config);
-    final loggingFile = _get(_key(JetLoggingProperty.FILE, tag)) ?? _get(_key(JetLoggingProperty.FILE));
+    final loggingFile = _get(_key(JetleafLoggingProperty.FILE, tag)) ?? _get(_key(JetleafLoggingProperty.FILE));
     final shouldLogToConsole = loggingFile == null || loggingFile.isEmpty;
 
     // 1. Get global level
     final gl = _getConfiguredLevel(null) ?? _getConfiguredLevel(tag);
-    final isEnabled = _get(_key(JetLoggingProperty.ENABLED, tag))?.toBool() ?? _get(_key(JetLoggingProperty.ENABLED))?.toBool() ?? true;
+    final isEnabled = _get(_key(JetleafLoggingProperty.ENABLED, tag))?.toBool() ?? _get(_key(JetleafLoggingProperty.ENABLED))?.toBool() ?? true;
 
     // 2. Check if this log should be printed
     final shouldLog = gl == null || gl.isEnabledFor(level);
@@ -164,7 +150,7 @@ final class ApplicationLoggingListener implements LoggingListener {
   /// ```
   /// {@endtemplate}
   LogType _getLogType(String? tag) {
-    final type = _get(_key(JetLoggingProperty.TYPE, tag)) ?? _get(_key(JetLoggingProperty.TYPE)) ?? "flat";
+    final type = _get(_key(JetleafLoggingProperty.TYPE, tag)) ?? _get(_key(JetleafLoggingProperty.TYPE)) ?? "flat";
     return LogType.fromString(type);
   }
 
@@ -187,16 +173,16 @@ final class ApplicationLoggingListener implements LoggingListener {
   /// ```
   /// {@endtemplate}
   LogConfig _getLogConfig(String? tag) => LogConfig(
-    showTimestamp: (_get(_key(JetLoggingProperty.SHOW_TIMESTAMP, tag)) ?? _get(_key(JetLoggingProperty.SHOW_TIMESTAMP)))?.toBool() ?? false,
-    showTimeOnly: (_get(_key(JetLoggingProperty.SHOW_TIME_ONLY, tag)) ?? _get(_key(JetLoggingProperty.SHOW_TIME_ONLY)))?.toBool() ?? false,
-    showDateOnly: (_get(_key(JetLoggingProperty.SHOW_DATE_ONLY, tag)) ?? _get(_key(JetLoggingProperty.SHOW_DATE_ONLY)))?.toBool() ?? false,
-    showLevel: (_get(_key(JetLoggingProperty.SHOW_LEVEL, tag)) ?? _get(_key(JetLoggingProperty.SHOW_LEVEL)))?.toBool() ?? false,
-    showTag: (_get(_key(JetLoggingProperty.SHOW_TAG, tag)) ?? _get(_key(JetLoggingProperty.SHOW_TAG)))?.toBool() ?? false,
-    showThread: (_get(_key(JetLoggingProperty.SHOW_THREAD, tag)) ?? _get(_key(JetLoggingProperty.SHOW_THREAD)))?.toBool() ?? false,
-    useHumanReadableTime: (_get(_key(JetLoggingProperty.USE_HUMAN_READABLE_TIME, tag)) ?? _get(_key(JetLoggingProperty.USE_HUMAN_READABLE_TIME)))?.toBool() ?? false,
-    showEmoji: (_get(_key(JetLoggingProperty.SHOW_EMOJI, tag)) ?? _get(_key(JetLoggingProperty.SHOW_EMOJI)))?.toBool() ?? false,
-    showLocation: (_get(_key(JetLoggingProperty.SHOW_LOCATION, tag)) ?? _get(_key(JetLoggingProperty.SHOW_LOCATION)))?.toBool() ?? false,
-    steps: (_get(_key(JetLoggingProperty.STEPS, tag)) ?? _get(_key(JetLoggingProperty.STEPS)))?.split(",").map((step) => LogStep.fromValue(step)).toList() ?? LogStep.defaultSteps,
+    showTimestamp: (_get(_key(JetleafLoggingProperty.SHOW_TIMESTAMP, tag)) ?? _get(_key(JetleafLoggingProperty.SHOW_TIMESTAMP)))?.toBool() ?? false,
+    showTimeOnly: (_get(_key(JetleafLoggingProperty.SHOW_TIME_ONLY, tag)) ?? _get(_key(JetleafLoggingProperty.SHOW_TIME_ONLY)))?.toBool() ?? false,
+    showDateOnly: (_get(_key(JetleafLoggingProperty.SHOW_DATE_ONLY, tag)) ?? _get(_key(JetleafLoggingProperty.SHOW_DATE_ONLY)))?.toBool() ?? false,
+    showLevel: (_get(_key(JetleafLoggingProperty.SHOW_LEVEL, tag)) ?? _get(_key(JetleafLoggingProperty.SHOW_LEVEL)))?.toBool() ?? false,
+    showTag: (_get(_key(JetleafLoggingProperty.SHOW_TAG, tag)) ?? _get(_key(JetleafLoggingProperty.SHOW_TAG)))?.toBool() ?? false,
+    showThread: (_get(_key(JetleafLoggingProperty.SHOW_THREAD, tag)) ?? _get(_key(JetleafLoggingProperty.SHOW_THREAD)))?.toBool() ?? false,
+    useHumanReadableTime: (_get(_key(JetleafLoggingProperty.USE_HUMAN_READABLE_TIME, tag)) ?? _get(_key(JetleafLoggingProperty.USE_HUMAN_READABLE_TIME)))?.toBool() ?? false,
+    showEmoji: (_get(_key(JetleafLoggingProperty.SHOW_EMOJI, tag)) ?? _get(_key(JetleafLoggingProperty.SHOW_EMOJI)))?.toBool() ?? false,
+    showLocation: (_get(_key(JetleafLoggingProperty.SHOW_LOCATION, tag)) ?? _get(_key(JetleafLoggingProperty.SHOW_LOCATION)))?.toBool() ?? false,
+    steps: (_get(_key(JetleafLoggingProperty.STEPS, tag)) ?? _get(_key(JetleafLoggingProperty.STEPS)))?.split(",").map((step) => LogStep.fromValue(step)).toList() ?? LogStep.defaultSteps,
   );
 
   /// {@template application_logging_listener_key}
@@ -242,7 +228,7 @@ final class ApplicationLoggingListener implements LoggingListener {
   LogLevel? _getConfiguredLevel(String? tag) {
     if(tag != null) {
       try {
-        final value = _get(_key(JetLoggingProperty.LEVEL, tag));
+        final value = _get(_key(JetleafLoggingProperty.LEVEL, tag));
 
         if(value != null && !value.equalsIgnoreCase("all")) {
           return LogLevel.fromValue(value);

@@ -1,22 +1,8 @@
-// ---------------------------------------------------------------------------
-// 🍃 JetLeaf Framework - https://jetleaf.hapnium.com
-//
-// Copyright © 2025 Hapnium & JetLeaf Contributors. All rights reserved.
-//
-// This source file is part of the JetLeaf Framework and is protected
-// under copyright law. You may not copy, modify, or distribute this file
-// except in compliance with the JetLeaf license.
-//
-// For licensing terms, see the LICENSE file in the root of this project.
-// ---------------------------------------------------------------------------
-// 
-// 🔧 Powered by Hapnium — the Dart backend engine 🍃
-
 import 'package:jetleaf_core/annotation.dart';
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_lang/lang.dart';
 
-import '../jet_leaf_application.dart';
+import '../jetleaf_application_starter.dart';
 
 /// The globally registered entry-point application type.
 /// 
@@ -80,8 +66,8 @@ final class ApplicationTypeFilter implements TypeFilter {
       final excludeNames = config?.excludeName ?? [];
 
       return hasAuto(cls) && excludeClasses.none((c) => c.getQualifiedName().equals(cls.getQualifiedName()) || c == cls) && excludeNames.none((n) => n.equalsIgnoreCase(cls.getName()));
-    } else if (_entryApplication!.hasDirectAnnotation<JetLeafApplication>()) {
-      final jl = _entryApplication!.getAllDirectAnnotations().find((a) => a.getDeclaringClass() == Class<JetLeafApplication>(null, PackageNames.MAIN))?.getDeclaringClass();
+    } else if (_entryApplication!.hasDirectAnnotation<JetleafApplicationStarter>()) {
+      final jl = _entryApplication!.getAllDirectAnnotations().find((a) => a.getDeclaringClass() == Class<JetleafApplicationStarter>(null, PackageNames.MAIN))?.getDeclaringClass();
       final config = jl?.getDirectAnnotation<EnableAutoConfiguration>();
       final excludeClasses = config?.exclude.map((c) => c.toClass()).toList() ?? [];
       final excludeNames = config?.excludeName ?? [];

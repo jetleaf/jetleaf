@@ -1,35 +1,21 @@
-// ---------------------------------------------------------------------------
-// 🍃 JetLeaf Framework - https://jetleaf.hapnium.com
-//
-// Copyright © 2025 Hapnium & JetLeaf Contributors. All rights reserved.
-//
-// This source file is part of the JetLeaf Framework and is protected
-// under copyright law. You may not copy, modify, or distribute this file
-// except in compliance with the JetLeaf license.
-//
-// For licensing terms, see the LICENSE file in the root of this project.
-// ---------------------------------------------------------------------------
-// 
-// 🔧 Powered by Hapnium — the Dart backend engine 🍃
-
 /// {@template dart_config_parser}
 /// DartConfigParser - improved to accept any constructor/static factory that
-/// produces a JetProperty (heuristic-based), not only JetProperty.custom.
+/// produces a JetleafProperty (heuristic-based), not only JetleafProperty.custom.
 ///
 /// Strategy:
 /// 1. Remove comments (but preserve strings).
-/// 2. Collect class names in the source that `extends JetProperty`.
+/// 2. Collect class names in the source that `extends JetleafProperty`.
 /// 3. Find classes that `extends ConfigurationProperty` and extract the
 ///    `ConfigurationProperties({...})` block inside their `properties()` method.
 /// 4. Parse the map content; accept any call expression whose callee looks like:
-///      - 'JetProperty' (static factory)
+///      - 'JetleafProperty' (static factory)
 ///      - a declared subclass found in step 2
 ///      - an identifier that starts with uppercase or ends with 'Property'
 ///    and whose first argument is a string literal (the key).
 /// 
 /// ## Example
 /// ```dart
-/// class MyProperty extends JetProperty {
+/// class MyProperty extends JetleafProperty {
 ///   MyProperty(String key) : super(key);
 /// }
 /// 
@@ -129,7 +115,7 @@ final class DartConfigParser {
   }
 
   // -------------------------
-  // Step 1.5: find declared classes that extend JetProperty
+  // Step 1.5: find declared classes that extend JetleafProperty
   // -------------------------
   Set<String> _findClassesExtendingJetProperty(String s) {
     final out = <String>{};
@@ -140,7 +126,7 @@ final class DartConfigParser {
       final bracePos = _indexOfCharOutsideStrings(s, 0x7B /* '{' */, idx);
       if (bracePos < 0) continue;
       final header = s.substring(idx, bracePos);
-      if (RegExp(r'\bextends\b\s+JetProperty\b').hasMatch(header)) {
+      if (RegExp(r'\bextends\b\s+JetleafProperty\b').hasMatch(header)) {
         // Extract the class name token after 'class'
         final nameMatch = RegExp(r'\bclass\s+([A-Za-z_][A-Za-z0-9_]*)').firstMatch(header);
         if (nameMatch != null) {
@@ -294,7 +280,7 @@ final class DartConfigParser {
   }
 
   // Extract callee token immediately before '(' at parenIndex.
-  // Returns dotted token like 'JetProperty.custom' or 'MyProp' or 'pkg.MyProp'.
+  // Returns dotted token like 'JetleafProperty.custom' or 'MyProp' or 'pkg.MyProp'.
   String? _extractCalleeBeforeParen(String s, int parenIndex) {
     int i = parenIndex - 1;
     // Skip whitespace
@@ -327,10 +313,10 @@ final class DartConfigParser {
     // Heuristics:
     // - token begins with uppercase char (constructor/class style), or
     // - token ends with 'Property', or
-    // - token is 'JetProperty', or
+    // - token is 'JetleafProperty', or
     // - token is among declared subclasses in this source
     final simple = classCandidate.split('.').last;
-    if (simple == 'JetProperty') return true;
+    if (simple == 'JetleafProperty') return true;
     if (declaredSubclasses.contains(simple)) return true;
     if (simple.endsWith('Property')) return true;
     if (simple.isNotEmpty && _isUppercase(simple.codeUnitAt(0))) return true;

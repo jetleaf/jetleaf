@@ -1,17 +1,3 @@
-// ---------------------------------------------------------------------------
-// 🍃 JetLeaf Framework - https://jetleaf.hapnium.com
-//
-// Copyright © 2025 Hapnium & JetLeaf Contributors. All rights reserved.
-//
-// This source file is part of the JetLeaf Framework and is protected
-// under copyright law. You may not copy, modify, or distribute this file
-// except in compliance with the JetLeaf license.
-//
-// For licensing terms, see the LICENSE file in the root of this project.
-// ---------------------------------------------------------------------------
-// 
-// 🔧 Powered by Hapnium — the Dart backend engine 🍃
-
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_lang/lang.dart';
 import 'package:jetleaf_pod/pod.dart';
@@ -19,7 +5,7 @@ import 'package:jetleaf_pod/pod.dart';
 import 'bootstrap_context_impl.dart';
 
 /// {@template bootstrap_context}
-/// A context used during JetLeaf's bootstrapping phase for accessing and managing
+/// A context used during Jetleaf's bootstrapping phase for accessing and managing
 /// lazily-created instances by their reflected [Class] types.
 ///
 /// Unlike a full [ApplicationContext], the [BootstrapContext] is lightweight,

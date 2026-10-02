@@ -1,17 +1,3 @@
-// ---------------------------------------------------------------------------
-// 🍃 JetLeaf Framework - https://jetleaf.hapnium.com
-//
-// Copyright © 2025 Hapnium & JetLeaf Contributors. All rights reserved.
-//
-// This source file is part of the JetLeaf Framework and is protected
-// under copyright law. You may not copy, modify, or distribute this file
-// except in compliance with the JetLeaf license.
-//
-// For licensing terms, see the LICENSE file in the root of this project.
-// ---------------------------------------------------------------------------
-// 
-// 🔧 Powered by Hapnium — the Dart backend engine 🍃
-
 import 'package:jetleaf_core/annotation.dart';
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_env/env.dart';
@@ -20,12 +6,12 @@ import 'package:jetleaf_lang/lang.dart';
 import '../context/bootstrap_context.dart';
 import 'run_listener.dart';
 
-/// {@template jet_lifecycle_run_listener}
-/// A reflection-driven JetLeaf [ApplicationRunListener] that automatically
+/// {@template jetleaf_lifecycle_run_listener}
+/// A reflection-driven Jetleaf [ApplicationRunListener] that automatically
 /// discovers and invokes lifecycle-annotated methods across all loaded types.
 ///
 /// The [LifecycleRunListener] scans all runtime-visible methods annotated with
-/// JetLeaf lifecycle annotations such as:
+/// Jetleaf lifecycle annotations such as:
 /// - [OnApplicationStarting]
 /// - [OnApplicationStarted]
 /// - [OnApplicationReady]
@@ -34,7 +20,7 @@ import 'run_listener.dart';
 /// - [OnContextPrepared]
 /// - [OnContextLoaded]
 ///
-/// Once discovered, JetLeaf automatically calls these annotated methods at
+/// Once discovered, Jetleaf automatically calls these annotated methods at
 /// the appropriate point during the application lifecycle without requiring
 /// explicit listener registration.
 ///
@@ -43,7 +29,7 @@ import 'run_listener.dart';
 /// class StartupHooks {
 ///   @OnApplicationStarting()
 ///   void beforeStart(ConfigurableBootstrapContext context, Class<Object> mainClass) {
-///     print('JetLeaf application starting: ${mainClass.getName()}');
+///     print('Jetleaf application starting: ${mainClass.getName()}');
 ///   }
 ///
 ///   @OnApplicationReady()
@@ -52,7 +38,7 @@ import 'run_listener.dart';
 ///   }
 /// }
 ///
-/// // JetLeaf detects and invokes StartupHooks automatically.
+/// // Jetleaf detects and invokes StartupHooks automatically.
 /// ```
 ///
 /// ### Features
@@ -60,15 +46,15 @@ import 'run_listener.dart';
 /// - Automatic dependency injection for context, environment, duration, and exceptions.
 /// - Prevents duplicate invocations using identity-based deduplication.
 /// - Supports abstract and concrete classes with no-arg or inferred constructors.
-/// - Enables concise, annotation-driven lifecycle logic in JetLeaf applications.
+/// - Enables concise, annotation-driven lifecycle logic in Jetleaf applications.
 ///
-/// This class is an integral part of JetLeaf’s reflective runtime and typically
+/// This class is an integral part of Jetleaf’s reflective runtime and typically
 /// runs automatically during framework initialization.
 /// {@endtemplate}
 final class LifecycleRunListener implements ApplicationRunListener {
   /// A collection of methods annotated with [OnContextLoaded].
   ///
-  /// These methods are invoked after the JetLeaf [ConfigurableApplicationContext]
+  /// These methods are invoked after the Jetleaf [ConfigurableApplicationContext]
   /// has completed loading all pods and configuration sources.
   Set<Method> _onContextLoadedMethods = {};
 
@@ -86,7 +72,7 @@ final class LifecycleRunListener implements ApplicationRunListener {
 
   /// A collection of methods annotated with [OnApplicationFailed].
   ///
-  /// Invoked whenever an unhandled exception occurs during JetLeaf startup
+  /// Invoked whenever an unhandled exception occurs during Jetleaf startup
   /// or shutdown, allowing for cleanup or diagnostic reporting.
   Set<Method> _onFailedMethods = {};
 
@@ -98,17 +84,17 @@ final class LifecycleRunListener implements ApplicationRunListener {
 
   /// A collection of methods annotated with [OnApplicationStarted].
   ///
-  /// Called after the JetLeaf application context has been refreshed
+  /// Called after the Jetleaf application context has been refreshed
   /// but before [OnApplicationReady] is fired.
   Set<Method> _onStartedMethods = {};
 
   /// A collection of methods annotated with [OnApplicationStarting].
   ///
-  /// Fired at the earliest possible phase in JetLeaf’s startup lifecycle,
+  /// Fired at the earliest possible phase in Jetleaf’s startup lifecycle,
   /// before the environment or context are initialized.
   Set<Method> _onStartingMethods = {};
 
-  /// {@macro jet_lifecycle_run_listener}
+  /// {@macro jetleaf_lifecycle_run_listener}
   LifecycleRunListener() {
     _onStartingMethods = MethodUtils.collectMethods<OnApplicationStarting>().toSet();
     _onStartedMethods = MethodUtils.collectMethods<OnApplicationStarted>().toSet();

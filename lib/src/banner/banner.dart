@@ -1,17 +1,3 @@
-// ---------------------------------------------------------------------------
-// 🍃 JetLeaf Framework - https://jetleaf.hapnium.com
-//
-// Copyright © 2025 Hapnium & JetLeaf Contributors. All rights reserved.
-//
-// This source file is part of the JetLeaf Framework and is protected
-// under copyright law. You may not copy, modify, or distribute this file
-// except in compliance with the JetLeaf license.
-//
-// For licensing terms, see the LICENSE file in the root of this project.
-// ---------------------------------------------------------------------------
-// 
-// 🔧 Powered by Hapnium — the Dart backend engine 🍃
-
 import 'package:jetleaf_env/env.dart';
 import 'package:jetleaf_lang/lang.dart';
 
@@ -27,7 +13,7 @@ enum BannerMode {
 }
 
 /// {@template banner_interface}
-/// A contract for printing a custom application banner during JetLeaf startup.
+/// A contract for printing a custom application banner during Jetleaf startup.
 ///
 /// Implement this interface to display a textual banner (e.g., ASCII art, branding,
 /// version info) at the beginning of your application's lifecycle.
@@ -42,7 +28,7 @@ enum BannerMode {
 /// class MyBanner implements Banner {
 ///   @override
 ///   void printBanner(Environment env, Class<Object> sourceClass, PrintStream printStream) {
-///     printStream.writeln('🚀 Welcome to JetLeaf!');
+///     printStream.writeln('🚀 Welcome to Jetleaf!');
 ///     printStream.writeln('Running ${sourceClass.name} in ${env.get("ENV") ?? "default"} mode');
 ///   }
 /// }
@@ -56,7 +42,7 @@ enum BannerMode {
 abstract interface class Banner implements PackageIdentifier {
   /// {@macro banner_interface}
   ///
-  /// Called during JetLeaf startup to render the banner.
+  /// Called during Jetleaf startup to render the banner.
   ///
   /// - [environment] gives access to environment variables
   /// - [sourceClass] is the main application entry class

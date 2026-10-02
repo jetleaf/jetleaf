@@ -1,17 +1,3 @@
-// ---------------------------------------------------------------------------
-// 🍃 JetLeaf Framework - https://jetleaf.hapnium.com
-//
-// Copyright © 2025 Hapnium & JetLeaf Contributors. All rights reserved.
-//
-// This source file is part of the JetLeaf Framework and is protected
-// under copyright law. You may not copy, modify, or distribute this file
-// except in compliance with the JetLeaf license.
-//
-// For licensing terms, see the LICENSE file in the root of this project.
-// ---------------------------------------------------------------------------
-// 
-// 🔧 Powered by Hapnium — the Dart backend engine 🍃
-
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_core/core.dart';
 import 'package:jetleaf_lang/lang.dart';
@@ -19,12 +5,12 @@ import 'package:jetleaf_logging/logging.dart';
 
 import '../listener/run_listeners.dart';
 import '../shutdown/application_shutdown_handler_hook.dart';
-import '../jet_leaf_exception.dart';
+import '../jetleaf_exception.dart';
 import 'application_exception_handler.dart';
 
 /// {@template exception_handler}
 /// Responsible for handling exceptions thrown during the application lifecycle
-/// (startup or runtime) in JetLeaf applications.
+/// (startup or runtime) in Jetleaf applications.
 ///
 /// This class provides a unified mechanism for:
 /// 1. Mapping exceptions to application exit codes.
@@ -90,7 +76,7 @@ final class ExceptionHandler {
   /// - Closes the [ConfigurableApplicationContext] safely if provided.
   /// - Returns a [RuntimeException] for consistent rethrowing.
   ///
-  /// If the given [exception] is already a [JetLeafException], it is returned unchanged.
+  /// If the given [exception] is already a [JetleafException], it is returned unchanged.
   /// Otherwise, it may be wrapped in an [IllegalStateException].
   ///
   /// References:
@@ -98,7 +84,7 @@ final class ExceptionHandler {
   /// - [_reportFailure]
   /// - [ApplicationRunListeners.onFailed]
   RuntimeException handleRunFailure(ConfigurableApplicationContext? context, Throwable exception, ApplicationRunListeners? listeners, StackTrace? st) {
-    if (exception is JetLeafException) {
+    if (exception is JetleafException) {
       return exception;
     }
 

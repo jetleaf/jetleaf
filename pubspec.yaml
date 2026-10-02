@@ -1,9 +1,9 @@
 name: jetleaf
 description: Enterprise-grade backend framework bringing dependency injection and lifecycle management to Dart.
-version: 1.2.1
+version: 1.3.0
 
 homepage: https://jetleaf.hapnium.com
-repository: https://github.com/jetleaf/jetleaf
+repository: https://github.com/jetleaf
 issue_tracker: https://github.com/jetleaf/jetleaf/issues
 documentation: https://jetleaf.hapnium.com/docs
 
@@ -24,16 +24,45 @@ keywords:
 environment:
   sdk: ^3.9.0
 
+executables:
+  jetleaf: jetleaf
+
+workspace:
+  - libraries/jetleaf_build
+  - libraries/jetleaf_logging
+  - libraries/jetleaf_lang
+  - libraries/jetleaf_utils
+  - libraries/jetleaf_convert
+  - libraries/jetleaf_env
+  - libraries/jetleaf_pod
+  - libraries/dart_internal
+  - libraries/jetleaf_core
+  - libraries/jetleaf_cli
+
+  - packages/jetleaf_resource
+  - packages/jetleaf_monitor
+  - packages/jetleaf_retry
+  - packages/jtl
+  - packages/jetleaf_scheduling
+  - packages/jetleaf_validation
+  - packages/jetleaf_web
+  - packages/jetson
+
+  - example
+  - builder/server
+
 dependencies:
-  meta: ^1.17.0
-  jetleaf_lang: ^1.1.3
-  jetleaf_logging: ^1.1.3
-  jetleaf_convert: ^1.1.4
-  jetleaf_utils: ^1.1.3
-  jetleaf_core: ^1.1.6
-  jetleaf_env: ^1.1.4
-  jetleaf_pod: ^1.1.5
+  jetleaf_core: any
+  jetleaf_build: any
+  jetleaf_logging: any
+  jetleaf_pod: any
+  jetleaf_env: any
+  jetleaf_convert: any
+  jetleaf_lang: any
+  jetleaf_utils: any
+  meta: ^1.18.3
 
 dev_dependencies:
-  test: ^1.28.0
-  lints: ^6.0.0
+  jetleaf_cli: any
+  test: ^1.31.1
+  lints: ^6.1.0

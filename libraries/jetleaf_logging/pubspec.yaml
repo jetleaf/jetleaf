@@ -1,0 +1,29 @@
+name: jetleaf_logging
+version: 1.0.0
+keywords:
+  - logging
+  - monitoring
+  - jetleaf
+  - ansi
+  - logger
+topics:
+  - logging
+  - monitoring
+  - jetleaf
+  - console
+  - ansi
+description: Flexible and pluggable logging library with ANSI and structured output.
+
+publish_to: 'none'
+
+environment:
+  sdk: ^3.9.0
+
+resolution: workspace
+
+dependencies:
+  jetleaf_lang: any
+
+dev_dependencies:
+  test: ^1.29.0
+  lints: ^6.0.0

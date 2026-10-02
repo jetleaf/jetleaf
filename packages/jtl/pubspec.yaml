@@ -1,0 +1,31 @@
+name: jtl
+version: 1.0.0
+keywords:
+  - jetleaf
+  - templates
+  - rendering
+  - html
+  - templating
+topics:
+  - templates
+  - rendering
+  - jetleaf
+  - html
+  - dynamic-content
+description: Jetleaf Template Language — a lightweight template engine for generating HTML, text, and dynamic content.
+
+publish_to: 'none'
+
+environment:
+  sdk: ^3.9.0
+
+resolution: workspace
+
+dependencies:
+  jetleaf_lang: any
+  jetleaf_logging: any
+
+dev_dependencies:
+  test: ^1.29.0
+  meta: ^1.18.0
+  lints: ^6.0.0

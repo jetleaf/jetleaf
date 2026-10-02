@@ -1,0 +1,15 @@
+name: dart_internal
+version: 0.2.17
+description: >-
+  Vendored copy of package:dart_internal 0.2.17 from the Dart SDK repo
+  (https://github.com/dart-lang/sdk/tree/main/pkg/dart_internal,
+  BSD-licensed, see LICENSE). Vendored because the published package caps
+  its SDK constraint at <3.13.0, which blocks `dart pub get` on newer SDKs
+  even though the code itself still works. Only the SDK constraint is
+  widened here; the library source is unmodified.
+repository: https://github.com/dart-lang/sdk/tree/main/pkg/dart_internal
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+resolution: workspace

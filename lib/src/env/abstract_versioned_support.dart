@@ -2,8 +2,8 @@ import 'package:jetleaf_env/jetleaf_env.dart';
 import 'package:jetleaf_lang/lang.dart';
 import 'package:meta/meta.dart';
 
-import '../jet_application.dart';
-import '../jet_leaf_version.dart';
+import '../jetleaf_application.dart';
+import '../jetleaf_version.dart';
 import 'abstract_environment_profile_support.dart';
 
 /// Adds support for populating version-related properties into the application
@@ -14,7 +14,7 @@ import 'abstract_environment_profile_support.dart';
 /// version property source.  
 ///
 /// The version information typically includes:
-/// - The **Jetleaf framework version**, sourced from [JetLeafVersion].
+/// - The **Jetleaf framework version**, sourced from [JetleafVersion].
 /// - The **application's own version**, derived from the package metadata of
 ///   the supplied application class.
 ///
@@ -28,11 +28,11 @@ abstract class AbstractVersionedSupport extends AbstractEnvironmentProfileSuppor
   /// This method inspects the current [ConfigurableEnvironment] and inserts a
   /// `PropertiesPropertySource` named `"versioned"` containing:
   ///
-  /// - **`JetApplication.JETLEAF_VERSION`**  
+  /// - **`JetleafApplication.JETLEAF_VERSION`**  
   ///   Added if not already present. Its value is obtained from
-  ///   [JetLeafVersion.getVersion].
+  ///   [JetleafVersion.getVersion].
   ///
-  /// - **`JetApplication.JETLEAF_APPLICATION_VERSION`**  
+  /// - **`JetleafApplication.JETLEAF_APPLICATION_VERSION`**  
   ///   Added if not already present. Its value is derived from the version
   ///   metadata of the provided [applicationClass]. If the version cannot be
   ///   resolved, the value defaults to `"unknown"`.
@@ -47,12 +47,12 @@ abstract class AbstractVersionedSupport extends AbstractEnvironmentProfileSuppor
   void addVersionedPropertySource(ConfigurableEnvironment environment, Class<Object> applicationClass) {
     final versionContent = <String, Object>{};
 
-    if (environment.getProperty(JetApplication.JETLEAF_VERSION) == null) {
-      versionContent[JetApplication.JETLEAF_VERSION] = JetLeafVersion.getVersion();
+    if (environment.getProperty(JetleafApplication.JETLEAF_VERSION) == null) {
+      versionContent[JetleafApplication.JETLEAF_VERSION] = JetleafVersion.getVersion();
     }
 
-    if (environment.getProperty(JetApplication.JETLEAF_APPLICATION_VERSION) == null) {
-      versionContent[JetApplication.JETLEAF_APPLICATION_VERSION] = applicationClass.getPackage().getVersion();
+    if (environment.getProperty(JetleafApplication.JETLEAF_APPLICATION_VERSION) == null) {
+      versionContent[JetleafApplication.JETLEAF_APPLICATION_VERSION] = applicationClass.getPackage().getVersion();
     }
 
     environment.getPropertySources().addLast(MapPropertySource("versioned", versionContent));

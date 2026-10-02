@@ -1,0 +1,38 @@
+name: jetleaf_validation
+description: Validation module for Jetleaf — provides data, input, and schema validation utilities.
+version: 1.0.0
+
+homepage: https://jetleaf.hapnium.com
+repository: https://github.com/jetleaf/jetleaf_validation
+issue_tracker: https://github.com/jetleaf/jetleaf_validation/issues
+documentation: https://jetleaf.hapnium.com/docs/validation
+
+topics:
+  - validation
+  - data
+  - jetleaf
+  - schema
+  - rules
+
+keywords:
+  - jetleaf
+  - validate
+  - input
+  - constraints
+  - integrity
+
+resolution: workspace
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  jetleaf_lang: any
+  jetleaf_logging: any
+  jetleaf_core: any
+  jetleaf_env: any
+
+dev_dependencies:
+  test: ^1.29.0
+  meta: ^1.18.0
+  lints: ^6.0.0

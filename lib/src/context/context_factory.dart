@@ -1,30 +1,16 @@
-// ---------------------------------------------------------------------------
-// 🍃 JetLeaf Framework - https://jetleaf.hapnium.com
-//
-// Copyright © 2025 Hapnium & JetLeaf Contributors. All rights reserved.
-//
-// This source file is part of the JetLeaf Framework and is protected
-// under copyright law. You may not copy, modify, or distribute this file
-// except in compliance with the JetLeaf license.
-//
-// For licensing terms, see the LICENSE file in the root of this project.
-// ---------------------------------------------------------------------------
-// 
-// 🔧 Powered by Hapnium — the Dart backend engine 🍃
-
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_env/env.dart';
 import 'package:jetleaf_lang/lang.dart';
 
 /// {@template application_context_factory}
-/// A factory for creating JetLeaf application context and environment instances.
+/// A factory for creating Jetleaf application context and environment instances.
 ///
 /// This abstraction allows you to define how a [ConfigurableApplicationContext]
 /// and its [ConfigurableEnvironment] are created based on the application's
 /// runtime type — such as `NONE`, `WEB`.
 ///
 /// ### Default Usage
-/// JetLeaf provides a default implementation via [ApplicationContextFactory.DEFAULT]
+/// Jetleaf provides a default implementation via [ApplicationContextFactory.DEFAULT]
 /// which uses [DefaultApplicationContextFactory].
 ///
 /// ### Example:

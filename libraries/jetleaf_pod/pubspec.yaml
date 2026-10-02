@@ -1,0 +1,33 @@
+name: jetleaf_pod
+version: 1.0.0
+keywords:
+  - ioc
+  - dependency-injection
+  - service-locator
+  - pod
+  - jetleaf
+topics:
+  - ioc
+  - dependency-injection
+  - pod
+  - jetleaf
+  - lifecycle
+description: Core module for dependency injection and pod lifecycle management.
+
+publish_to: 'none'
+
+environment:
+  sdk: ^3.9.0
+
+resolution: workspace
+
+dependencies:
+  jetleaf_lang: any
+  jetleaf_logging: any
+  jetleaf_convert: any
+  jetleaf_build: any
+
+dev_dependencies:
+  test: ^1.29.0
+  meta: ^1.18.0
+  lints: ^6.0.0

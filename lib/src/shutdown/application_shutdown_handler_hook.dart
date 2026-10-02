@@ -1,17 +1,3 @@
-// ---------------------------------------------------------------------------
-// 🍃 JetLeaf Framework - https://jetleaf.hapnium.com
-//
-// Copyright © 2025 Hapnium & JetLeaf Contributors. All rights reserved.
-//
-// This source file is part of the JetLeaf Framework and is protected
-// under copyright law. You may not copy, modify, or distribute this file
-// except in compliance with the JetLeaf license.
-//
-// For licensing terms, see the LICENSE file in the root of this project.
-// ---------------------------------------------------------------------------
-// 
-// 🔧 Powered by Hapnium — the Dart backend engine 🍃
-
 import 'dart:async';
 import 'dart:io';
 
@@ -26,7 +12,7 @@ import 'application_shutdown_handler.dart';
 
 /// {@template application_shutdown_handler_hook}
 /// The `ApplicationShutdownHandlerHook` is responsible for managing the **graceful
-/// shutdown** of a JetLeaf application, ensuring that all registered
+/// shutdown** of a Jetleaf application, ensuring that all registered
 /// [ConfigurableApplicationContext] instances and shutdown handlers are executed
 /// in a predictable and safe order when the Dart process exits or receives a
 /// termination signal.

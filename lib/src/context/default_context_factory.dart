@@ -1,17 +1,3 @@
-// ---------------------------------------------------------------------------
-// 🍃 JetLeaf Framework - https://jetleaf.hapnium.com
-//
-// Copyright © 2025 Hapnium & JetLeaf Contributors. All rights reserved.
-//
-// This source file is part of the JetLeaf Framework and is protected
-// under copyright law. You may not copy, modify, or distribute this file
-// except in compliance with the JetLeaf license.
-//
-// For licensing terms, see the LICENSE file in the root of this project.
-// ---------------------------------------------------------------------------
-// 
-// 🔧 Powered by Hapnium — the Dart backend engine 🍃
-
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_env/env.dart';
 import 'package:jetleaf_lang/lang.dart';
@@ -20,10 +6,10 @@ import 'package:jetleaf_logging/logging.dart';
 import 'context_factory.dart';
 
 /// {@template default_application_context_factory}
-/// The default implementation of [ApplicationContextFactory] in JetLeaf.
+/// The default implementation of [ApplicationContextFactory] in Jetleaf.
 ///
 /// This factory serves as the primary mechanism for creating fully configured
-/// application contexts and environments during the startup of a JetLeaf
+/// application contexts and environments during the startup of a Jetleaf
 /// application. Its primary responsibilities are discovery, instantiation,
 /// and selection of the appropriate context for the application's runtime
 /// type.
@@ -63,7 +49,7 @@ import 'context_factory.dart';
 ///   trace the factory’s behavior without changing runtime code.
 ///
 /// ### Usage Scenario
-/// - When a JetLeaf application is launched, this factory is called
+/// - When a Jetleaf application is launched, this factory is called
 ///   internally to produce the appropriate [ConfigurableApplicationContext].
 /// - Custom application contexts can be discovered automatically if they
 ///   extend [ConfigurableApplicationContext] and provide a no-arg constructor

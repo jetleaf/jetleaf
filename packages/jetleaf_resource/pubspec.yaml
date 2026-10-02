@@ -1,0 +1,34 @@
+name: jetleaf_resource
+version: 1.0.0
+keywords:
+  - jetleaf
+  - cache
+  - throttling
+  - limits
+  - resource-management
+topics:
+  - caching
+  - rate-limiting
+  - jetleaf
+  - performance
+  - resources
+description: Resource management module for Jetleaf — handles caching and rate limiting efficiently.
+
+publish_to: 'none'
+
+environment:
+  sdk: ^3.9.0
+
+resolution: workspace
+
+dependencies:
+  jetleaf_lang: any
+  jetleaf_logging: any
+  jetleaf_pod: any
+  jetleaf_core: any
+  jetleaf_env: any
+
+dev_dependencies:
+  test: ^1.29.0
+  meta: ^1.18.0
+  lints: ^6.0.0

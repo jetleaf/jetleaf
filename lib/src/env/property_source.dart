@@ -1,24 +1,10 @@
-// ---------------------------------------------------------------------------
-// 🍃 JetLeaf Framework - https://jetleaf.hapnium.com
-//
-// Copyright © 2025 Hapnium & JetLeaf Contributors. All rights reserved.
-//
-// This source file is part of the JetLeaf Framework and is protected
-// under copyright law. You may not copy, modify, or distribute this file
-// except in compliance with the JetLeaf license.
-//
-// For licensing terms, see the LICENSE file in the root of this project.
-// ---------------------------------------------------------------------------
-// 
-// 🔧 Powered by Hapnium — the Dart backend engine 🍃
-
 import 'dart:io';
 
 import 'package:jetleaf_env/env.dart';
 import 'package:jetleaf_env/property.dart';
 import 'package:jetleaf_lang/lang.dart';
 
-import '../jet_application.dart';
+import '../jetleaf_application.dart';
 
 /// {@template default_properties_property_source}
 /// A specialized [MapPropertySource] representing a default set of properties
@@ -34,7 +20,7 @@ import '../jet_application.dart';
 /// Example:
 /// ```dart
 /// final defaults = {
-///   'app.name': 'JetLeaf',
+///   'app.name': 'Jetleaf',
 ///   'app.debug': false,
 /// };
 /// DefaultPropertiesPropertySource.ifNotEmpty(defaults, (p) {
@@ -169,14 +155,14 @@ class DefaultPropertiesPropertySource extends MapPropertySource {
 }
 
 /// {@template application_info_property_source}
-/// A [MapPropertySource] that exposes JetLeaf application metadata such as
+/// A [MapPropertySource] that exposes Jetleaf application metadata such as
 /// version and process ID (`pid`) to the environment system.
 ///
 /// This property source contributes:
 /// - `jetleaf.application.version`: extracted from the Dart class's package metadata
 /// - `jetleaf.application.pid`: the current process ID
 ///
-/// This source is typically registered during JetLeaf application startup and is
+/// This source is typically registered during Jetleaf application startup and is
 /// useful for diagnostic or logging purposes.
 ///
 /// ### Example usage:
@@ -206,10 +192,10 @@ class ApplicationInfoPropertySource extends MapPropertySource {
   static Map<String, Object> _getProperties(String? applicationVersion) {
     Map<String, Object> result = {};
     if (applicationVersion != null && applicationVersion.isNotEmpty) {
-      result.put(JetApplication.JETLEAF_APPLICATION_VERSION, applicationVersion);
+      result.put(JetleafApplication.JETLEAF_APPLICATION_VERSION, applicationVersion);
     }
 
-    result.put(JetApplication.JETLEAF_APPLICATION_PID, pid);
+    result.put(JetleafApplication.JETLEAF_APPLICATION_PID, pid);
 
     return result;
   }

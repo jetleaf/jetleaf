@@ -1,57 +1,42 @@
-// ---------------------------------------------------------------------------
-// 🍃 JetLeaf Framework - https://jetleaf.hapnium.com
-//
-// Copyright © 2025 Hapnium & JetLeaf Contributors. All rights reserved.
-//
-// This source file is part of the JetLeaf Framework and is protected
-// under copyright law. You may not copy, modify, or distribute this file
-// except in compliance with the JetLeaf license.
-//
-// For licensing terms, see the LICENSE file in the root of this project.
-// ---------------------------------------------------------------------------
-// 
-// 🔧 Powered by Hapnium — the Dart backend engine 🍃
-
 import 'package:jetleaf_env/env.dart';
 import 'package:jetleaf_lang/lang.dart';
 
-import '../jet_application.dart';
-import '../jet_leaf_version.dart';
+import '../jetleaf_application.dart';
+import '../jetleaf_version.dart';
 import 'banner.dart';
 
 /// {@template jetleaf_banner}
 /// A [Banner] implementation that displays a simple text-based banner
-/// with the JetLeaf logo and version information.
+/// with the Jetleaf logo and version information.
 ///
 /// ### Example
 /// ```dart
-/// final banner = JetLeafBanner();
+/// final banner = JetleafBanner();
 /// banner.printBanner(env, MyApp, printStream);
 /// ```
 ///
-/// This banner is the default banner used by the [JetApplication].
+/// This banner is the default banner used by the [JetleafApplication].
 /// {@endtemplate}
-final class JetLeafBanner implements Banner {
+final class JetleafBanner implements Banner {
 
   static final String BANNER = r'''                                                             
-🍃    .-.          _      _   _                __    ______________  
-🍃   /   \        | | ___| |_| |    ___  __ _ / _|   \ \ \ \ \ \ \ \
-🍃  /  _  \    _  | |/ _ \ __| |   / _ \/ _` | |_     \ \ \ \ \ \ \ \
-🍃 |  ( )  |  | |_| |  __/ |_| |__|  __/ (_| |  _|    / / / / / / / /
-🍃  \     /    \___/ \___|\__|_____\___|\__,_|_|     /_/_/_/_/_/_/_/ 
-🍃   `---'                                                              
-🍃 https://jetleaf.hapnium.com      
-🍃 Running 🍃 JetLeaf ({VERSION})       
+  ______      _      _   _             __  ______    ____             _   
+ / / / /     | | ___| |_| | ___  __ _ / _| \ \ \ \  |  _ \  __ _ _ __| |_ 
+/ / / /   _  | |/ _ \ __| |/ _ \/ _` | |_   \ \ \ \ | | | |/ _` | '__| __|
+\ \ \ \  | |_| |  __/ |_| |  __/ (_| |  _|  / / / / | |_| | (_| | |  | |_ 
+ \_\_\_\  \___/ \___|\__|_|\___|\__,_|_|   /_/_/_/  |____/ \__,_|_|   \__|
+https://jetleaf.hapnium.com      
+Running Jetleaf ({VERSION})       
   ''';
 
   /// {@macro jetleaf_banner}
-  JetLeafBanner();
+  JetleafBanner();
 
   @override
   void printBanner(Environment environment, Class<Object> sourceClass, PrintStream printStream) {
     printStream.println();
 
-    String banner = BANNER.replaceAll("{VERSION}", "v${JetLeafVersion.getVersion()}");
+    String banner = BANNER.replaceAll("{VERSION}", "v${JetleafVersion.getVersion()}");
     printStream.println(banner);
   }
 
@@ -71,8 +56,8 @@ final class JetLeafBanner implements Banner {
 ///
 /// ### Example
 /// ```dart
-/// // Use DefaultBanner with JetLeafBanner as fallback
-/// final banner = DefaultBanner(JetLeafBanner());
+/// // Use DefaultBanner with JetleafBanner as fallback
+/// final banner = DefaultBanner(JetleafBanner());
 /// banner.printBanner(env, MyApp, printStream);
 /// ```
 ///
@@ -88,7 +73,7 @@ final class DefaultBanner implements Banner {
 
   @override
   void printBanner(Environment environment, Class<Object> sourceClass, PrintStream printStream) {
-    final bannerFile = environment.getProperty(JetApplication.BANNER_LOCATION);
+    final bannerFile = environment.getProperty(JetleafApplication.BANNER_LOCATION);
     String? banner;
 
     if (bannerFile != null) {
@@ -100,7 +85,7 @@ final class DefaultBanner implements Banner {
     }
 
     if (banner == null || banner.isEmpty) {
-      final bannerText = environment.getProperty(JetApplication.BANNER_TEXT);
+      final bannerText = environment.getProperty(JetleafApplication.BANNER_TEXT);
       if (bannerText != null) {
         banner = bannerText;
       }
@@ -117,8 +102,8 @@ final class DefaultBanner implements Banner {
 
   /// Replace placeholders like #{jetleaf.version} or ${jetleaf.application.version}.
   String _interpolateBanner(String banner, Environment env, Class<Object> sourceClass) {
-    String version = env.getProperty(JetApplication.JETLEAF_VERSION) ?? JetLeafVersion.getVersion();
-    String applicationVersion = env.getProperty(JetApplication.JETLEAF_APPLICATION_VERSION) ?? sourceClass.getPackage().getVersion();
+    String version = env.getProperty(JetleafApplication.JETLEAF_VERSION) ?? JetleafVersion.getVersion();
+    String applicationVersion = env.getProperty(JetleafApplication.JETLEAF_APPLICATION_VERSION) ?? sourceClass.getPackage().getVersion();
 
     banner = env.resolvePlaceholders(banner);
 

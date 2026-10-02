@@ -1,17 +1,3 @@
-// ---------------------------------------------------------------------------
-// 🍃 JetLeaf Framework - https://jetleaf.hapnium.com
-//
-// Copyright © 2025 Hapnium & JetLeaf Contributors. All rights reserved.
-//
-// This source file is part of the JetLeaf Framework and is protected
-// under copyright law. You may not copy, modify, or distribute this file
-// except in compliance with the JetLeaf license.
-//
-// For licensing terms, see the LICENSE file in the root of this project.
-// ---------------------------------------------------------------------------
-// 
-// 🔧 Powered by Hapnium — the Dart backend engine 🍃
-
 import 'dart:async';
 
 import 'package:jetleaf_core/context.dart';
@@ -19,10 +5,10 @@ import 'package:jetleaf_env/env.dart';
 import 'package:jetleaf_lang/lang.dart';
 
 import '../context/bootstrap_context.dart';
-import '../jet_application.dart';
+import '../jetleaf_application.dart';
 
-/// {@template jet_application_run_listener}
-/// A listener for JetLeaf application lifecycle events during startup.
+/// {@template jetleaf_application_run_listener}
+/// A listener for Jetleaf application lifecycle events during startup.
 /// 
 /// This abstract class can be implemented to hook into specific stages
 /// of the application's lifecycle such as environment preparation,
@@ -99,7 +85,7 @@ abstract class ApplicationRunListener {
   FutureOr<void> onFailed(ConfigurableApplicationContext? context, Object exception) {}
 }
 
-/// {@template jet_application_hook}
+/// {@template jetleaf_application_hook}
 /// A hook interface for integrating with the lifecycle of a [Application].
 ///
 /// Implementations of this interface can register listeners that observe and
@@ -120,9 +106,9 @@ abstract class ApplicationRunListener {
 /// ```
 /// {@endtemplate}
 abstract interface class ApplicationHook {
-  /// {@macro jet_application_hook}
+  /// {@macro jetleaf_application_hook}
   ///
   /// Returns a [ApplicationRunListener] that will be attached to the
-  /// lifecycle of the given [jetApplication].
-  ApplicationRunListener getRunListener(JetApplication jetApplication);
+  /// lifecycle of the given [jetleafApplication].
+  ApplicationRunListener getRunListener(JetleafApplication jetleafApplication);
 }

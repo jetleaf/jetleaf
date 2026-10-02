@@ -1,0 +1,43 @@
+name: builder
+version: 1.0.2
+
+description: >-
+  Jetleaf Application Builder — an interactive scaffolding platform
+  and bootstrap project generator for creating new Jetleaf applications.
+
+publish_to: "none"
+
+environment:
+  sdk: ^3.9.0
+
+homepage: https://jetleaf.hapnium.com
+repository: https://github.com/jetleaf/builder
+issue_tracker: https://github.com/jetleaf/builder/issues
+
+resolution: workspace
+
+topics:
+  - generator
+  - scaffolding
+  - jetleaf
+  - tooling
+  - bootstrap
+
+keywords:
+  - jetleaf
+  - generator
+  - scaffolding
+  - bootstrap
+  - tooling
+
+dependencies:
+  jetleaf: any
+  jetleaf_resource: any
+  jetleaf_web: any
+  jetleaf_validation: any
+  jetleaf_monitor: any
+  build_runner: ^2.10.1
+  supabase: ^2.10.2
+
+dev_dependencies:
+  lints: ^6.0.0

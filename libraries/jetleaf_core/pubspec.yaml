@@ -1,0 +1,37 @@
+name: jetleaf_core
+version: 1.0.0
+keywords:
+  - ioc
+  - jetleaf
+  - service-locator
+  - context
+  - pod
+topics:
+  - ioc
+  - jetleaf
+  - context
+  - lifecycle
+  - application-core
+description: The core runtime that powers Jetleaf’s pod, context, and app lifecycle.
+
+publish_to: 'none'
+
+environment:
+  sdk: ^3.9.0
+
+resolution: workspace
+
+dependencies:
+  jetleaf_build: any
+  jetleaf_lang: any
+  jetleaf_logging: any
+  jetleaf_convert: any
+  jetleaf_utils: any
+  jetleaf_env: any
+  jetleaf_pod: any
+  intl: ^0.20.3
+
+dev_dependencies:
+  test: ^1.29.0
+  meta: ^1.18.0
+  lints: ^6.0.0
