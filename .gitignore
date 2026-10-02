@@ -43,3 +43,7 @@
 **.jetleaf/
 **/.jetleaf/
 **/Jetleaf
+
+# STORE
+.DS_Store
+**.DS_Store
