@@ -94,11 +94,9 @@ library;
 export 'src/argument/executable_argument.dart';
 
 export 'src/builder/runtime_builder.dart';
-export 'src/build/runtime_manifest.dart';
 export 'src/serialization/jetleaf_json.dart';
 export 'src/cache/jetleaf_paths.dart';
 export 'src/cli/jl_cli.dart';
-export 'src/build/reachability.dart';
 export 'src/builder/build_arg.dart';
 
 export 'src/helpers/base.dart' hide equals, toString, toStringWith;

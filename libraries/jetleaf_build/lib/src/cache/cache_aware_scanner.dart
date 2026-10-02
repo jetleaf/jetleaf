@@ -5,7 +5,7 @@ import 'dart:isolate';
 import 'dart:mirrors' as mirrors;
 
 import '../builder/runtime_builder.dart';
-import '../build/runtime_manifest.dart';
+import '../helpers/manifest.dart';
 import '../runtime/executor/resolving/default_runtime_executor_resolving.dart';
 import '../runtime/provider/runtime_provider.dart';
 import '../runtime/declaration/declaration.dart';
