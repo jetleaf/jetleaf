@@ -28,6 +28,7 @@ executables:
   jl: jl
 
 dependencies:
+  meta: ^1.18.3
   jetleaf_core: ^2.0.0
   analyzer: ^10.2.0
   frontend_server_client: ^4.0.0
@@ -37,4 +38,3 @@ dependencies:
 dev_dependencies:
   test: ^1.31.1
   lints: ^6.1.0
-  meta: ^1.18.3
