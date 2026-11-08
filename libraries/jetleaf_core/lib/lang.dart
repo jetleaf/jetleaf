@@ -49,6 +49,10 @@ export 'src/lang/meta/executable/executable_instantiator.dart';
 // ============================================================================
 
 export 'package:jetleaf_tools/jetleaf_tools.dart' show
+  ClassNotFoundException,
+  RuntimeProvider,
+  RuntimeScannerConfiguration,
+  runScan,
   Declaration,
   Constant,
   Asset,

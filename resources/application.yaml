@@ -1,0 +1,44 @@
+logging:
+  type: flat
+  level: all
+  show:
+    time-only: true
+    date-only: true
+    level: true
+    tag: true
+    timestamp: true
+    thread: true
+    location: true
+    emoji: true
+  use-human-readable-time: true
+  enabled: true
+  file: ""
+  steps:
+    - thread
+    - location
+    - date
+    - timestamp
+    - level
+    - tag
+    - message
+    - error
+    - stacktrace
+  enabled.AbstractPropertyResolver: true
+  level.AbstractPropertyResolver: DEBUG
+
+banner:
+  location: resources/banners/banner.txt
+
+jetleaf:
+  enableautoconfiguration:
+    jetleaf_data:
+      - DataAutoConfiguration
+    jetleaf_security:
+      - SecurityAutoConfiguration
+    jetleaf_web:
+      - WebMvcAutoConfiguration
+  disableautoconfiguration:
+    - jpa
+    - jetleaf_data
+    - jetleaf_security
+    - jetleaf_web

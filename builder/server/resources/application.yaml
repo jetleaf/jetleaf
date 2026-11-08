@@ -1,0 +1,7 @@
+server.context-path: /api
+server.port: ${SERVER_PORT}
+server.host: ${SERVER_HOST}
+
+jetleaf.web.cors.enabled: true
+
+jetleaf.packages: ${PACKAGES}

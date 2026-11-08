@@ -122,7 +122,7 @@ abstract class AotSubRegistrarWriter {
     String? partOf,
   }) {
     final year = DateTime.now().year;
-    buffer.writeln('''// ignore_for_file: type=lint, unused_import, unused_local_variable, unnecessary_cast, avoid_redundant_argument_values, depend_on_referenced_packages, implementation_imports, invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member, deprecated_member_use, unnecessary_non_null_assertion, duplicate_import, prefer_final_fields, library_prefixes, unnecessary_underscores, unnecessary_import, lines_longer_than_80_chars, avoid_dynamic_calls, inference_failure_on_function_invocation, unnecessary_nullable_for_final_variable_declarations, non_constant_identifier_names, avoid_shadowing_type_parameters
+    buffer.writeln('''// ignore_for_file: type=lint, unused_import, unused_local_variable, unnecessary_cast, avoid_redundant_argument_values, depend_on_referenced_packages, implementation_imports, invalid_use_of_protected_member, invalid_use_of_visible_for_testing_member, invalid_use_of_internal_member, deprecated_member_use, unnecessary_non_null_assertion, duplicate_import, prefer_final_fields, library_prefixes, unnecessary_underscores, unnecessary_import, lines_longer_than_80_chars, avoid_dynamic_calls, inference_failure_on_function_invocation, unnecessary_nullable_for_final_variable_declarations, non_constant_identifier_names, avoid_shadowing_type_parameters
 //
 ${Constant.BANNER_ART.trim()}
 //

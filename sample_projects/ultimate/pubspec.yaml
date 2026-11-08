@@ -1,0 +1,29 @@
+name: ultimate
+version: 1.0.0
+description: >-
+  Ultimate Jetleaf test project verifying all annotations, features,
+  custom extensions, and architecture in the Jetleaf v2 ecosystem.
+
+publish_to: "none"
+
+environment:
+  sdk: ^3.9.0
+
+resolution: workspace
+
+dependencies:
+  jetleaf: any
+  jetleaf_core: any
+  jetleaf_web: any
+  jetleaf_resource: any
+  jetleaf_scheduling: any
+  jetleaf_retry: any
+  jetleaf_validation: any
+  jetleaf_monitor: any
+  jetson: any
+  jtl: any
+
+dev_dependencies:
+  test: ^1.31.1
+  lints: ^6.1.0
+  jetleaf_tools: ^1.0.0

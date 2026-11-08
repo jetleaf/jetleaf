@@ -1,0 +1,22 @@
+name: resource_app
+version: 1.0.0
+description: >-
+  Resource application project demonstrating and testing Jetleaf v2 resource and
+  asset scanning, profile loading, @ConfigurationProperty, and @Value injection.
+
+publish_to: "none"
+
+environment:
+  sdk: ^3.9.0
+
+resolution: workspace
+
+dependencies:
+  jetleaf: any
+  jetleaf_core: any
+  jetleaf_resource: any
+
+dev_dependencies:
+  test: ^1.31.1
+  lints: ^6.1.0
+  jetleaf_tools: ^1.0.0

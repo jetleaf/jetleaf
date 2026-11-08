@@ -1,0 +1,21 @@
+name: cli_app
+version: 1.0.0
+description: >-
+  CLI application project demonstrating and testing Jetleaf v2 CLI features,
+  command line arguments, CommandLineRunner, ApplicationRunner, and lifecycle.
+
+publish_to: "none"
+
+environment:
+  sdk: ^3.9.0
+
+resolution: workspace
+
+dependencies:
+  jetleaf: any
+  jetleaf_core: any
+
+dev_dependencies:
+  test: ^1.31.1
+  lints: ^6.1.0
+  jetleaf_tools: ^1.0.0

@@ -80,8 +80,11 @@ export 'src/env/property_source/composite_property_source.dart';
 export 'src/env/property_source/mutable_property_sources.dart';
 export 'src/env/property_source/property_sources.dart';
 export 'src/env/property_source/listable_property_source.dart';
+export 'src/env/property_source/command_line_property_source.dart';
+export 'src/env/property_source/simple_command_line_property_source.dart';
 
 export 'src/env/property_resolver/property_resolver.dart';
+export 'src/env/property_resolver/abstract_property_resolver.dart';
 export 'src/env/property_resolver/property_sources_property_resolver.dart';
 
 export 'src/env/property/jetleaf_property.dart';
