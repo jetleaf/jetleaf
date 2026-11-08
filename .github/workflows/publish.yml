@@ -1,14 +1,180 @@
-# # .github/workflows/publish.yml
-# name: Publish to pub.dev
+name: Publish to pub.dev
 
-# on:
-#   push:
-#     tags:
-#       - 'v[0-9]+.[0-9]+.[0-9]+' # tag-pattern on pub.dev: 'v{{version}}'
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+*'
+      - '*-v[0-9]+.[0-9]+.[0-9]+*'
+    branches:
+      - main
+    paths:
+      - 'libraries/**'
+      - 'packages/**'
+      - 'lib/**'
+      - 'pubspec.yaml'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (validate without publishing)'
+        required: false
+        default: false
+        type: boolean
 
-# # Publish using the reusable workflow from dart-lang.
-# jobs:
-#   publish:
-#     permissions:
-#       id-token: write # Required for authentication using OIDC
-#     uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
+concurrency:
+  group: publish-pub-dev
+  cancel-in-progress: false
+
+permissions:
+  id-token: write # Required for authentication using OIDC on pub.dev
+  contents: read  # Required for repository checkout
+
+jobs:
+  publish:
+    name: Publish Packages to pub.dev
+    runs-on: ubuntu-latest
+    env:
+      DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Dart SDK
+        uses: dart-lang/setup-dart@v1
+        with:
+          sdk: stable
+
+      - name: Initialize Publish Summary
+        run: |
+          echo "### 🚀 Jetleaf Publishing Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Package | Directory | Version | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "| :--- | :--- | :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+
+      - name: Resolve Workspace Dependencies
+        run: dart pub get
+
+      - name: Create Publish Helper Script
+        run: |
+          cat << 'EOF' > /tmp/publish_pkg.sh
+          #!/usr/bin/env bash
+          set -e
+
+          DIR="$1"
+          DESCRIPTION="$2"
+          DRY_RUN="${3:-false}"
+
+          echo ""
+          echo "================================================================="
+          echo "📦 Processing: $DESCRIPTION"
+          echo "📁 Path: $DIR"
+          echo "================================================================="
+
+          if [ ! -f "$DIR/pubspec.yaml" ]; then
+            echo "❌ Error: $DIR/pubspec.yaml not found!"
+            exit 1
+          fi
+
+          PKG_NAME=$(grep '^name:' "$DIR/pubspec.yaml" | head -n1 | awk '{print $2}' | tr -d '\r' | tr -d '"' | tr -d "'")
+          PKG_VER=$(grep '^version:' "$DIR/pubspec.yaml" | head -n1 | awk '{print $2}' | tr -d '\r' | tr -d '"' | tr -d "'")
+
+          if [ -z "$PKG_NAME" ] || [ -z "$PKG_VER" ]; then
+            echo "❌ Error: Could not determine package name or version from $DIR/pubspec.yaml"
+            exit 1
+          fi
+
+          echo "Package: $PKG_NAME"
+          echo "Local Version: $PKG_VER"
+
+          # Check if this version is already published on pub.dev
+          HTTP_RESPONSE=$(curl -s -w "\n%{http_code}" "https://pub.dev/api/packages/$PKG_NAME" || true)
+          HTTP_CODE=$(echo "$HTTP_RESPONSE" | tail -n1)
+          RESPONSE_BODY=$(echo "$HTTP_RESPONSE" | sed '$d')
+
+          ALREADY_PUBLISHED=false
+          if [ "$HTTP_CODE" = "200" ]; then
+            if echo "$RESPONSE_BODY" | grep -q "\"version\":[[:space:]]*\"$PKG_VER\""; then
+              ALREADY_PUBLISHED=true
+            fi
+          fi
+
+          if [ "$ALREADY_PUBLISHED" = "true" ]; then
+            echo "⏭️ $PKG_NAME @ $PKG_VER is already published on pub.dev. Skipping."
+            echo "| \`$PKG_NAME\` | \`$DIR\` | \`$PKG_VER\` | ⏭️ Skipped (already published) |" >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+
+          echo "🚀 Publishing $PKG_NAME @ $PKG_VER to pub.dev..."
+          pushd "$DIR" > /dev/null
+
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "Running dry-run validation for $PKG_NAME..."
+            dart pub publish --dry-run
+            echo "| \`$PKG_NAME\` | \`$DIR\` | \`$PKG_VER\` | 🔍 Dry-run Success |" >> $GITHUB_STEP_SUMMARY
+          else
+            dart pub publish --force
+            echo "✅ Successfully published $PKG_NAME @ $PKG_VER!"
+            echo "| \`$PKG_NAME\` | \`$DIR\` | \`$PKG_VER\` | ✅ Published |" >> $GITHUB_STEP_SUMMARY
+
+            echo "Waiting 15 seconds for pub.dev cache propagation..."
+            sleep 15
+          fi
+
+          popd > /dev/null
+          EOF
+          chmod +x /tmp/publish_pkg.sh
+
+      # =================================================================
+      # Tier 1: Dev Tooling & Resident Compiler (Zero internal dependencies)
+      # =================================================================
+      - name: "Publish Tier 1: jetleaf_tools"
+        run: |
+          /tmp/publish_pkg.sh "libraries/jetleaf_tools" "jetleaf_tools (Dev Tooling & Codegen)" "$DRY_RUN"
+
+      # =================================================================
+      # Tier 2: Core Runtime (Depends on jetleaf_tools)
+      # =================================================================
+      - name: "Publish Tier 2: jetleaf_core"
+        run: |
+          /tmp/publish_pkg.sh "libraries/jetleaf_core" "jetleaf_core (Core Runtime & IoC)" "$DRY_RUN"
+
+      # =================================================================
+      # Tier 3: Base Packages (Depend only on jetleaf_core)
+      # =================================================================
+      - name: "Publish Tier 3: Base Packages"
+        run: |
+          # 1. jetson (JSON serialization, required by jetleaf_monitor & jetleaf_web)
+          /tmp/publish_pkg.sh "packages/jetson" "jetson (JSON Serializer)" "$DRY_RUN"
+
+          # 2. jtl (Template language, required by jetleaf_web)
+          /tmp/publish_pkg.sh "packages/jtl" "jtl (Template Language)" "$DRY_RUN"
+
+          # 3. jetleaf_resource (Resource management, caching & rate limiting)
+          /tmp/publish_pkg.sh "packages/jetleaf_resource" "jetleaf_resource (Caching & Rate Limiting)" "$DRY_RUN"
+
+          # 4. jetleaf_retry (Resilience & Retry mechanisms)
+          /tmp/publish_pkg.sh "packages/jetleaf_retry" "jetleaf_retry (Fault Tolerance & Retry)" "$DRY_RUN"
+
+          # 5. jetleaf_scheduling (Cron & Scheduled tasks)
+          /tmp/publish_pkg.sh "packages/jetleaf_scheduling" "jetleaf_scheduling (Task Scheduling)" "$DRY_RUN"
+
+          # 6. jetleaf_validation (Validation engine)
+          /tmp/publish_pkg.sh "packages/jetleaf_validation" "jetleaf_validation (Bean Validation)" "$DRY_RUN"
+
+      # =================================================================
+      # Tier 4: Composite / Dependent Packages
+      # =================================================================
+      - name: "Publish Tier 4: Dependent Packages"
+        run: |
+          # 1. jetleaf_monitor (depends on jetleaf_core + jetson)
+          /tmp/publish_pkg.sh "packages/jetleaf_monitor" "jetleaf_monitor (Monitoring & Metrics)" "$DRY_RUN"
+
+          # 2. jetleaf_web (depends on jetleaf_core + jetson + jtl)
+          /tmp/publish_pkg.sh "packages/jetleaf_web" "jetleaf_web (HTTP & Web Framework)" "$DRY_RUN"
+
+      # =================================================================
+      # Tier 5: Root Framework Package
+      # =================================================================
+      - name: "Publish Tier 5: jetleaf (Root Framework)"
+        run: |
+          /tmp/publish_pkg.sh "." "jetleaf (Root Framework)" "$DRY_RUN"

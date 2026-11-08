@@ -4,38 +4,107 @@ on:
   pull_request:
     types: [closed]
     branches: [main]
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: write # Required for creating Git tags and GitHub releases
 
 jobs:
   release:
-    if: github.event.pull_request.merged == true
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
 
-      - name: Extract version from pubspec.yaml
-        id: version
+      - name: Configure Git identity
         run: |
-          VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: //')
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Create Git tag
+      - name: Fetch existing tags
+        run: git fetch --tags origin
+
+      - name: Initialize Release Summary
         run: |
-          TAG="v${{ steps.version.outputs.version }}"
-          git config user.name "GitHub Actions"
-          git config user.email "actions@github.com"
-          git tag "$TAG"
-          git push origin "$TAG"
+          echo "### 🏷️ Monorepo Release & Tagging Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Package | Directory | Version | Tag | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "| :--- | :--- | :--- | :--- | :--- |" >> $GITHUB_STEP_SUMMARY
 
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v${{ steps.version.outputs.version }}
-          name: Release v${{ steps.version.outputs.version }}
-          generate_release_notes: true
+      - name: Process Tags and Releases for Monorepo Packages
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PACKAGES=(
+            "libraries/jetleaf_tools"
+            "libraries/jetleaf_core"
+            "packages/jetson"
+            "packages/jtl"
+            "packages/jetleaf_resource"
+            "packages/jetleaf_retry"
+            "packages/jetleaf_scheduling"
+            "packages/jetleaf_validation"
+            "packages/jetleaf_monitor"
+            "packages/jetleaf_web"
+            "."
+          )
+
+          NEW_TAGS=0
+
+          for DIR in "${PACKAGES[@]}"; do
+            if [ ! -f "$DIR/pubspec.yaml" ]; then
+              echo "⚠️ Warning: $DIR/pubspec.yaml not found, skipping."
+              continue
+            fi
+
+            PKG_NAME=$(grep '^name:' "$DIR/pubspec.yaml" | head -n1 | awk '{print $2}' | tr -d '\r' | tr -d '"' | tr -d "'")
+            PKG_VER=$(grep '^version:' "$DIR/pubspec.yaml" | head -n1 | awk '{print $2}' | tr -d '\r' | tr -d '"' | tr -d "'")
+
+            if [ -z "$PKG_NAME" ] || [ -z "$PKG_VER" ]; then
+              echo "⚠️ Could not parse name/version from $DIR/pubspec.yaml, skipping."
+              continue
+            fi
+
+            # Format tag: root package uses 'vX.Y.Z', sub-packages use '<name>-vX.Y.Z'
+            if [ "$DIR" = "." ]; then
+              TAG="v$PKG_VER"
+              TITLE="Release v$PKG_VER ($PKG_NAME)"
+            else
+              TAG="$PKG_NAME-v$PKG_VER"
+              TITLE="$PKG_NAME v$PKG_VER"
+            fi
+
+            # Check if tag already exists in local or remote repository
+            if git rev-parse -q --verify "refs/tags/$TAG" > /dev/null; then
+              echo "⏭️ Tag '$TAG' already exists for $PKG_NAME ($PKG_VER). Skipping."
+              echo "| \`$PKG_NAME\` | \`$DIR\` | \`$PKG_VER\` | \`$TAG\` | ⏭️ Skipped (already tagged) |" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "🏷️ Creating new tag '$TAG' for $PKG_NAME ($PKG_VER)..."
+              git tag -a "$TAG" -m "$TITLE"
+              git push origin "$TAG"
+
+              echo "📦 Creating GitHub Release for '$TAG'..."
+              if gh release create "$TAG" --title "$TITLE" --generate-notes; then
+                echo "✅ GitHub Release created for $TAG"
+              else
+                echo "⚠️ Warning: Failed to create GitHub Release for $TAG, continuing..."
+              fi
+
+              NEW_TAGS=$((NEW_TAGS + 1))
+              echo "| \`$PKG_NAME\` | \`$DIR\` | \`$PKG_VER\` | \`$TAG\` | ✅ Tagged & Released |" >> $GITHUB_STEP_SUMMARY
+            fi
+          done
+
+          echo ""
+          if [ "$NEW_TAGS" -eq 0 ]; then
+            echo "ℹ️ No new tags to create. All packages are already tagged at their current versions."
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "*No new versions detected. All packages already tagged.*" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "🎉 Created and pushed $NEW_TAGS new tag(s) and release(s)."
+          fi
