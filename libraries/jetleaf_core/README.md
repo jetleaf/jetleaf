@@ -70,7 +70,7 @@ dependencies:
   jetleaf_core: ^2.0.0
 
 dev_dependencies:
-  jetleaf_tools: ^1.0.0
+  jetleaf_tools: ^1.0.1
 ```
 
 Fetch dependencies:

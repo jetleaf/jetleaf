@@ -1,3 +1,11 @@
+## 1.0.1
+
+### Fixes & Improvements
+* **Resolved Circular Dependency**: Removed unintended runtime dependency on `jetleaf_core` to establish `jetleaf_tools` as a strictly independent, standalone tooling package.
+* **Pub.dev Packaging Compliance**:
+  * Moved `package:meta` from `dev_dependencies` to runtime `dependencies` to satisfy pub.dev validation requirements for annotations used across `lib/src/`.
+  * Added root `LICENSE` file for pub.dev distribution.
+
 ## 1.0.0
 
 ### Initial Release

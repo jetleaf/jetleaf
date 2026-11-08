@@ -2,7 +2,7 @@
 
 ### Landmark Architectural Consolidation
 * **Unified Core Architecture**: Consolidated 7 previously independent runtime packages (`jetleaf_lang`, `jetleaf_convert`, `jetleaf_pod`, `jetleaf_env`, `jetleaf_logging`, `jetleaf_utils`, and `jetleaf_core`) into a single cohesive, high-performance runtime package.
-* **Streamlined Dependency Graph**: Removed external package fragmentation. Users now only need `jetleaf_core: ^2.0.0` for full runtime capabilities and `jetleaf_tools: ^1.0.0` for compilation and developer tooling.
+* **Streamlined Dependency Graph**: Removed external package fragmentation. Users now only need `jetleaf_core: ^2.0.0` for full runtime capabilities and `jetleaf_tools: ^1.0.1` for compilation and developer tooling.
 * **Modular Internal Organization**:
   * `lib/src/core/` — Application context, event bus, condition evaluators, lifecycle processors, availability indicators, and diagnostic reporters.
   * `lib/src/env/` — Unified environment abstractions, profile management (`dev`, `prod`, `test`), and hierarchical property source resolution.
@@ -16,7 +16,7 @@
   * Individual entry points for focused imports: `package:jetleaf_core/core.dart`, `package:jetleaf_core/pod.dart`, `package:jetleaf_core/env.dart`, `package:jetleaf_core/logging.dart`, `package:jetleaf_core/convert.dart`, `package:jetleaf_core/utils.dart`, `package:jetleaf_core/lang.dart`.
   * Preserved full backwards compatibility with sub-library exports: `annotation.dart`, `context.dart`, `format.dart`, `intercept.dart`, `message.dart`, `collections.dart`, `design.dart`, `extensions.dart`, `io.dart`, `printers.dart`, and `property.dart`.
 * **Pure AOT Compliance**: Completely eliminated runtime mirrors (`dart:mirrors`) and dynamic evaluation bottlenecks. Full compatibility with Dart AOT native compilation (`dart compile exe`).
-* **Tooling Integration**: Updated compiler interface to depend on `jetleaf_tools: ^1.0.0`.
+* **Tooling Integration**: Updated compiler interface to depend on `jetleaf_tools: ^1.0.1`.
 
 ---
 
