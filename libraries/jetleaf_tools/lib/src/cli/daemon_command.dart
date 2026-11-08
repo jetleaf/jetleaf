@@ -29,4 +29,3 @@ Runs the builder server in daemon mode, communicating via JSON lines over stdin 
     return 0;
   }
 }
-
