@@ -1,0 +1,24 @@
+name: jetleaf_scheduling_example
+description: Demonstrates cron expressions, fixed-rate scheduling, and concurrent task management using jetleaf_scheduling 2.0.0.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  jetleaf_scheduling:
+    path: ../
+  jetleaf_core:
+    path: ../../../libraries/jetleaf_core
+
+dependency_overrides:
+  jetleaf_scheduling:
+    path: ../
+  jetleaf_core:
+    path: ../../../libraries/jetleaf_core
+  jetleaf_tools:
+    path: ../../../libraries/jetleaf_tools
+
+dev_dependencies:
+  lints: ^6.0.0

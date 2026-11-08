@@ -29,3 +29,11 @@ environment:
 workspace:
   - libraries/jetleaf_core
   - libraries/jetleaf_tools
+  - packages/jtl
+  - packages/jetson
+  - packages/jetleaf_resource
+  - packages/jetleaf_retry
+  - packages/jetleaf_scheduling
+  - packages/jetleaf_validation
+  - packages/jetleaf_monitor
+  - packages/jetleaf_web

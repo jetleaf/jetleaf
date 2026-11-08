@@ -1,0 +1,26 @@
+name: jtl_example
+description: Demonstrates how to use Jetleaf Template Language (JTL) for template rendering.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  jtl:
+    path: ../
+  jetleaf_core:
+    path: ../../../libraries/jetleaf_core
+  jetleaf_tools:
+    path: ../../../libraries/jetleaf_tools
+
+dependency_overrides:
+  jtl:
+    path: ../
+  jetleaf_core:
+    path: ../../../libraries/jetleaf_core
+  jetleaf_tools:
+    path: ../../../libraries/jetleaf_tools
+
+dev_dependencies:
+  lints: ^6.0.0

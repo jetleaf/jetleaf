@@ -1,0 +1,24 @@
+name: jetson_example
+description: Demonstrates JSON, XML, and YAML object mapping using Jetson 2.0.0.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  jetson:
+    path: ../
+  jetleaf_core:
+    path: ../../../libraries/jetleaf_core
+
+dependency_overrides:
+  jetson:
+    path: ../
+  jetleaf_core:
+    path: ../../../libraries/jetleaf_core
+  jetleaf_tools:
+    path: ../../../libraries/jetleaf_tools
+
+dev_dependencies:
+  lints: ^6.0.0
