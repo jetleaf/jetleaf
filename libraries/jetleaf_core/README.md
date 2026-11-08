@@ -1,591 +1,370 @@
-# 🍃 Jetleaf Core — Application Lifecycle & Pod Management
-
-[![pub package](https://img.shields.io/badge/version-1.0.0-blue)](https://pub.dev/packages/jetleaf_core)
-[![License](https://img.shields.io/badge/license-Jetleaf-green)](#license)
-[![Dart SDK](https://img.shields.io/badge/sdk-%3E%3D3.9.0-blue)](https://dart.dev)
-
-The core runtime that powers **Jetleaf's pod discovery, context management, and application lifecycle**.
-
-## 📋 Overview
-
-`jetleaf_core` is the heart of the Jetleaf framework, providing:
-
-- **Inversion of Control (IoC)** — Automatic pod discovery and registration
-- **Pod Lifecycle Management** — From initialization through graceful shutdown
-- **Application Context** — Central registry for all framework components
-- **Annotation-Driven Configuration** — Declarative pod and lifecycle definitions
-- **Aware Interfaces** — Lifecycle callbacks for framework integration
-- **Event Publishing** — Application-level event system
-- **Ordering Mechanisms** — Deterministic pod initialization sequences
-
-- **Homepage**: https://jetleaf.hapnium.com
-- **Repository**: https://github.com/jetleaf/jetleaf_core
-- **License**: See `LICENSE`
-
-## Contents
-- **[Features](#features)**
-- **[Install](#install)**
-- **[Quick Start](#quick-start)**
-- **[Core Concepts](#core-concepts)**
-  - **[Application Context](#application-context)**
-  - **[Annotations](#annotations)**
-  - **[Dependency Injection](#dependency-injection)**
-  - **[Conditional Configuration](#conditional-configuration)**
-  - **[Lifecycle Management](#lifecycle-management)**
-  - **[Event System](#event-system)**
-  - **[Message Source (i18n)](#message-source-i18n)**
-- **[Usage](#usage)**
-  - **[Creating an Application Context](#creating-an-application-context)**
-  - **[Configuration Classes](#configuration-classes)**
-  - **[Component Scanning](#component-scanning)**
-  - **[Dependency Injection](#dependency-injection-1)**
-  - **[Conditional Pods](#conditional-pods)**
-  - **[Lifecycle Hooks](#lifecycle-hooks)**
-  - **[Publishing Events](#publishing-events)**
-  - **[Internationalization](#internationalization)**
-- **[API Reference](#api-reference)**
-- **[Testing](#testing)**
-- **[Changelog](#changelog)**
-- **[Contributing](#contributing)**
-- **[Compatibility](#compatibility)**
-
-## Features
-- **Application Context** – Central container for managing application lifecycle, configuration, and pods.
-- **Annotations** – Rich set of annotations for configuration, components, dependency injection, and conditional processing.
-- **Dependency Injection** – `@Autowired`, `@Value`, `@RequiredAll` for automatic dependency wiring.
-- **Configuration** – `@Configuration`, `@AutoConfiguration`, `@Pod` for defining pods and settings.
-- **Stereotypes** – `@Component`, `@Service`, `@Repository`, `@Controller` for semantic component roles.
-- **Conditional Processing** – `@Conditional`, `@ConditionalOnProperty`, `@ConditionalOnPod`, etc. for environment-specific configuration.
-- **Lifecycle Management** – Context lifecycle (refresh, start, stop, close) and pod lifecycle hooks.
-- **Event System** – Publish and listen to application events for decoupled communication.
-- **Message Source** – Internationalization (i18n) support with locale-based message resolution.
-- **Exit Code Management** – Graceful shutdown with exit code generation.
-
-## Install
-Add to your `pubspec.yaml`:
-
-```yaml
-dependencies:
-  jetleaf_core: ^1.0.0
-```
-
-Minimum SDK: Dart ^3.9.0
-
-Import:
-
-```dart
-import 'package:jetleaf_core/annotation.dart';
-import 'package:jetleaf_core/context.dart';
-import 'package:jetleaf_core/core.dart';
-import 'package:jetleaf_core/message.dart';
-```
-
-## Quick Start
-```dart
-import 'package:jetleaf_core/annotation.dart';
-import 'package:jetleaf_core/context.dart';
-
-// Define a service
-@Service()
-class UserService {
-  void greet() => print('Hello from UserService!');
-}
-
-// Define a configuration
-@Configuration()
-class AppConfig {
-  @Pod()
-  Logger createLogger() => Logger('AppLogger');
-}
-
-// Create and run the application
-void main() async {
-  final context = AnnotationConfigApplicationContext([
-    Class<AppConfig>(),
-    Class<UserService>(),
-  ]);
-
-  await context.refresh();
-
-  final userService = await context.getPod<UserService>('userService');
-  userService.greet(); // Output: Hello from UserService!
-
-  await context.close();
-}
-```
-
-## Core Concepts
-
-### Application Context
-The `ApplicationContext` is the central interface for a Jetleaf application. It provides:
-- **Dependency Injection**: Access to managed pods via `ListablePodFactory` and `HierarchicalPodFactory`
-- **Environment Management**: Configuration and profile handling via `EnvironmentCapable`
-- **Internationalization**: Message resolution via `MessageSource`
-- **Event System**: Application-wide event publication
-- **Lifecycle Management**: Context state tracking (active, closed)
-
-Key implementations:
-- `GenericApplicationContext` – Basic application context
-- `AnnotationConfigApplicationContext` – Annotation-driven context with component scanning
-- `AbstractApplicationContext` – Base implementation with lifecycle support
-
-### Annotations
-Jetleaf provides a rich set of annotations for declarative configuration:
-
-#### Configuration Annotations
-- **`@Configuration`** – Marks a class as a source of pod definitions
-- **`@AutoConfiguration`** – Auto-discovered configuration class
-- **`@Pod`** – Marks a method as a pod provider (factory method)
-
-#### Stereotype Annotations
-- **`@Component`** – Generic component for DI
-- **`@Service`** – Business logic layer
-- **`@Repository`** – Data access layer
-- **`@Controller`** – Presentation/routing layer
-
-#### Dependency Injection Annotations
-- **`@Autowired`** – Marks a field for automatic dependency injection
-- **`@RequiredAll`** – Auto-injects all eligible fields in a class
-- **`@Value`** – Injects property values or pod expressions
-
-#### Conditional Annotations
-- **`@Conditional`** – Conditional registration based on custom conditions
-- **`@ConditionalOnProperty`** – Conditional based on property values
-- **`@ConditionalOnPod`** – Conditional based on pod existence
-- **`@ConditionalOnMissingPod`** – Conditional when pod is missing
-- **`@ConditionalOnClass`** – Conditional based on class presence
-
-#### Lifecycle Annotations
-- **`@PostConstruct`** – Method called after pod initialization
-- **`@PreDestroy`** – Method called before pod destruction
-- **`@Lazy`** – Lazy initialization of pods
-- **`@DependsOn`** – Explicit pod dependency ordering
-
-#### Other Annotations
-- **`@Primary`** – Marks a pod as primary when multiple candidates exist
-- **`@Qualifier`** – Specifies which pod to inject when multiple candidates exist
-- **`@Scope`** – Defines the scope of a pod (singleton, prototype, etc.)
-- **`@Order`** – Defines ordering for pods
-- **`@Profile`** – Activates pods for specific profiles
-
-### Dependency Injection
-Jetleaf supports multiple injection strategies:
-
-**Field Injection**:
-```dart
-@Service()
-class OrderService {
-  @Autowired()
-  late UserService userService;
-}
-```
-
-**Constructor Injection** (preferred):
-```dart
-@Service()
-class OrderService {
-  final UserService userService;
-  
-  OrderService(this.userService);
-}
-```
-
-**Auto-injection**:
-```dart
-@Service()
-@RequiredAll()
-class OrderService {
-  late UserService userService;       // Auto-injected
-  late PaymentService paymentService; // Auto-injected
-}
-```
-
-**Property Injection**:
-```dart
-@Component()
-class DatabaseService {
-  @Value('#{database.url}')
-  late String databaseUrl;
-  
-  @Value('#{database.timeout:30}') // Default value
-  late int timeout;
-}
-```
-
-### Conditional Configuration
-Control pod registration based on runtime conditions:
-
-```dart
-// Conditional on property
-@ConditionalOnProperty(
-  prefix: 'server',
-  names: ['ssl.enabled'],
-  havingValue: 'true',
-)
-@Configuration()
-class SslServerConfig {
-  @Pod()
-  SslContext sslContext() => SslContext();
-}
-
-// Conditional on pod existence
-@ConditionalOnPod(DatabaseConnection)
-@Service()
-class DatabaseMigrationService {
-  final DatabaseConnection db;
-  DatabaseMigrationService(this.db);
-}
-
-// Custom condition
-class OnProductionEnvironmentCondition implements Condition {
-  @override
-  bool matches(ConditionalContext context, ClassType<Object> classType) {
-    return context.environment.activeProfiles.contains('production');
-  }
-}
-
-@Conditional([ClassType<OnProductionEnvironmentCondition>()])
-@Configuration()
-class ProductionConfig {}
-```
-
-### Lifecycle Management
-Application contexts have a well-defined lifecycle:
-
-1. **Creation** – Context is instantiated
-2. **Refresh** – Pods are loaded, processed, and initialized
-3. **Active** – Context is fully operational
-4. **Close** – Resources are released, pods are destroyed
-
-```dart
-final context = AnnotationConfigApplicationContext([...]);
-
-// Refresh to initialize
-await context.refresh();
-print(context.isActive()); // true
-
-// Use the context
-final service = await context.getPod<MyService>('myService');
-
-// Close when done
-await context.close();
-print(context.isClosed()); // true
-```
-
-### Event System
-Publish and listen to application events for decoupled communication:
-
-```dart
-// Define an event
-class OrderCreatedEvent extends ApplicationEvent {
-  final Order order;
-  
-  OrderCreatedEvent(Object source, this.order) : super(source);
-}
-
-// Publish an event
-@Service()
-class OrderService {
-  final ApplicationContext context;
-  
-  OrderService(this.context);
-  
-  Future<void> createOrder(OrderRequest request) async {
-    final order = await orderRepository.save(request);
-    await context.publishEvent(OrderCreatedEvent(this, order));
-  }
-}
-
-// Listen to events
-@Component()
-class OrderEventListener implements ApplicationEventListener<OrderCreatedEvent> {
-  @override
-  Future<void> onApplicationEvent(OrderCreatedEvent event) async {
-    await emailService.sendConfirmation(event.order);
-  }
-}
-```
-
-### Message Source (i18n)
-Internationalization support with locale-based message resolution:
-
-```dart
-final messageSource = ConfigurableMessageSource();
-
-// Simple message
-final greeting = messageSource.getMessage('greeting');
-
-// Message with parameters
-final welcome = messageSource.getMessage('welcome', args: ['John']);
-
-// Message for specific locale
-final bonjour = messageSource.getMessage('greeting', locale: Locale('fr'));
-```
-
-## Usage
-
-### Creating an Application Context
-```dart
-import 'package:jetleaf_core/context.dart';
-
-void main() async {
-  // Create context with configuration classes
-  final context = AnnotationConfigApplicationContext([
-    Class<AppConfig>(),
-    Class<DatabaseConfig>(),
-  ]);
-
-  // Initialize the context
-  await context.refresh();
-
-  // Access context information
-  print('Application: ${context.getApplicationName()}');
-  print('Context ID: ${context.getId()}');
-  print('Start Time: ${context.getStartTime()}');
-
-  // Use the context
-  final service = await context.getPod<MyService>('myService');
-  await service.doWork();
-
-  // Shutdown
-  await context.close();
-}
-```
-
-### Configuration Classes
-```dart
-@Configuration()
-class DatabaseConfig {
-  @Pod()
-  DatabaseConnection primaryDatabase() {
-    return DatabaseConnection(
-      url: 'postgresql://localhost:5432/primary',
-      maxConnections: 20,
-    );
-  }
-  
-  @Pod('readOnlyDatabase')
-  @Scope('prototype')
-  DatabaseConnection readOnlyDatabase() {
-    return DatabaseConnection(
-      url: 'postgresql://localhost:5432/readonly',
-      readOnly: true,
-    );
-  }
-}
-```
-
-### Component Scanning
-```dart
-// Auto-discovered components
-@Component()
-class EmailService {
-  final EmailProvider emailProvider;
-  
-  EmailService(this.emailProvider);
-  
-  Future<void> sendEmail(String to, String subject, String body) async {
-    await emailProvider.send(to: to, subject: subject, body: body);
-  }
-}
-
-@Service()
-class UserService {
-  @Autowired()
-  late EmailService emailService;
-  
-  Future<void> registerUser(User user) async {
-    await userRepository.save(user);
-    await emailService.sendEmail(
-      user.email,
-      'Welcome!',
-      'Welcome to our application!',
-    );
-  }
-}
-```
-
-### Dependency Injection
-```dart
-@Service()
-class OrderService {
-  final UserService userService;
-  final PaymentService paymentService;
-  final InventoryService inventoryService;
-  
-  // Constructor injection (preferred)
-  OrderService(
-    this.userService,
-    this.paymentService,
-    this.inventoryService,
-  );
-  
-  Future<Order> createOrder(CreateOrderRequest request) async {
-    final user = await userService.findById(request.userId);
-    await inventoryService.reserveItems(request.items);
-    final payment = await paymentService.processPayment(request.payment);
-    
-    return Order(
-      userId: user.id,
-      items: request.items,
-      payment: payment,
-      createdAt: DateTime.now(),
-    );
-  }
-}
-```
-
-### Conditional Pods
-```dart
-// Only register in development
-@ConditionalOnProperty(
-  prefix: 'app',
-  names: ['debug'],
-  havingValue: 'true',
-)
-@Component()
-class DebugLogger {
-  void log(String message) => print('[DEBUG] $message');
-}
-
-// Only register if Redis is available
-@ConditionalOnClass('redis.RedisClient')
-@Service()
-class RedisCacheService {
-  final RedisClient redis;
-  
-  RedisCacheService(this.redis);
-  
-  Future<String?> get(String key) => redis.get(key);
-}
-```
-
-### Lifecycle Hooks
-```dart
-@Service()
-class DatabaseService {
-  late DatabaseConnection connection;
-  
-  @PostConstruct()
-  Future<void> initialize() async {
-    connection = await DatabaseConnection.connect();
-    print('Database connected');
-  }
-  
-  @PreDestroy()
-  Future<void> cleanup() async {
-    await connection.close();
-    print('Database connection closed');
-  }
-}
-```
-
-### Publishing Events
-```dart
-@Service()
-class UserService {
-  final ApplicationContext context;
-  
-  UserService(this.context);
-  
-  Future<User> createUser(CreateUserRequest request) async {
-    final user = await userRepository.save(request);
-    
-    // Publish domain event
-    await context.publishEvent(UserCreatedEvent(this, user));
-    
-    return user;
-  }
-}
-
-@Component()
-class UserEventListener implements ApplicationEventListener<UserCreatedEvent> {
-  @override
-  Future<void> onApplicationEvent(UserCreatedEvent event) async {
-    print('User created: ${event.user.email}');
-    await emailService.sendWelcomeEmail(event.user.email);
-  }
-}
-```
-
-### Internationalization
-```dart
-@Configuration()
-class MessageConfig {
-  @Pod()
-  MessageSource messageSource() {
-    final source = ConfigurableMessageSource();
-    source.setBasename('messages');
-    return source;
-  }
-}
-
-// Usage
-final messageSource = await context.getPod<MessageSource>('messageSource');
-
-// Get localized messages
-final greeting = messageSource.getMessage('greeting');
-final welcome = messageSource.getMessage('welcome', args: ['Alice']);
-final bonjour = messageSource.getMessage('greeting', locale: Locale('fr'));
-```
-
-## API Reference
-
-### Core Exports (`lib/core.dart`)
-- **Condition Helpers**: Conditional processing utilities
-- **Lifecycle**: Context lifecycle management
-- **Aware Interfaces**: `EnvironmentAware`, `ApplicationContextAware`, etc.
-- **Exceptions**: `PodException`, `ContextException`
-- **Order Comparator**: `AnnotationAwareOrderComparator`
-
-### Context Exports (`lib/context.dart`)
-- **Core**: `ApplicationContext`, `GenericApplicationContext`, `AnnotationConfigApplicationContext`
-- **Events**: `ApplicationEvent`, `ApplicationEventListener`
-- **Exit Code**: `ExitCodeGenerator`, `ExitCodeEvent`
-- **Helpers**: Context utilities
-- **Module**: `ApplicationModule`
-- **Registrar**: `PodRegistrar`
-
-### Annotation Exports (`lib/annotation.dart`)
-- **Lifecycle**: `@PostConstruct`, `@PreDestroy`, `@Lazy`, `@DependsOn`
-- **Autowired**: `@Autowired`, `@RequiredAll`, `@Value`, `@Qualifier`
-- **Configuration**: `@Configuration`, `@AutoConfiguration`, `@Pod`
-- **Conditional**: `@Conditional`, `@ConditionalOnProperty`, `@ConditionalOnPod`, etc.
-- **Others**: `@Primary`, `@Scope`, `@Order`, `@Profile`
-- **Stereotypes**: `@Component`, `@Service`, `@Repository`, `@Controller`
-
-### Message Exports (`lib/message.dart`)
-- **MessageSource**: Internationalization interface
-- **AbstractMessageSource**: Base implementation
-- **ConfigurableMessageSource**: Configurable message source
-- **MessageSourceLoader**: Message loading utilities
-
-See `lib/` for the full export list and `lib/src/` for implementation details.
-
-## Testing
-Run tests with:
-
-```bash
-dart test
-```
-
-See `test/` for coverage of context lifecycle, annotations, conditional processing, events, and message resolution.
-
-## Changelog
-See `CHANGELOG.md`.
-
-## Contributing
-Issues and PRs are welcome at the GitHub repository.
-
-1. Fork and create a feature branch.
-2. Add tests for new functionality.
-3. Run `dart test` and ensure lints pass.
-4. Open a PR with a concise description and examples.
-
-## Compatibility
-- Dart SDK: `>=3.9.0 <4.0.0`
-- Depends on `jetleaf_lang`, `jetleaf_logging`, `jetleaf_convert`, `jetleaf_utils`, `jetleaf_env`, `jetleaf_pod` (see `pubspec.yaml`).
+<div align="center">
+
+# jetleaf_core
+
+**The unified core runtime powering dependency injection, lifecycle management, environment configuration, logging, and type conversion for the Jetleaf framework.**
+
+[![pub package](https://img.shields.io/pub/v/jetleaf_core.svg?logo=dart&logoColor=white&color=0b2ab5)](https://pub.dev/packages/jetleaf_core)
+[![tests](https://img.shields.io/badge/tests-3600%2B%20passing-brightgreen.svg?logo=github)](https://github.com/jetleaf/jetleaf)
+[![pure AOT](https://img.shields.io/badge/AOT-100%25%20mirror--free-success.svg)](https://pub.dev/packages/jetleaf_core)
+[![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![platform](https://img.shields.io/badge/platform-dart%20%7C%20server%20%7C%20cli%20%7C%20web%20%7C%20flutter-lightgrey)](https://pub.dev/packages/jetleaf_core)
+
+</div>
+
+<p align="left">
+  <a href="#-features">Features</a> •
+  <a href="#-installation">Installation</a> •
+  <a href="#-quick-start">Quick Start</a> •
+  <a href="#-architectural-subsystems">Architecture & Subsystems</a> •
+  <a href="#-dependency-injection-pods">Dependency Injection</a> •
+  <a href="#-environment--properties">Environment & Config</a> •
+  <a href="#-type-conversion">Type Conversion</a> •
+  <a href="#-structured-logging">Logging</a> •
+  <a href="#-language-primitives--collections">Language Primitives</a> •
+  <a href="#-utilities">Utilities</a> •
+  <a href="#-aot-compilation">AOT Compilation</a> •
+  <a href="#-testing">Testing</a>
+</p>
 
 ---
 
-Built with 🍃 by the Jetleaf team.
+`jetleaf_core` is the enterprise-grade foundation of the Jetleaf application framework. It brings robust dependency injection, hierarchical configuration resolution, declarative metadata, event-driven decoupling, structured logging, and extensible type conversion to Dart — engineered from the ground up for **pure AOT compilation (`dart compile exe`)** with zero reflection runtime performance penalties.
+
+```dart
+// Import the complete unified framework
+import 'package:jetleaf_core/jetleaf_core.dart';
+
+// Or import specific modular entry points
+import 'package:jetleaf_core/core.dart';
+import 'package:jetleaf_core/pod.dart';
+import 'package:jetleaf_core/env.dart';
+import 'package:jetleaf_core/logging.dart';
+import 'package:jetleaf_core/convert.dart';
+import 'package:jetleaf_core/utils.dart';
+import 'package:jetleaf_core/lang.dart';
+```
+
+---
+
+## ✨ Features
+
+* **Unified 7-in-1 Architecture** — Consolidates the complete Jetleaf runtime (core context, pods/IoC, environment, logging, conversion, utilities, and language extensions) into a single cohesive package.
+* **Declarative Inversion of Control (IoC)** — Full container lifecycle management (`GenericApplicationContext`, `AnnotationConfigApplicationContext`, `DefaultListablePodFactory`) supporting singleton and prototype scopes, eager/lazy initialization, constructor/property autowiring, and circular dependency resolution.
+* **Hierarchical Environment & Properties** — Type-safe configuration binding (`@ConfigurationProperties`), multi-profile support (`dev`, `prod`, `test`), and hierarchical property resolution across environment variables, CLI options, YAML/JSON/Properties files, and custom property sources.
+* **Pure AOT Native Compilation** — Completely mirror-free (`dart:mirrors` free). Generates deterministic dispatch registries at build time that survive Dart's aggressive tree-shaker without reflection compromises.
+* **Decoupled Event Bus** — Synchronous and asynchronous application event dispatching (`ApplicationEvent`, `@EventListener`, `SimpleApplicationEventBus`) with ordering and payload validation.
+* **Extensible Type Conversion Service** — Robust conversion pipeline (`ConversionService`, `ConverterRegistry`) covering primitives, collections, custom objects, enums, dates, and localized strings with bidirectional adapters.
+* **Structured Leveled Logging** — Pluggable ANSI-formatted console logging with customizable log levels (`TRACE` through `FATAL`), formatters (`PrettyPrinter`, `FlatStructuredPrinter`, `FmtPrinter`), and filter pipelines.
+* **High-Performance Collections & Functional Streams** — Low-overhead linear data structures (`ArrayList`, `LinkedList`, `Stack`, `Queue`, `HashMap`, `CaseInsensitiveMap`) and functional streams (`GenericStream`, `IntStream`, `DoubleStream`, `Collector`).
+* **Cross-Cutting Method Interception** — Method interception hooks (`@Intercept`, `Interceptable`, `MethodInterceptor`) for declarative caching, audit trails, transactions, and metrics.
+
+---
+
+## 📦 Installation
+
+Add `jetleaf_core` to your `pubspec.yaml`:
+
+```yaml
+dependencies:
+  jetleaf_core: ^2.0.0
+
+dev_dependencies:
+  jetleaf_tools: ^1.0.0
+```
+
+Fetch dependencies:
+
+```sh
+dart pub get
+```
+
+---
+
+## 🚀 Quick Start
+
+Here is a complete, runnable example showcasing configuration classes, pods, dependency injection, and environment property resolution in under 40 lines of code:
+
+```dart
+import 'package:jetleaf_core/jetleaf_core.dart';
+
+// 1. Define a domain service
+@Service()
+class UserService {
+  final DatabaseClient _db;
+  
+  UserService(this._db);
+
+  Future<void> createUser(String name) async {
+    console.info('Creating user: $name via ${_db.url}');
+  }
+}
+
+// 2. Define a dependency pod
+class DatabaseClient {
+  final String url;
+  DatabaseClient(this.url);
+}
+
+// 3. Define an application configuration module
+@Configuration()
+class AppConfig {
+  @Pod()
+  DatabaseClient databaseClient(@Value('\${app.database.url:memory://default}') String url) {
+    return DatabaseClient(url);
+  }
+}
+
+void main() async {
+  // 4. Initialize the application context
+  final context = AnnotationConfigApplicationContext();
+  context.register(AppConfig);
+  context.register(UserService);
+  await context.refresh();
+
+  // 5. Retrieve and execute the managed pod
+  final userService = context.getPod<UserService>();
+  await userService.createUser('Alice');
+
+  // 6. Gracefully shut down
+  await context.close();
+}
+```
+
+---
+
+## 🏛 Architectural Subsystems
+
+`jetleaf_core` is organized into 7 distinct, cohesive subsystems under `lib/src/`:
+
+```text
+┌────────────────────────────────────────────────────────────────────────┐
+│                          jetleaf_core (2.0.0)                          │
+├──────────────┬──────────────┬──────────────┬──────────────┬────────────┤
+│  src/core/   │   src/pod/   │   src/env/   │ src/logging/ │src/convert/│
+│ Context,     │ IoC Container│ Environment, │ Structured   │ Type       │
+│ Events,      │ Factories,   │ Profiles,    │ Loggers,     │ Conversion │
+│ Lifecycle    │ Scopes       │ Properties   │ Printers     │ Pipeline   │
+├──────────────┴──────────────┴──────────────┴──────────────┴────────────┤
+│                src/lang/                │          src/utils/          │
+│ Metaprogramming, Collections, I/O       │ Placeholders, Parsers, Assert│
+└─────────────────────────────────────────┴──────────────────────────────┘
+```
+
+---
+
+## 🫘 Dependency Injection (Pods)
+
+The IoC container in `jetleaf_core` is built around the concept of **Pods** — lightweight, managed components that participate in dependency injection, lifecycle callbacks, and scoping.
+
+### Registering Pods
+
+Pods can be declared using annotations or registered programmatically:
+
+```dart
+// Declarative stereotype annotations
+@Component()
+class EmailNotifier implements Notifier {}
+
+@Repository()
+class OrderRepository {}
+
+// Programmatic pod registration
+final context = GenericApplicationContext();
+context.registerPod<OrderRepository>();
+context.registerPod<EmailNotifier>(name: 'primaryNotifier');
+```
+
+### Autowiring & Injection
+
+Constructor injection is the recommended pattern:
+
+```dart
+@Service()
+class OrderService {
+  final OrderRepository repository;
+  final Notifier notifier;
+
+  // Dependencies are automatically resolved by type and qualifier
+  OrderService(this.repository, @Qualifier('primaryNotifier') this.notifier);
+}
+```
+
+### Pod Lifecycles & Callbacks
+
+Components can hook into the container lifecycle via interfaces or annotations:
+
+```dart
+@Service()
+class CacheService implements InitializingPod, DisposablePod {
+  @override
+  Future<void> onReady() async {
+    console.info('Cache warmed up.');
+  }
+
+  @override
+  Future<void> onDestroy() async {
+    console.info('Cache flushed to disk.');
+  }
+}
+```
+
+---
+
+## 🌍 Environment & Properties
+
+The environment abstraction (`Environment`) provides unified access to runtime configuration, active profiles, and hierarchical property resolution.
+
+### Hierarchical Resolution Order
+
+Properties are resolved across multiple layered sources with deterministic precedence:
+
+1. **Command Line Arguments** (`--server.port=8080`)
+2. **System Environment Variables** (`SERVER_PORT=8080`)
+3. **Profile-Specific Configuration** (`application-prod.yaml`)
+4. **Default Configuration** (`application.yaml`)
+
+```dart
+final env = StandardEnvironment();
+env.setActiveProfiles(['prod']);
+
+// Placeholder resolution with default fallback syntax
+final port = env.resolvePlaceholders('\${server.port:8080}');
+final dbHost = env.getProperty<String>('database.host', defaultValue: 'localhost');
+```
+
+### Strongly-Typed Configuration Binding
+
+Bind structured configuration maps directly into immutable classes:
+
+```dart
+@ConfigurationProperties(prefix: 'server')
+class ServerConfig {
+  final int port;
+  final String host;
+  final Duration timeout;
+
+  const ServerConfig({
+    required this.port,
+    this.host = '0.0.0.0',
+    this.timeout = const Duration(seconds: 30),
+  });
+}
+```
+
+---
+
+## 🔄 Type Conversion
+
+`jetleaf_core` includes a comprehensive type conversion service (`DefaultConversionService`) capable of converting between primitives, collections, complex objects, and dates:
+
+```dart
+import 'package:jetleaf_core/convert.dart';
+
+final conversionService = DefaultConversionService();
+
+// Primitives and numbers
+final intVal = conversionService.convert<int>('42'); // 42
+final boolVal = conversionService.convert<bool>('true'); // true
+
+// Dates and durations
+final duration = conversionService.convert<Duration>('5s'); // Duration(seconds: 5)
+final dateTime = conversionService.convert<DateTime>('2026-11-08T07:00:00Z');
+
+// Custom Converter Registration
+conversionService.addConverter<String, GeoLocation>(
+  Converter.from((source) => GeoLocation.parse(source)),
+);
+```
+
+---
+
+## 📝 Structured Logging
+
+The logging engine (`package:jetleaf_core/logging.dart`) provides structured, leveled, colorized output with zero external dependencies:
+
+```dart
+import 'package:jetleaf_core/logging.dart';
+
+// Quick global console logger
+console.info('Application started successfully.');
+console.warn('Cache hit ratio below 80%');
+console.error('Database connection timeout', error: err, stackTrace: st);
+
+// Custom scoped logger with formatted output
+final logger = Logger(
+  name: 'HTTP-Worker',
+  level: LogLevel.DEBUG,
+  printer: PrettyPrinter(),
+);
+
+logger.debug('Handled request in 12ms', tag: 'perf');
+```
+
+---
+
+## 📚 Language Primitives & Collections
+
+`jetleaf_core` bundles low-overhead, deterministic data structures and streaming pipelines:
+
+| Structure | Access / Peek | Mutation | Memory Alignment |
+| :--- | :--- | :--- | :--- |
+| `ArrayList<T>` | $\mathcal{O}(1)$ | Amortized $\mathcal{O}(1)$ | Contiguous flat memory buffer |
+| `LinkedList<T>` | $\mathcal{O}(n)$ | $\mathcal{O}(1)$ | Doubly linked node chain |
+| `Stack<T>` / `LinkedStack<T>` | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | LIFO ring / node sequence |
+| `Queue<T>` / `LinkedQueue<T>` | $\mathcal{O}(1)$ | $\mathcal{O}(1)$ | FIFO ring buffer |
+| `CaseInsensitiveMap<V>` | $\mathcal{O}(1)$ avg | $\mathcal{O}(1)$ avg | Normalized header/key lookup |
+
+### Functional Streams
+
+```dart
+import 'package:jetleaf_core/lang.dart';
+
+final totalOrderAmount = GenericStream.of(orders)
+    .filter((order) => order.isPaid)
+    .mapToDouble((order) => order.total)
+    .sum();
+```
+
+---
+
+## 🧩 Utilities
+
+- **`PropertyPlaceholderHelper`**: Fast, recursive `${placeholder:default}` resolution.
+- **Parsers**: Native parsers for YAML, JSON, XML, `.env`, and `.properties`.
+- **`Assert`**: Framework assertion preconditions (`Assert.notNull`, `Assert.hasText`, `Assert.state`).
+- **`StackTraceParser`**: Clean stack trace parsing, frame mapping, and sanitization.
+
+---
+
+## ⚙️ AOT Compilation
+
+`jetleaf_core` is architected for Dart's ahead-of-time (AOT) compiler:
+1. Zero usage of `dart:mirrors`.
+2. Static dispatch registries generated via `jetleaf_tools`.
+3. Fully compatible with `dart compile exe` producing standalone, native OS binaries without external VM dependencies.
+
+```sh
+# Compile to a standalone binary
+dart compile exe bin/main.dart -o build/server.exe
+
+# Execute native binary
+./build/server.exe
+```
+
+---
+
+## 🧪 Testing
+
+The repository includes over 3,600 automated tests exercising the container, factories, converters, logging formats, environment resolution, and collections:
+
+```sh
+# Run the test suite
+dart test test/all_tests.dart
+```
+
+---
+
+## 📄 License
+
+Licensed under the Apache License, Version 2.0. See the [LICENSE](LICENSE) file for details.

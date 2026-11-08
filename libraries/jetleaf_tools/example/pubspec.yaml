@@ -1,0 +1,22 @@
+name: jetleaf_tools_example
+description: Demonstrates AST declaration indexing, runtime metadata inspection, and AOT executor dispatch using jetleaf_tools.
+publish_to: none
+version: 1.0.0
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  jetleaf_core:
+    path: ../../jetleaf_core
+  jetleaf_tools:
+    path: ../
+
+dependency_overrides:
+  jetleaf_core:
+    path: ../../jetleaf_core
+  jetleaf_tools:
+    path: ../
+
+dev_dependencies:
+  lints: ^6.0.0

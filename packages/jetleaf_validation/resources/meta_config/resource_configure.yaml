@@ -1,2 +1,0 @@
-jetleaf.enableautoconfiguration:
-  -  package:jetleaf_validation/src/validation_auto_configuration.dart.ValidationAutoConfiguration

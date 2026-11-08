@@ -1,2 +1,0 @@
-jetleaf.enableautoconfiguration:
-  -  package:jetleaf_retry/src/retry_auto_configuration.dart.RetryAutoConfiguration

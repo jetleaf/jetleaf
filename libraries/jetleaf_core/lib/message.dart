@@ -1,57 +1,41 @@
-/// 🌐 **Jetleaf Core Message**
+/// 🌐 **Jetleaf Internationalization (i18n) & Message Subsystem**
 ///
-/// Provides infrastructure for message retrieval, internationalization (i18n),
-/// and localization in Jetleaf applications. This library allows developers
-/// to manage messages, load them from various sources, and support
-/// parent-child hierarchies for fallback message resolution.
+/// This library provides the message resolution and internationalization (i18n)
+/// infrastructure for Jetleaf applications, enabling parameter-driven localized text,
+/// message bundles, and hierarchical fallback resolution.
 ///
-/// ## 🔑 Core Components
+/// ---
 ///
-/// ### Message Source
-/// - `message_source.dart` — core interface for retrieving messages by key,
-///   supporting locale-specific lookups and parameterized messages.
+/// ## 📦 Exports Categorization
 ///
-/// ### Message Source Loader
-/// - `message_source_loader.dart` — strategy interface for loading messages
-///   from different sources and formats (e.g., JSON, YAML, properties files).
+/// ### 🗣️ Message Sources
+/// - [MessageSource] — strategy interface for resolving messages, supporting parameterized arguments and internationalization.
+/// - [AbstractMessageSource] — base implementation handling parameter interpolation and hierarchical parent delegation.
+/// - [ConfigurableMessageSource] — mutable message source allowing runtime message registration.
+/// - [MessageSourceLoader] — utility for loading message bundles from property files or JSON assets.
 ///
-/// ### Abstract Message Source
-/// - `abstract_message_source.dart` — base implementation providing
-///   common functionality for message sources, including support for
-///   parent-child message resolution.
+/// ---
 ///
-/// ### Configurable Message Source
-/// - `configurable_message_source.dart` — full-featured, configurable
-///   message source implementation with the ability to customize
-///   message loading, caching, and fallback mechanisms.
-///
-///
-/// ## 🎯 Intended Usage
-///
-/// Import this library to manage internationalized messages in Jetleaf:
+/// ## 🎯 Usage Example: Localized Message Resolution
 ///
 /// ```dart
 /// import 'package:jetleaf_core/message.dart';
 ///
-/// final messages = ConfigurableMessageSource();
-/// messages.loadFromJson('messages_en.json');
-/// final greeting = messages.getMessage('hello', locale: 'en');
+/// void main() {
+///   final source = ConfigurableMessageSource();
+///   source.addMessage('user.welcome', 'en', 'Welcome back, {0}!');
+///   source.addMessage('user.welcome', 'fr', 'Bienvenue, {0}!');
+///
+///   final enMsg = source.getMessage('user.welcome', args: ['Alice'], locale: 'en');
+///   final frMsg = source.getMessage('user.welcome', args: ['Alice'], locale: 'fr');
+///
+///   print(enMsg); // Welcome back, Alice!
+///   print(frMsg); // Bienvenue, Alice!
+/// }
 /// ```
-///
-/// Provides a standard foundation for i18n, message retrieval,
-/// and localization in Jetleaf applications.
-///
-/// {@category Internationalization}
 library;
 
-/// Core interface for message retrieval and internationalization support.
-export 'src/message/message_source.dart';
-
-/// Strategy interface for loading messages from various sources and formats.
-export 'src/message/message_source_loader.dart';
-
-/// Base implementation with common message source functionality and parent-child support.
-export 'src/message/abstract_message_source.dart';
-
-/// Full-featured message source implementation with configuration capabilities.
-export 'src/message/configurable_message_source.dart';
+export 'src/core/message/message_source.dart';
+export 'src/core/message/message_source_loader.dart';
+export 'src/core/message/abstract_message_source.dart';
+export 'src/core/message/configurable_message_source.dart';

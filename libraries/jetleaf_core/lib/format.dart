@@ -1,7 +1,9 @@
-export 'src/format/annotations/date_time_format.dart';
-export 'src/format/annotations/duration_format.dart';
-export 'src/format/annotations/number_format.dart';
+library;
 
-export 'src/format/core.dart';
-export 'src/format/factory.dart';
-export 'src/format/registry.dart';
+export 'src/core/format/annotations/date_time_format.dart';
+export 'src/core/format/annotations/duration_format.dart';
+export 'src/core/format/annotations/number_format.dart';
+
+export 'src/core/format/core.dart';
+export 'src/core/format/factory.dart';
+export 'src/core/format/registry.dart';

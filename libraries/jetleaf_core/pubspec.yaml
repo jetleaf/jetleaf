@@ -1,5 +1,11 @@
 name: jetleaf_core
-version: 1.0.0
+description: The core runtime that powers Jetleaf's dependency injection, lifecycle, environment, logging, and type conversion.
+version: 2.0.0
+homepage: https://jetleaf.hapnium.com
+repository: https://github.com/jetleaf/jetleaf
+issue_tracker: https://github.com/jetleaf/jetleaf/issues
+documentation: https://jetleaf.hapnium.com/docs/core
+
 keywords:
   - ioc
   - jetleaf
@@ -12,9 +18,6 @@ topics:
   - context
   - lifecycle
   - application-core
-description: The core runtime that powers Jetleaf’s pod, context, and app lifecycle.
-
-publish_to: 'none'
 
 environment:
   sdk: ^3.9.0
@@ -22,16 +25,13 @@ environment:
 resolution: workspace
 
 dependencies:
-  jetleaf_build: any
-  jetleaf_lang: any
-  jetleaf_logging: any
-  jetleaf_convert: any
-  jetleaf_utils: any
-  jetleaf_env: any
-  jetleaf_pod: any
   intl: ^0.20.3
+  path: ^1.9.1
+  yaml: ^3.1.3
+  stack_trace: ^1.12.1
+  meta: ^1.18.0
+  jetleaf_tools: ^1.0.0
 
 dev_dependencies:
   test: ^1.29.0
-  meta: ^1.18.0
   lints: ^6.0.0

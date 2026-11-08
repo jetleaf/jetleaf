@@ -1,0 +1,20 @@
+name: jetleaf_core_example
+description: Demonstrates dependency injection, lifecycle management, event bus, type conversion, and environment resolution using jetleaf_core.
+publish_to: none
+version: 1.0.0
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  jetleaf_core:
+    path: ../
+
+dependency_overrides:
+  jetleaf_core:
+    path: ../
+  jetleaf_tools:
+    path: ../../jetleaf_tools
+
+dev_dependencies:
+  lints: ^6.0.0
