@@ -29,7 +29,6 @@ executables:
 
 dependencies:
   meta: ^1.18.3
-  jetleaf_core: ^2.0.0
   analyzer: ^10.2.0
   frontend_server_client: ^4.0.0
   path: ^1.9.1
