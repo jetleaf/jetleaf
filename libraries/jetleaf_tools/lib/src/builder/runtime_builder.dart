@@ -1,4 +1,4 @@
-import '../annotations.dart';
+import 'package:jetleaf_core/lang.dart';
 import 'build_arg.dart';
 
 /// {@template on_logged}

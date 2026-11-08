@@ -16,7 +16,7 @@ import '../cache/manager/cacheable_manager.dart';
 import '../cache/scanner/cache_scanners.dart';
 import '../cache/jetleaf_paths.dart';
 import '../serialization/jetleaf_json.dart';
-import '../utils/constant.dart';
+import 'package:jetleaf_core/lang.dart';
 import '../utils/utils.dart';
 import 'jetleaf_decorator.dart';
 import 'project_watcher.dart';

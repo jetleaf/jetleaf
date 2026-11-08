@@ -58,10 +58,8 @@ Add `jetleaf` and its core dependencies to your `pubspec.yaml`:
 ```yaml
 dependencies:
   jetleaf: ^2.0.0
-  jetleaf_core: ^2.0.0
-
-dev_dependencies:
-  jetleaf_tools: ^1.0.1
+  jetleaf_core: ^2.0.1
+  jetleaf_tools: ^1.0.2
 ```
 
 Fetch dependencies using `dart pub get`:
@@ -325,15 +323,15 @@ Jetleaf provides a modular suite of official extensions:
 
 | Package | Version | Description |
 |:---|:---:|:---|
-| [`jetleaf_core`](https://pub.dev/packages/jetleaf_core) | `^2.0.0` | Unified runtime engine: IoC, environments, properties, logging, and type conversions. |
-| [`jetleaf_tools`](https://pub.dev/packages/jetleaf_tools) | `^1.0.0` | Developer tooling CLI (`jl`), static AST scanner, resident compiler daemon, and AOT generator. |
+| [`jetleaf_core`](https://pub.dev/packages/jetleaf_core) | `^2.0.1` | Unified runtime engine: IoC, environments, properties, logging, and type conversions. |
+| [`jetleaf_tools`](https://pub.dev/packages/jetleaf_tools) | `^1.0.2` | Developer tooling CLI (`jl`), static AST scanner, resident compiler daemon, and AOT generator. |
 | [`jetleaf_web`](https://pub.dev/packages/jetleaf_web) | `^2.0.0` | High-throughput HTTP server, REST controllers, route mapping, and middleware pipeline. |
 | [`jetleaf_resource`](https://pub.dev/packages/jetleaf_resource) | `^2.0.0` | Multi-source resource loading (`file:`, `classpath:`, `asset:`), caching, and profile assets. |
 | [`jetleaf_scheduling`](https://pub.dev/packages/jetleaf_scheduling) | `^2.0.0` | Cron, fixed-rate, and delayed background task scheduling with `@Scheduled`. |
 | [`jetleaf_retry`](https://pub.dev/packages/jetleaf_retry) | `^2.0.0` | Declarative fault-tolerance with exponential backoff retries and `@Recover` methods. |
 | [`jetleaf_validation`](https://pub.dev/packages/jetleaf_validation) | `^2.0.0` | Bean and field validation framework (`@NotNull`, `@Size`, `@Email`, `@Pattern`). |
 | [`jetleaf_monitor`](https://pub.dev/packages/jetleaf_monitor) | `^2.0.0` | Health checks, metrics collectors, latency timers, and actuator endpoints. |
-| [`jetson`](https://pub.dev/packages/jetson) | `^2.0.0` | High-performance JSON serialization engine with zero mirrors. |
+| [`jetson`](https://pub.dev/packages/jetson) | `^2.0.1` | High-performance JSON serialization engine with zero mirrors. |
 | [`jtl`](https://pub.dev/packages/jtl) | `^2.0.0` | Jetleaf Template Language for server-side HTML rendering. |
 
 ---

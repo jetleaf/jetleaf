@@ -1,7 +1,7 @@
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
 import '../../commons/version.dart';
+import '../../declaration/declaration.dart';
 import '../../exceptions.dart';
+import '../../helpers/equals_and_hash_code.dart';
 import '../../utils/lang_utils.dart';
 import '../core.dart';
 import '../annotation/annotation.dart';

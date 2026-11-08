@@ -1,3 +1,11 @@
+## [2.0.1]
+
+### Enhancements
+- Updated runtime dependency to `jetleaf_core: ^2.0.1`.
+- Cleaned dependency tree to ensure complete separation from development tooling.
+
+---
+
 ## [2.0.0]
 
 ### Breaking Changes

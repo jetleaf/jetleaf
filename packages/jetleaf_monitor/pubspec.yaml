@@ -28,8 +28,8 @@ environment:
 
 dependencies:
   meta: ^1.18.0
-  jetleaf_core: ^2.0.0
-  jetson: ^2.0.0
+  jetleaf_core: ^2.0.1
+  jetson: ^2.0.1
 
 dev_dependencies:
   test: ^1.29.0

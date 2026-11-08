@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import '../../helpers/equals_and_hash_code.dart';
+import 'package:jetleaf_core/lang.dart';
 
 // ====================================================== SUBCLASS ENTRY ===================================================
 

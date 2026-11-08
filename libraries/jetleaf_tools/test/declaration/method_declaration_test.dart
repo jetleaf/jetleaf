@@ -1,8 +1,7 @@
 // ignore_for_file: unused_field, unnecessary_getters_setters, unused_element
 
 import 'package:test/test.dart';
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import 'package:jetleaf_core/lang.dart';
 // Classes with various method types
 class MethodTestClass {
   // Regular methods

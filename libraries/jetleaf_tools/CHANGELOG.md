@@ -1,3 +1,10 @@
+## 1.0.2
+
+### Architecture & Tooling Refinement
+* **Inverted Tooling Dependency**: `jetleaf_tools` now cleanly depends on `jetleaf_core: ^2.0.1` as a build and code-generation toolchain.
+* **Separation of Concerns**: Moved runtime data models, reflective declarations, binary buffer serialization, and core exceptions into `jetleaf_core`.
+* **No Core Re-Exports**: Removed all runtime re-exports from `jetleaf_tools` so it functions strictly as a compiler, scanner, and CLI development toolchain.
+
 ## 1.0.1
 
 ### Fixes & Improvements

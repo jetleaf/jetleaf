@@ -8,7 +8,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:typed_data';
 
-import '../classes.dart';
+import 'package:jetleaf_core/lang.dart';
 
 /// Resolves a **public Dart platform type** using a library URI and class name.
 ///

@@ -1,14 +1,18 @@
 import 'dart:async';
 import 'dart:collection';
 
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-import 'package:jetleaf_tools/declaration.dart';
-
+import '../../annotation/reflectable_annotations.dart';
+import '../../classes.dart';
+import '../../declaration/declaration.dart';
 import '../../commons/version.dart';
 import '../../extensions/primitives/iterable.dart';
 import '../../extensions/primitives/string.dart';
 import '../../exceptions.dart';
 import '../../garbage_collector/garbage_collector.dart';
+import '../../helpers/equals_and_hash_code.dart';
+import '../../helpers/qualified_name.dart';
+import '../../runtime/provider/runtime_provider.dart';
+import '../../utils/generic_type_parser.dart';
 import '../../utils/lang_utils.dart';
 import '../annotation/annotation.dart';
 import '../constructor/constructor.dart';

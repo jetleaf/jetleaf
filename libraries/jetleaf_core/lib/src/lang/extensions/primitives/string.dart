@@ -1,8 +1,7 @@
 import 'dart:convert' show json;
 
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
 import '../../commons/regex_utils.dart';
+import '../../declaration/declaration.dart';
 import '../../meta/resource/asset_path/asset_resource.dart';
 import 'iterable.dart';
 import 'map.dart';

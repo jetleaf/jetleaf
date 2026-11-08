@@ -2,6 +2,7 @@
 
 import 'dart:io';
 
+import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_tools/jetleaf_tools.dart';
 import 'package:jetleaf_tools/src/cache/indexer/declaration_builder.dart';
 import 'package:jetleaf_tools/src/cache/indexer/file_discovery.dart';

@@ -1,9 +1,10 @@
 import 'dart:collection';
 
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import '../../annotation/reflectable_annotations.dart';
 import '../../commons/version.dart';
+import '../../declaration/declaration.dart';
 import '../../exceptions.dart';
+import '../../runtime/provider/runtime_provider.dart';
 import '../../utils/lang_utils.dart';
 import '../class/class.dart';
 import '../field/field.dart';

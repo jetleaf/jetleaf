@@ -1,7 +1,6 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_tools/cache.dart';
-import 'package:jetleaf_tools/src/runtime/declaration/declaration.dart';
-import 'package:jetleaf_tools/src/exceptions.dart';
+import 'package:jetleaf_core/lang.dart';
 
 /// Helper to build a StandardClassDeclaration for testing.
 StandardClassDeclaration _makeClass({

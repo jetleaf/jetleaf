@@ -1,5 +1,4 @@
-import '../helpers/equals_and_hash_code.dart';
-import '../runtime/declaration/declaration.dart';
+import 'package:jetleaf_core/lang.dart';
 
 // ========================================================== CACHE ===================================================
 

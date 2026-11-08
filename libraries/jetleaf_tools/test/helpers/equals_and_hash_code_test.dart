@@ -1,5 +1,5 @@
 // test/equals_and_hash_code_test.dart
-import 'package:jetleaf_tools/src/helpers/equals_and_hash_code.dart';
+import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
 
 // Test classes

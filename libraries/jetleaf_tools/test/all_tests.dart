@@ -18,7 +18,6 @@ import 'helpers/deep_test.dart' as deep_test;
 import 'helpers/equals_and_hash_code_test.dart' as equals_and_hash_code_test;
 import 'generic_parser_test.dart' as generic_parser_test;
 import 'runtime/declaration_test.dart' as declaration_test;
-import 'runtime/reflection_utils_test.dart' as reflection_utils_test;
 import 'runtime/utils_test.dart' as utils_test;
 import 'cache/cache_serializer_test.dart' as cache_serializer_test;
 import 'vm/discoverable_test.dart' as discoverable_test;
@@ -80,9 +79,6 @@ void main() {
   });
   group('runtime/declaration', () {
     declaration_test.main();
-  });
-  group('runtime/reflection_utils', () {
-    reflection_utils_test.main();
   });
   group('runtime/utils', () {
     utils_test.main();

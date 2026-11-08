@@ -4,7 +4,7 @@ import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart' as ast;
 import 'package:path/path.dart' as p;
 
-import '../../runtime/declaration/declaration.dart';
+import 'package:jetleaf_core/declaration.dart';
 import 'discovered_files.dart';
 
 class _ParsedUnit {

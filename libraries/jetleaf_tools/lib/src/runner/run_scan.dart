@@ -6,7 +6,7 @@ import '../runtime/scanner/application_runtime_scanner.dart';
 import '../runtime/scanner/runtime_scanner.dart';
 import '../runtime/scanner/runtime_scanner_configuration.dart';
 import '../runtime/scanner/runtime_scanner_summary.dart';
-import '../utils/constant.dart';
+import 'package:jetleaf_core/lang.dart';
 
 // import 'jet_runtime_stub_scanner.dart'
 //     if (dart.library.mirrors) '../runtime/runtime_scanner/application_runtime_scanner.dart';

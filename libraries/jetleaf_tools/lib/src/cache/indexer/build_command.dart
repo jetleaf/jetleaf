@@ -5,7 +5,7 @@ import 'package:path/path.dart' as p;
 import '../manager/cacheable_manager.dart';
 import '../jetleaf_paths.dart';
 import '../scanner/cache_scanners.dart';
-import '../../utils/constant.dart';
+import 'package:jetleaf_core/lang.dart';
 import '../../builder/reachability.dart';
 import '../../builder/runtime_manifest.dart';
 import '../../aot/aot_registrar_writer.dart';

@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:jetleaf_tools/cache.dart';
 import 'package:jtl/jtl.dart';
 import 'package:jetleaf_core/lang.dart';
 

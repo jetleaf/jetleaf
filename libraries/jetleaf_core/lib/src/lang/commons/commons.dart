@@ -1,10 +1,11 @@
 import 'dart:async' show FutureOr;
 
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import '../annotation/reflectable_annotations.dart';
+import '../helpers/equals_and_hash_code.dart';
 import '../io/base.dart';
 import '../extensions/others/t.dart';
 import '../meta/class/class.dart';
+import '../utils/constant.dart';
 
 /// {@template jetleaf_provider}
 /// A generic provider interface for supplying instances of type [T].

@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:jetleaf_tools/cache.dart';
 import 'package:jetleaf_tools/src/cache/indexer/declaration_builder.dart';
 import 'package:jetleaf_tools/src/cache/indexer/file_discovery.dart';
-import 'package:jetleaf_tools/src/runtime/declaration/declaration.dart';
+import 'package:jetleaf_core/declaration.dart';
 import 'package:test/test.dart';
 
 void main() {

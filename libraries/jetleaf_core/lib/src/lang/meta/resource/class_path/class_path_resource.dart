@@ -1,14 +1,5 @@
-import 'package:jetleaf_tools/jetleaf_tools.dart';
+import 'package:jetleaf_core/lang.dart';
 import 'package:meta/meta.dart';
-
-import '../../../exceptions.dart';
-import '../../../extensions/primitives/iterable.dart';
-import '../../../io/input_stream/input_stream.dart';
-import '../../../io/input_stream/input_stream_source.dart';
-import '../../../io/input_stream/string_input_stream.dart';
-import '../../class/class.dart';
-import '../../method/method.dart';
-import '../../protection_domain/protection_domain.dart';
 
 part 'default_class_path_resource.dart';
 

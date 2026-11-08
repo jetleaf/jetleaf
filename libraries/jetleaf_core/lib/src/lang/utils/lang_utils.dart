@@ -1,8 +1,11 @@
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import '../classes.dart';
+import '../declaration/declaration.dart';
+import '../exceptions.dart';
 import '../meta/class/class.dart';
 import '../meta/class/class_type.dart';
 import '../meta/protection_domain/protection_domain.dart';
+import '../runtime/provider/runtime_provider.dart' show Runtime;
+import 'generic_type_parser.dart';
 
 /// Pure Dart reified generic type extractor for Iterable
 Object? extractIterableTypeArgument(Iterable iterable, Object? Function<T>() extract) {

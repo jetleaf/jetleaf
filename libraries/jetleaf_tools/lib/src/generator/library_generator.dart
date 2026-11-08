@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:meta/meta.dart';
 
-import '../runtime/declaration/declaration.dart';
+import 'package:jetleaf_core/declaration.dart';
 import '../runtime/scanner/runtime_scanner_configuration.dart';
 import '../utils/utils.dart';
 

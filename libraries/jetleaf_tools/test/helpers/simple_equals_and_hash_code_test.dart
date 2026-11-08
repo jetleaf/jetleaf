@@ -1,4 +1,4 @@
-import 'package:jetleaf_tools/src/helpers/equals_and_hash_code.dart';
+import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
 
 class TestClass with EqualsAndHashCode {

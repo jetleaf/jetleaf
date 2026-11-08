@@ -125,46 +125,42 @@ jobs:
           chmod +x /tmp/publish_pkg.sh
 
       # =================================================================
-      # Tier 1: Dev Tooling & Resident Compiler (Zero internal dependencies)
+      # Tier 1: Core Runtime (Foundation for all packages, 0 internal dependencies)
       # =================================================================
-      - name: "Publish Tier 1: jetleaf_tools"
+      - name: "Publish Tier 1: jetleaf_core"
         run: |
+          /tmp/publish_pkg.sh "libraries/jetleaf_core" "jetleaf_core (Core Runtime & IoC Foundation)" "$DRY_RUN"
+
+      # =================================================================
+      # Tier 2: Base Packages & Tooling (Depend on jetleaf_core)
+      # =================================================================
+      - name: "Publish Tier 2: Base Packages & Dev Tooling"
+        run: |
+          # 1. jetleaf_tools (Dev Tooling & Codegen, depends on jetleaf_core)
           /tmp/publish_pkg.sh "libraries/jetleaf_tools" "jetleaf_tools (Dev Tooling & Codegen)" "$DRY_RUN"
 
-      # =================================================================
-      # Tier 2: Core Runtime (Depends on jetleaf_tools)
-      # =================================================================
-      - name: "Publish Tier 2: jetleaf_core"
-        run: |
-          /tmp/publish_pkg.sh "libraries/jetleaf_core" "jetleaf_core (Core Runtime & IoC)" "$DRY_RUN"
-
-      # =================================================================
-      # Tier 3: Base Packages (Depend only on jetleaf_core)
-      # =================================================================
-      - name: "Publish Tier 3: Base Packages"
-        run: |
-          # 1. jetson (JSON serialization, required by jetleaf_monitor & jetleaf_web)
+          # 2. jetson (JSON serialization, required by jetleaf_monitor & jetleaf_web)
           /tmp/publish_pkg.sh "packages/jetson" "jetson (JSON Serializer)" "$DRY_RUN"
 
-          # 2. jtl (Template language, required by jetleaf_web)
+          # 3. jtl (Template language, required by jetleaf_web)
           /tmp/publish_pkg.sh "packages/jtl" "jtl (Template Language)" "$DRY_RUN"
 
-          # 3. jetleaf_resource (Resource management, caching & rate limiting)
+          # 4. jetleaf_resource (Resource management, caching & rate limiting)
           /tmp/publish_pkg.sh "packages/jetleaf_resource" "jetleaf_resource (Caching & Rate Limiting)" "$DRY_RUN"
 
-          # 4. jetleaf_retry (Resilience & Retry mechanisms)
+          # 5. jetleaf_retry (Resilience & Retry mechanisms)
           /tmp/publish_pkg.sh "packages/jetleaf_retry" "jetleaf_retry (Fault Tolerance & Retry)" "$DRY_RUN"
 
-          # 5. jetleaf_scheduling (Cron & Scheduled tasks)
+          # 6. jetleaf_scheduling (Cron & Scheduled tasks)
           /tmp/publish_pkg.sh "packages/jetleaf_scheduling" "jetleaf_scheduling (Task Scheduling)" "$DRY_RUN"
 
-          # 6. jetleaf_validation (Validation engine)
+          # 7. jetleaf_validation (Validation engine)
           /tmp/publish_pkg.sh "packages/jetleaf_validation" "jetleaf_validation (Bean Validation)" "$DRY_RUN"
 
       # =================================================================
-      # Tier 4: Composite / Dependent Packages
+      # Tier 3: Composite / Dependent Packages
       # =================================================================
-      - name: "Publish Tier 4: Dependent Packages"
+      - name: "Publish Tier 3: Dependent Packages"
         run: |
           # 1. jetleaf_monitor (depends on jetleaf_core + jetson)
           /tmp/publish_pkg.sh "packages/jetleaf_monitor" "jetleaf_monitor (Monitoring & Metrics)" "$DRY_RUN"
@@ -173,8 +169,8 @@ jobs:
           /tmp/publish_pkg.sh "packages/jetleaf_web" "jetleaf_web (HTTP & Web Framework)" "$DRY_RUN"
 
       # =================================================================
-      # Tier 5: Root Framework Package
+      # Tier 4: Root Framework Package
       # =================================================================
-      - name: "Publish Tier 5: jetleaf (Root Framework)"
+      - name: "Publish Tier 4: jetleaf (Root Framework)"
         run: |
           /tmp/publish_pkg.sh "." "jetleaf (Root Framework)" "$DRY_RUN"

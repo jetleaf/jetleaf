@@ -1,9 +1,11 @@
 import 'dart:async';
 
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
 import '../../commons/version.dart';
+import '../../declaration/declaration.dart';
 import '../../exceptions.dart';
+import '../../helpers/equals_and_hash_code.dart';
+import '../../classes.dart';
+import '../../utils/constant.dart';
 import '../../utils/lang_utils.dart';
 import '../../utils/method_utils.dart';
 import '../class/class_type.dart';

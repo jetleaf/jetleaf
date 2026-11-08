@@ -1,8 +1,7 @@
 import 'dart:async';
 import 'dart:isolate';
 
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import '../annotation/reflectable_annotations.dart';
 import '../exceptions.dart';
 import 'local_thread.dart';
 

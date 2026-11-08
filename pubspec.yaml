@@ -44,9 +44,9 @@ workspace:
 
 dependencies:
   meta: ^1.18.3
-  jetleaf_core: ^2.0.0
+  jetleaf_core: ^2.0.1
+  jetleaf_tools: ^1.0.2
 
 dev_dependencies:
-  jetleaf_tools: ^1.0.1
   test: ^1.29.0
   lints: ^6.0.0

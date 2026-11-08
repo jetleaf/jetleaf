@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:isolate';
 
-import 'package:jetleaf_tools/jetleaf_tools.dart';
 import 'package:meta/meta.dart';
 
+import '../annotation/reflectable_annotations.dart';
 import '../commons/typedefs.dart';
 
 part 'local_thread_key.dart';

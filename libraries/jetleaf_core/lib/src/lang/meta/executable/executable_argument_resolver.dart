@@ -1,10 +1,9 @@
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
 import '../../commons/typedefs.dart';
 import '../../exceptions.dart';
 import '../class/class.dart';
 import '../core.dart';
 import '../parameter/parameter.dart';
+import 'executable_argument.dart';
 
 part '_executable_argument_resolver.dart';
 

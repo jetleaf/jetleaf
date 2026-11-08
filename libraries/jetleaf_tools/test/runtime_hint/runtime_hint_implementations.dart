@@ -1,7 +1,6 @@
 // ignore_for_file: deprecated_member_use_from_same_package
 
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import 'package:jetleaf_core/lang.dart';
 // ========================================================================
 // DESIGN 1: Classes that extend AbstractRuntimeHint or implement RuntimeHint
 // ========================================================================

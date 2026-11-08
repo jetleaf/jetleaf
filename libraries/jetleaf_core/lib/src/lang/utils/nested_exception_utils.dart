@@ -1,4 +1,4 @@
-import 'package:jetleaf_tools/jetleaf_tools.dart';
+import 'package:jetleaf_core/lang.dart';
 
 /// {@template nested_exception_utils}
 /// Utility class providing static methods for working with nested exception hierarchies.

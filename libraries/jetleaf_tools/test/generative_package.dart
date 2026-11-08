@@ -1,5 +1,4 @@
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import 'package:jetleaf_core/declaration.dart';
 class BuildGenerativePackage extends GenerativePackage {
   @override
   String? getFilePath() => "lib/src/generated/";

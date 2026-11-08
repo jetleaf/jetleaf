@@ -1,4 +1,4 @@
-import 'package:jetleaf_tools/jetleaf_tools.dart';
+import 'package:jetleaf_core/lang.dart';
 
 /// {@template collector}
 /// A mutable reduction operation that accumulates input elements into a mutable

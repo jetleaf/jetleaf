@@ -3,8 +3,7 @@
 // ============================================================================
 
 // Base interfaces and abstract classes
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import 'package:jetleaf_core/lang.dart';
 abstract class BaseInterface {
   void doSomething();
   String get name;

@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'package:jetleaf_tools/jetleaf_tools.dart';
+import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
 
 /// NOTE:

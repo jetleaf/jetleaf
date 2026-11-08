@@ -1,6 +1,6 @@
 name: jetson
 description: Object mapping and serialization core for Jetleaf — provides JSON, model binding, and conversion utilities.
-version: 2.0.0
+version: 2.0.1
 
 homepage: https://jetleaf.hapnium.com
 repository: https://github.com/jetleaf/jetleaf
@@ -28,7 +28,7 @@ environment:
 
 dependencies:
   meta: ^1.18.0
-  jetleaf_core: ^2.0.0
+  jetleaf_core: ^2.0.1
 
 dev_dependencies:
   test: ^1.29.0

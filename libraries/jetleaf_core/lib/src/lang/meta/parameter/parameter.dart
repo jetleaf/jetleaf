@@ -1,14 +1,6 @@
-import 'package:jetleaf_tools/jetleaf_tools.dart';
+import 'package:jetleaf_core/lang.dart';
 
-import '../../commons/version.dart';
 import '../../utils/lang_utils.dart';
-import '../annotation/annotation.dart';
-import '../class/class.dart';
-import '../constructor/constructor.dart';
-import '../field/field.dart';
-import '../core.dart';
-import '../method/method.dart';
-import '../protection_domain/protection_domain.dart';
 
 part '_parameter.dart';
 

@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import '../annotation/reflectable_annotations.dart';
 import '../collections/hash_map.dart';
+import '../helpers/equals_and_hash_code.dart';
 
 part '_garbage_collector.dart';
 

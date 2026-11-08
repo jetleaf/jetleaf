@@ -1,8 +1,7 @@
 import 'dart:io';
 
 import '../cache/jetleaf_paths.dart';
-import '../runtime/declaration/declaration.dart';
-import '../utils/constant.dart';
+import 'package:jetleaf_core/lang.dart';
 import 'aot_annotation_registry_writer.dart';
 import 'aot_constructor_registry_writer.dart';
 import 'aot_field_registry_writer.dart';

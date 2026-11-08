@@ -1,7 +1,7 @@
 // ignore_for_file: unused_element, unused_field
 
 import 'package:test/test.dart';
-import 'package:jetleaf_tools/jetleaf_tools.dart';
+import 'package:jetleaf_core/lang.dart';
 import 'dart:io';
 
 // Test classes for class declarations

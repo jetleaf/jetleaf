@@ -1,8 +1,8 @@
 import 'dart:collection';
 
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import '../annotation/reflectable_annotations.dart';
 import '../commons/version.dart';
+import '../declaration/declaration.dart';
 import 'annotation/annotation.dart';
 import 'class/class.dart';
 import 'parameter/parameter.dart';

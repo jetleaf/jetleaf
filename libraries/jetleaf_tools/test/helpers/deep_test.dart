@@ -1,5 +1,5 @@
 import 'dart:typed_data';
-import 'package:jetleaf_tools/src/helpers/equals_and_hash_code.dart';
+import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
 
 /// A model that includes raw bytes (`Uint8List`) and complex nested data

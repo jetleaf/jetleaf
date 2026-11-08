@@ -1,6 +1,5 @@
 import 'package:test/test.dart';
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import 'package:jetleaf_core/lang.dart';
 // Base classes for mixin constraints
 abstract class BaseModel {
   String get id;

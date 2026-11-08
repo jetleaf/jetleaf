@@ -1,7 +1,7 @@
 // ignore_for_file: unused_local_variable, deprecated_member_use_from_same_package
 
 import 'package:test/test.dart';
-import 'package:jetleaf_tools/jetleaf_tools.dart';
+import 'package:jetleaf_core/lang.dart';
 import 'runtime_hint_implementations.dart';
 
 @JetleafTest()

@@ -1,5 +1,4 @@
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import '../../annotation/reflectable_annotations.dart';
 import 'class.dart';
 
 /// {@template class_gettable}

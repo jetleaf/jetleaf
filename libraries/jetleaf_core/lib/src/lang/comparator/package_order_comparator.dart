@@ -1,6 +1,6 @@
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import '../declaration/declaration.dart';
 import '../meta/class/class.dart';
+import '../utils/constant.dart';
 import 'order_comparator.dart';
 import 'ordered.dart';
 

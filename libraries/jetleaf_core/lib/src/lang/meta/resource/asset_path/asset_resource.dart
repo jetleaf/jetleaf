@@ -1,19 +1,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-import 'package:jetleaf_tools/cache.dart' show BinaryBuilder;
+import 'package:jetleaf_core/lang.dart';
 import 'package:meta/meta.dart';
-
-import '../../../extensions/primitives/string.dart';
-import '../../../commons/typedefs.dart';
-import '../../../exceptions.dart';
-import '../../../io/base.dart';
-import '../../../io/input_stream/byte_array_input_stream.dart';
-import '../../../io/input_stream/input_stream.dart';
-import '../../../io/input_stream/input_stream_source.dart';
-import '../asset_loader/bundler.dart';
-import '../asset_loader/interface.dart';
 
 part '_asset_path_resource.dart';
 part '_asset_resource.dart';

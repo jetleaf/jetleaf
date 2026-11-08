@@ -1,8 +1,7 @@
 // ignore_for_file: unused_element, empty_constructor_bodies, avoid_shadowing_type_parameters
 
 import 'package:test/test.dart';
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import 'package:jetleaf_core/lang.dart';
 typedef WhenChecked = Map<String, bool>;
 final record = (String, bool);
 typedef Rrec = ({String name, int age});

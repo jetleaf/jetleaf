@@ -3,7 +3,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
-import '../runtime/declaration/declaration.dart';
+import 'package:jetleaf_core/declaration.dart';
 import '../runtime/scanner/runtime_scanner_configuration.dart';
 import 'abstract_asset_support.dart';
 

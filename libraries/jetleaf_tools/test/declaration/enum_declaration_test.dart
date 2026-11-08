@@ -1,8 +1,7 @@
 // ignore_for_file: unused_element, unused_field
 
 import 'package:test/test.dart';
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import 'package:jetleaf_core/lang.dart';
 // Simple enum
 enum SimpleEnum {
   @Author("Eve")

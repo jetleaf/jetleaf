@@ -2,8 +2,7 @@ import 'dart:io';
 
 import '../cache/indexer/declaration_builder.dart';
 import '../cache/indexer/discovered_files.dart';
-import '../runtime/declaration/declaration.dart';
-import '../runtime/provider/runtime_provider.dart';
+import 'package:jetleaf_core/lang.dart';
 import 'library_generator.dart';
 
 /// {@template default_library_generator}

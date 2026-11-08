@@ -2,8 +2,9 @@
 
 import 'dart:async';
 
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import '../classes.dart' show Void;
+import '../declaration/declaration.dart';
+import '../exceptions.dart';
 import '../extensions/primitives/string.dart';
 import '../collections/hash_set.dart';
 import '../commons/optional.dart';
@@ -19,6 +20,9 @@ import '../primitives/float.dart';
 import '../primitives/integer.dart';
 import '../meta/method/method.dart';
 import '../meta/class/class.dart';
+import '../runtime/provider/runtime_provider.dart' show Runtime;
+import 'constant.dart';
+import 'reflection_utils.dart';
 
 /// {@template class_utils}
 /// A utility class that provides static methods for working with class hierarchies

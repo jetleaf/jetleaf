@@ -1,6 +1,5 @@
 import 'package:test/test.dart';
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import 'package:jetleaf_core/lang.dart';
 // Simple record types
 typedef SimpleRecord = (String, int);
 typedef NamedRecord = ({String name, int age});

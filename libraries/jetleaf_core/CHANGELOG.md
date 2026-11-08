@@ -1,3 +1,14 @@
+## 2.0.1
+
+### Architectural Enhancements
+* **Independent Core Architecture**: Completely removed runtime dependency on `jetleaf_tools`. `jetleaf_core` is now 100% self-contained with zero dependencies on build or developer tooling.
+* **Native Runtime Foundation**:
+  * Moved binary buffer I/O (`BinaryBuilder`, `BinaryReader`) into `package:jetleaf_core/cache.dart`.
+  * Moved reflective declaration models (`Declaration`, `ClassDeclaration`, `FieldDeclaration`, `MethodDeclaration`, `ConstructorDeclaration`, `Asset`, `Package`) into `package:jetleaf_core/declaration.dart`.
+  * Integrated core runtime exceptions (`Throwable`, `RuntimeException`, `ClassNotFoundException`, etc.) directly into `package:jetleaf_core/lang.dart`.
+  * Integrated object helpers (`EqualsAndHashCode`, `ToString`, `QualifiedName`), argument containers (`ExecutableArgument`), runtime hints (`RuntimeHint`), and system utilities (`System`, `SystemDetector`).
+* **Clean Downward Dependency**: Allows applications and extension packages (`jtl`, `jetson`, `jetleaf_web`, etc.) to run purely on `jetleaf_core` without requiring `jetleaf_tools` at runtime.
+
 ## 2.0.0
 
 ### Landmark Architectural Consolidation

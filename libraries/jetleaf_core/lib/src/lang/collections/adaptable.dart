@@ -1,9 +1,8 @@
 import 'dart:collection' as collection;
 
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
 import '../exceptions.dart';
 import '../meta/class/class.dart';
+import '../utils/constant.dart';
 import 'array_list.dart';
 import 'hash_map.dart';
 import 'hash_set.dart';

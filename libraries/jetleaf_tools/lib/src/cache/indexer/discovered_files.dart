@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import '../../utils/constant.dart';
+import 'package:jetleaf_core/lang.dart';
 
 /// Result of file discovery — all Dart files found in the project.
 final class DiscoveredFiles {

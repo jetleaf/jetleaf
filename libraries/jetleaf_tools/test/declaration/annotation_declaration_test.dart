@@ -1,8 +1,7 @@
 // ignore_for_file: unused_field
 
 import 'package:test/test.dart';
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import 'package:jetleaf_core/lang.dart';
 // Test annotations
 class SimpleAnnotation {
   final String value;

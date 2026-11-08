@@ -1,5 +1,9 @@
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import '../../annotation/reflectable_annotations.dart';
+import '../../classes.dart';
+import '../../declaration/declaration.dart';
+import '../../exceptions.dart';
+import '../../helpers/equals_and_hash_code.dart';
+import '../../utils/constant.dart';
 import 'class.dart';
 import 'class_gettable.dart';
 import '../protection_domain/protection_domain.dart';

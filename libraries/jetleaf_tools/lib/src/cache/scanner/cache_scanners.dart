@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'dart:typed_data';
 
-import '../../runtime/declaration/declaration.dart';
+import 'package:jetleaf_core/declaration.dart';
 import '../jetleaf_paths.dart';
 import '../models.dart';
 import '../serializer/cacheable_serializer.dart';

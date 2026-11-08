@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import '../../utils/constant.dart';
+import 'package:jetleaf_core/lang.dart';
 
 /// Init command — creates Jetleaf config file.
 void runInit(List<String> args) {

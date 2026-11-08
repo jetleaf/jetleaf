@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:jetleaf_tools/jetleaf_tools.dart' show runScan, RuntimeScannerConfiguration;
 import 'package:jetleaf_core/convert.dart';
 import 'package:jetleaf_core/core.dart';
 import 'package:jetleaf_core/pod.dart';
@@ -533,14 +534,11 @@ final class JetleafApplication {
   ///
   /// Creates a new JetleafApplication instance with the specified primary source.
   ///
-  /// [primarySource] the primary source object, typically the main application class
-  /// [primarySources] additional primary sources for component scanning
+  /// [_primarySource] the primary source object, typically the main application class
   ///
   /// Example:
   /// ```dart
   /// final app = JetleafApplication(MyApp);
-  /// // or with additional sources
-  /// final app = JetleafApplication(MyApp, {Config1, Config2});
   /// ```
   JetleafApplication(this._primarySource) {
     _applicationContextFactory = DefaultApplicationContextFactory();
@@ -565,7 +563,7 @@ final class JetleafApplication {
   /// 5. **Startup**: Refresh context and execute application runners
   ///
   /// [args] command line arguments passed to the application
-  /// [provider] optional runtime provider for environment detection
+  /// [_detector] optional runtime provider for environment detection
   ///
   /// Returns a [ConfigurableApplicationContext] representing the running application
   ///
@@ -579,7 +577,8 @@ final class JetleafApplication {
   /// final context = await app.create(args, null);
   /// ```
   /// {@endtemplate}
-  Future<ConfigurableApplicationContext?> create(List<String> args, RuntimeScannerConfiguration? scanConfiguration) async {
+  /// Creates and initializes the application context.
+  Future<ConfigurableApplicationContext?> create(List<String> args, [RuntimeScannerConfiguration? scanConfiguration]) async {
     final system = _detector.detect(args);
     _system = system;
 
@@ -606,10 +605,8 @@ final class JetleafApplication {
       }
       
       _mainApplicationClass = _primarySource is Class<Object>
-          ? _primarySource
-          : (_primarySource is Type
-              ? Class.forType(_primarySource)
-              : Class.forObject(_primarySource));
+        ? _primarySource
+        : (_primarySource is Type ? Class.forType(_primarySource) : Class.forObject(_primarySource));
 
       /// We use the [JetleafApplicationShutdownHook] to register a shutdown hook with the system.
       /// 

@@ -1,6 +1,6 @@
 name: jetleaf_tools
 description: Build, runtime scanning, code generation, and developer tooling for the Jetleaf framework.
-version: 1.0.1
+version: 1.0.2
 homepage: https://jetleaf.hapnium.com
 repository: https://github.com/jetleaf/jetleaf
 issue_tracker: https://github.com/jetleaf/jetleaf/issues
@@ -29,6 +29,7 @@ executables:
 
 dependencies:
   meta: ^1.18.3
+  jetleaf_core: ^2.0.1
   analyzer: ^10.2.0
   frontend_server_client: ^4.0.0
   path: ^1.9.1

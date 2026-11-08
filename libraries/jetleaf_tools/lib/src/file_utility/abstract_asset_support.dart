@@ -2,8 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
-import '../runtime/declaration/declaration.dart';
-import '../utils/constant.dart';
+import 'package:jetleaf_core/lang.dart';
 import 'abstract_file_utility.dart';
 import 'abstract_part_file_utility.dart';
 

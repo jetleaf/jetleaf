@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import '../../helpers/equals_and_hash_code.dart';
-import '../../runtime/declaration/declaration.dart';
+import 'package:jetleaf_core/lang.dart';
 import '../jetleaf_paths.dart';
 import '../models.dart';
 import '../serializer/cacheable_serializer.dart';

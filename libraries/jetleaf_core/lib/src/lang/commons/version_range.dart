@@ -1,5 +1,4 @@
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import '../helpers/equals_and_hash_code.dart';
 import 'version.dart';
 
 /// {@template range}

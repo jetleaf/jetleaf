@@ -1,8 +1,8 @@
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import '../annotation/reflectable_annotations.dart';
 import '../meta/method/method.dart';
 import '../meta/parameter/parameter.dart';
 import '../meta/protection_domain/protection_domain.dart';
+import '../runtime/provider/runtime_provider.dart' show Runtime;
 
 /// {@template jet_method_utils}
 /// Provides reflective utility functions for working with Jetleaf runtime

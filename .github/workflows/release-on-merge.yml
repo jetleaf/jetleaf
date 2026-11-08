@@ -41,8 +41,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PACKAGES=(
-            "libraries/jetleaf_tools"
             "libraries/jetleaf_core"
+            "libraries/jetleaf_tools"
             "packages/jetson"
             "packages/jtl"
             "packages/jetleaf_resource"

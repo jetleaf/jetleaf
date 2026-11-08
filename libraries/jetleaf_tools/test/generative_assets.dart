@@ -1,6 +1,5 @@
 import 'dart:typed_data';
-import 'package:jetleaf_tools/jetleaf_tools.dart';
-
+import 'package:jetleaf_core/declaration.dart';
 class SimpleUserHtml extends GenerativeAsset {
   @override
   Uint8List getContentBytes() {

@@ -1,7 +1,6 @@
 import 'dart:io';
 
-import '../runtime/declaration/declaration.dart';
-import '../utils/constant.dart';
+import 'package:jetleaf_core/lang.dart';
 import 'aot_sub_registrar_writer.dart';
 
 /// {@template aot_constructor_registry_writer}

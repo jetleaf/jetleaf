@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 
-import '../utils/constant.dart';
+import 'package:jetleaf_core/lang.dart';
 
 /// {@template jetleaf_paths}
 /// Shared path construction for the Jetleaf workspace.

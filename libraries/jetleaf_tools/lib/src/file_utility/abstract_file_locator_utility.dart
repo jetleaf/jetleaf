@@ -4,7 +4,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 
 import 'abstract_file_utility.dart';
-import '../utils/constant.dart';
+import 'package:jetleaf_core/lang.dart';
 import '../utils/must_avoid.dart';
 import 'located_files.dart';
 

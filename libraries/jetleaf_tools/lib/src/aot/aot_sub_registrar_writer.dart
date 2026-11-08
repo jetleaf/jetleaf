@@ -1,4 +1,4 @@
-import '../utils/constant.dart';
+import 'package:jetleaf_core/lang.dart';
 
 /// {@template aot_sub_registrar_writer}
 /// 🛠️ **Base AOT Registry Code Generator**
