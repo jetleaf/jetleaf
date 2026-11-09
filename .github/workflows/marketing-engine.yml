@@ -1,0 +1,97 @@
+name: Jetleaf Marketing Engine
+
+on:
+  schedule:
+    # Daily Tips: Everyday at 07:00 UTC (08:00 AM Africa/Lagos)
+    - cron: '0 7 * * *'
+    # Weekly Newsletter: Every Sunday at 09:00 UTC (10:00 AM Africa/Lagos)
+    - cron: '0 9 * * 0'
+    # Weekly Article: Every Wednesday at 08:00 UTC (09:00 AM Africa/Lagos)
+    - cron: '0 8 * * 3'
+    # Weekend Guide: Every Thursday at 14:00 UTC (03:00 PM Africa/Lagos)
+    - cron: '0 14 * * 4'
+
+  # Allows manual triggering from GitHub Actions UI
+  workflow_dispatch:
+    inputs:
+      content_type:
+        description: 'Select content to generate'
+        required: true
+        default: 'daily-tips'
+        type: choice
+        options:
+          - 'daily-tips'
+          - 'newsletter'
+          - 'article'
+          - 'weekend-guide'
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Determine Content Type
+        id: select_type
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "type=${{ github.event.inputs.content_type }}" >> $GITHUB_OUTPUT
+          else
+            DAY=$(date -u +%u)
+            HOUR=$(date -u +%H)
+            
+            # Default to daily-tips
+            TARGET_TYPE="daily-tips"
+            
+            # Sunday around 09:00 UTC -> newsletter
+            if [ "$DAY" = "7" ] && [ "$HOUR" = "09" ]; then
+              TARGET_TYPE="newsletter"
+            # Wednesday around 08:00 UTC -> article
+            elif [ "$DAY" = "3" ] && [ "$HOUR" = "08" ]; then
+              TARGET_TYPE="article"
+            # Thursday around 14:00 UTC -> weekend-guide
+            elif [ "$DAY" = "4" ] && [ "$HOUR" = "14" ]; then
+              TARGET_TYPE="weekend-guide"
+            fi
+            
+            echo "type=$TARGET_TYPE" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run Marketing Generator
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          if [ -f "marketing/generator.mjs" ]; then
+            node marketing/generator.mjs "${{ steps.select_type.outputs.type }}"
+          elif [ -f "jetleaf/marketing/generator.mjs" ]; then
+            node jetleaf/marketing/generator.mjs "${{ steps.select_type.outputs.type }}"
+          elif [ -f "generator.mjs" ]; then
+            node generator.mjs "${{ steps.select_type.outputs.type }}"
+          else
+            echo "❌ Error: generator.mjs not found!"
+            pwd
+            ls -la
+            exit 1
+          fi
+
+      - name: Commit & Push Changes
+        run: |
+          git config --local user.name "github-actions[bot]"
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "chore(marketing): auto-generate ${{ steps.select_type.outputs.type }} [skip ci]"
+            git pull --rebase origin main || git pull --rebase --autostash origin main
+            git push origin main
+          fi

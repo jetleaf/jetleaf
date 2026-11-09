@@ -13,6 +13,8 @@ packages/
 builder/
 sample_projects/
 tool/
+roadmap/
+marketing/
 
 # Build artifacts (ignore build outputs but keep build folders in lib/)
 **/build/
