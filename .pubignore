@@ -1,0 +1,23 @@
+# Git ignore rules (standard)
+.git/
+.github/
+.vscode/
+.dart_tool/
+pubspec.lock
+
+# Workspace child packages (published independently)
+libraries/
+packages/
+
+# Monorepo tooling and sample applications
+builder/
+sample_projects/
+tool/
+
+# Jetleaf AOT caches & build outputs
+.jetleaf/
+_jetleaf/
+*.bin
+*.info.json
+*.log
+.env*
