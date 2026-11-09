@@ -14,6 +14,13 @@ builder/
 sample_projects/
 tool/
 
+# Build artifacts (ignore build outputs but keep build folders in lib/)
+**/build/
+!**/lib/**/build/
+!**/lib/**/build/**
+!lib/**/build/
+!lib/**/build/**
+
 # Jetleaf AOT caches & build outputs
 .jetleaf/
 _jetleaf/

@@ -4,6 +4,10 @@
 **/.dart_tool/
 **/.packages
 **/build/
+!**/lib/**/build/
+!**/lib/**/build/**
+!lib/**/build/
+!lib/**/build/**
 
 # IDE
 **.vscode/
