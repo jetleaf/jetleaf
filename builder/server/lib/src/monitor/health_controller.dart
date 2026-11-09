@@ -1,5 +1,5 @@
 import 'package:jetleaf/core.dart';
-import 'package:jetleaf_monitor/jetleaf_monitor.dart';
+import 'package:jetleaf_actuator/jetleaf_actuator.dart';
 import 'package:jetleaf_web/jetleaf_web.dart';
 
 /// {@template application_readiness}

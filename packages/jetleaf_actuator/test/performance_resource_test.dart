@@ -1,5 +1,5 @@
-import 'package:jetleaf_monitor/jetleaf_monitor.dart';
-import 'package:jetleaf_monitor/src/core/default_monitoring_service.dart' show PerformanceResource;
+import 'package:jetleaf_actuator/jetleaf_actuator.dart';
+import 'package:jetleaf_actuator/src/core/default_monitoring_service.dart' show PerformanceResource;
 import 'package:jetleaf_core/core.dart';
 import 'package:test/test.dart';
 

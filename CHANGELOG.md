@@ -12,7 +12,7 @@
 - **Unified `JetleafApplication` Bootstrap**: Streamlined application bootstrap with `JetleafApplication.run` supporting automatic AOT registrar integration and zero-config AST scanning via `runScan` and `RuntimeScannerConfiguration` from `jetleaf_tools`.
 - **Application Types**: Native support for `ApplicationType.WEB` (HTTP web servers) and `ApplicationType.NONE` (CLI utilities and batch applications).
 - **Compile-Time AOT Synthesis**: Ahead-Of-Time code synthesis generates zero-reflection constructor and member dispatch tables in `_jetleaf/` that survive `dart compile exe` tree-shaking.
-- **Full Workspace Integration**: Multi-project workspace support across all official Jetleaf packages (`jetleaf_core`, `jetleaf_tools`, `jetleaf_web`, `jetleaf_resource`, `jetleaf_scheduling`, `jetleaf_retry`, `jetleaf_validation`, `jetleaf_monitor`, `jetson`, `jtl`).
+- **Full Workspace Integration**: Multi-project workspace support across all official Jetleaf packages (`jetleaf_core`, `jetleaf_tools`, `jetleaf_web`, `jetleaf_resource`, `jetleaf_scheduling`, `jetleaf_retry`, `jetleaf_validation`, `jetleaf_actuator`, `jetson`, `jtl`).
 - **Comprehensive Lifecycle Support**: Fully unified lifecycle processors for `@PostConstruct`, `@PreDestroy`, `@OnApplicationReady`, and `@OnApplicationStarting`.
 - **Hierarchical Configuration & Profiles**: Unified property loading for `.properties`, `.yaml`, `.json`, environment variables, and CLI arguments with profile activation (`--jetleaf.profiles.active=...`).
 - **Extensive Sample Projects**:

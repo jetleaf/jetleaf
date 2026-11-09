@@ -33,7 +33,7 @@ workspace:
   - packages/jetleaf_retry
   - packages/jetleaf_scheduling
   - packages/jetleaf_validation
-  - packages/jetleaf_monitor
+  - packages/jetleaf_actuator
   - packages/jetleaf_web
   - example
   - builder/server

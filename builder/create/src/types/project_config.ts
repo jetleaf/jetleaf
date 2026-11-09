@@ -601,13 +601,13 @@ export default class ProjectConfig {
   /**
    * Indicates whether the project should include Jetleaf's monitoring utilities.
    *
-   * Returns `true` only when `"jetleaf_monitor"` is selected. Useful for
+   * Returns `true` only when `"jetleaf_actuator"` is selected. Useful for
    * generating instrumentation, logging, metrics, or health-check scaffolding.
    *
    * @returns {boolean} `true` if the monitoring package is selected, otherwise `false`.
    */
   private get showMonitor(): boolean {
-    return this.selectedPackages.some(pk => pk.id === "jetleaf_monitor");
+    return this.selectedPackages.some(pk => pk.id === "jetleaf_actuator");
   }
 
   /**

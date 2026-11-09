@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_core/logging.dart';
-import 'package:jetleaf_monitor/src/base/monitoring_report.dart';
+import '../base/monitoring_report.dart';
 import 'package:jetleaf_core/pod.dart';
 import 'package:meta/meta.dart';
 

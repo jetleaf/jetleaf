@@ -1459,7 +1459,7 @@ pubspec.lock
       sb.writeln('### Monitoring Services');
       sb.writeln('```dart');
       sb.writeln('import \'package:jetleaf/jetleaf.dart\';');
-      sb.writeln('import \'package:jetleaf_monitor/jetleaf_monitor.dart\';');
+      sb.writeln('import \'package:jetleaf_actuator/jetleaf_actuator.dart\';');
       sb.writeln();
       sb.writeln('@Monitor()  // Enable monitoring for this class');
       sb.writeln('@Primary()');
@@ -1673,12 +1673,12 @@ class ApiResponse<T> {
    * Generates a string containing a Dart example for a monitored service using Jetleaf.
    *
    * This code demonstrates how to define a service whose method calls are automatically
-   * monitored using the `jetleaf_monitor` package.
+   * monitored using the `jetleaf_actuator` package.
    *
    * Features:
    * 1. **Imports**
    *    - `jetleaf` — core framework.
-   *    - `jetleaf_monitor` — enables automatic monitoring.
+   *    - `jetleaf_actuator` — enables automatic monitoring.
    *
    * 2. **MonitoredService class**
    *    - Decorated with `@Monitor()` to enable monitoring for all method calls.
@@ -1700,7 +1700,7 @@ class ApiResponse<T> {
   static buildMonitorExample(): string {
     return `
 import 'package:jetleaf/jetleaf.dart';
-import 'package:jetleaf_monitor/jetleaf_monitor.dart';
+import 'package:jetleaf_actuator/jetleaf_actuator.dart';
 
 @Monitor()
 @Primary()
@@ -1728,7 +1728,7 @@ class MonitoredService {
    * Features:
    * 1. **Imports**
    *    - `jetleaf` — core framework.
-   *    - `jetleaf_monitor` — access to monitoring services and data.
+   *    - `jetleaf_actuator` — access to monitoring services and data.
    *    - `jetleaf_web` — web controller and HTTP annotations.
    *
    * 2. **PerformanceController class**
@@ -1749,7 +1749,7 @@ class MonitoredService {
   static buildMonitorControllerExample(): string {
     return `
 import 'package:jetleaf/jetleaf.dart';
-import 'package:jetleaf_monitor/jetleaf_monitor.dart';
+import 'package:jetleaf_actuator/jetleaf_actuator.dart';
 import 'package:jetleaf_web/jetleaf_web.dart';
 
 @RequiredAll()

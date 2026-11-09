@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:jetleaf/core.dart' hide Package;
-import 'package:jetleaf_monitor/jetleaf_monitor.dart';
+import 'package:jetleaf_actuator/jetleaf_actuator.dart';
 import 'package:jetleaf_web/jetleaf_web.dart';
 
 import '../models/package_group.dart';

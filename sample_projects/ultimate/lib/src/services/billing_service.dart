@@ -4,7 +4,7 @@
 // ---------------------------------------------------------------------------
 
 import 'package:jetleaf/jetleaf.dart';
-import 'package:jetleaf_monitor/jetleaf_monitor.dart';
+import 'package:jetleaf_actuator/jetleaf_actuator.dart';
 import 'package:jetleaf_resource/jetleaf_resource.dart';
 import 'package:jetleaf_retry/jetleaf_retry.dart';
 

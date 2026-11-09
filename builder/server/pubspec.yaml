@@ -35,7 +35,7 @@ dependencies:
   jetleaf_resource: any
   jetleaf_web: any
   jetleaf_validation: any
-  jetleaf_monitor: any
+  jetleaf_actuator: any
   build_runner: ^2.10.1
   supabase: ^2.10.2
 

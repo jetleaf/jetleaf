@@ -19,7 +19,7 @@ dependencies:
   jetleaf_scheduling: any
   jetleaf_retry: any
   jetleaf_validation: any
-  jetleaf_monitor: any
+  jetleaf_actuator: any
   jetson: any
   jtl: any
 

@@ -1,5 +1,5 @@
 import 'package:jetleaf_core/lang.dart';
-import 'package:jetleaf_monitor/jetleaf_monitor.dart';
+import 'package:jetleaf_actuator/jetleaf_actuator.dart';
 import 'package:test/test.dart';
 
 void main() {

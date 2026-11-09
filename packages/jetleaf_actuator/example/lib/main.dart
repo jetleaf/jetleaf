@@ -2,12 +2,12 @@
 
 import 'dart:io';
 
-import 'package:jetleaf_monitor/jetleaf_monitor.dart';
+import 'package:jetleaf_actuator/jetleaf_actuator.dart';
 import 'package:jetson/jetson.dart';
 
 void main() {
   print('========================================================');
-  print('  🍃 Jetleaf Monitor 2.0.0 Actuator Showcase');
+  print('  🍃 Jetleaf Actuator 1.0.0 Actuator Showcase');
   print('========================================================\n');
 
   final startTime = DateTime.now().subtract(const Duration(minutes: 15));

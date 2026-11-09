@@ -1,6 +1,6 @@
-# Jetleaf Monitor Example
+# Jetleaf Actuator Example
 
-This example demonstrates how to use `jetleaf_monitor` to capture process statistics, track memory analytics over time, build diagnostic monitoring reports, and serialize runtime health metrics into structured JSON with `jetson`.
+This example demonstrates how to use `jetleaf_actuator` to capture process statistics, track memory analytics over time, build diagnostic monitoring reports, and serialize runtime health metrics into structured JSON with `jetson`.
 
 ## Running the Example
 

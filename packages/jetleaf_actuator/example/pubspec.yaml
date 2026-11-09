@@ -1,14 +1,14 @@
-name: jetleaf_monitor_example
-description: Demonstrates runtime metrics, memory analytics, and diagnostic reporting with Jetleaf Monitor.
+name: jetleaf_actuator_example
+description: Demonstrates runtime metrics, memory analytics, and diagnostic reporting with Jetleaf Actuator.
 publish_to: none
 
 environment:
   sdk: ^3.9.0
 
 dependencies:
-  jetleaf_core: ^2.0.0
-  jetleaf_monitor: ^2.0.0
-  jetson: ^2.0.0
+  jetleaf_core: ^2.0.1
+  jetleaf_actuator: ^1.0.0
+  jetson: ^2.0.1
 
 dependency_overrides:
   jetleaf_core:
@@ -17,5 +17,5 @@ dependency_overrides:
     path: ../../../libraries/jetleaf_tools
   jetson:
     path: ../../jetson
-  jetleaf_monitor:
+  jetleaf_actuator:
     path: ../

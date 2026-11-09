@@ -1,10 +1,10 @@
-# 📊 Jetleaf Monitor
+# 📊 Jetleaf Actuator
 
-[![pub package](https://img.shields.io/badge/pub-v2.0.0-blue.svg)](https://pub.dev/packages/jetleaf_monitor)
+[![pub package](https://img.shields.io/badge/pub-v1.0.0-blue.svg)](https://pub.dev/packages/jetleaf_actuator)
 [![Dart](https://img.shields.io/badge/dart-%5E3.9.0-0175C2.svg?logo=dart)](https://dart.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Jetleaf Monitor** is the production-grade Actuator, telemetry, and diagnostics subsystem for the [Jetleaf Framework](https://jetleaf.hapnium.com). It provides lightweight, reflection-free, and AOT-safe runtime monitoring, process telemetry, memory analytics, and execution performance tracking.
+**Jetleaf Actuator** is the production-grade Actuator, telemetry, and diagnostics subsystem for the [Jetleaf Framework](https://jetleaf.hapnium.com). It provides lightweight, reflection-free, and AOT-safe runtime monitoring, process telemetry, memory analytics, and execution performance tracking.
 
 ---
 
@@ -21,12 +21,12 @@
 
 ## 📦 Installation
 
-Add `jetleaf_monitor` to your `pubspec.yaml`:
+Add `jetleaf_actuator` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  jetleaf_core: ^2.0.0
-  jetleaf_monitor: ^2.0.0
+  jetleaf_core: ^2.0.1
+  jetleaf_actuator: ^1.0.0
 ```
 
 ---
@@ -37,7 +37,7 @@ dependencies:
 
 ```dart
 import 'dart:io';
-import 'package:jetleaf_monitor/jetleaf_monitor.dart';
+import 'package:jetleaf_actuator/jetleaf_actuator.dart';
 import 'package:jetson/jetson.dart';
 
 void main() {
@@ -97,7 +97,7 @@ void main() {
 Use `@Monitor` to track method invocation durations, memory spikes, and failures:
 
 ```dart
-import 'package:jetleaf_monitor/jetleaf_monitor.dart';
+import 'package:jetleaf_actuator/jetleaf_actuator.dart';
 
 class PaymentProcessor {
   @Monitor(name: 'processPayment')
