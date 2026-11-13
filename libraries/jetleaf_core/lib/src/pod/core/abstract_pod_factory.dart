@@ -892,9 +892,36 @@ abstract class AbstractPodFactory extends AbstractPodProviderFactory implements 
 
   @override
   Future<T> get<T>(Class<T> type, [List<ArgumentValue>? args]) async {
-    final definition = getDefinitionByClass(type);
-    final classType = Class<Object>.fromQualifiedName(definition.type.getQualifiedName());
-    return await doGet(definition.name, classType, args) as T;
+    try {
+      final definition = getDefinitionByClass(type);
+      final classType = Class<Object>.fromQualifiedName(definition.type.getQualifiedName());
+      return await doGet(definition.name, classType, args) as T;
+    } on PodDefinitionStoreException {
+      // A lookup by an interface or supertype normally has no exact
+      // definition.  Resolve it with the same candidate-selection path used
+      // for injection so @Primary, qualifiers, and assignable return types
+      // work consistently for generated AOT suppliers too.
+      final dependency = await resolveDependency(DependencyDescriptor(
+        source: type,
+        podName: type.getName(),
+        propertyName: type.getName(),
+        type: type,
+        args: args,
+        component: type.componentType(),
+        key: type.keyType(),
+        isEager: true,
+      ));
+
+      if (dependency == null || dependency is NullablePod) {
+        throw PodDefinitionStoreException(
+          name: type.getName(),
+          resourceDescription: null,
+          msg: "No pod of type '${type.getQualifiedName()}' is defined",
+        );
+      }
+
+      return dependency as T;
+    }
   }
 
   @override

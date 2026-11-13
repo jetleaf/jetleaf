@@ -242,6 +242,9 @@ class AnnotationConfigApplicationContext extends GenericApplicationContext imple
 
   @override
   Future<void> registerClass({List<Class<Object>>? classes, Class<Object>? mainClass}) async {
+    _reader.setEnvironment(getEnvironment());
+    _reader.setPodFactory(getPodFactory());
+
     if(classes != null) {
       await _reader.register(classes);
     }

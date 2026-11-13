@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:jetleaf_core/annotation.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'aot_sub_registrar_writer.dart';
 
@@ -58,46 +59,64 @@ import 'aot_sub_registrar_writer.dart';
 /// configuration.
 /// {@endtemplate}
 final class AotPodRegistryWriter extends AotSubRegistrarWriter {
+  /// {@macro aot_pod_registry_writer}
+  const AotPodRegistryWriter();
+
+  String get _componentName => const Component().runtimeType.toString();
+  String get _serviceName => const Service().runtimeType.toString();
+  String get _repositoryName => const Repository().runtimeType.toString();
+  String get _configurationName => const Configuration().runtimeType.toString();
+  String get _autoConfigurationName => const AutoConfiguration().runtimeType.toString();
+  String get _podName => const Pod().runtimeType.toString();
+  String get _configurationPropertyName => const ConfigurationProperty().runtimeType.toString();
+  String get _lazyName => const Lazy().runtimeType.toString();
+  String get _primaryName => const Primary().runtimeType.toString();
+  String get _namedName => const Named('').runtimeType.toString();
+  String get _postConstructName => const PostConstruct().runtimeType.toString();
+  String get _onApplicationReadyName => const OnApplicationReady().runtimeType.toString();
+  String get _preDestroyName => const PreDestroy().runtimeType.toString();
+  String get _reflectableName => "ReflectableAnnotation";
+  String get _conditionalName => Conditional([]).runtimeType.toString();
+  String get _controllerName => 'Controller';
+  String get _restController => 'RestController';
+
   /// Known stereotype annotation names that qualify a class as an IoC Pod.
-  static const Set<String> podStereotypes = {
-    'Component',
-    'Service',
-    'Repository',
-    'Controller',
-    'RestController',
-    'Configuration',
-    'AutoConfiguration',
-    'Pod',
+  Set<String> get _podStereotypes => {
+    _componentName,
+    _serviceName,
+    _repositoryName,
+    _controllerName,
+    _restController,
+    _configurationName,
+    _autoConfigurationName,
+    _podName,
     'JetleafApplicationStarter',
-    'ConfigurationProperty',
+    _configurationPropertyName,
   };
 
-  /// Configuration and conditional annotations evaluated dynamically by
-  /// configuration class post-processors rather than registered as static AOT singletons.
-  static const Set<String> configurationAndConditionalNames = {
-    'Configuration',
-    'AutoConfiguration',
-    'JetleafApplicationStarter',
-    'Conditional',
-    'ConditionalOnProperty',
-    'ConditionalOnClass',
-    'ConditionalOnMissingClass',
-    'ConditionalOnPod',
-    'ConditionalOnMissingPod',
+  /// Conditional annotations whose enclosing definitions are not emitted as
+  /// unconditional AOT pods.
+  Set<String> get _configurationAndConditionalNames => {
+    _conditionalName,
+    ConditionalOnProperty().runtimeType.toString(),
+    ConditionalOnClass().runtimeType.toString(),
+    ConditionalOnMissingClass().runtimeType.toString(),
+    ConditionalOnPod().runtimeType.toString(),
+    ConditionalOnMissingPod().runtimeType.toString(),
+    ConditionalOnExpression(Object()).runtimeType.toString(),
+    Profile([]).runtimeType.toString(),
     'ConditionalOnWebApplication',
     'ConditionalOnNotWebApplication',
-    'ConditionalOnExpression',
-    'Profile',
   };
 
   /// Supported lifecycle initialization annotation identifiers.
-  static const Set<String> postConstructNames = {'PostConstruct', 'OnApplicationReady'};
+  Set<String> get _postConstructNames => {
+    _postConstructName,
+    _onApplicationReadyName,
+  };
 
   /// Supported lifecycle destruction annotation identifiers.
-  static const Set<String> preDestroyNames = {'PreDestroy'};
-
-  /// {@macro aot_pod_registry_writer}
-  const AotPodRegistryWriter();
+  Set<String> get _preDestroyNames => {_preDestroyName};
 
   /// Recursively determines whether [annName] directly matches any name in [targets],
   /// or if its class declaration in [classByName] inherits, implements, or is
@@ -149,14 +168,14 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
     Set<String>? visited,
   ]) {
     final name = component.getName();
-    if (name == 'ReflectableAnnotation') return true;
+    if (name == _reflectableName) return true;
     final v = visited ?? <String>{};
     if (!v.add(name)) return false;
 
     final superClass = component.getSuperClass();
     if (superClass != null) {
       final superName = superClass.getName();
-      if (superName == 'ReflectableAnnotation') return true;
+      if (superName == _reflectableName) return true;
       final superDecl = classByName[superName];
       if (superDecl != null && isAnnotationClass(superDecl, classByName, v)) {
         return true;
@@ -165,7 +184,7 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
 
     for (final iface in component.getInterfaces()) {
       final ifaceName = iface.getName();
-      if (ifaceName == 'ReflectableAnnotation') return true;
+      if (ifaceName == _reflectableName) return true;
       final ifaceDecl = classByName[ifaceName];
       if (ifaceDecl != null && isAnnotationClass(ifaceDecl, classByName, v)) {
         return true;
@@ -180,7 +199,7 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
   /// Returns `false` if:
   /// - The component is abstract
   /// - The component is an annotation definition
-  /// - The component is guarded by conditional or configuration annotations (evaluated at runtime)
+  /// - The component is guarded by a conditional annotation (evaluated at runtime)
   /// - The component lacks a recognized pod stereotype
   bool isPodComponent(ClassDeclaration component, [Map<String, ClassDeclaration> classByName = const {}]) {
     if (component.getIsAbstract()) return false;
@@ -189,22 +208,26 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
 
     for (final annotation in component.getAnnotations()) {
       final name = annotation.getName();
-      if (matchesOrExtendsAnnotation(name, podStereotypes, classByName)) {
+      if (matchesOrExtendsAnnotation(name, _podStereotypes, classByName)) {
         return true;
       }
     }
     return false;
   }
 
-  /// Returns `true` if [component] carries `@Conditional` or dynamic configuration markers.
+  /// Returns `true` if [component] carries a conditional marker.
+  ///
+  /// `@Configuration` and `@AutoConfiguration` are intentionally accepted:
+  /// registering their definitions is what lets
+  /// `ConfigurationClassPostProcessor` discover and process their pod methods.
   bool _isConfigurationOrConditional(ClassDeclaration component, Map<String, ClassDeclaration> classByName) {
     for (final annotation in component.getAnnotations()) {
       final name = annotation.getName();
-      if (name == 'ConfigurationProperty') {
+      if (name == _configurationPropertyName) {
         continue;
       }
 
-      if (name.startsWith('Conditional') || matchesOrExtendsAnnotation(name, configurationAndConditionalNames, classByName)) {
+      if (name.startsWith(_conditionalName) || matchesOrExtendsAnnotation(name, _configurationAndConditionalNames, classByName)) {
         return true;
       }
     }
@@ -263,9 +286,8 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
       final initInvokerCode = _buildInitInvoker(component, prefix, className, classByName);
       final destroyInvokerCode = _buildDestroyInvoker(component, prefix, className, classByName);
 
-      final isLazy = _hasAnnotation(component, const {'Lazy'}, classByName);
-      final isPrimary = _hasAnnotation(component, const {'Primary'}, classByName);
-
+      final isLazy = _hasAnnotation(component, {_lazyName}, classByName);
+      final isPrimary = _hasAnnotation(component, {_primaryName}, classByName);
       buffer.writeln('''  if (!factory.containsDefinition('$podName')) {
     await factory.registerDefinition('$podName', RootPodDefinition(
       type: Class<$prefix$className>.fromQualifiedName('${component.getQualifiedName()}'),
@@ -280,6 +302,53 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
   }''');
     }
 
+    // Configuration factory methods are pods too.  Emitting them directly is
+    // essential in AOT mode, where reflection metadata is not available for
+    // ConfigurationClassPostProcessor to discover `@Pod` methods at runtime.
+    for (final component in components) {
+      if (!_isConfiguration(component, classByName)) continue;
+
+      final configurationName = _resolvePodName(component, classByName);
+      final configurationUri = component.getLibrary().getUri();
+      final configurationPrefix = libraryAliases[configurationUri] != null
+        ? '${libraryAliases[configurationUri]}.'
+        : '';
+
+      for (final method in component.getMethods()) {
+        if (!method.getAnnotations().any((annotation) => matchesOrExtendsAnnotation(annotation.getName(), {_podName}, classByName))) {
+          continue;
+        }
+
+        final returnTypeName = method.getReturnType().getName();
+        final returnTypePrefix = classToPrefix[returnTypeName];
+        final supplierCode = _buildPodMethodSupplier(
+          component,
+          method,
+          configurationPrefix,
+          classToPrefix,
+          podMethodByReturnType,
+        );
+
+        if (returnTypeName.isEmpty || returnTypePrefix == null || supplierCode == null) {
+          continue;
+        }
+
+        final methodPodName = '$configurationName.${method.getName()}';
+        if (usedPodNames.contains(methodPodName)) continue;
+        usedPodNames.add(methodPodName);
+
+        buffer.writeln('''  if (!factory.containsDefinition('$methodPodName')) {
+      await factory.registerDefinition('$methodPodName', RootPodDefinition(
+        type: Class<$returnTypePrefix$returnTypeName>(),
+        instanceSupplier: $supplierCode,
+      )
+        ..name = '$methodPodName'
+        ..factoryMethod = FactoryMethodDesign('$configurationName', '${method.getName()}')
+      );
+    }''');
+      }
+    }
+
     buffer.writeln('}');
 
     if (!packageDir.existsSync()) {
@@ -288,6 +357,66 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
     final file = File('${packageDir.path}/${Constant.AOT_REGISTRY_PODS_FILE_NAME}');
     await file.writeAsString(buffer.toString());
     return fnName;
+  }
+
+  bool _isConfiguration(ClassDeclaration component, Map<String, ClassDeclaration> classByName) {
+    for (final annotation in component.getAnnotations()) {
+      if (matchesOrExtendsAnnotation(annotation.getName(), {_autoConfigurationName}, classByName)) {
+        return true;
+      }
+
+      if (matchesOrExtendsAnnotation(annotation.getName(), {_configurationName}, classByName)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  String? _buildPodMethodSupplier(
+    ClassDeclaration configuration,
+    MethodDeclaration method,
+    String configurationPrefix,
+    Map<String, String> classToPrefix,
+    Map<String, String> podMethodByReturnType,
+  ) {
+    final positionalArgs = <String>[];
+    final namedArgs = <String>[];
+
+    for (final parameter in method.getParameters()) {
+      final parameterType = parameter.getLinkDeclaration().getName();
+      final typePrefix = classToPrefix[parameterType];
+      String? lookup;
+      if (typePrefix != null && !isPrimitiveType(parameterType)) {
+        lookup = 'factory.get(Class<$typePrefix$parameterType>())';
+      } else if (podMethodByReturnType.containsKey(parameterType)) {
+        lookup = "factory.getPod('${podMethodByReturnType[parameterType]}')";
+      }
+
+      if (lookup == null) {
+        if (parameter.getIsRequired()) return null;
+        continue;
+      }
+
+      final argument = 'await $lookup';
+      if (parameter.getIsNamed()) {
+        namedArgs.add('${parameter.getName()}: $argument');
+      } else {
+        positionalArgs.add(argument);
+      }
+    }
+
+    final arguments = [...positionalArgs, ...namedArgs];
+    final configurationName = configuration.getName();
+    final buffer = StringBuffer('(PodFactory factory) async {\n');
+    buffer.writeln('  final configuration = await factory.get(Class<$configurationPrefix$configurationName>());');
+    buffer.writeln('  return configuration.${method.getName()}(');
+    for (final argument in arguments) {
+      buffer.writeln('    $argument,');
+    }
+    buffer.writeln('  );');
+    buffer.write('}');
+    return buffer.toString();
   }
 
   /// Resolves the explicit or default pod name for [component].
@@ -299,12 +428,20 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
     for (final ann in component.getAnnotations()) {
       final annName = ann.getName();
       final values = ann.getUserProvidedValues();
-      if (annName == 'Named' || matchesOrExtendsAnnotation(annName, const {'Named'}, classByName)) {
+      if (annName == _namedName || matchesOrExtendsAnnotation(annName, {_namedName}, classByName)) {
         final v = values['name'] ?? values['value'] ?? values[r'$0'];
         if (v is String && v.isNotEmpty) {
           name = v;
         }
-      } else if (matchesOrExtendsAnnotation(annName, const {'Component', 'Service', 'Repository', 'Controller', 'RestController', 'Configuration', 'Pod'}, classByName)) {
+      } else if (matchesOrExtendsAnnotation(annName, {
+        _componentName,
+        _serviceName,
+        _repositoryName,
+        _controllerName,
+        _restController,
+        _configurationName,
+        _podName,
+      }, classByName)) {
         final v = values['value'] ?? values['name'] ?? values[r'$0'];
         if (v is String && v.isNotEmpty) {
           name ??= v;
@@ -408,8 +545,14 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
   ) {
     for (final method in component.getMethods()) {
       for (final annotation in method.getAnnotations()) {
-        if (matchesOrExtendsAnnotation(annotation.getName(), postConstructNames, classByName)) {
-          return '(instance) { final res = (instance as dynamic).${method.getName()}(); if (res is Future) return res; }';
+        if (matchesOrExtendsAnnotation(annotation.getName(), _postConstructNames, classByName)) {
+          final buffer = StringBuffer('(instance) {\n');
+          buffer.writeln('  final result = (instance as dynamic).${method.getName()}();');
+          buffer.writeln('  if (result is Future) {');
+          buffer.writeln('    return result;');
+          buffer.writeln('  }');
+          buffer.write('}');
+          return buffer.toString();
         }
       }
     }
@@ -425,8 +568,14 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
   ) {
     for (final method in component.getMethods()) {
       for (final annotation in method.getAnnotations()) {
-        if (matchesOrExtendsAnnotation(annotation.getName(), preDestroyNames, classByName)) {
-          return '(instance) { final res = (instance as dynamic).${method.getName()}(); if (res is Future) return res; }';
+        if (matchesOrExtendsAnnotation(annotation.getName(), _preDestroyNames, classByName)) {
+          final buffer = StringBuffer('(instance) {\n');
+          buffer.writeln('  final result = (instance as dynamic).${method.getName()}();');
+          buffer.writeln('  if (result is Future) {');
+          buffer.writeln('    return result;');
+          buffer.writeln('  }');
+          buffer.write('}');
+          return buffer.toString();
         }
       }
     }

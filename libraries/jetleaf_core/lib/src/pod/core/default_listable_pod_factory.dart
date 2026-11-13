@@ -349,7 +349,7 @@ class DefaultListablePodFactory extends AbstractAutowirePodFactory implements Co
       if(logger.getIsWarnEnabled()) {
         logger.warn("No pod of type '${type.getQualifiedName()}' is defined");
       }
-      
+
       throw PodDefinitionStoreException(
         name: type.getName(),
         resourceDescription: null,

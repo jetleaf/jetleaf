@@ -589,10 +589,6 @@ final class JetleafApplication {
       /// It is to track the time taken to reach any point of the application startup process.
       _startup = StartupTracker.create();
 
-      // If a compile-time AOT registrar is provided, Jetleaf runs in pure AOT mode:
-      // static types, constructors, fields, methods, annotations, and pods are loaded
-      // directly via generated closures without runtime reflection.
-      // Otherwise, the fallback path invokes runScan to discover and load component metadata.
       if (_aotRegistrar case JetleafAotRegistrar registrar) {
         await registrar(null);
         Runtime.getAllClasses();

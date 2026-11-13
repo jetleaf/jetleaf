@@ -22,6 +22,7 @@ import 'package:meta/meta.dart';
 
 import '../env/standard_web_environment.dart';
 import '../exception/exceptions.dart';
+import '../exception/server_exceptions.dart';
 import '../web/web.dart';
 import 'aware.dart';
 import 'server_context.dart';
@@ -77,7 +78,7 @@ class ServerWebApplicationContext extends AnnotationConfigApplicationContext imp
   ///
   /// The web server is created and initialized during [setup],
   /// using the registered [WebServerFactory] pod.
-  late WebServer _webServer;
+  WebServer? _webServer;
 
   /// The web application's context path, representing the root mapping
   /// for all HTTP endpoints.
@@ -136,7 +137,14 @@ class ServerWebApplicationContext extends AnnotationConfigApplicationContext imp
   /// The [WebServer] handles network-level concerns such as port binding,
   /// request dispatching, and connection management. It is usually created
   /// and started as part of the web application context lifecycle.
-  WebServer getWebServer() => _webServer;
+  WebServer getWebServer() {
+    if (_webServer case WebServer server?) return server;
+    throw WebServerException(
+      'No WebServer is available in this application context. '
+      'Ensure that a WebServer has been configured and started '
+      'before attempting to retrieve it.',
+    );
+  }
 
   /// Returns the context path for this web application.
   ///
@@ -238,9 +246,7 @@ class ServerWebApplicationContext extends AnnotationConfigApplicationContext imp
 
     final type = Class<WebServerFactory>(null, PackageNames.WEB);
     final serverFactory = await podFactory.get(type);
-    _webServer = await serverFactory.createWebServer(ctx);
-
-    return _webServer;
+    return _webServer ??= await serverFactory.createWebServer(ctx);
   }
 
   @override
@@ -251,7 +257,13 @@ class ServerWebApplicationContext extends AnnotationConfigApplicationContext imp
 
   @override
   Future<void> doClose() async {
-    await getWebServer().stop();
+    // Startup can fail before createWebServer assigns the late field.  Closing
+    // must preserve that original exception instead of masking it with a
+    // LateInitializationError.
+    if (_webServer case final webServer?) {
+      await webServer.stop();
+    }
+
     return await super.doClose();
   }
 }
