@@ -82,7 +82,7 @@ final class AotMethodRegistryWriter extends AotSubRegistrarWriter {
 
     for (final component in components) {
       final rawName = component.getName();
-      if (rawName.startsWith('_') || rawName.contains(' ') || !component.getIsPublic() || component.getTypeArguments().isNotEmpty) {
+      if (rawName.startsWith('_') || rawName.contains(' ') || !component.getIsPublic()) {
         continue;
       }
 
@@ -100,7 +100,12 @@ final class AotMethodRegistryWriter extends AotSubRegistrarWriter {
         if (!method.getIsPublic() || method.getIsStatic()) continue;
         
         final methodName = method.getName();
-        if (!isValidDartIdentifier(methodName) || AotSubRegistrarWriter.skippedMemberNames.contains(methodName)) {
+        // Setter members carry a trailing '=' — validate the base name but keep
+        // the qualified setter name as the registry key (Dart convention).
+        final baseMethodName = method.getIsSetter() && methodName.endsWith('=')
+            ? methodName.substring(0, methodName.length - 1)
+            : methodName;
+        if (!isValidDartIdentifier(baseMethodName) || AotSubRegistrarWriter.skippedMemberNames.contains(baseMethodName)) {
           continue;
         }
 
@@ -110,21 +115,22 @@ final class AotMethodRegistryWriter extends AotSubRegistrarWriter {
         if (method.getIsGetter()) {
           lines.add('''
   AotRuntimeExecutor.registerMethod(
-    '$memberKey',
+    '${escapeDartStringLiteral(memberKey)}',
     (inst, _) => (inst as $prefix$cleanClassName).$methodName,
   );''');
         } else if (method.getIsSetter()) {
+          final setterBase = baseMethodName;
           lines.add('''
   AotRuntimeExecutor.registerMethod(
-    '$memberKey',
-    (inst, args) => (inst as $prefix$cleanClassName).$methodName = args.getPositionalArguments()[0] as dynamic,
+    '${escapeDartStringLiteral(memberKey)}',
+    (inst, args) => (inst as $prefix$cleanClassName).$setterBase = args.getPositionalArguments()[0] as dynamic,
   );''');
         } else {
           final params = method.getParameters();
           if (params.isEmpty) {
             lines.add('''
   AotRuntimeExecutor.registerMethod(
-    '$memberKey',
+    '${escapeDartStringLiteral(memberKey)}',
     (inst, _) => (inst as $prefix$cleanClassName).$methodName(),
   );''');
           } else {
@@ -133,7 +139,7 @@ final class AotMethodRegistryWriter extends AotSubRegistrarWriter {
 
             final body = StringBuffer();
             body.writeln("  AotRuntimeExecutor.registerMethod(");
-            body.writeln("    '$memberKey',");
+            body.writeln("    '${escapeDartStringLiteral(memberKey)}',");
             body.writeln("    (inst, args) {");
             body.writeln("      final pos = args.getPositionalArguments();");
             body.writeln("      final named = args.getNamedArguments();");

@@ -161,8 +161,26 @@ class AutowiredAnnotationPodProcessor extends PodSmartInstantiationProcessor imp
         if (hasAutowired) {
           final dependency = await _processAutowiredAnnotation(field, pod, name, podClass);
 
-          if (dependency != null && fieldClass.isInstance(dependency)) {
-            field.setValue(pod, dependency);
+          if (dependency != null) {
+            if (fieldClass.isInstance(dependency)) {
+              field.setValue(pod, dependency);
+            } else {
+              // The reflective [Class] may not model parameterized generic
+              // assignments (e.g. ObjectFactoryDependency<Object> vs a raw
+              // ObjectFactory field). The Dart VM still enforces the declared
+              // field type at the actual store, so delegate to it.
+              try {
+                field.setValue(pod, dependency);
+              } catch (error, st) {
+                if (_logger.getIsDebugEnabled()) {
+                  _logger.debug('Failed to assign resolved dependency to ${podClass.getName()}.${field.getName()}: $error');
+                }
+                assert(() {
+                  // Surface assignment failures loudly in debug builds.
+                  throw IllegalStateException('Cannot inject ${podClass.getName()}.${field.getName()}: $error\n$st');
+                }());
+              }
+            }
           }
 
           continue;

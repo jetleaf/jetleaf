@@ -4,11 +4,11 @@ import 'dart:io';
 import '../builder/runtime_builder.dart';
 import '../file_utility/file_utility.dart';
 import 'package:jetleaf_core/lang.dart';
-import '../runtime/scanner/default_runtime_scanner_summary.dart';
-import '../runtime/scanner/application_runtime_scanner.dart';
-import '../runtime/scanner/runtime_scanner.dart';
-import '../runtime/scanner/runtime_scanner_configuration.dart';
-import '../runtime/scanner/runtime_scanner_summary.dart';
+import '../scanner/default_runtime_scanner_summary.dart';
+import '../scanner/application_runtime_scanner.dart';
+import '../scanner/runtime_scanner.dart';
+import '../scanner/runtime_scanner_configuration.dart';
+import '../scanner/runtime_scanner_summary.dart';
 import 'manager/cacheable_manager.dart';
 import 'models.dart';
 import 'indexer/declaration_builder.dart';
@@ -34,13 +34,12 @@ class CacheAwareScanner implements RuntimeScanner {
 
   /// {@macro cache_aware_scanner}
   CacheAwareScanner({
-    required RuntimeScanner inner,
-    Directory? source,
+    required this._inner,
+    this._source,
     this.onInfo,
     this.onWarning,
     this.onError,
-  })  : _inner = inner,
-        _source = source;
+  });
 
   @override
   Future<RuntimeScannerSummary> scan(

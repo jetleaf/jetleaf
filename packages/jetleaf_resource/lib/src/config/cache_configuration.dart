@@ -234,7 +234,10 @@ final class CacheConfiguration {
   ///
   /// This handler logs all cache-related errors instead of throwing them,
   /// promoting non-intrusive error handling for production environments.
+  /// Designated [Primary] so type-based injection resolves to the logger-backed
+  /// handler when both handlers are registered.
   @Pod(value: LOGGABLE_CACHE_ERROR_HANDLER_POD_NAME)
+  @Primary()
   @ConditionalOnMissingPod(values: [ClassType<CacheErrorHandler>()])
   @ConditionalOnProperty(prefix: "jetleaf", names: ['cache.error-handler'], havingValue: "log", matchIfMissing: true)
   CacheErrorHandler loggableCacheErrorHandler() => LoggableCacheErrorHandler();

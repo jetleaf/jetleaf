@@ -182,7 +182,7 @@ final class _Method extends Executable with EqualsAndHashCode implements Method 
     checkAccess('isVoid', DomainPermission.READ_METHODS);
 
     final type = getReturnClass();
-    return type == VOID_CLASS || type.getType() == Void;
+    return type == VOID_CLASS || type.getType() == Void || type.getName() == 'void';
   }
 
   @override
@@ -190,7 +190,7 @@ final class _Method extends Executable with EqualsAndHashCode implements Method 
     checkAccess('isDynamic', DomainPermission.READ_METHODS);
 
     final type = getReturnClass();
-    return type == DYNAMIC_CLASS || type.getType() == Dynamic;
+    return type == DYNAMIC_CLASS || type.getType() == Dynamic || type.getName() == 'dynamic';
   }
 
   @override

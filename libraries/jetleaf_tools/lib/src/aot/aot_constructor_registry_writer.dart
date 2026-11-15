@@ -95,11 +95,10 @@ final class AotConstructorRegistryWriter extends AotSubRegistrarWriter {
         final enumKey = component.getQualifiedName();
         if (registeredConstructors.add(enumKey)) {
           final prefix = libraryAliases[libraryUri] != null ? '${libraryAliases[libraryUri]}.' : '';
-          lines.add(
-            "  for (final v in $prefix$cleanClassName.values) { "
-            "AotRuntimeExecutor.registerNamedConstructor('$cleanClassName.\${v.name}', ([_]) => v); "
-            "}",
-          );
+          lines.add('''
+  for (final v in $prefix$cleanClassName.values) {
+    AotRuntimeExecutor.registerNamedConstructor('${escapeDartStringLiteral(cleanClassName)}.\${v.name}', ([_]) => v);
+  }''');
         }
         continue;
       }
@@ -126,13 +125,13 @@ final class AotConstructorRegistryWriter extends AotSubRegistrarWriter {
           final invocation = ctorName.isEmpty ? '$prefix$cleanClassName()' : '$prefix$cleanClassName.$ctorName()';
           lines.add('''
   AotRuntimeExecutor.registerNamedConstructor(
-    '$ctorKey',
-    ([_]) => $invocation,
+    '${escapeDartStringLiteral(ctorKey)}',
+    ([_]) => $invocation
   );''');
           lines.add('''
   AotRuntimeExecutor.registerNamedConstructor(
-    '$qualifiedKey',
-    ([_]) => $invocation,
+    '${escapeDartStringLiteral(qualifiedKey)}',
+    ([_]) => $invocation
   );''');
         } else {
           final ctorTearOff = ctorName.isEmpty ? '$prefix$cleanClassName.new' : '$prefix$cleanClassName.$ctorName';
@@ -187,14 +186,14 @@ final class AotConstructorRegistryWriter extends AotSubRegistrarWriter {
 
           lines.add('''
   AotRuntimeExecutor.registerNamedConstructor(
-    '$ctorKey',
+    '${escapeDartStringLiteral(ctorKey)}',
     ([args]) {
 ${body.toString().trimRight()}
     },
   );''');
           lines.add('''
   AotRuntimeExecutor.registerNamedConstructor(
-    '$qualifiedKey',
+    '${escapeDartStringLiteral(qualifiedKey)}',
     ([args]) {
 ${body.toString().trimRight()}
     },

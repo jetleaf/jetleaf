@@ -434,6 +434,10 @@ abstract class AbstractApplicationContext implements ConfigurableApplicationCont
   /// {@endtemplate}
   bool _isClosed = false;
 
+  /// In-flight [close] future shared by all callers so every caller
+  /// deterministically waits for the same destruction to complete.
+  Future<void>? _closeFuture;
+
   /// {@template abstract_application_context.is_running_field}
   /// Whether the application context is running.
   ///
@@ -870,48 +874,52 @@ abstract class AbstractApplicationContext implements ConfigurableApplicationCont
 
   @override
   Future<void> close() async {
-    if (_isClosed) {
-      return;
+    final existing = _closeFuture;
+    if (existing != null) {
+      return existing;
     }
 
     _isClosed = true;
 
-    try {
-      // Stop lifecycle processors
-      await getLifecycleProcessor().onClose();
+    final closeFuture = (() async {
+      try {
+        // Stop lifecycle processors
+        await getLifecycleProcessor().onClose();
 
-      // Publish close event
-      await publishEvent(ContextClosedEvent.withClock(this, () => DateTime.now()));
+        // Publish close event
+        await publishEvent(ContextClosedEvent.withClock(this, () => DateTime.now()));
 
-      // Perform actual cleanup
-      await doClose();
+        // Perform actual cleanup
+        await doClose();
 
-      // Destroy singletons
-      await destroyPods();
+        // Destroy singletons
+        await destroyPods();
 
-      // Reset common caches
-      await resetCommonCaches();
+        // Reset common caches
+        await resetCommonCaches();
 
-      _applicationEventBus = null;
-      _messageSource = null;
-      _environment = null;
-      _parent = null;
-      _podFactoryPostProcessors.clear();
-      _applicationEventListeners.clear();
+        _applicationEventBus = null;
+        _messageSource = null;
+        _environment = null;
+        _parent = null;
+        _podFactoryPostProcessors.clear();
+        _applicationEventListeners.clear();
 
-      _lifecycleProcessor = null;
-      _applicationStartup = null;
-      _mainApplicationClass = null;
+        _lifecycleProcessor = null;
+        _applicationStartup = null;
+        _mainApplicationClass = null;
 
-      _isActive = false;
-      _isRunning = false;
-    } catch (e) {
-      if (logger.getIsErrorEnabled()) {
-        logger.error("Unable to close context due to some issues.", error: e);
+        _isActive = false;
+        _isRunning = false;
+      } catch (e) {
+        if (logger.getIsErrorEnabled()) {
+          logger.error("Unable to close context due to some issues.", error: e);
+        }
       }
-    }
+    })();
 
-    return Future.value();
+    _closeFuture = closeFuture;
+    return closeFuture;
   }
 
   @override
@@ -1317,7 +1325,7 @@ abstract class AbstractApplicationContext implements ConfigurableApplicationCont
   @mustCallSuper
   Future<void> destroyPods() async {
     final pf = getPodFactory();
-    pf.destroySingletons();
+    await pf.destroySingletons();
 
     return Future.value();
   }
@@ -1849,7 +1857,7 @@ abstract class AbstractApplicationContext implements ConfigurableApplicationCont
   }
 
   @override
-  void destroySingletons() {
+  Future<void> destroySingletons() {
     _assertThatPodFactoryIsActive();
 
     return getPodFactory().destroySingletons();

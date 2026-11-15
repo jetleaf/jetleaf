@@ -25,7 +25,7 @@ final class SetYamlSerializationAdapter extends YamlSerializationAdapter<Set> {
   const SetYamlSerializationAdapter();
 
   @override
-  bool canDeserialize(Class type) => type == Class<Set>() || type.getType() == Set;
+  bool canDeserialize(Class type) => type == Class<Set>() || (type.isArray() && type.getType().toString().startsWith('Set'));
 
   @override
   Set? deserialize(YamlParser parser, YamlDeserializationContext ctxt, Class toClass) {
@@ -45,7 +45,7 @@ final class SetYamlSerializationAdapter extends YamlSerializationAdapter<Set> {
   }
 
   @override
-  bool canSerialize(Class type) => type == Class<Set>() || type.getType() == Set;
+  bool canSerialize(Class type) => type == Class<Set>() || (type.isArray() && type.getType().toString().startsWith('Set'));
 
   @override
   void serialize(Set value, YamlGenerator generator, YamlSerializationContext serializer) {

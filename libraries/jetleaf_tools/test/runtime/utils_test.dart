@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:jetleaf_tools/src/runtime/scanner/runtime_scanner_configuration.dart';
+import 'package:jetleaf_tools/src/scanner/runtime_scanner_configuration.dart';
 import 'package:jetleaf_tools/src/utils/utils.dart';
 import 'package:test/test.dart';
 

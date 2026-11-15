@@ -413,6 +413,13 @@ abstract class AbstractFileLocatorUtility extends AbstractFileUtility {
   /// - Its name exists in [jetleafPackages], **or**
   /// - Its name starts with [PackageNames.MAIN] (the Jetleaf main package prefix)
   ///
+  /// The package itself is considered part of the framework when its own name
+  /// is a Jetleaf package — the framework's base packages (e.g.
+  /// `jetleaf_core`) are leaves of the dependency tree which may depend on no
+  /// Jetleaf package themselves and must still be scanned. This mirrors the
+  /// runtime's own classification, which treats any package named
+  /// `jetleaf*` as a Jetleaf package.
+  ///
   /// Parameters:
   /// - [packageRoot]: The root directory of the Dart package containing
   ///   a `pubspec.yaml` file.
@@ -422,7 +429,12 @@ abstract class AbstractFileLocatorUtility extends AbstractFileUtility {
   ///   or its core modules.
   Future<Set<String>> getJetleafDependencies(Directory packageRoot) async {
     final keys = await extractPubspecDependencyKeys(packageRoot);
-    return extractJetleafDependencies(keys).toSet();
+    final jetleaf = extractJetleafDependencies(keys).toSet();
+    final name = await _readPackageNameFor(packageRoot);
+    if (name != null && (jetleafPackages.contains(name) || name.startsWith(PackageNames.MAIN))) {
+      jetleaf.add(name);
+    }
+    return jetleaf;
   }
 
   /// Returns the set of **Jetleaf-related dependencies** declared in a package.

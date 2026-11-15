@@ -1,6 +1,6 @@
 # Jetson Example
 
-This example demonstrates how to use the Jetson 2.0.0 object mapping engine for JSON and YAML serialization and deserialization.
+This example demonstrates how to use the Jetson 2.1.0 object mapping engine for JSON and YAML serialization and deserialization.
 
 ## Features Covered
 - Instantiating `JetsonObjectMapper`

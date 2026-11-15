@@ -2,10 +2,10 @@ import 'dart:io';
 
 import '../builder/runtime_builder.dart';
 import '../cache/cache_aware_scanner.dart';
-import '../runtime/scanner/runtime_scanner.dart';
-import '../runtime/scanner/runtime_scanner_configuration.dart';
-import '../runtime/scanner/mock_runtime_scanner.dart';
-import '../runtime/scanner/runtime_scanner_summary.dart';
+import '../scanner/runtime_scanner.dart';
+import '../scanner/runtime_scanner_configuration.dart';
+import '../scanner/mock_runtime_scanner.dart';
+import '../scanner/runtime_scanner_summary.dart';
 
 /// Executes a **mock runtime scan** and registers the resulting runtime
 /// context for testing and validation purposes.

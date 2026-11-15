@@ -25,7 +25,7 @@ final class ListXmlSerializationAdapter extends XmlSerializationAdapter<List> {
   const ListXmlSerializationAdapter();
 
   @override
-  bool canSerialize(Class type) => type == Class<List>() || type.getType() == List;
+  bool canSerialize(Class type) => type == Class<List>() || (type.isArray() && type.getType().toString().startsWith('List'));
 
   @override
   void serialize(List value, XmlGenerator generator, XmlSerializationContext serializer) {
@@ -37,7 +37,7 @@ final class ListXmlSerializationAdapter extends XmlSerializationAdapter<List> {
   }
 
   @override
-  bool canDeserialize(Class type) => type == Class<List>() || type.getType() == List;
+  bool canDeserialize(Class type) => type == Class<List>() || (type.isArray() && type.getType().toString().startsWith('List'));
 
   @override
   List? deserialize(XmlParser parser, XmlDeserializationContext ctxt, Class toClass) {

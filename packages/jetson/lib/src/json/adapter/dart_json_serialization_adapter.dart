@@ -89,6 +89,41 @@ final class DartJsonSerializationAdapter extends JsonSerializationAdapter<Object
   Object? deserialize(JsonParser parser, JsonDeserializationContext ctxt, Class toClass) {
     final token = parser.getCurrentToken();
 
+    // Treat only genuine Object/Dynamic/Null targets as erased; cache-synthetic
+    // declarations report `Object` because `Type` objects cannot be serialized.
+    bool isObjectish(Class c) {
+      try {
+        final qn = c.getQualifiedName();
+        return qn == 'dart:core.Object' ||
+          qn == 'Object' ||
+          qn.endsWith('/Object.dart.Object') ||
+          qn == 'dart:core.dynamic' ||
+          qn == 'dynamic' ||
+          qn.endsWith('/dynamic.dart.dynamic') ||
+          qn == 'dart:core.Null' ||
+          qn == 'Null' ||
+          qn.endsWith('/Null.dart.Null');
+      } catch (_) {
+        return false;
+      }
+    }
+
+    final isErasedTarget = isObjectish(toClass) || isObjectish(_type);
+
+    if (isErasedTarget) {
+      // Objects become maps, arrays become lists, and scalars come back as-is.
+      if (token == JsonToken.VALUE_NULL) {
+        return null;
+      }
+      if (token == JsonToken.START_OBJECT) {
+        return ctxt.deserialize(parser, Class.forType(Map));
+      }
+      if (token == JsonToken.START_ARRAY) {
+        return ctxt.deserialize(parser, Class.forType(List));
+      }
+      return parser.getCurrentValue();
+    }
+
     if (token == JsonToken.VALUE_NULL) {
       return null;
     }

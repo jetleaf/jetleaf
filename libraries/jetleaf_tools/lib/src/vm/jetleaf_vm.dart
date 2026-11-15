@@ -12,10 +12,12 @@ import 'package:vm_service/vm_service_io.dart';
 
 import '../cache/indexer/declaration_builder.dart';
 import '../cache/indexer/file_discovery.dart';
+import '../aot/aot_proxy_writer.dart';
 import '../cache/manager/cacheable_manager.dart';
 import '../cache/scanner/cache_scanners.dart';
+import '../aot/aot_registrar_writer.dart';
 import '../cache/jetleaf_paths.dart';
-import '../serialization/jetleaf_json.dart';
+import '../utils/jetleaf_json.dart';
 import 'package:jetleaf_core/lang.dart';
 import '../utils/utils.dart';
 import 'jetleaf_decorator.dart';
@@ -83,17 +85,23 @@ final class JetleafLogRecord {
 
   /// Serializes this record for the control/event protocol.
   Map<String, Object?> toEvent() => {
-        'type': 'log',
-        'timestamp': timestamp.toIso8601String(),
-        'level': level.name,
-        'source': source,
-        if (entry != null) 'entry': entry,
-        if (stream != null) 'stream': stream,
-        if (phase != null) 'phase': phase,
-        'banner': banner,
-        'message': message,
-        'formatted': formatted,
-      };
+    'type': 'log',
+    'timestamp': timestamp.toIso8601String(),
+    'level': level.name,
+    'source': source,
+    if (entry != null) ...{
+      'entry': entry
+    },
+    if (stream != null) ...{
+      'stream': stream
+    },
+    if (phase != null) ...{
+      'phase': phase
+    },
+    'banner': banner,
+    'message': message,
+    'formatted': formatted,
+  };
 }
 
 /// {@template vm_paths}
@@ -112,18 +120,15 @@ abstract final class JetleafVmPaths {
   /// Name of the human-readable entry-state file at the project root
   /// (next to `pubspec.yaml`). JSON array, 4-space indent, one object
   /// per entry. Written on every state change, deleted on clean stop.
-  static const String vmFileName =
-      '${Constant.WORKSPACE_DIR_NAME}/${Constant.VM_DIR_NAME}/${Constant.VM_STATE_FILE_NAME}';
+  static const String vmFileName = '${Constant.WORKSPACE_DIR_NAME}/${Constant.VM_DIR_NAME}/${Constant.VM_STATE_FILE_NAME}';
 
   /// Internal manager metadata (pid, control port). Machine-only sidecar
   /// next to the VM state location; the entry state stays a pure
   /// human-readable entry array.
-  static const String managerRelativePath =
-      '${Constant.WORKSPACE_DIR_NAME}/${Constant.VM_DIR_NAME}/${Constant.VM_MANAGER_FILE_NAME}';
+  static const String managerRelativePath = '${Constant.WORKSPACE_DIR_NAME}/${Constant.VM_DIR_NAME}/${Constant.VM_MANAGER_FILE_NAME}';
 
   /// Per-entry incremental snapshots live here.
-  static const String entrySnapshotDir =
-      '${Constant.WORKSPACE_DIR_NAME}/${Constant.VM_DIR_NAME}/${Constant.ENTRIES_DIR_NAME}';
+  static const String entrySnapshotDir = '${Constant.WORKSPACE_DIR_NAME}/${Constant.VM_DIR_NAME}/${Constant.ENTRIES_DIR_NAME}';
 
   /// Resolves the `package_config.json` for [root], searching upward so
   /// workspace members (which keep no local
@@ -162,18 +167,6 @@ abstract final class JetleafVmPaths {
 ///
 /// {@endtemplate}
 final class _WarmSummary {
-  /// {@macro warm_summary}
-  const _WarmSummary({
-    required this.packageName,
-    required this.fileCount,
-    required this.componentCount,
-    required this.libraryCount,
-    required this.packageCount,
-    required this.assetCount,
-    required this.fingerprint,
-    required this.durationMs,
-  });
-
   /// Package name read from the project `pubspec.yaml`.
   final String packageName;
 
@@ -197,6 +190,18 @@ final class _WarmSummary {
 
   /// Wall-clock cost in milliseconds.
   final int durationMs;
+
+  /// {@macro warm_summary}
+  const _WarmSummary({
+    required this.packageName,
+    required this.fileCount,
+    required this.componentCount,
+    required this.libraryCount,
+    required this.packageCount,
+    required this.assetCount,
+    required this.fingerprint,
+    required this.durationMs,
+  });
 }
 
 /// Live backend for one entry: incremental compiler + VM process +
@@ -535,10 +540,34 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
       'current': 0,
       'total': fileCount,
     });
-    final components = await DeclarationBuilder().build(
+    var declarationBuilder = DeclarationBuilder();
+    var components = await declarationBuilder.build(
       files: files,
       packageName: packageName,
     );
+
+    // Proxy emission: emit Interceptable proxies for stereotype components,
+    // then re-run discovery+analysis so the proxies land in the declarations
+    // the warm cache and the AOT registry are built from.
+    final proxyCount = await AotProxyWriter().emitProjectProxies(
+      projectRoot: dir,
+      packageName: packageName,
+      log: (msg) => onEvent?.call({'type': 'proxy_emitted', 'message': msg}),
+      components: components,
+    );
+    if (proxyCount > 0) {
+      onEvent?.call({'type': 'proxy_emitted_count', 'count': proxyCount});
+      final filesWithProxies = await discovery.discover(
+        skipTests: false,
+        packagesToExclude: [],
+        packagesToScan: [],
+        filesToExclude: [],
+      );
+      components = await declarationBuilder.build(
+        files: filesWithProxies,
+        packageName: packageName,
+      );
+    }
     onEvent?.call({
       'type': 'warm_progress',
       'phase': 'analysis',
@@ -563,6 +592,27 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
       fingerprint: prodFingerprint,
       forTests: false,
     );
+
+    // 4. Regenerate the test-only AOT registry (production registry is
+    //    untouched — `lib/_jetleaf_test/` carries the full src+test
+    //    component set for the warm test runtime and `jl test` stubs).
+    try {
+      onEvent?.call({
+        'type': 'warm_progress',
+        'phase': 'aot',
+        'status': 'writing',
+      });
+      final aotWriter = AotRegistrarWriter(
+        projectRoot: dir,
+        packageName: packageName,
+      );
+      await aotWriter.writeAotRegistrar(components: components, forTests: true);
+    } catch (e) {
+      onEvent?.call({
+        'type': 'warm_warning',
+        'message': 'failed to write _jetleaf_test/: $e',
+      });
+    }
 
     final testFingerprint = CacheManager.generateFingerprint(skipTests: false);
     final testSummary = await cacheWriter.writeWithComponents(

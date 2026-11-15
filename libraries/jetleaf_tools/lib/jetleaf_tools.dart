@@ -84,7 +84,7 @@ library;
 
 export 'src/builder/runtime_builder.dart';
 export 'src/builder/runtime_manifest.dart';
-export 'src/serialization/jetleaf_json.dart';
+export 'src/utils/jetleaf_json.dart';
 export 'src/cache/jetleaf_paths.dart';
 export 'src/cli/jl_cli.dart';
 export 'src/builder/reachability.dart';
@@ -101,12 +101,12 @@ export 'src/generator/library_generator.dart';
 export 'src/generator/mock_library_generator.dart';
 export 'src/generator/default_library_generator.dart';
 
-export 'src/runtime/scanner/application_runtime_scanner.dart';
-export 'src/runtime/scanner/default_runtime_scanner_summary.dart';
-export 'src/runtime/scanner/mock_runtime_scanner.dart';
-export 'src/runtime/scanner/runtime_scanner.dart';
-export 'src/runtime/scanner/runtime_scanner_configuration.dart';
-export 'src/runtime/scanner/runtime_scanner_summary.dart';
+export 'src/scanner/application_runtime_scanner.dart';
+export 'src/scanner/default_runtime_scanner_summary.dart';
+export 'src/scanner/mock_runtime_scanner.dart';
+export 'src/scanner/runtime_scanner.dart';
+export 'src/scanner/runtime_scanner_configuration.dart';
+export 'src/scanner/runtime_scanner_summary.dart';
 
 export 'src/utils/dart_type_resolver.dart';
 export 'src/utils/utils.dart' hide StringX;

@@ -344,6 +344,13 @@ abstract class AbstractPropertyResolver implements ConfigurablePropertyResolver 
       return value as T;
     }
 
+    // A collection converted to String is a
+    // comma-separated list (not a `[a, b]` toString), regardless of
+    // which converter happens to be registered.
+    if (targetType.getType() == String && value is Iterable) {
+      return value.join(',') as T;
+    }
+
     ConversionService? conversionServiceToUse = _conversionService;
     if (conversionServiceToUse == null) {
       // Avoid initialization of shared DefaultConversionService if

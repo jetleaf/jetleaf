@@ -43,7 +43,8 @@ class PositionalClass {
 }
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('Constructor API', () {
     test('getConstructors() returns all constructors', () {
       final userClass = Class<TestUser>();

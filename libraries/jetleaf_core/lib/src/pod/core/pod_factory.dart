@@ -780,7 +780,7 @@ abstract interface class ConfigurablePodFactory implements HierarchicalPodFactor
   /// await factory.destroySingletons();
   /// ```
   /// {@endtemplate}
-  void destroySingletons();
+  Future<void> destroySingletons();
 
   /// {@template configurable_pod_factory_destroy_scoped_pod}
   /// Destroys all pods in the specified scope.

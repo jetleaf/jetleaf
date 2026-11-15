@@ -89,7 +89,7 @@ final class HandlerAdapterManager implements ApplicationContextAware, Initializi
   @override
   Future<void> onReady() async {
     final type = Class<HandlerAdapter>(null, PackageNames.WEB);
-    final values = await _applicationContext.getPodsOf(type);
+    final values = await _applicationContext.getPodsOf(type, allowEagerInit: true);
 
     for (final value in values.values) {
       addAdapter(value);

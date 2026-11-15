@@ -1,6 +1,6 @@
 # 💾 Jetleaf Resource — Caching & Rate Limiting
 
-[![pub package](https://img.shields.io/badge/version-1.0.0-blue)](https://pub.dev/packages/jetleaf_resource)
+[![pub package](https://img.shields.io/badge/version-2.1.0-blue)](https://pub.dev/packages/jetleaf_resource)
 [![License](https://img.shields.io/badge/license-Jetleaf-green)](#license)
 [![Dart SDK](https://img.shields.io/badge/sdk-%3E%3D3.9.0-blue)](https://dart.dev)
 
@@ -23,7 +23,7 @@ Unified resource management utilities for caching, rate limiting, and key genera
 
 ```yaml
 dependencies:
-  jetleaf_resource: ^1.0.0
+  jetleaf_resource: ^2.1.0
 ```
 
 ### Basic Caching

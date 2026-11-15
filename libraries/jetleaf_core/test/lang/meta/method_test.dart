@@ -37,7 +37,8 @@ class Child extends Parent {
 }
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('Method API', () {
     test('getMethod() finds method by name', () {
       final userClass = Class<TestUser>();

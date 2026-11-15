@@ -1,6 +1,6 @@
 # 📊 Jetson — JSON Object Mapping & Serialization
 
-[![pub package](https://img.shields.io/badge/version-2.0.0-blue)](https://pub.dev/packages/jetson)
+[![pub package](https://img.shields.io/badge/version-2.1.0-blue)](https://pub.dev/packages/jetson)
 [![License](https://img.shields.io/badge/license-Jetleaf-green)](#license)
 [![Dart SDK](https://img.shields.io/badge/sdk-%3E%3D3.9.0-blue)](https://dart.dev)
 
@@ -26,7 +26,7 @@ Flexible and extensible JSON serialization/deserialization library inspired by J
 
 ```yaml
 dependencies:
-  jetson: ^2.0.0
+  jetson: ^2.1.0
 ```
 
 ### Basic Serialization/Deserialization

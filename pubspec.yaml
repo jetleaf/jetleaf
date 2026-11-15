@@ -1,6 +1,6 @@
 name: jetleaf
 description: Enterprise-grade backend framework bringing dependency injection and lifecycle management to Dart.
-version: 2.0.0
+version: 2.1.0
 
 homepage: https://jetleaf.hapnium.com
 repository: https://github.com/jetleaf/jetleaf
@@ -44,8 +44,8 @@ workspace:
 
 dependencies:
   meta: ^1.18.3
-  jetleaf_core: ^2.0.1
-  jetleaf_tools: ^1.0.2
+  jetleaf_core: ^2.1.0
+  jetleaf_tools: ^1.1.0
 
 dev_dependencies:
   test: ^1.29.0

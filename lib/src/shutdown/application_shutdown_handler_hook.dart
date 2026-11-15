@@ -382,8 +382,8 @@ class ApplicationShutdownHandlerHook implements Runnable {
   /// ```
   /// {@endtemplate}
   Future<void> _closeAndWait(ConfigurableApplicationContext context) async {
-    if (!context.isRunning()) return;
-
+    // Always await close() — it is idempotent and completes the destruction
+    // chain deterministically. _isClosed guards against double work.
     await context.close();
     final start = DateTime.now();
     while (context.isRunning()) {

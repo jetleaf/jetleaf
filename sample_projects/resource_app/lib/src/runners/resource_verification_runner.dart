@@ -18,7 +18,7 @@ class ResourceVerificationRunner implements CommandLineRunner {
   @override
   Future<void> run(List<String> args) async {
     _logger.info('ResourceVerificationRunner: Verifying resources and profile configuration...');
-    
+
     templateContent = await _service.readWelcomeTemplate();
     jsonContent = await _service.readJsonConfig();
     verified = true;

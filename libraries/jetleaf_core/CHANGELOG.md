@@ -1,3 +1,17 @@
+## 2.1.0
+
+### Fixes & Improvements
+
+- **Parameterized Collections**: `Class<T>.isArray()` and `Class<T>.isKeyValuePaired()` now recognise parameterized generic targets (`List<T>`, `Set<T>`, `Map<K, V>`, `MapEntry<K, V>`) via both the reified `Type` and the declaration name, in addition to `TypeKind` and type-argument inspection.
+- **Class Resolution**: `findClassByType` / `_MaterialLibrary.findClassByType` no longer fall back to matching bare base names for parameterized types — prevents `Class<User>()` resolving to an unrelated `User` declaration from another package or scope.
+- **@ConfigurationProperty Visibility**: `ConfigurationPropertyPodProcessor` no longer crashes with a null-check exception when the `@ConfigurationProperty` annotation is visible via `hasDirectAnnotation` but the annotation instance cannot be constructed at this stage (AOT/JIT visibility gaps) — the bean is silently skipped instead of failing pod creation.
+- **Factory Method Dedup**: `AnnotatedPodMethodBuilder` only qualifies an auto-named pod (`configClass.methodName`) when the pre-existing bare-name definition comes from a different factory method; same-method re-definition keeps the bare method name.
+- **Conversion Semantics**: `Iterable` values converted to `String` now join with commas (Spring semantics) instead of leaking through an arbitrary toString.
+- **Reflective Utils**: Removed the broken reified-generic reflection helpers that mislabelled collected list/map/set/iterable element types; element types are now resolved purely through `Runtime.obtainClassDeclaration`.
+- **AOT Execution**: Minor cleanups to the `AotRuntimeExecutor` runtime executor.
+
+---
+
 ## 2.0.1
 
 ### Architectural Enhancements

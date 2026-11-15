@@ -9,7 +9,7 @@ void main() {
     late BufferedWriter writer;
 
     setUp(() {
-      file = File('test/io/tmp_buffered_output.txt');
+      file = File('test/lang/io_streams/tmp_buffered_output.txt');
       if (file.existsSync()) file.deleteSync();
     });
 

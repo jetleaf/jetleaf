@@ -95,7 +95,8 @@ final class StringReturnValueHandler implements ReturnValueHandler {
 
   @override
   Future<void> handleReturnValue(Object? returnValue, Method? method, ServerHttpRequest request, ServerHttpResponse response, HandlerMethod? hm) async {
-    final contentType = request.getHeaders().getAccept().firstOrNull ?? MediaType.TEXT_PLAIN;
+    final accepted = request.getHeaders().getAccept().where((mediaType) => mediaType.getMimeType() != '*/*').firstOrNull;
+    final contentType = accepted ?? MediaType.TEXT_PLAIN;
     response.getHeaders().setContentType(contentType);
 
     if (response.getStatus() == null) {

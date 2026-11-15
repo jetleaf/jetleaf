@@ -95,7 +95,12 @@ final class ResourceAutoConfiguration {
   /// [KeyGenerator]s (including conditional generators) into a
   /// deterministic chain, ensuring flexible and extensible key
   /// resolution.
+  ///
+  /// Marked [Primary] so that when both the simple and composite generators are
+  /// registered, the composite is the default chosen for type-based injection —
+  /// matching the framework's documented default.
   @Pod(value: COMPOSITE_KEY_GENERATOR_POD_NAME)
+  @Primary()
   @ConditionalOnMissingPod(values: [ClassType<KeyGenerator>()])
   @ConditionalOnProperty(prefix: "jetleaf", names: ['resource.key-generator'], havingValue: "composite", matchIfMissing: true)
   KeyGenerator compositeKeyGenerator() => CompositeKeyGenerator();

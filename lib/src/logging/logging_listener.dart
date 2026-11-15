@@ -184,7 +184,7 @@ final class ApplicationLoggingListener implements LoggingListener {
       useHumanReadableTime: (_get(_key(JetleafLoggingProperty.USE_HUMAN_READABLE_TIME, tag)) ?? _get(_key(JetleafLoggingProperty.USE_HUMAN_READABLE_TIME)))?.toBool() ?? false,
       showEmoji: (_get(_key(JetleafLoggingProperty.SHOW_EMOJI, tag)) ?? _get(_key(JetleafLoggingProperty.SHOW_EMOJI)))?.toBool() ?? false,
       showLocation: (_get(_key(JetleafLoggingProperty.SHOW_LOCATION, tag)) ?? _get(_key(JetleafLoggingProperty.SHOW_LOCATION)))?.toBool() ?? false,
-      steps: rawSteps?.split(",").map((step) => LogStep.fromValue(step.trim())).toList() ?? LogStep.defaultSteps,
+      steps: rawSteps?.split(",").map((step) => step.replaceAll(RegExp(r'[\[\]]'), '').trim()).where((step) => step.isNotEmpty).map(LogStep.fromValue).toList() ?? LogStep.defaultSteps,
     );
   }
 

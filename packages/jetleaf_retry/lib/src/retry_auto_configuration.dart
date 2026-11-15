@@ -92,7 +92,12 @@ final class RetryAutoConfiguration {
   RetryExecutor retryExecutor() => DefaultRetryExecutor();
 
   /// Declares an exponential [BackoffPolicy] pod.
+  ///
+  /// Designated [Primary] so that type-based injection resolves to the
+  /// exponential policy (consistent with `matchIfMissing: true`) when both
+  /// backoff policies are registered.
   @Pod(value: EXPONENTIAL_BACKOFF_POLICY_POD_NAME)
+  @Primary()
   @ConditionalOnMissingPod(values: [BackoffPolicy])
   @ConditionalOnProperty(
     prefix: "jetleaf",
@@ -108,7 +113,6 @@ final class RetryAutoConfiguration {
   @ConditionalOnProperty(
     prefix: "jetleaf",
     havingValue: 'fixed',
-    matchIfMissing: true,
     names: ["backoff", "policy"],
   )
   BackoffPolicy fixedBackoffPolicy() => FixedBackoffPolicy();

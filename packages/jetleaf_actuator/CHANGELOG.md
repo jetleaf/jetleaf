@@ -1,3 +1,11 @@
+## [1.1.0]
+
+### Changed
+
+- **Dependency Bumps**: `jetleaf_core: ^2.1.0`, `jetson: ^2.1.0`.
+
+---
+
 ## [1.0.0]
 
 ### Added

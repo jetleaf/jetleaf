@@ -4,7 +4,6 @@ import 'package:jetleaf_core/annotation.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'aot_sub_registrar_writer.dart';
 
-/// {@template aot_pod_registry_writer}
 /// 📦 **Ahead-Of-Time (AOT) Pod Registry Code Generator**
 ///
 /// Generates package-scoped `registry_pods.g.dart` sub-registry part files containing statically
@@ -57,7 +56,32 @@ import 'aot_sub_registrar_writer.dart';
 /// Classes carrying conditional annotations (`@ConditionalOnProperty`, `@ConditionalOnClass`, etc.)
 /// are deferred from static AOT pod registration and instead evaluated dynamically during context
 /// configuration.
-/// {@endtemplate}
+/// Maps primitive Dart type names to their `Class<...>()` literal expression.
+String? primitiveClassLiteral(String typeName) {
+  switch (typeName) {
+    case 'String':
+      return 'Class<String>()';
+    case 'int':
+      return 'Class<int>()';
+    case 'double':
+      return 'Class<double>()';
+    case 'num':
+      return 'Class<num>()';
+    case 'bool':
+      return 'Class<bool>()';
+  }
+  return null;
+}
+
+/// Escapes an arbitrary string into a safe single-quoted Dart string literal.
+String dartStringLiteral(String value) {
+  final escaped = value
+    .replaceAll('\\', '\\\\')
+    .replaceAll(r'$', r'\$')
+    .replaceAll("'", r"\'");
+  return "'$escaped'";
+}
+
 final class AotPodRegistryWriter extends AotSubRegistrarWriter {
   /// {@macro aot_pod_registry_writer}
   const AotPodRegistryWriter();
@@ -70,6 +94,7 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
   String get _podName => const Pod().runtimeType.toString();
   String get _configurationPropertyName => const ConfigurationProperty().runtimeType.toString();
   String get _lazyName => const Lazy().runtimeType.toString();
+  String get _scopeName => const Scope('singleton').runtimeType.toString();
   String get _primaryName => const Primary().runtimeType.toString();
   String get _namedName => const Named('').runtimeType.toString();
   String get _postConstructName => const PostConstruct().runtimeType.toString();
@@ -79,6 +104,7 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
   String get _conditionalName => Conditional([]).runtimeType.toString();
   String get _controllerName => 'Controller';
   String get _restController => 'RestController';
+  String get _valueName => const Value('').runtimeType.toString();
 
   /// Known stereotype annotation names that qualify a class as an IoC Pod.
   Set<String> get _podStereotypes => {
@@ -257,6 +283,9 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
 
     final fnName = '_registerPods_${sanitizePackageIdentifier(packageName)}';
     final buffer = StringBuffer();
+    final factoryMethodBuffer = StringBuffer();
+    var factoryMethodPodsEmitted = 0;
+
     writeNestedPartHeader(buffer, 'AOT Pods Sub-Registry for [$packageName]');
     buffer.writeln('Future<void> $fnName(DefaultListablePodFactory factory) async {');
 
@@ -282,29 +311,31 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
         className,
         classToPrefix,
         podMethodByReturnType,
+        libraryAliases,
       );
       final initInvokerCode = _buildInitInvoker(component, prefix, className, classByName);
       final destroyInvokerCode = _buildDestroyInvoker(component, prefix, className, classByName);
 
       final isLazy = _hasAnnotation(component, {_lazyName}, classByName);
       final isPrimary = _hasAnnotation(component, {_primaryName}, classByName);
-      buffer.writeln('''  if (!factory.containsDefinition('$podName')) {
-    await factory.registerDefinition('$podName', RootPodDefinition(
-      type: Class<$prefix$className>.fromQualifiedName('${component.getQualifiedName()}'),
+      final scopeDesign = _scopeDesignExpression(component, classByName);
+      buffer.writeln('''  if (!factory.containsDefinition('${escapeDartStringLiteral(podName)}')) {
+    await factory.registerDefinition('${escapeDartStringLiteral(podName)}', RootPodDefinition(
+      type: Class<$prefix$className>.fromQualifiedName('${escapeDartStringLiteral(component.getQualifiedName())}'),
       ${supplierCode != null ? 'instanceSupplier: $supplierCode,' : ''}
       ${initInvokerCode != null ? 'initMethodInvoker: $initInvokerCode,' : ''}
       ${destroyInvokerCode != null ? 'destroyMethodInvoker: $destroyInvokerCode,' : ''}
     )
-      ..name = '$podName'
+      ..name = '${escapeDartStringLiteral(podName)}'
+      ${scopeDesign != null ? '..scope = $scopeDesign' : ''}
       ..design.isPrimary = $isPrimary
       ..lifecycle.isLazy = $isLazy
     );
   }''');
     }
 
-    // Configuration factory methods are pods too.  Emitting them directly is
-    // essential in AOT mode, where reflection metadata is not available for
-    // ConfigurationClassPostProcessor to discover `@Pod` methods at runtime.
+    // Configuration factory methods are pods too. In pure AOT mode there is no
+    // reflection metadata for ConfigurationClassPostProcessor to discover them, so they are emitted statically.
     for (final component in components) {
       if (!_isConfiguration(component, classByName)) continue;
 
@@ -319,34 +350,81 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
           continue;
         }
 
-        final returnTypeName = method.getReturnType().getName();
-        final returnTypePrefix = classToPrefix[returnTypeName];
+        // `@Pod` methods returning `Future<X>` are registered under the
+        // completeness type `X` — fall out of `Future` whose runtime value
+        // is awaited by the container before the pod is published (mirrors
+        // `isAsync ? componentType() : getReturnClass()` in `AnnotatedPodMethodBuilder`).
+        final returnType = method.getReturnType();
+        final effectiveReturnType = method.isAsynchronous() && returnType.getTypeArguments().length == 1
+          ? returnType.getTypeArguments().first
+          : returnType;
+        final returnTypeName = effectiveReturnType.getName();
+        final returnTypePrefix = _typeReferencePrefix(effectiveReturnType, libraryAliases) ?? classToPrefix[returnTypeName];
         final supplierCode = _buildPodMethodSupplier(
           component,
           method,
           configurationPrefix,
           classToPrefix,
           podMethodByReturnType,
+          libraryAliases,
+          classByName,
         );
 
-        if (returnTypeName.isEmpty || returnTypePrefix == null || supplierCode == null) {
+        final canEmitType = returnTypeName.isNotEmpty && (returnTypePrefix != null || effectiveReturnType.getPointerQualifiedName().isNotEmpty);
+
+        if (!canEmitType || supplierCode == null) {
           continue;
         }
 
-        final methodPodName = '$configurationName.${method.getName()}';
-        if (usedPodNames.contains(methodPodName)) continue;
-        usedPodNames.add(methodPodName);
+        final preferredName = _podMethodPreferredName(method, classByName);
+        final qualifiedName = '$configurationName.${method.getName()}';
+        if (usedPodNames.contains(preferredName) || usedPodNames.contains(qualifiedName)) continue;
+        usedPodNames.add(preferredName);
+        usedPodNames.add(qualifiedName);
 
-        buffer.writeln('''  if (!factory.containsDefinition('$methodPodName')) {
-      await factory.registerDefinition('$methodPodName', RootPodDefinition(
-        type: Class<$returnTypePrefix$returnTypeName>(),
+        final methodIsPrimary = _methodHasAnnotation(method, {_primaryName}, classByName);
+        final scopeDesign = _scopeDesignExpressionForMethod(method, classByName);
+
+        final effectiveReturnTypeRef = returnTypePrefix != null
+          ? 'Class<$returnTypePrefix$returnTypeName>()'
+          : 'Class.fromQualifiedName(\'${escapeDartStringLiteral(effectiveReturnType.getPointerQualifiedName())}\')';
+
+        factoryMethodBuffer.writeln('''  if (!factory.containsDefinition('${escapeDartStringLiteral(preferredName)}')) {
+      await factory.registerDefinition('${escapeDartStringLiteral(preferredName)}', RootPodDefinition(
+        type: $effectiveReturnTypeRef,
         instanceSupplier: $supplierCode,
       )
-        ..name = '$methodPodName'
-        ..factoryMethod = FactoryMethodDesign('$configurationName', '${method.getName()}')
+        ..name = '${escapeDartStringLiteral(preferredName)}'
+        ${scopeDesign != null ? '..scope = $scopeDesign' : ''}
+        ..factoryMethod = FactoryMethodDesign('${escapeDartStringLiteral(configurationName)}', '${escapeDartStringLiteral(method.getName())}')
+        ..design.isPrimary = $methodIsPrimary
+      );
+    } else if (!_isSameFactoryMethod('${escapeDartStringLiteral(preferredName)}', '${escapeDartStringLiteral(configurationName)}', '${escapeDartStringLiteral(method.getName())}') && !factory.containsDefinition('${escapeDartStringLiteral(qualifiedName)}')) {
+      await factory.registerDefinition('${escapeDartStringLiteral(qualifiedName)}', RootPodDefinition(
+        type: $effectiveReturnTypeRef,
+        instanceSupplier: $supplierCode,
+      )
+        ..name = '${escapeDartStringLiteral(qualifiedName)}'
+        ${scopeDesign != null ? '..scope = $scopeDesign' : ''}
+        ..factoryMethod = FactoryMethodDesign('${escapeDartStringLiteral(configurationName)}', '${escapeDartStringLiteral(method.getName())}')
+        ..design.isPrimary = $methodIsPrimary
       );
     }''');
+        factoryMethodPodsEmitted++;
       }
+    }
+
+    if (factoryMethodPodsEmitted > 0) {
+      buffer.writeln('''  bool _isSameFactoryMethod(String name, String configPod, String method) {
+    try {
+      final def = factory.getDefinition(name);
+      return def.factoryMethod.podName == configPod && def.factoryMethod.methodName == method;
+    } catch (_) {
+      return false;
+    }
+  }
+''');
+      buffer.write(factoryMethodBuffer.toString());
     }
 
     buffer.writeln('}');
@@ -373,24 +451,128 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
     return false;
   }
 
+  /// Checks whether [method] carries an annotation within [targets] (or extends/meta-annotates to one).
+  ///
+  /// Used to detect [Primary] (and any future stereotype markers) on factory
+  /// `@Pod` methods so that generated AOT pods honour the same semantics as
+  /// their reflective counterparts.
+  bool _methodHasAnnotation(MethodDeclaration method, Set<String> targets, Map<String, ClassDeclaration> classByName) {
+    for (final annotation in method.getAnnotations()) {
+      final name = annotation.getName();
+      if (matchesOrExtendsAnnotation(name, targets, classByName)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /// Resolves the user-facing name for a `@Pod`-annotated factory method.
+  ///
+  /// Mirrors the JIT `AnnotatedPodMethodBuilder` naming policy exactly:
+  ///
+  /// 1. `@Named('name')` wins outright
+  /// 2. `@Pod('value')` wins when non-empty
+  /// 3. bare method name wins when no explicit name is given
+  ///
+  /// If [component] carries an `@Scope` annotation, returns a `ScopeDesign.type('…')`
+  /// expression to embed in the generated definition; `null` when absent.
+  String? _scopeDesignExpression(ClassDeclaration component, Map<String, ClassDeclaration> classByName) {
+    for (final annotation in component.getAnnotations()) {
+      final name = annotation.getName();
+      if (!matchesOrExtendsAnnotation(name, {_scopeName}, classByName)) continue;
+      final values = annotation.getUserProvidedValues();
+      return _scopeDesignFromValues(values);
+    }
+
+    return null;
+  }
+
+  /// If [method] carries an `@Scope` annotation, returns a `ScopeDesign.type('…')`
+  /// expression to embed in the generated definition; `null` when absent.
+  String? _scopeDesignExpressionForMethod(MethodDeclaration method, Map<String, ClassDeclaration> classByName) {
+    for (final annotation in method.getAnnotations()) {
+      final name = annotation.getName();
+      if (!matchesOrExtendsAnnotation(name, {_scopeName}, classByName)) continue;
+      final values = annotation.getUserProvidedValues();
+      return _scopeDesignFromValues(values);
+    }
+
+    return null;
+  }
+
+  String? _scopeDesignFromValues(Map<String, Object?> values) {
+    final value = values['value'] ?? values[r'$0'];
+    if (value is String && value.trim().isNotEmpty) {
+      return "ScopeDesign.type('${value.trim().toLowerCase()}')";
+    }
+
+    return null;
+  }
+
+  /// Returns an empty result when nothing usable is found so callers can
+  /// decide on their own fallback.
+  String? _podAnnotationValue(MethodDeclaration method, Set<String> targets, Map<String, ClassDeclaration> classByName) {
+    for (final annotation in method.getAnnotations()) {
+      final name = annotation.getName();
+      if (!matchesOrExtendsAnnotation(name, targets, classByName)) continue;
+      final values = annotation.getUserProvidedValues();
+      final v = values['name'] ?? values['value'] ?? values[r'$0'];
+      if (v is String && v.isNotEmpty) return v;
+    }
+
+    return null;
+  }
+
+  /// Computes the preferred pod name for a `@Pod`-annotated factory method.
+  ///
+  /// See [_podAnnotationValue] for the resolution order. Callers should treat
+  /// a collision with an existing definition that is *not* this exact factory
+  /// method as an error in the caller, not in this helper.
+  String _podMethodPreferredName(MethodDeclaration method, Map<String, ClassDeclaration> classByName) {
+    final named = _podAnnotationValue(method, {_namedName}, classByName);
+    if (named != null) return named;
+    final pod = _podAnnotationValue(method, {_podName}, classByName);
+    if (pod != null) return pod;
+    return method.getName();
+  }
+
   String? _buildPodMethodSupplier(
     ClassDeclaration configuration,
     MethodDeclaration method,
     String configurationPrefix,
     Map<String, String> classToPrefix,
     Map<String, String> podMethodByReturnType,
+    Map<String, String> libraryAliases,
+    Map<String, ClassDeclaration> classByName,
   ) {
     final positionalArgs = <String>[];
     final namedArgs = <String>[];
 
     for (final parameter in method.getParameters()) {
       final parameterType = parameter.getLinkDeclaration().getName();
-      final typePrefix = classToPrefix[parameterType];
-      String? lookup;
-      if (typePrefix != null && !isPrimitiveType(parameterType)) {
-        lookup = 'factory.get(Class<$typePrefix$parameterType>())';
-      } else if (podMethodByReturnType.containsKey(parameterType)) {
-        lookup = "factory.getPod('${podMethodByReturnType[parameterType]}')";
+
+      // Fast path: a registered library prefix for the parameter's written
+      // type reference, resolved from the URI the parameter was declared with.
+      final referencePrefix = _typeReferencePrefix(parameter.getLinkDeclaration(), libraryAliases);
+
+      // Fall back to the simple-name prefix map for parameters whose link
+      // URI carries no useful import prefix.
+      final typePrefix = classToPrefix.containsKey(parameterType) && !isPrimitiveType(parameterType)
+        ? classToPrefix[parameterType]
+        : null;
+
+      var lookup = _buildParameterLookup(
+        parameter: parameter,
+        referencePrefix: referencePrefix,
+        typePrefix: typePrefix,
+        parameterType: parameterType,
+        podMethodByReturnType: podMethodByReturnType,
+        classByName: classByName,
+      );
+
+      if (lookup != null && (!parameter.getIsRequired() || parameter.getIsNullable())) {
+        lookup = "_optional(factory, () async => $lookup)";
       }
 
       if (lookup == null) {
@@ -417,6 +599,90 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
     buffer.writeln('  );');
     buffer.write('}');
     return buffer.toString();
+  }
+
+  /// Resolves the imported library prefix (e.g. `"p3."`) for a written type
+  /// reference.
+  ///
+  /// [link] is the raw type reference the writer sees on parameters or
+  /// return types. It may carry either a `referenceUri` (the import where the
+  /// type was found) or a `canonicalUri` (where the type is declared). Both
+  /// point at a library file, and that file URI is the same key used by
+  /// [libraryAliases] to map libraries to generated import prefixes.
+  ///
+  /// Any fragment is stripped because [LinkDeclaration] URIs routinely include
+  /// one (e.g. `package:example/logger.dart#Logger`).
+  ///
+  /// Returns `null` when the library is not part of the generated import set,
+  /// so callers can fall back to the simple-name prefix map.
+  String? _typeReferencePrefix(LinkDeclaration? link, Map<String, String> libraryAliases) {
+    if (link == null) return null;
+
+    final uri = link.getReferenceUri() ?? link.getCanonicalUri();
+    final raw = uri?.toString();
+    if (raw == null || raw.isEmpty) return null;
+
+    final alias = libraryAliases[raw.split('#').first];
+    return alias == null ? null : '$alias.';
+  }
+
+  /// Extracts the literal expression of a `@Value` annotation on [parameter], if any.
+  String? _valueExpression(ParameterDeclaration parameter, Map<String, ClassDeclaration> classByName) {
+    for (final ann in parameter.getAnnotations()) {
+      final annName = ann.getName();
+      if (!matchesOrExtendsAnnotation(annName, {_valueName}, classByName)) continue;
+      final Map<String, dynamic> values = ann.getUserProvidedValues();
+      final Object? raw = values[r'$0'] ?? values['value'] ?? values['expression'];
+      if (raw != null) return raw.toString();
+    }
+    return null;
+  }
+
+  /// Returns the written type name to cast to for `@Value`-bound parameters.
+  String? _castTarget(String parameterType, String? referencePrefix) {
+    if (parameterType.isEmpty || parameterType == 'dynamic' || parameterType == 'Object') {
+      return null;
+    }
+    if (referencePrefix != null && !isPrimitiveType(parameterType)) {
+      return '$referencePrefix$parameterType';
+    }
+    return parameterType;
+  }
+
+  /// Builds the supplier lookup expression for an injectable parameter.
+  String? _buildParameterLookup({
+    required ParameterDeclaration parameter,
+    required String? referencePrefix,
+    required String? typePrefix,
+    required String parameterType,
+    required Map<String, String> podMethodByReturnType,
+    required Map<String, ClassDeclaration> classByName,
+  }) {
+    final valueExpression = _valueExpression(parameter, classByName);
+    if (valueExpression != null) {
+      final castTarget = _castTarget(parameterType, referencePrefix);
+      final targetType = primitiveClassLiteral(parameterType) ?? "Class.fromQualifiedName('${parameter.getLinkDeclaration().getPointerQualifiedName()}')";
+      return "_resolveConfigValue(factory, ${dartStringLiteral(valueExpression)}, $targetType)${castTarget == null ? '' : ' as $castTarget'}";
+    }
+
+    if (referencePrefix != null && !isPrimitiveType(parameterType)) {
+      return 'factory.get(Class<$referencePrefix$parameterType>())';
+    }
+
+    final q = parameter.getLinkDeclaration().getPointerQualifiedName();
+    if (q.isNotEmpty) {
+      return "factory.get(Class.fromQualifiedName('$q'))";
+    }
+
+    if (podMethodByReturnType.containsKey(parameterType)) {
+      return "factory.getPod('${podMethodByReturnType[parameterType]}')";
+    }
+
+    if (typePrefix != null) {
+      return 'factory.get(Class<$typePrefix$parameterType>())';
+    }
+
+    return null;
   }
 
   /// Resolves the explicit or default pod name for [component].
@@ -473,6 +739,7 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
     String className,
     Map<String, String> classToPrefix,
     Map<String, String> podMethodByReturnType,
+    Map<String, String> libraryAliases,
   ) {
     final constructors = component.getConstructors();
     ConstructorDeclaration? targetConstructor;
@@ -509,16 +776,20 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
       }
 
       String lookup;
+      final typePrefix = _typeReferencePrefix(param.getLinkDeclaration(), libraryAliases) ?? classToPrefix[paramTypeName];
       if (namedQualifier != null && namedQualifier.isNotEmpty) {
         lookup = "factory.getPod('$namedQualifier')";
-      } else if (classToPrefix.containsKey(paramTypeName) && !isPrimitiveType(paramTypeName)) {
-        final typePrefix = classToPrefix[paramTypeName]!;
+      } else if (typePrefix != null && !isPrimitiveType(paramTypeName)) {
         lookup = "factory.get(Class<$typePrefix$paramTypeName>())";
       } else if (podMethodByReturnType.containsKey(paramTypeName)) {
         final podMethodName = podMethodByReturnType[paramTypeName]!;
         lookup = "factory.getPod('$podMethodName')";
       } else {
         return null;
+      }
+
+      if (!param.getIsRequired() || param.getIsNullable()) {
+        lookup = "_optional(factory, () async => $lookup)";
       }
 
       if (param.getIsNamed()) {

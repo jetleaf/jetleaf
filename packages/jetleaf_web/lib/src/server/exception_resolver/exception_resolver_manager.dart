@@ -120,7 +120,7 @@ final class ExceptionResolverManager implements ApplicationContextAware, Initial
   @override
   Future<void> onReady() async {
     final type = Class<ExceptionResolver>(null, PackageNames.WEB);
-    final values = await _applicationContext.getPodsOf(type);
+    final values = await _applicationContext.getPodsOf(type, allowEagerInit: true);
 
     for (final value in values.values) {
       _addExceptionResolver(value);

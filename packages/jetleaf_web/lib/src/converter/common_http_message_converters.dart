@@ -27,7 +27,7 @@ import 'abstract_http_message_converter.dart';
 /// - **Outbound conversion**: Writes a `String` directly to an [HttpOutputMessage] body.
 ///
 /// ### Supported Media Types
-/// - `text/plain`
+/// - `text/plain` (and `text/html`, `text/css`)
 ///
 /// ### Example
 /// ```dart
@@ -46,6 +46,8 @@ final class StringHttpMessageConverter extends AbstractHttpMessageConverter<Stri
   /// {@macro string_http_message_converter}
   StringHttpMessageConverter() : super() {
     super.addSupportedMediaType(MediaType.TEXT_PLAIN);
+    super.addSupportedMediaType(MediaType.TEXT_HTML);
+    super.addSupportedMediaType(MediaType.TEXT_CSS);
   }
 
   @override

@@ -8,7 +8,7 @@ void main() {
     late File file;
 
     setUp(() {
-      file = File('test/io/tmp_output.dat');
+      file = File('test/lang/io_streams/tmp_output.dat');
     });
 
     tearDown(() async {

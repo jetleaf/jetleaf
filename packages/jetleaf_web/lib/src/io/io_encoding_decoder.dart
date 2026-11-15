@@ -145,7 +145,7 @@ class IoEncodingDecoder implements EncodingDecoder, ApplicationContextAware, Ini
   @override
   Future<void> onReady() async {
     final type = Class<EncodingDecoder>(null, PackageNames.WEB);
-    final pods = await _applicationContext.getPodsOf(type);
+    final pods = await _applicationContext.getPodsOf(type, allowEagerInit: true);
     final ordered = AnnotationAwareOrderComparator.getOrderedItems(pods.values);
 
     for (final order in ordered) {

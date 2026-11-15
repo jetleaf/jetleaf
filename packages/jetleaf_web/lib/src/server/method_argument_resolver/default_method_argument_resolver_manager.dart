@@ -98,7 +98,7 @@ final class DefaultMethodArgumentResolverManager implements MethodArgumentResolv
   /// Example:
   /// ```dart
   /// final resolverPods = _applicationContext.getPodsOf(
-  ///   Class<MethodArgumentResolver>(null, PackageNames.WEB)
+  ///   Class<MethodArgumentResolver>(null, PackageNames.WEB, allowEagerInit: true)
   /// );
   /// ```
   late ApplicationContext _applicationContext;
@@ -151,8 +151,9 @@ final class DefaultMethodArgumentResolverManager implements MethodArgumentResolv
     final List<Object?> positional = [];
 
     for (final p in params) {
-      final value = await resolveArgument(p, req, res, handler, ex, st);
-      
+      final resolved = await resolveArgument(p, req, res, handler, ex, st);
+      final value = await _convertArgument(p, resolved);
+
       if (p.isNamed()) {
         named[p.getName()] = value;
       } else {
@@ -161,6 +162,31 @@ final class DefaultMethodArgumentResolverManager implements MethodArgumentResolv
     }
 
     return ArgumentValueHolder(namedArgs: named, positionalArgs: positional);
+  }
+
+  /// Converts a resolved argument value to the parameter's declared type.
+  ///
+  /// Resolvers produce raw values (e.g. query params arrive as strings), so the
+  /// value is run through the pod factory conversion service when the Dart type
+  /// does not already match. Conversion failures surface as a 400-style
+  /// [InvalidArgumentException] instead of a `String is not a subtype of int`
+  /// crash deep inside reflective invocation.
+  @protected
+  Future<Object?> _convertArgument(Parameter param, Object? value) async {
+    if (value == null) {
+      return null;
+    }
+
+    final type = param.getReturnClass();
+    if (type.isInstance(value)) {
+      return value;
+    }
+
+    try {
+      return _applicationContext.getPodFactory().getConversionService().convert(value, type);
+    } catch (_) {
+      throw InvalidArgumentException('Cannot convert request parameter "${param.getName()}" value "$value" to ${type.getName()}.');
+    }
   }
 
   @protected
@@ -185,7 +211,7 @@ final class DefaultMethodArgumentResolverManager implements MethodArgumentResolv
   @override
   Future<void> onReady() async {
     final type = Class<MethodArgumentResolver>(null, PackageNames.WEB);
-    final values = await _applicationContext.getPodsOf(type);
+    final values = await _applicationContext.getPodsOf(type, allowEagerInit: true);
     for (final value in values.values) {
       if (value is DefaultMethodArgumentResolverManager) {
         continue;

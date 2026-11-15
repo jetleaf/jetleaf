@@ -103,7 +103,12 @@ class ConfigurationPropertyPodProcessor extends PodSmartInstantiationProcessor i
   Future<Object?> processBeforeInstantiation(Class podClass, String name) async {
     // Only process classes annotated with @ConfigurationProperty
     if (podClass.hasDirectAnnotation<ConfigurationProperty>()) {
-      final annotation = podClass.getDirectAnnotation<ConfigurationProperty>()!;
+      final annotation = podClass.getDirectAnnotation<ConfigurationProperty>();
+      if (annotation == null) {
+        // Annotation not resolvable at this stage (e.g. AOT/JIT visibility gap) — skip
+        return super.processBeforeInstantiation(podClass, name);
+      }
+      
       final prefix = annotation.prefix;
       final ignoreUnknown = annotation.ignoreUnknownFields;
       final validate = annotation.validate;
@@ -141,9 +146,15 @@ class ConfigurationPropertyPodProcessor extends PodSmartInstantiationProcessor i
 
   @override
   Future<void> populateValues(Object pod, Class podClass, String name) async {
-    if (!podClass.hasDirectAnnotation<ConfigurationProperty>()) return;
+    if (!podClass.hasDirectAnnotation<ConfigurationProperty>()) {
+      return;
+    }
 
-    final annotation = podClass.getDirectAnnotation<ConfigurationProperty>()!;
+    final annotation = podClass.getDirectAnnotation<ConfigurationProperty>();
+    if (annotation == null) {
+      return;
+    }
+
     final prefix = annotation.prefix;
     final ignoreUnknown = annotation.ignoreUnknownFields;
     final validate = annotation.validate;

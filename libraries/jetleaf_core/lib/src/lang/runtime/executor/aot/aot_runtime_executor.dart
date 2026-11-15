@@ -1,5 +1,10 @@
 import 'package:jetleaf_core/lang.dart';
 
+typedef MethodExecutable = Object? Function(Object? instance, ExecutableArgument argument);
+typedef ConstructorExecutable = Object Function([ExecutableArgument? argument]);
+typedef FieldGetterExecutable = Object? Function(Object? instance);
+typedef FieldSetterExecutable = void Function(Object? instance, Object? value);
+
 /// {@template aot_runtime_executor}
 /// An [RuntimeExecutor] implementation that leverages Ahead-of-Time (AOT) 
 /// generative hints to perform instance creation, method invocation, and 
@@ -49,10 +54,10 @@ import 'package:jetleaf_core/lang.dart';
 /// {@endtemplate}
 class AotRuntimeExecutor implements RuntimeExecutor {
   /// Named factory registry for AOT instantiation without mirrors.
-  static final Map<String, Object Function([ExecutableArgument? argument])> _namedConstructors = {};
+  static final Map<String, ConstructorExecutable> _namedConstructors = {};
 
   /// Type-based factory registry for AOT instantiation without mirrors.
-  static final Map<Type, Object Function([ExecutableArgument? argument])> _typeConstructors = {};
+  static final Map<Type, ConstructorExecutable> _typeConstructors = {};
 
   /// Registers a runtime [Type] for a class name and optional qualified name.
   static void registerType(String name, Type type, [String? qualifiedName]) {
@@ -60,7 +65,7 @@ class AotRuntimeExecutor implements RuntimeExecutor {
   }
 
   /// Registers a named constructor factory for AOT instantiation.
-  static void registerNamedConstructor(String name, Object Function([ExecutableArgument? argument]) factory) {
+  static void registerNamedConstructor(String name, ConstructorExecutable factory) {
     _namedConstructors[name] = factory;
   }
 
@@ -78,31 +83,31 @@ class AotRuntimeExecutor implements RuntimeExecutor {
   }
 
   /// Registers a typed constructor factory for AOT instantiation.
-  static void registerConstructor<T>(Object Function([ExecutableArgument? argument]) factory) {
+  static void registerConstructor<T>(ConstructorExecutable factory) {
     _typeConstructors[T] = factory;
   }
 
   /// Method registry for AOT method invocation without mirrors.
-  static final Map<String, Object? Function(Object instance, ExecutableArgument argument)> _methodInvokers = {};
+  static final Map<String, MethodExecutable> _methodInvokers = {};
 
   /// Registers a method invoker for AOT execution.
-  static void registerMethod(String methodKey, Object? Function(Object instance, ExecutableArgument argument) invoker) {
+  static void registerMethod(String methodKey, MethodExecutable invoker) {
     _methodInvokers[methodKey] = invoker;
   }
 
   /// Field getter registry for AOT field access without mirrors.
-  static final Map<String, Object? Function(Object instance)> _fieldGetters = {};
+  static final Map<String, FieldGetterExecutable> _fieldGetters = {};
 
   /// Field setter registry for AOT field mutation without mirrors.
-  static final Map<String, void Function(Object instance, Object? value)> _fieldSetters = {};
+  static final Map<String, FieldSetterExecutable> _fieldSetters = {};
 
   /// Registers a field getter for AOT execution.
-  static void registerFieldGetter(String fieldKey, Object? Function(Object instance) getter) {
+  static void registerFieldGetter(String fieldKey, FieldGetterExecutable getter) {
     _fieldGetters[fieldKey] = getter;
   }
 
   /// Registers a field setter for AOT execution.
-  static void registerFieldSetter(String fieldKey, void Function(Object instance, Object? value) setter) {
+  static void registerFieldSetter(String fieldKey, FieldSetterExecutable setter) {
     _fieldSetters[fieldKey] = setter;
   }
 
@@ -148,8 +153,8 @@ class AotRuntimeExecutor implements RuntimeExecutor {
 
     final hint = descriptor.getHint<T>(type: returnType ?? T);
     final targetType = (returnType != null && returnType != Object) 
-        ? returnType 
-        : (T != dynamic && T != Object ? T : (constructor.getParentClass()?.getName() ?? 'Unknown'));
+      ? returnType 
+      : (T != dynamic && T != Object ? T : (constructor.getParentClass()?.getName() ?? 'Unknown'));
     final type = hint?.obtainTypeOfRuntimeHint() ?? targetType;
     
     if (hint case final hint?) {
@@ -236,6 +241,16 @@ class AotRuntimeExecutor implements RuntimeExecutor {
 
   @override
   Object? getValue<T>(T instance, String name) {
+    // Class-qualified key (e.g. 'DataClass.property') — static accessor registered by the AOT registry.
+    if (name.contains('.')) {
+      if (_fieldGetters.containsKey(name)) {
+        return _fieldGetters[name]!(null as dynamic);
+      }
+      if (_methodInvokers.containsKey(name)) {
+        return _methodInvokers[name]!(null as dynamic, ExecutableArgument.unmodified(const {}, const []));
+      }
+    }
+
     if (instance != null) {
       final rawClassName = instance.runtimeType.toString();
       final className = rawClassName.split('<').first;
@@ -265,6 +280,18 @@ class AotRuntimeExecutor implements RuntimeExecutor {
 
   @override
   void setValue<T>(T instance, String name, Object? value) {
+    // Class-qualified key (e.g. 'DataClass.property') — static accessor registered by the AOT registry.
+    if (name.contains('.')) {
+      if (_fieldSetters.containsKey(name)) {
+        _fieldSetters[name]!(null as dynamic, value);
+        return;
+      }
+      if (_methodInvokers.containsKey(name)) {
+        _methodInvokers[name]!(null as dynamic, ExecutableArgument.unmodified(const {}, [value]));
+        return;
+      }
+    }
+
     if (instance != null) {
       final rawClassName = instance.runtimeType.toString();
       final className = rawClassName.split('<').first;

@@ -2,10 +2,10 @@ import 'dart:io';
 
 import '../builder/runtime_builder.dart';
 import '../cache/cache_aware_scanner.dart';
-import '../runtime/scanner/application_runtime_scanner.dart';
-import '../runtime/scanner/runtime_scanner.dart';
-import '../runtime/scanner/runtime_scanner_configuration.dart';
-import '../runtime/scanner/runtime_scanner_summary.dart';
+import '../scanner/application_runtime_scanner.dart';
+import '../scanner/runtime_scanner.dart';
+import '../scanner/runtime_scanner_configuration.dart';
+import '../scanner/runtime_scanner_summary.dart';
 import 'package:jetleaf_core/lang.dart';
 
 // import 'jet_runtime_stub_scanner.dart'

@@ -443,6 +443,7 @@ class DefaultListablePodFactory extends AbstractAutowirePodFactory implements Co
           final isS = await isSingleton(name);
 
           bool matches = cls == type || cls.isSubclassOf(type) || type.isAssignableFrom(cls) || type.isInstance(cls);
+
           if (!matches && !isCurrentlyInCreation(name) && containsSingletonObject(name)) {
             final singletonInstance = await getSingleton(name, allowEarlyReference: false);
             if (singletonInstance != null) {

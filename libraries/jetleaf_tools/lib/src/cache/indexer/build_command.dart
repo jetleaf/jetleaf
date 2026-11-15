@@ -12,6 +12,7 @@ import '../../aot/aot_registrar_writer.dart';
 import 'declaration_builder.dart';
 import 'discovered_files.dart';
 import 'file_discovery.dart';
+import '../../aot/aot_proxy_writer.dart';
 
 /// One-shot build command — scans and writes cache, then exits.
 Future<int> runBuild(List<String> args, {Directory? root}) async {
@@ -37,7 +38,7 @@ Future<int> runBuild(List<String> args, {Directory? root}) async {
   // 1. Discovery
   print('  Discovery ...');
   final discovery = FileDiscovery(projectRoot);
-  final files = await discovery.discover(
+  var files = await discovery.discover(
     skipTests: false,
     packagesToExclude: [],
     packagesToScan: [],
@@ -47,11 +48,40 @@ Future<int> runBuild(List<String> args, {Directory? root}) async {
 
   // 2. Analysis
   print('  Analysis ...');
-  final declarationBuilder = DeclarationBuilder();
-  final components = await declarationBuilder.build(
+  var declarationBuilder = DeclarationBuilder();
+  var components = await declarationBuilder.build(
     files: files,
     packageName: packageName,
   );
+
+  // 2.5 Emit Interceptable proxies for stereotype-annotated components, then
+  // re-run discovery+analysis so the proxies are part of the declarations,
+  // cache and AOT registry.
+  final proxyCount = await AotProxyWriter().emitProjectProxies(
+    projectRoot: projectRoot,
+    packageName: packageName,
+    log: print,
+    components: components,
+  );
+  if (proxyCount > 0) {
+    print('  Proxy emission: $proxyCount proxies written');
+    declarationBuilder = DeclarationBuilder();
+    final filesWithProxies = await discovery.discover(
+      skipTests: false,
+      packagesToExclude: [],
+      packagesToScan: [],
+      filesToExclude: [],
+    );
+    components = await declarationBuilder.build(
+      files: filesWithProxies,
+      packageName: packageName,
+    );
+    // The proxy files are written after the initial discovery — the
+    // reachability pass below must see them, or every proxy is pruned as
+    // unreachable (nothing imports them; they are reached only through the
+    // AOT declaration cache).
+    files = filesWithProxies;
+  }
 
   final reachability = treeShaking
       ? await ReachabilityAnalyzer(

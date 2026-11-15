@@ -53,10 +53,10 @@ Add `jetleaf_tools` to your `dev_dependencies` in `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  jetleaf_core: ^2.0.0
+  jetleaf_core: ^2.1.0
 
 dev_dependencies:
-  jetleaf_tools: ^1.0.1
+  jetleaf_tools: ^1.1.0
 ```
 
 To use the `jl` command-line executable globally:

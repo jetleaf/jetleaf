@@ -76,14 +76,14 @@ final class EntryStatus {
   /// **Returns:** `{file, kind, state, pid, vmServiceUri, snapshot,
   /// fingerprint, lastRunAt, lastError}`.
   Map<String, Object?> toJson() => {
-        'file': record.file,
-        'kind': record.kind.name,
-        'state': state.name,
-        'pid': pid,
-        'vmServiceUri': vmServiceUri,
-        'snapshot': snapshot,
-        'fingerprint': fingerprint,
-        'lastRunAt': lastRunAt,
-        'lastError': lastError,
-      };
+    'file': record.file,
+    'kind': record.kind.name,
+    'state': state.name,
+    'pid': pid,
+    'vmServiceUri': vmServiceUri,
+    'snapshot': snapshot,
+    'fingerprint': fingerprint,
+    'lastRunAt': lastRunAt,
+    'lastError': lastError,
+  };
 }

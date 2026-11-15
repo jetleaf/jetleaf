@@ -12,6 +12,9 @@
 // 
 // 🔧 Powered by Hapnium — the Dart backend engine 🍃
 
+import 'dart:convert' show utf8;
+import 'dart:typed_data' show Uint8List;
+
 import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_core/pod.dart';
 import 'package:jetleaf_core/utils.dart';
@@ -19,6 +22,8 @@ import '../annotation/core.dart';
 import '../exception/exceptions.dart';
 import '../http/http_status.dart';
 import '../http/media_type.dart';
+import '../io/io_form_request.dart';
+import '../io/io_request.dart';
 import '../path/path_pattern_parser.dart';
 import '../server/server_http_request.dart';
 import '../server/server_http_response.dart';
@@ -27,6 +32,15 @@ import '../web_configurer.dart';
 /// {@template web_utils}
 /// Utility methods for web-related operations, such as retrieving
 /// HTTP response status codes from annotated methods or classes.
+/// 
+/// Resolves `application/x-www-form-urlencoded` request bodies into form
+/// parameters, mirroring how the multipart resolver handles
+/// `multipart/form-data`.
+///
+/// The body is read exactly once and cached; the resulting [IoFormRequest]
+/// exposes the merged query-string + form parameter map through the usual
+/// [ServerHttpRequest] contract, so `@RequestParam` works transparently for
+/// HTML form submissions.
 /// {@endtemplate}
 final class WebUtils {
   /// {@macro web_utils}
@@ -375,5 +389,54 @@ final class WebUtils {
     }
 
     return selectedContentType;
+  }
+
+  static const String FORM_URL_ENCODED_MIME = 'application/x-www-form-urlencoded';
+
+  /// True when [request] carries a urlencoded form body.
+  static bool isFormUrlencoded(ServerHttpRequest request) {
+    final contentType = request.getHeaders().getContentType();
+    if (contentType == null) return false;
+
+    return contentType.getMimeType().toLowerCase() == FORM_URL_ENCODED_MIME;
+  }
+
+  /// Reads the body of [request] and returns an [IoFormRequest] whose
+  /// parameter map merges the query string with the parsed form body.
+  ///
+  /// Non-IO requests are returned unchanged (form parsing is only supported
+  /// for the Dart IO runtime).
+  static Future<ServerHttpRequest> resolve(ServerHttpRequest request) async {
+    if (request is! IoRequest) {
+      return request;
+    }
+
+    final bytes = await request.getBody().readAll();
+    final params = _parse(utf8.decode(bytes, allowMalformed: true));
+
+    return IoFormRequest(request, params, Uint8List.fromList(bytes));
+  }
+
+  /// Parses an `a=b&c=d` body into a multi-value map, percent-decoding keys
+  /// and values and treating `+` as a space.
+  static Map<String, List<String>> _parse(String body) {
+    final params = <String, List<String>>{};
+    if (body.isEmpty) return params;
+
+    for (final pair in body.split('&')) {
+      if (pair.isEmpty) continue;
+
+      final index = pair.indexOf('=');
+      final rawName = index == -1 ? pair : pair.substring(0, index);
+      final rawValue = index == -1 ? '' : pair.substring(index + 1);
+
+      // Note: Uri.decodeQueryComponent already maps '+' to a space.
+      final name = Uri.decodeQueryComponent(rawName);
+      final value = Uri.decodeQueryComponent(rawValue);
+
+      (params[name] ??= <String>[]).add(value);
+    }
+
+    return params;
   }
 }

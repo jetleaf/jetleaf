@@ -1,6 +1,6 @@
 # JTL Example
 
-This example demonstrates how to use the Jetleaf Template Language (JTL) 2.0.0 for dynamic HTML template rendering.
+This example demonstrates how to use the Jetleaf Template Language (JTL) 2.1.0 for dynamic HTML template rendering.
 
 ## Features Covered
 - Instantiating `JtlFactory`

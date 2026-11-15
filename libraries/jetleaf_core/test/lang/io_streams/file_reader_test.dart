@@ -11,7 +11,7 @@ void main() {
     late FileReader reader;
 
     setUp(() async {
-      file = File('test/io/tmp_text.txt');
+      file = File('test/lang/io_streams/tmp_text.txt');
       await file.writeAsString('Line1\nLine2\nLine3\nLine4\n');
       reader = FileReader.fromFile(file);
     });

@@ -64,9 +64,7 @@ final class JetleafWatcher {
     for (final file in ['pubspec.yaml', '.dart_tool/package_config.json']) {
       final f = File(p.join(projectRoot.path, file));
       if (await f.exists()) {
-        _subscriptions.add(
-          f.parent.watch().listen(_handleEvent),
-        );
+        _subscriptions.add(f.parent.watch().listen(_handleEvent));
       }
     }
   }

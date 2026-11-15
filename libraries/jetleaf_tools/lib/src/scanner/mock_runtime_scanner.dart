@@ -16,17 +16,13 @@ final class MockRuntimeScanner implements RuntimeScanner {
     dynamic onWarning,
     dynamic onError,
   }) : _delegate = ApplicationRuntimeScanner(
-          onInfo: onInfo,
-          onWarning: onWarning,
-          onError: onError,
-        );
+    onInfo: onInfo,
+    onWarning: onWarning,
+    onError: onError,
+  );
 
   @override
-  Future<RuntimeScannerSummary> scan(
-    RuntimeScannerConfiguration configuration,
-    List<String> args, {
-    Directory? source,
-  }) async {
+  Future<RuntimeScannerSummary> scan(RuntimeScannerConfiguration configuration, List<String> args, {Directory? source}) async {
     return _delegate.scan(configuration, args, source: source);
   }
 }

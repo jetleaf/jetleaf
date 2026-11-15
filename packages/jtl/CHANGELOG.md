@@ -6,6 +6,18 @@ This project follows a simple, human-readable changelog format inspired by
 
 ---
 
+## [2.1.0]
+
+### Changed
+
+- **Dependency Bumps**: `jetleaf_core: ^2.1.0`.
+
+### Fixed
+
+- Minor template-engine internals aligned with 2.1.0 core APIs.
+
+---
+
 ## [2.0.0]
 
 ### Breaking Changes

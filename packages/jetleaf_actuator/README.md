@@ -1,6 +1,6 @@
 # 📊 Jetleaf Actuator
 
-[![pub package](https://img.shields.io/badge/pub-v1.0.0-blue.svg)](https://pub.dev/packages/jetleaf_actuator)
+[![pub package](https://img.shields.io/badge/pub-v1.1.0-blue.svg)](https://pub.dev/packages/jetleaf_actuator)
 [![Dart](https://img.shields.io/badge/dart-%5E3.9.0-0175C2.svg?logo=dart)](https://dart.dev)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -25,8 +25,8 @@ Add `jetleaf_actuator` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  jetleaf_core: ^2.0.1
-  jetleaf_actuator: ^1.0.0
+  jetleaf_core: ^2.1.0
+  jetleaf_actuator: ^1.1.0
 ```
 
 ---

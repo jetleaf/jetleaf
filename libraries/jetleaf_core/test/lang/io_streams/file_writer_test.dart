@@ -12,7 +12,7 @@ void main() {
     late FileWriter writer;
 
     setUp(() {
-      file = File('test/io/tmp_output.txt');
+      file = File('test/lang/io_streams/tmp_output.txt');
       if (file.existsSync()) file.deleteSync();
     });
 

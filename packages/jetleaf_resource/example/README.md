@@ -1,6 +1,6 @@
 # Jetleaf Resource Example
 
-This example demonstrates how to use `jetleaf_resource` 2.0.0 for in-memory caching and rate-limiting.
+This example demonstrates how to use `jetleaf_resource` 2.1.0 for in-memory caching and rate-limiting.
 
 ## Features Covered
 - Creating and configuring named cache storage (`DefaultCacheStorage`)

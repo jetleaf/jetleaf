@@ -7,7 +7,8 @@ import 'test_data.dart';
 final class FinalTestClass {}
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('Class API', () {
     test('Class<T>() constructor', () {
       final stringClass = Class<String>();
@@ -213,8 +214,8 @@ void main() {
     test('getEnumValuesAsFields() for enum classes', () {
       final statusClass = Class<TestStatus>();
       final values = statusClass.getFields();
-      
-      expect(values.length, 5);
+
+      expect(values.length, 3);
       expect(values.any((f) => f.getName() == 'active'), isTrue);
       expect(values.any((f) => f.getName() == 'inactive'), isTrue);
       expect(values.any((f) => f.getName() == 'pending'), isTrue);

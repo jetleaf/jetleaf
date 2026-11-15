@@ -741,7 +741,8 @@ abstract class AbstractEnvironmentSupport extends AbstractEnvironmentLoggingSupp
     
     for (final source in sources) {
       final resolvedProperties = resolveProperties(source.properties, environment, sources);
-      propertySources.addOrMerge(resolvedProperties, source.profile);
+      final name = source.profile;
+      propertySources.addOrMerge(resolvedProperties, name);
     }
   }
 

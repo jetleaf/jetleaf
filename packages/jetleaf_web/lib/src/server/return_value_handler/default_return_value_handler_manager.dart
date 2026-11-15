@@ -244,7 +244,7 @@ final class DefaultReturnValueHandlerManager implements ReturnValueHandlerManage
   @override
   Future<void> onReady() async {
     final type = Class<ReturnValueHandler>(null, PackageNames.WEB);
-    final values = await _applicationContext.getPodsOf(type);
+    final values = await _applicationContext.getPodsOf(type, allowEagerInit: true);
     for (final value in values.values) {
       if (value is DefaultReturnValueHandlerManager) {
         continue;

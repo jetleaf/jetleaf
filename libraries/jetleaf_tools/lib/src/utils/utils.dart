@@ -5,7 +5,7 @@ import 'dart:isolate';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 
-import '../runtime/scanner/runtime_scanner_configuration.dart';
+import '../scanner/runtime_scanner_configuration.dart';
 
 /// {@template reflect_utils}
 /// Utility class for reflection-related operations in Jetleaf.
@@ -532,17 +532,20 @@ class RuntimeUtils {
   /// 1. `pubspec.yaml` has `jetleaf_tools:` or `jetleaf_build:` under `dependencies:` or
   ///    `dev_dependencies:`, or the package itself is named `jetleaf_tools` or `jetleaf_build`
   ///    (self-hosting), OR
-  /// 2. `.dart_tool/package_config.json` lists a `jetleaf_tools` or `jetleaf_build` package.
+  /// 2. `.dart_tool/package_config.json` lists a `jetleaf_tools` or `jetleaf_build` package, OR
+  /// 3. a `.jetleaf/` state directory exists (created by `jl build`), which
+  ///    is how in-repo packages such as `jetleaf_core` — the packages the
+  ///    tools themselves build and test — are recognized.
   static bool isJetLeafBuildProject([Directory? root]) {
     final dir = root ?? Directory.current;
     // The low-level VM is also the runtime engine for a user-facing Jetleaf
     // application. A root Jetleaf state file is the strongest signal; the
     // dependency check keeps freshly created projects usable before `init`.
     if (File('${dir.path}/Jetleaf').existsSync()) return true;
+    if (Directory('${dir.path}/.jetleaf').existsSync()) return true;
     if (_hasJetLeafStarterDep(File('${dir.path}/pubspec.yaml'))) return true;
     if (_hasJetLeafBuildDep(File('${dir.path}/pubspec.yaml'))) return true;
-    if (_hasJetLeafBuildPackage(
-        File('${dir.path}/.dart_tool/package_config.json'))) {
+    if (_hasJetLeafBuildPackage(File('${dir.path}/.dart_tool/package_config.json'))) {
       return true;
     }
     return false;
@@ -553,8 +556,7 @@ class RuntimeUtils {
       if (!pubspec.existsSync()) return false;
       for (final raw in pubspec.readAsLinesSync()) {
         final trimmed = raw.trim();
-        if (trimmed.startsWith('jetleaf:') ||
-            trimmed.startsWith('jetleaf_core:')) {
+        if (trimmed.startsWith('jetleaf:') || trimmed.startsWith('jetleaf_core:')) {
           return true;
         }
       }
@@ -574,14 +576,14 @@ class RuntimeUtils {
           inDeps = true;
           continue;
         }
+
         if (inDeps) {
           // A new top-level key ends the deps section.
-          if (raw.isNotEmpty &&
-              !raw.startsWith(' ') &&
-              !raw.startsWith('\t')) {
+          if (raw.isNotEmpty && !raw.startsWith(' ') && !raw.startsWith('\t')) {
             if (trimmed.endsWith(':') && !trimmed.startsWith('#')) {
               inDeps = false;
             }
+            
             continue;
           }
           if (trimmed.startsWith('jetleaf_tools:') || trimmed.startsWith('jetleaf_build:')) return true;

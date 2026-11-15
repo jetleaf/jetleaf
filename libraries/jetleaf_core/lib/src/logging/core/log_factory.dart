@@ -404,7 +404,12 @@ mixin class _LogProperty {
   /// }
   /// ```
   /// {@endtemplate}
-  bool _isWarnEnabled(String tag) => _isEnabled(tag) && (getProperty("logging.level.$tag")?.equalsIgnoreCase("warn") ?? false);
+  /// **Note:** `WARN` defaults to enabled — consistent with INFO/DEBUG/ERROR.
+  /// A warning is by definition something an operator should see; a default of
+  /// `false` here silently swallowed every `_logger.warn(...)` in the
+  /// framework (e.g. push-delivery degradation) and made them invisible in
+  /// production no matter how noisy the log level was for other tags.
+  bool _isWarnEnabled(String tag) => _isEnabled(tag) && (getProperty("logging.level.$tag")?.equalsIgnoreCase("warn") ?? true);
 
   /// {@template log_property.get_is_fatal_enabled}
   /// Returns `true` if the log level for the given [tag] equals `"fatal"`.

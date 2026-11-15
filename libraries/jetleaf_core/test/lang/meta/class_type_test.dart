@@ -7,7 +7,8 @@ class Service {
 }
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('ClassType API', () {
     test('ClassType<T>() constructor', () {
       final classType = ClassType<String>();

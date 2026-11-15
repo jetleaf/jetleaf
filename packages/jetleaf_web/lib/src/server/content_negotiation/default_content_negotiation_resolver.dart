@@ -108,7 +108,7 @@ final class DefaultContentNegotiationResolver implements ContentNegotiationResol
   @override
   Future<void> onReady() async {
     final type = Class<ContentNegotiationStrategy>(null, PackageNames.WEB);
-    final values = await _applicationContext.getPodsOf(type);
+    final values = await _applicationContext.getPodsOf(type, allowEagerInit: true);
     final ordered = AnnotationAwareOrderComparator.getOrderedItems(values.values);
 
     for (final value in ordered) {

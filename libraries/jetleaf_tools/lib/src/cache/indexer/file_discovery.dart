@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 
 import '../../file_utility/file_utility.dart';
-import '../../runtime/scanner/runtime_scanner_configuration.dart';
+import '../../scanner/runtime_scanner_configuration.dart';
 import 'discovered_files.dart';
 
 /// Adapts Jetleaf's canonical runtime file discovery to the cache indexer.

@@ -1578,9 +1578,14 @@ void main() {
 // ---------------------------------------------------------------------------
 
 /// Helper to get a real [Method] from the framework's reflection system.
+///
+/// Uses a framework-declared class (`HttpStatus`) and a registered method
+/// (`getCode`) so the lookup is backed by the generated reflection/invoke
+/// registry; synthetic `Class<Object>()` falls back to a declaration without
+/// `toString(...)` registered and yields `Method == null`.
 Method? _cachedMethod;
 Method _getTestMethod() {
-  _cachedMethod ??= Class<Object>().getMethod('toString');
+  _cachedMethod ??= Class<HttpStatus>().getMethod('getCode');
   return _cachedMethod!;
 }
 

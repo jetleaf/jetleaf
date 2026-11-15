@@ -7,24 +7,6 @@ import '../meta/protection_domain/protection_domain.dart';
 import '../runtime/provider/runtime_provider.dart' show Runtime;
 import 'generic_type_parser.dart';
 
-/// Pure Dart reified generic type extractor for Iterable
-Object? extractIterableTypeArgument(Iterable iterable, Object? Function<T>() extract) {
-  return _extractIterableHelper(iterable, extract);
-}
-
-Object? _extractIterableHelper<T>(Iterable<T> iterable, Object? Function<E>() extract) {
-  return extract<T>();
-}
-
-/// Pure Dart reified generic type extractor for Map
-Object? extractMapTypeArguments(Map map, Object? Function<K, V>() extract) {
-  return _extractMapHelper(map, extract);
-}
-
-Object? _extractMapHelper<K, V>(Map<K, V> map, Object? Function<E, F>() extract) {
-  return extract<K, V>();
-}
-
 /// {@template lang_utils}
 /// Utility class providing **type resolution helpers** for Jetleaf meta-APIs.
 ///
@@ -79,41 +61,9 @@ abstract final class LangUtils {
     final Object self = object;
 
     try {
-      if (self is Iterable<Object?>) {
-        Class<Object?> Function<E>() f = switch (self) {
-          List<Object?>() => <E>() => Class<List<E>>(null, null),
-          Set<Object?>() => <E>() => Class<Set<E>>(null, null),
-          _ => <E>() => Class<Iterable<E>>(null, null),
-        };
-        return extractIterableTypeArgument(self, f) as Class<Object>;
-      }
-
-      if (self is Iterable) {
-        Class Function<E>() f = switch (self) {
-          List() => <E>() => Class<List<E>>(null, null),
-          Set() => <E>() => Class<Set<E>>(null, null),
-          _ => <E>() => Class<Iterable<E>>(null, null),
-        };
-        return extractIterableTypeArgument(self, f) as Class<Object>;
-      }
-
-      if (self is Map<Object?, Object?>) {
-        Class<Object?> Function<E, F>() f = switch (self) {
-          Map<Object?, Object?>() => <E, F>() => Class<Map<E, F>>(null, null),
-        };
-        return extractMapTypeArguments(self, f) as Class<Object>;
-      }
-
-      if (self is Map) {
-        Class Function<E, F>() f = switch (self) {
-          Map() => <E, F>() => Class<Map<E, F>>(null, null),
-        };
-        return extractMapTypeArguments(self, f) as Class<Object>;
-      }
-      
-      return Class.declared(Runtime.obtainClassDeclaration(object), pd ?? ProtectionDomain.current());
+      return Class.declared(Runtime.obtainClassDeclaration(self), pd ?? ProtectionDomain.current());
     } on ClassNotFoundException catch (_) {
-      return Class.declared(Runtime.obtainClassDeclaration(object), pd ?? ProtectionDomain.current());
+      return Class.declared(Runtime.obtainClassDeclaration(self), pd ?? ProtectionDomain.current());
     }
   }
 

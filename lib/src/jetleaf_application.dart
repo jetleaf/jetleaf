@@ -1405,7 +1405,7 @@ final class JetleafApplication {
 					context.publishEvent(ExitCodeEvent(context, exitCode));
 				}
 			} finally {
-				close(context);
+				await close(context);
 			}
 		} on Exception catch (ex) {
 			ex.printStackTrace();
@@ -1423,9 +1423,9 @@ final class JetleafApplication {
   ///
   /// [context] the application context to close
   /// {@endtemplate}
-  static void close(ApplicationContext context) {
+  static Future<void> close(ApplicationContext context) async {
 		if (context is ConfigurableApplicationContext) {
-			context.close();
+			await context.close();
 		}
 	}
 

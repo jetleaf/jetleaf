@@ -17,7 +17,7 @@ Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  jetleaf_retry: ^1.0.0
+  jetleaf_retry: ^2.1.0
 ```
 
 ## Quick Start

@@ -25,7 +25,7 @@ final class MapYamlSerializationAdapter extends YamlSerializationAdapter<Map> {
   const MapYamlSerializationAdapter();
 
   @override
-  bool canDeserialize(Class type) => type == Class<Map>() || type.getType() == Map;
+  bool canDeserialize(Class type) => type == Class<Map>() || type.isKeyValuePaired();
 
   @override
   Map? deserialize(YamlParser parser, YamlDeserializationContext ctxt, Class toClass) {
@@ -50,7 +50,7 @@ final class MapYamlSerializationAdapter extends YamlSerializationAdapter<Map> {
   }
 
   @override
-  bool canSerialize(Class type) => type == Class<Map>() || type.getType() == Map;
+  bool canSerialize(Class type) => type == Class<Map>() || type.isKeyValuePaired();
 
   @override
   void serialize(Map value, YamlGenerator generator, YamlSerializationContext serializer) {

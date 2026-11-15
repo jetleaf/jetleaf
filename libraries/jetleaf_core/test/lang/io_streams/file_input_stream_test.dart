@@ -9,7 +9,7 @@ void main() {
     late FileInputStream stream;
 
     setUp(() async {
-      file = File('test/io/tmp_input.dat');
+      file = File('test/lang/io_streams/tmp_input.dat');
       await file.writeAsBytes([1, 2, 3, 4, 5, 6, 7, 8]);
       stream = FileInputStream.fromFile(file);
     });

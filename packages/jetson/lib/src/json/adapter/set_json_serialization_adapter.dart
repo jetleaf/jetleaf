@@ -70,7 +70,7 @@ final class SetJsonSerializationAdapter extends JsonSerializationAdapter<Set> {
   const SetJsonSerializationAdapter();
 
   @override
-  bool canSerialize(Class type) => type == Class<Set>() || type.getType() == Set;
+  bool canSerialize(Class type) => type == Class<Set>() || (type.isArray() && type.getType().toString().startsWith('Set'));
 
   @override
   void serialize(Set value, JsonGenerator generator, JsonSerializationContext serializer) {
@@ -82,7 +82,7 @@ final class SetJsonSerializationAdapter extends JsonSerializationAdapter<Set> {
   }
 
   @override
-  bool canDeserialize(Class type) => type == Class<Set>() || type.getType() == Set;
+  bool canDeserialize(Class type) => type == Class<Set>() || (type.isArray() && type.getType().toString().startsWith('Set'));
 
   @override
   Set? deserialize(JsonParser parser, JsonDeserializationContext ctxt, Class toClass) {

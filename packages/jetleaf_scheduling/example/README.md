@@ -1,6 +1,6 @@
 # Jetleaf Scheduling Example
 
-This example demonstrates how to use `jetleaf_scheduling` 2.0.0 for cron parsing and asynchronous task scheduling.
+This example demonstrates how to use `jetleaf_scheduling` 2.1.0 for cron parsing and asynchronous task scheduling.
 
 ## Features Covered
 - Parsing and calculating next execution times with `CronExpression` and `CronTrigger`

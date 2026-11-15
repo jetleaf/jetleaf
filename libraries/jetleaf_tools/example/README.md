@@ -1,6 +1,6 @@
 # jetleaf_tools example
 
-A runnable showcase demonstrating the developer tooling, AST indexing, runtime manifest generation, and AOT runtime execution capabilities of `jetleaf_tools` 1.0.0.
+A runnable showcase demonstrating the developer tooling, AST indexing, runtime manifest generation, and AOT runtime execution capabilities of `jetleaf_tools` 1.1.0.
 
 ## Running the Example
 

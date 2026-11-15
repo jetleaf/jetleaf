@@ -32,6 +32,7 @@ library;
 export 'src/io/io_encoding_decoder.dart';
 export 'src/io/io_multipart_request.dart';
 export 'src/io/io_multipart_resolver.dart';
+export 'src/io/io_form_request.dart';
 export 'src/io/io_part.dart';
 export 'src/io/io_request.dart' hide IoRequestInputStream;
 export 'src/io/io_response.dart' hide IoResponseOutputStream;

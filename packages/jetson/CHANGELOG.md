@@ -1,3 +1,14 @@
+## [2.1.0]
+
+### Enhancements
+
+- **Erased `Object` Targets**: `DartJsonSerializationAdapter` now treats genuine `Object`/`dynamic`/`Null` targets as erased (Jackson semantics — objects become maps, arrays become lists, scalars pass through) using a **qualified-name** discriminator, so cache-synthetic declarations that merely report `Object` as their `Type` are no longer misclassed — they continue through the reflective dataclass path.
+- **Parameterized Collections**: JSON, YAML and XML `List`/`Map`/`Set` adapters and their (de)serialization contexts now accept parameterized type declarations for element/key/value resolution.
+- **YAML Parsing**: `StringYamlParser` handles multi-document markers and document boundaries correctly in mixed YAML files.
+- **Dependency Bump**: `jetleaf_core: ^2.1.0`.
+
+---
+
 ## [2.0.1]
 
 ### Enhancements

@@ -1,6 +1,7 @@
 import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_core/pod.dart';
 
+import '../../aware.dart';
 import '../../annotations/others.dart';
 
 /// {@template jetleaf_class_CommonAnnotationPodProcessor}
@@ -53,9 +54,35 @@ import '../../annotations/others.dart';
 /// This class is part of **Jetleaf** – a framework developers can use
 /// to build web applications.
 /// {@endtemplate}
-class CommonAnnotationPodProcessor extends PodDestructionProcessor implements PodInitializationProcessor, PriorityOrdered {
+class CommonAnnotationPodProcessor extends PodDestructionProcessor implements PodInitializationProcessor, PriorityOrdered, PodFactoryAware {
+  /// Optional handle to the pod factory, used to skip reflection-based
+  /// invocation for pods carrying an AOT compiled invoker (`initMethodInvoker`).
+  ConfigurableListablePodFactory? _podFactory;
+
   /// {@macro jetleaf_class_CommonAnnotationPodProcessor}
   CommonAnnotationPodProcessor();
+
+  @override
+  void setPodFactory(PodFactory podFactory) {
+    if (podFactory is ConfigurableListablePodFactory) {
+      _podFactory = podFactory;
+    }
+  }
+
+  /// True when the named pod has a statically compiled AOT invoker for the
+  /// requested lifecycle step — the AOT path is invoked exactly once by the
+  /// container, so the reflection-based path must step aside.
+  bool _hasAotInvoker(String name, {required bool destroy}) {
+    final factory = _podFactory;
+    if (factory == null) return false;
+
+    try {
+      final definition = factory.getDefinition(name);
+      return destroy ? definition.destroyMethodInvoker != null : definition.initMethodInvoker != null;
+    } catch (_) {
+      return false;
+    }
+  }
 
   @override
   int getOrder() => Ordered.LOWEST_PRECEDENCE;
@@ -73,6 +100,10 @@ class CommonAnnotationPodProcessor extends PodDestructionProcessor implements Po
 
   @override
   Future<Object?> processAfterInitialization(Object pod, Class podClass, String name) async {
+    if (_hasAotInvoker(name, destroy: false)) {
+      return pod;
+    }
+
     for (final method in podClass.getMethods()) {
       if (method.hasDirectAnnotation<PostConstruct>()) {
         method.invoke(pod);
@@ -93,6 +124,10 @@ class CommonAnnotationPodProcessor extends PodDestructionProcessor implements Po
 
   @override
   Future<void> processBeforeDestruction(Object pod, Class podClass, String name) async {
+    if (_hasAotInvoker(name, destroy: true)) {
+      return;
+    }
+
     for (final method in podClass.getMethods()) {
       if (method.hasDirectAnnotation<PreDestroy>()) {
         method.invoke(pod);

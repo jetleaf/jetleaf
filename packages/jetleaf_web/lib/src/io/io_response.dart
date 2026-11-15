@@ -260,25 +260,28 @@ class IoResponseOutputStream extends OutputStream {
       if (_response.headers.value(HttpHeaders.POWERED_BY_JETLEAF) == null) {
         _response.headers.add(HttpHeaders.POWERED_BY_JETLEAF, "Jetleaf, powered by hapnium");
       }
+
+      // Propagate the local header copy onto the underlying dart:io response so
+      // headers set by filters (e.g. CORS) actually reach the client. Without
+      // this, header mutations through `response.getHeaders()` are silently dropped.
+      response.getHeaders().forEach((key, values) {
+        if (values.isNotEmpty) {
+          _response.headers.set(key, values.join(', '));
+        }
+      });
     }
   }
 
   @override
   Future<void> writeByte(int b) async {
     checkClosed();
-    if (_ioResponse.isCommitted()) {
-      throw ResponseAlreadyCommittedException('Cannot write to response body: response has already been committed');
-    }
     _response.add([b]);
   }
 
   @override
   Future<void> write(List<int> b, [int offset = 0, int? length]) async {
     checkClosed();
-    if (_ioResponse.isCommitted()) {
-      throw ResponseAlreadyCommittedException('Cannot write to response body: response has already been committed');
-    }
-    
+
     length ??= b.length - offset;
     if (length == 0) return;
 
@@ -288,10 +291,7 @@ class IoResponseOutputStream extends OutputStream {
   @override
   Future<void> writeString(String str, [Encoding? encoding]) async {
     checkClosed();
-    if (_ioResponse.isCommitted()) {
-      throw ResponseAlreadyCommittedException('Cannot write to response body: response has already been committed');
-    }
-    
+
     final contentType = _response.headers.contentType;
     final isTextual = contentType == null ||
         contentType.mimeType.startsWith('text/') ||

@@ -1,6 +1,6 @@
 # 🌐 Jetleaf Web — HTTP Server & Web Framework
 
-[![pub package](https://img.shields.io/badge/version-2.0.0-blue)](https://pub.dev/packages/jetleaf_web)
+[![pub package](https://img.shields.io/badge/version-2.1.0-blue)](https://pub.dev/packages/jetleaf_web)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Dart SDK](https://img.shields.io/badge/sdk-%3E%3D3.9.0-blue)](https://dart.dev)
 
@@ -29,9 +29,9 @@ Add `jetleaf_web` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  jetleaf_core: ^2.0.0
-  jetleaf_web: ^2.0.0
-  jetson: ^2.0.0
+  jetleaf_core: ^2.1.0
+  jetleaf_web: ^2.1.0
+  jetson: ^2.1.0
 ```
 
 ### Basic Web Application

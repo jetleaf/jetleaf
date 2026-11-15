@@ -5,7 +5,7 @@ import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 
 import '../builder/runtime_builder.dart';
-import '../runtime/scanner/runtime_scanner_configuration.dart';
+import '../scanner/runtime_scanner_configuration.dart';
 
 /// {@template abstract_file_utility}
 /// A foundational utility class providing shared logic, configuration access,  

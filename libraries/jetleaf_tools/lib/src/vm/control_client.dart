@@ -29,8 +29,7 @@ abstract final class JetleafControlClient {
   /// when `jl dev` is not running here.
   static Map<String, dynamic>? readManagerFile(Directory root) {
     try {
-      final file =
-          File(p.join(root.path, JetleafVmPaths.managerRelativePath));
+      final file = File(p.join(root.path, JetleafVmPaths.managerRelativePath));
       if (!file.existsSync()) return null;
       return jsonDecode(file.readAsStringSync()) as Map<String, dynamic>;
     } catch (_) {
@@ -46,14 +45,10 @@ abstract final class JetleafControlClient {
   ///   `stop` — see `JetleafVM` control channel docs).
   ///
   /// **Returns:** the exit code (0 ok, 1 failed).
-  static Future<int> sendControlRequest(
-    Directory root,
-    Map<String, Object?> request,
-  ) async {
+  static Future<int> sendControlRequest(Directory root, Map<String, Object?> request) async {
     final manager = readManagerFile(root);
     if (manager == null) {
-      stderr.writeln(
-          'Error: jl dev is not running for ${root.path} (no manager file).');
+      stderr.writeln('Error: jl dev is not running for ${root.path} (no manager file).');
       return 1;
     }
     final port = manager['controlPort'] as int?;
@@ -64,8 +59,7 @@ abstract final class JetleafControlClient {
 
     late Socket socket;
     try {
-      socket = await Socket.connect(InternetAddress.loopbackIPv4, port)
-          .timeout(const Duration(seconds: 10));
+      socket = await Socket.connect(InternetAddress.loopbackIPv4, port).timeout(const Duration(seconds: 10));
     } catch (e) {
       stderr.writeln('Error: cannot reach jl dev (port $port): $e');
       return 1;
@@ -76,11 +70,7 @@ abstract final class JetleafControlClient {
     try {
       socket.writeln(jsonEncode(request));
       await socket.flush();
-      socket
-          .cast<List<int>>()
-          .transform(utf8.decoder)
-          .transform(const LineSplitter())
-          .listen(
+      socket.cast<List<int>>().transform(utf8.decoder).transform(const LineSplitter()).listen(
         (line) {
           try {
             final event = jsonDecode(line) as Map<String, dynamic>;
@@ -156,8 +146,7 @@ abstract final class JetleafControlClient {
   ///
   /// **Returns:** one `state  file  pid=… ws://…` line per entry.
   static String _formatStatus(Map<String, dynamic> event) {
-    final buf = StringBuffer(
-        'JetleafVM pid=${event['pid']} root=${event['projectRoot']}\n');
+    final buf = StringBuffer( 'JetleafVM pid=${event['pid']} root=${event['projectRoot']}\n');
     final entries = (event['entries'] as List?) ?? const [];
     if (entries.isEmpty) {
       buf.writeln('  (no entries discovered)');
@@ -168,8 +157,7 @@ abstract final class JetleafControlClient {
         if (e['pid'] != null) 'pid=${e['pid']}',
         if (e['vmServiceUri'] != null) '${e['vmServiceUri']}',
       ].join(' ');
-      buf.writeln('  ${'${e['state']}'.padRight(10)} ${e['file']}'
-          '${detail.isEmpty ? '' : '  $detail'}');
+      buf.writeln('  ${'${e['state']}'.padRight(10)} ${e['file']}${detail.isEmpty ? '' : '  $detail'}');
     }
     return buf.toString();
   }

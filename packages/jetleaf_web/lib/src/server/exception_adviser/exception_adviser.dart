@@ -109,14 +109,16 @@ final class ExceptionAdviser {
     final controllerAnnotation = controllerClass.getDirectAnnotation<RestController>()
       ?? controllerClass.getDirectAnnotation<WebView>()
       ?? controllerClass.getDirectAnnotation<Controller>();
+    final isRestController = controllerAnnotation is RestController;
 
     // REST advice applies only to REST controllers
     if (controllerAnnotation is RestController && controllerAdvice is! RestControllerAdvice) {
       return false;
     }
 
-    // MVC or WebView advice applies only to MVC/WebView controllers
-    if ((controllerAnnotation is Controller || controllerAnnotation is WebView) && controllerAdvice is RestControllerAdvice) {
+    // Plain MVC or WebView controllers (i.e. NOT a RestController) cannot be advised by REST advice.
+    // Note: RestController extends Controller, so a plain Controller check must exclude RestController.
+    if ((controllerAnnotation is WebView || (controllerAnnotation is Controller && !isRestController)) && controllerAdvice is RestControllerAdvice) {
       return false;
     }
 

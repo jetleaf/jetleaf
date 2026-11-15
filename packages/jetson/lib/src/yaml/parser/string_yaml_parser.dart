@@ -164,8 +164,11 @@ final class StringYamlParser implements YamlParser {
   /// Whether the parser is inside a YAML document (`---` seen).
   bool _inDocument = false;
 
-  /// Whether a document end marker (`...`) has been reached.
-  bool _documentEnded = false;
+  /// Whether the parser has been closed via [close].
+  ///
+  /// A closed parser is dead: [nextToken] returns `false` and
+  /// [getCurrentToken] returns `null`.
+  bool _closed = false;
 
   /// Whether the entire input stream has been fully consumed.
   bool _streamEnded = false;
@@ -189,12 +192,16 @@ final class StringYamlParser implements YamlParser {
 
   @override
   bool nextToken() {
+    if (_closed) {
+      return false;
+    }
+
     if (_tokenQueue.isNotEmpty) {
       _currentToken = _tokenQueue.removeFirst();
       return _currentToken != YamlToken.END_DOCUMENT;
     }
 
-    if (_documentEnded || _streamEnded) {
+    if (_streamEnded) {
       _currentToken = YamlToken.END_DOCUMENT;
       return false;
     }
@@ -235,7 +242,8 @@ final class StringYamlParser implements YamlParser {
     }
 
     _skipWhitespace();
-    
+    _skipNewlinesAndComments();
+
     if (_scanner.isDone) {
       _handleEndOfStream();
       return;
@@ -309,6 +317,14 @@ final class StringYamlParser implements YamlParser {
     
     // Default to parsing a plain scalar
     _parsePlainScalar();
+    if (!_scanner.isDone && _scanner.peekChar() == ':') {
+      // A plain scalar immediately followed by ':' is an implicit key
+      _scanner.advance();
+      _scanner.skipWhitespace();
+      _currentToken = YamlToken.KEY;
+      return;
+    }
+    _currentToken = YamlToken.SCALAR;
   }
   
   /// Emits a [YamlToken.DOCUMENT_START] token and initializes a new document.
@@ -323,7 +339,6 @@ final class StringYamlParser implements YamlParser {
   void _handleDocumentStart() {
     _scanner.advance(3); // Skip '---'
     _inDocument = true;
-    _documentEnded = false;
     _currentToken = YamlToken.DOCUMENT_START;
     
     // Push new document context
@@ -346,7 +361,6 @@ final class StringYamlParser implements YamlParser {
   void _handleDocumentEnd() {
     _scanner.advance(3); // Skip '...'
     _inDocument = false;
-    _documentEnded = true;
     _currentToken = YamlToken.DOCUMENT_END;
     
     // Pop document context
@@ -362,8 +376,7 @@ final class StringYamlParser implements YamlParser {
   /// `END_DOCUMENT`.
   void _handleEndOfStream() {
     if (_inDocument) {
-      _documentEnded = true;
-      _inDocument = false;
+        _inDocument = false;
       _currentToken = YamlToken.DOCUMENT_END;
     } else {
       _streamEnded = true;
@@ -381,7 +394,7 @@ final class StringYamlParser implements YamlParser {
   void _startFlowSequence() {
     _scanner.advance(); // Skip '['
     _inFlowCollection = true;
-    _tokenQueue.add(YamlToken.SEQUENCE_START);
+    _currentToken = YamlToken.SEQUENCE_START;
   }
   
   /// Emits a [YamlToken.MAPPING_START] token for a flow mapping.
@@ -394,7 +407,7 @@ final class StringYamlParser implements YamlParser {
   void _startFlowMapping() {
     _scanner.advance(); // Skip '{'
     _inFlowCollection = true;
-    _tokenQueue.add(YamlToken.MAPPING_START);
+    _currentToken = YamlToken.MAPPING_START;
   }
   
   /// Emits the appropriate end token when encountering `]` or `}`.
@@ -406,7 +419,7 @@ final class StringYamlParser implements YamlParser {
   void _endFlowCollection(String endChar) {
     _scanner.advance(); // Skip ']' or '}'
     _inFlowCollection = _documentStack.isNotEmpty && _documentStack.last.inFlowCollection;
-    _tokenQueue.add(endChar == ']' ? YamlToken.SEQUENCE_END : YamlToken.MAPPING_END);
+    _currentToken = endChar == ']' ? YamlToken.SEQUENCE_END : YamlToken.MAPPING_END;
   }
   
   /// Parses an anchor definition (`&name`) and records it.
@@ -847,6 +860,12 @@ final class StringYamlParser implements YamlParser {
     }
     
     _currentScalar = buffer.toString().trim();
+    if (buffer.isEmpty) {
+      // Defensive: zero-length plain scalar at a terminator. Consume the
+      // offending character so the parser cannot spin forever without
+      // making progress or emitting a token.
+      _scanner.advance();
+    }
     _handleTaggedValue(); // Handle any tags that were set
     return _currentScalar ?? '';
   }
@@ -913,8 +932,8 @@ final class StringYamlParser implements YamlParser {
     _currentIndent = 0;
     _inFlowCollection = false;
     _inDocument = false;
-    _documentEnded = false;
     _streamEnded = false;
+    _closed = true;
   }
   
   /// Consumes spaces and tabs, stopping before newlines or non-whitespace.
@@ -926,6 +945,27 @@ final class StringYamlParser implements YamlParser {
       if (ch != ' ' && ch != '\t') break;
       _scanner.advance();
     }
+  }
+
+  /// Skips newlines and `#` comments between tokens.
+  ///
+  /// Blank lines, comments and flow separators are not tokens in YAML, so
+  /// they are consumed before the dispatch decides the next construct.
+  /// Trailing spaces/tabs after a comment or newline are consumed as well.
+  void _skipNewlinesAndComments() {
+    while (!_scanner.isDone) {
+      final ch = _scanner.peekChar();
+      if (ch == '\n' || ch == '\r' || ch == ',') {
+        _scanner.advance();
+        continue;
+      }
+      if (ch == '#') {
+        _scanner.skipToEndOfLine();
+        continue;
+      }
+      break;
+    }
+    _skipWhitespace();
   }
   
   /// Computes the character index of every line start in the input.

@@ -5,7 +5,7 @@ import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:path/path.dart' as p;
 
 import '../cache/indexer/discovered_files.dart';
-import '../serialization/jetleaf_json.dart';
+import '../utils/jetleaf_json.dart';
 
 /// Result of conservative build-time library reachability analysis.
 final class ReachabilityResult {

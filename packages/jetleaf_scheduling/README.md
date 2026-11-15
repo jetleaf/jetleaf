@@ -1,6 +1,6 @@
 # ⏱️ Jetleaf Scheduling — Task Scheduling & Timed Execution
 
-[![pub package](https://img.shields.io/badge/version-1.0.0-blue)](https://pub.dev/packages/jetleaf_scheduling)
+[![pub package](https://img.shields.io/badge/version-2.1.0-blue)](https://pub.dev/packages/jetleaf_scheduling)
 [![License](https://img.shields.io/badge/license-Jetleaf-green)](#license)
 [![Dart SDK](https://img.shields.io/badge/sdk-%3E%3D3.9.0-blue)](https://dart.dev)
 
@@ -24,7 +24,7 @@ Task scheduling framework for background jobs, periodic tasks, and delayed execu
 
 ```yaml
 dependencies:
-  jetleaf_scheduling: ^1.0.0
+  jetleaf_scheduling: ^2.1.0
 ```
 
 ### Basic Scheduled Tasks

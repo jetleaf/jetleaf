@@ -1,9 +1,9 @@
 import 'dart:io';
 
-import '../../builder/runtime_builder.dart';
-import '../../cache/indexer/declaration_builder.dart';
-import '../../cache/indexer/file_discovery.dart';
-import '../../file_utility/file_utility.dart';
+import '../builder/runtime_builder.dart';
+import '../cache/indexer/declaration_builder.dart';
+import '../cache/indexer/file_discovery.dart';
+import '../file_utility/file_utility.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'default_runtime_scanner_summary.dart';
 import 'runtime_scanner.dart';
@@ -33,11 +33,7 @@ final class ApplicationRuntimeScanner implements RuntimeScanner {
   List<ClassDeclaration> getLastDeclarations() => _lastDeclarations;
 
   @override
-  Future<RuntimeScannerSummary> scan(
-    RuntimeScannerConfiguration configuration,
-    List<String> args, {
-    Directory? source,
-  }) async {
+  Future<RuntimeScannerSummary> scan(RuntimeScannerConfiguration configuration, List<String> args, {Directory? source}) async {
     String? package;
     RuntimeBuilder.setContext(args, onError: onError, onInfo: onInfo, onWarning: onWarning, package: package);
 
@@ -118,10 +114,7 @@ final class ApplicationRuntimeScanner implements RuntimeScanner {
     return summary;
   }
 
-  RuntimeScannerConfiguration _addDefaultPackagesToScan(
-    RuntimeScannerConfiguration configuration,
-    String currentPackage,
-  ) {
+  RuntimeScannerConfiguration _addDefaultPackagesToScan(RuntimeScannerConfiguration configuration, String currentPackage) {
     final defaultPackages = {
       currentPackage,
       ...configuration.packagesToScan,

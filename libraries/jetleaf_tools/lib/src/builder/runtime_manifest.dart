@@ -4,7 +4,7 @@ import 'dart:io';
 import '../cache/jetleaf_paths.dart';
 import '../cache/scanner/cache_models.dart';
 import 'package:jetleaf_core/declaration.dart';
-import '../serialization/jetleaf_json.dart';
+import '../utils/jetleaf_json.dart';
 
 /// Build-time runtime metadata for a production Jetleaf launcher.
 ///

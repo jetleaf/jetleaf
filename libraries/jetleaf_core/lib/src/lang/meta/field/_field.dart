@@ -225,6 +225,13 @@ final class _Field extends Source with EqualsAndHashCode implements Field {
     checkAccess('getValue', DomainPermission.READ_FIELDS);
     
     if(isEnumField()) {
+      try {
+        final parentName = _parent.getName();
+        final resolved = AotRuntimeExecutor.constructByName('$parentName.${getName()}');
+        if (resolved != null) {
+          return resolved;
+        }
+      } catch (_) {}
       return asEnum()?.getEnumValue();
     }
     

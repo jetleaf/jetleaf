@@ -30,13 +30,22 @@ final class _Class<T> extends Source with EqualsAndHashCode implements Class<T> 
       }
     }
 
-    if ((decl == null || decl.getIsSynthetic()) && baseName != _name) {
+    if (_name.contains('<')) {
+      // Parameterized classes have no declaration of their own — resolve the
+      // cached generic declaration by its base name instead.
+      try {
+        final base = Runtime.findClassByName(baseName, _package);
+        if (!base.getIsSynthetic() || (decl?.getIsSynthetic() ?? true)) {
+          decl = base;
+        }
+      } on ClassNotFoundException catch (_) {}
+    } else if (decl == null && baseName != _name) {
       try {
         decl = Runtime.findClassByName(baseName, _package);
       } on ClassNotFoundException catch (_) {}
     }
 
-    if ((decl == null || decl.getIsSynthetic()) && _package != null) {
+    if (decl == null && _package != null) {
       try {
         final fallback = Runtime.findClass<T>();
         if (!fallback.getIsSynthetic()) {
@@ -61,7 +70,7 @@ final class _Class<T> extends Source with EqualsAndHashCode implements Class<T> 
       }
     }
 
-    if ((decl == null || decl.getIsSynthetic()) && baseName != _name) {
+    if (decl == null && baseName != _name) {
       try {
         final fallback = Runtime.findClassByName(baseName);
         if (!fallback.getIsSynthetic()) {
@@ -176,7 +185,7 @@ final class _Class<T> extends Source with EqualsAndHashCode implements Class<T> 
   @override
   String getSimpleName() {
     checkAccess('getSimpleName', DomainPermission.READ_TYPE_INFO);
-    return _declaration.getSimpleName();
+    return _name;
   }
 
   @override
@@ -555,23 +564,31 @@ final class _Class<T> extends Source with EqualsAndHashCode implements Class<T> 
   @override
   bool isArray() {
     checkAccess('isArray', DomainPermission.READ_TYPE_INFO);
-    return _declaration.getKind() == TypeKind.listType 
+    final typeName = getType().toString();
+    return _declaration.getKind() == TypeKind.listType
       || (getTypeArgumentLinks().isNotEmpty && getTypeArgumentLinks().length == 1)
       || T.toString().startsWith("List<") || T.toString().startsWith("Iterable")
-      || T is List || T is Iterable || T == List || T == Set || T == Iterable 
+      || T is List || T is Iterable || T == List || T == Set || T == Iterable
+      || typeName.startsWith("List<") || typeName.startsWith("Set<") || typeName.startsWith("Iterable<")
+      || getType() == List || getType() == Set || getType() == Iterable
+      || getName().startsWith("List<") || getName().startsWith("Set<") || getName().startsWith("Iterable<")
       || isAssignableTo(Class<List>())
-      || isAssignableTo(Class<Set>()) 
+      || isAssignableTo(Class<Set>())
       || isAssignableTo(Class<Iterable>());
   }
 
   @override
   bool isKeyValuePaired() {
     checkAccess('isKeyValuePaired', DomainPermission.READ_TYPE_INFO);
-    return (getTypeArgumentLinks().isNotEmpty && getTypeArgumentLinks().length >= 2) 
+    final typeName = getType().toString();
+    return (getTypeArgumentLinks().isNotEmpty && getTypeArgumentLinks().length >= 2)
       || _declaration.getKind() == TypeKind.mapType
-      || T == Map 
+      || T == Map
       || T == MapEntry
-      || isAssignableTo(Class<Map>()) 
+      || typeName.startsWith("Map<") || typeName.startsWith("MapEntry<")
+      || getType() == Map || getType() == MapEntry
+      || getName().startsWith("Map<") || getName().startsWith("MapEntry<")
+      || isAssignableTo(Class<Map>())
       || isAssignableTo(Class<MapEntry>());
   }
 
@@ -785,6 +802,111 @@ final class _Class<T> extends Source with EqualsAndHashCode implements Class<T> 
     }
   }
 
+  /// Parses the type arguments of the reified [T] string — e.g. `'Map<String, int>'`.
+  ///
+  /// Returns the raw argument strings at the top level, preserving angle-depth
+  /// awareness so nested generics (e.g. `'Map<K, V>'`) are handled.
+  /// Returns an empty list when [T] carries no generic arguments.
+  List<String> _parseReifiedTypeArguments() {
+    final s = T.toString();
+    final open = s.indexOf('<');
+    if (open == -1) return const [];
+
+    final close = s.lastIndexOf('>');
+    if (close <= open) return const [];
+
+    final inner = s.substring(open + 1, close);
+    final args = <String>[];
+    var depth = 0;
+    var start = 0;
+
+    for (var i = 0; i < inner.length; i++) {
+      final ch = inner[i];
+      if (ch == '<' || ch == '(' || ch == '[' || ch == '{') {
+        depth++;
+        continue;
+      }
+
+      if (ch == '>' || ch == ')' || ch == ']' || ch == '}') {
+        depth--;
+        continue;
+      }
+
+      if (ch == ',' && depth == 0) {
+        args.add(inner.substring(start, i).trim());
+        start = i + 1;
+      }
+    }
+
+    final tail = inner.substring(start).trim();
+    if (tail.isNotEmpty) args.add(tail);
+    return args;
+  }
+
+  /// Resolves the parsed reified type argument to a [Class], or `null`
+  /// when it is missing or erased to `dynamic`/`Object`.
+  ///
+  /// For [key], the first argument is picked (Map keys, and the single
+  /// element type of `List`/`Set`/`Iterable`). Otherwise the second argument
+  /// is picked (Map values). Single-argument generics always pick index 0.
+  ClassDeclaration? _resolveReifiedTypeArgumentDeclaration({required bool key}) {
+    final args = _parseReifiedTypeArguments();
+    if (args.isEmpty) return null;
+
+    final int argIndex;
+    if (args.length == 1) {
+      argIndex = 0;
+    } else if (key) {
+      argIndex = 0;
+    } else {
+      argIndex = 1;
+    }
+
+    if (argIndex >= args.length) return null;
+
+    var arg = args[argIndex].trim();
+    // Nested generic arguments are reported wholesale — erase them to their
+    // outer type name and let the synthetic fallback synthesize a declaration.
+    final nested = arg.indexOf('<');
+    if (nested != -1) {
+      arg = arg.substring(0, nested);
+    }
+
+    if (arg.endsWith('?')) {
+      arg = arg.substring(0, arg.length - 1);
+    }
+
+    if (arg.isEmpty || arg == 'dynamic' || arg == 'Object') {
+      return null;
+    }
+    
+    final resolved = StandardDeclaration.resolveType(arg);
+    return StandardClassDeclaration(
+      name: arg,
+      type: resolved,
+      isPublic: true,
+      isAbstract: false,
+      isSynthetic: true,
+      library: StandardLibraryDeclaration(
+        uri: 'package:synthetic/$arg.dart',
+        parentPackage: MaterialPackage(
+          name: 'synthetic',
+          version: '0.0.0',
+          isRootPackage: false,
+          filePath: '',
+          rootUri: 'package:synthetic/',
+          jetleafDependencies: [],
+          dependencies: [],
+          devDependencies: [],
+        ),
+        name: 'synthetic',
+        isPublic: true,
+        isSynthetic: true,
+      ),
+      typeArguments: const [],
+    );
+  }
+
   @override
   Iterable<Class> getTypeParameters() sync* {
     checkAccess('getTypeParameters', DomainPermission.READ_TYPE_INFO);
@@ -813,19 +935,33 @@ final class _Class<T> extends Source with EqualsAndHashCode implements Class<T> 
     }
 
     if (isKeyValuePaired() && (Dynamic.isDynamic<K>() || K.toString() == "Object")) {
+      final reified = _resolveReifiedTypeArgumentDeclaration(key: true);
+      if (reified != null) {
+        return Class<K>.declared(reified, _pd);
+      }
       return Class<Object>() as Class<K>;
+    }
+
+    // Reified fallback: build from the generic arguments of the reified [T] string.
+    final reified = _resolveReifiedTypeArgumentDeclaration(key: true);
+    if (reified != null) {
+      return Class<K>.declared(reified, _pd);
+    }
+
+    if (!Dynamic.isDynamic<K>() && K != Object) {
+      return Class<K>(_pd);
     }
 
     return null;
   }
-  
+
   @override
   Class<C>? componentType<C>() {
     checkAccess('componentType', DomainPermission.READ_TYPE_INFO);
 
     final typeArgs = _link?.getTypeArguments() ?? _declaration.getTypeArguments();
     LinkDeclaration? link;
-    
+
     if (typeArgs.isNotEmpty && typeArgs.length == 1) {
       link = typeArgs.first;
     } else if (typeArgs.length >= 2) {
@@ -841,7 +977,21 @@ final class _Class<T> extends Source with EqualsAndHashCode implements Class<T> 
     }
 
     if (isArray() && (Dynamic.isDynamic<C>() || C.toString() == "Object")) {
+      final reified = _resolveReifiedTypeArgumentDeclaration(key: false);
+      if (reified != null) {
+        return Class<C>.declared(reified, _pd);
+      }
       return Class<Object>() as Class<C>;
+    }
+
+    // Reified fallback: build from the generic arguments of the reified [T] string.
+    final reified = _resolveReifiedTypeArgumentDeclaration(key: false);
+    if (reified != null) {
+      return Class<C>.declared(reified, _pd);
+    }
+
+    if (!Dynamic.isDynamic<C>() && C != Object) {
+      return Class<C>(_pd);
     }
 
     return null;

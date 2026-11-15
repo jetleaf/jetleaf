@@ -79,9 +79,9 @@ final class AotTypeRegistryWriter extends AotSubRegistrarWriter {
       if (component.getTypeArguments().isEmpty && registeredTypes.add(qName)) {
         lines.add('''
   AotRuntimeExecutor.registerType(
-    '$cleanClassName',
+    '${escapeDartStringLiteral(cleanClassName)}',
     $prefix$cleanClassName,
-    '$qName',
+    '${escapeDartStringLiteral(qName)}',
   );''');
       }
     }

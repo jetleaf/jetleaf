@@ -69,7 +69,7 @@ final class AotAnnotationRegistryWriter extends AotSubRegistrarWriter {
     buffer.writeln(r"final _annotatedTypeFilterPattern = RegExp(r'^AnnotatedTypeFilter<([^>]+)>\(\)$');");
     buffer.writeln(r"final _eventTypePattern = RegExp(r'^(?:const\s+)?EventType<([^>]+)>\((.*)\)$');");
     buffer.writeln(r"final _enumOrStaticPattern = RegExp(r'^([A-Z][A-Za-z0-9_]*)\.([A-Za-z0-9_]+)$');");
-    buffer.writeln(r"final _ctorCallPattern = RegExp(r'^(?:const\s+)?([A-Z][A-Za-z0-9_]*)(?:<[^>]+>)?\((.*)\)$', dotAll: true);");
+    buffer.writeln(r"final _ctorCallPattern = RegExp(r'^(?:const\s+)?([A-Za-z_][A-Za-z0-9_]*)(?:<[^>]+>)?(?:\.([A-Za-z_][A-Za-z0-9_]*))?\((.*)\)$', dotAll: true);");
     buffer.writeln();
     buffer.writeln('List<String> _splitTopLevelArgs(String input) {');
     buffer.writeln('  final result = <String>[];');
@@ -146,9 +146,11 @@ final class AotAnnotationRegistryWriter extends AotSubRegistrarWriter {
     buffer.writeln('    final ctorMatch = _ctorCallPattern.firstMatch(trimmed);');
     buffer.writeln('    if (ctorMatch != null) {');
     buffer.writeln('      final className = ctorMatch.group(1)!;');
-    buffer.writeln('      final rawArgs = ctorMatch.group(2)!.trim();');
+    buffer.writeln('      final callee = ctorMatch.group(2);');
+    buffer.writeln('      final rawArgs = ctorMatch.group(3)!.trim();');
+    buffer.writeln("      final targetName = callee == null || callee == '_' ? className : '\$className.\$callee';");
     buffer.writeln('      if (rawArgs.isEmpty) {');
-    buffer.writeln('        final constructed = AotRuntimeExecutor.constructByName(className);');
+    buffer.writeln('        final constructed = AotRuntimeExecutor.constructByName(targetName) ?? AotRuntimeExecutor.constructByName(className);');
     buffer.writeln('        if (constructed != null) return constructed;');
     buffer.writeln('      } else {');
     buffer.writeln('        final parts = _splitTopLevelArgs(rawArgs);');
@@ -177,7 +179,8 @@ final class AotAnnotationRegistryWriter extends AotSubRegistrarWriter {
     buffer.writeln('            posArgs.add(_normalizeNestedRawArg(part));');
     buffer.writeln('          }');
     buffer.writeln('        }');
-    buffer.writeln('        final constructed = AotRuntimeExecutor.constructByName(className, ExecutableArgument.unmodified(namedArgs, posArgs));');
+    buffer.writeln('        final constructed = AotRuntimeExecutor.constructByName(targetName, ExecutableArgument.unmodified(namedArgs, posArgs))');
+    buffer.writeln('          ?? (callee == null ? null : AotRuntimeExecutor.constructByName(className, ExecutableArgument.unmodified(namedArgs, posArgs)));');
     buffer.writeln('        if (constructed != null) return constructed;');
     buffer.writeln('      }');
     buffer.writeln('    }');
@@ -195,7 +198,7 @@ final class AotAnnotationRegistryWriter extends AotSubRegistrarWriter {
     buffer.writeln('    if (mapped.every((e) => e is ComponentScanFilter)) return mapped.cast<ComponentScanFilter>().toList();');
     buffer.writeln('    if (mapped.every((e) => e is TypeFilter)) return mapped.cast<TypeFilter>().toList();');
     buffer.writeln('    if (mapped.every((e) => e is Type)) return mapped.cast<Type>().toList();');
-    buffer.writeln('    if (mapped.every((e) => e != null)) return mapped.cast<Object>().toList();');
+    buffer.writeln('    if (mapped.every((e) => e != null)) return List<dynamic>.from(mapped);');
     buffer.writeln('    return mapped;');
     buffer.writeln('  }');
     buffer.writeln('  return val;');

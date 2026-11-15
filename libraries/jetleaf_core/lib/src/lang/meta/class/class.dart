@@ -1866,7 +1866,10 @@ abstract final class Class<T> extends Source implements FieldAccess, QualifiedNa
   /// ```
   /// {@endtemplate}
   static Class<C> forType<C>(C type, [ProtectionDomain? domain, String? package, LinkDeclaration? link]) {
-    return _Class<C>(type.toString(), domain ?? ProtectionDomain.current(), package, link);
+    // `type` may be a `Type` object (`Class.forType<int>()`), or
+    // a value instance (`Class.forType<int>(0)`). Use the right name source.
+    final typeString = type is Type ? type.toString() : type.runtimeType.toString();
+    return _Class<C>(typeString, domain ?? ProtectionDomain.current(), package, link);
   }
 
   /// Creates a Class instance for a runtime type name.

@@ -106,18 +106,13 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
   const AotRegistrarWriter({
     required this.projectRoot,
     required this.packageName,
-    AotPodRegistryWriter podWriter = const AotPodRegistryWriter(),
-    AotTypeRegistryWriter typeWriter = const AotTypeRegistryWriter(),
-    AotConstructorRegistryWriter constructorWriter = const AotConstructorRegistryWriter(),
-    AotFieldRegistryWriter fieldWriter = const AotFieldRegistryWriter(),
-    AotMethodRegistryWriter methodWriter = const AotMethodRegistryWriter(),
-    AotAnnotationRegistryWriter annotationWriter = const AotAnnotationRegistryWriter(),
-  })  : _podWriter = podWriter,
-        _typeWriter = typeWriter,
-        _constructorWriter = constructorWriter,
-        _fieldWriter = fieldWriter,
-        _methodWriter = methodWriter,
-        _annotationWriter = annotationWriter;
+    this._podWriter = const AotPodRegistryWriter(),
+    this._typeWriter = const AotTypeRegistryWriter(),
+    this._constructorWriter = const AotConstructorRegistryWriter(),
+    this._fieldWriter = const AotFieldRegistryWriter(),
+    this._methodWriter = const AotMethodRegistryWriter(),
+    this._annotationWriter = const AotAnnotationRegistryWriter(),
+  });
 
   /// Generates the complete modular AOT registry files under `lib/_jetleaf/` from [components].
   ///
@@ -138,6 +133,7 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
     bool forTests = false,
   }) async {
     final baseImports = <String>{
+      "import 'package:jetleaf_core/design.dart' show IllegalStateException;",
       "import 'package:jetleaf_core/pod.dart';",
       "import 'package:jetleaf_core/lang.dart';",
       "import 'package:jetleaf_core/core.dart';",
@@ -196,7 +192,8 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
       } catch (_) {}
     }
 
-    final generatedRootDir = Directory('${projectRoot.path}/${Constant.GENERATED_DIR_NAME}');
+    final generatedRootName = forTests ? Constant.TEST_GENERATED_DIR_NAME : Constant.GENERATED_DIR_NAME;
+    final generatedRootDir = Directory('${projectRoot.path}/$generatedRootName');
     if (generatedRootDir.existsSync()) {
       generatedRootDir.deleteSync(recursive: true);
     }
@@ -225,13 +222,18 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
     final podMethodByReturnType = <String, String>{};
     for (final component in components) {
       for (final method in component.getMethods()) {
-        final isPodMethod = method.getAnnotations().any(
-          (a) => _podWriter.matchesOrExtendsAnnotation(a.getName(), const {'Pod'}, classByName),
-        );
+        final isPodMethod = method.getAnnotations().any((a) => _podWriter.matchesOrExtendsAnnotation(a.getName(), const {'Pod'}, classByName));
 
         if (!isPodMethod) continue;
-        final returnTypeName = method.getReturnType().getName();
-        
+        // `@Pod` methods returning `Future<X>` are exposed to the container
+        // under the completeness type `X` (mirrors `isAsync ? componentType() :
+        // getReturnClass()` in `AnnotatedPodMethodBuilder`), so gather the
+        // mapping under the same name the container will see.
+        final returnType = method.getReturnType();
+        final effectiveReturnType = method.isAsynchronous() && returnType.getTypeArguments().length == 1
+          ? returnType.getTypeArguments().first
+          : returnType;
+        final returnTypeName = effectiveReturnType.getName();
         if (returnTypeName.isEmpty || returnTypeName == 'void' || returnTypeName == 'dynamic') {
           continue;
         }
@@ -342,6 +344,8 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
       buffer.writeln("part '$partPath';");
     }
     buffer.writeln();
+    buffer.writeln(_valueResolver);
+    buffer.writeln(_optionalHelper);
     buffer.writeln('bool _aotRuntimeInitialized = false;');
     buffer.writeln();
     buffer.writeln('/// Registers all compile-time AOT declarations, members, and pods into [factory].');
@@ -408,6 +412,49 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
     return masterFile;
   }
 
+  /// Runtime support shared by generated pod suppliers for nullable injectable parameters.
+  ///
+  /// Resolves an optional dependency to `null` instead of throwing when the pod is absent.
+  static const String _optionalHelper = '''
+/// Resolves an optional dependency to `null` instead of throwing when the pod is absent.
+/// Used for nullable injectable parameters (e.g. `SomeService? service`).
+Future<T?> _optional<T>(PodFactory factory, Future<T> Function() supplier) async {
+  try {
+    return await supplier();
+  } catch (_) {
+    return null;
+  }
+}''';
+  /// Runtime support shared by generated pod suppliers that bind `@Value`-annotated
+  /// parameters (e.g. `@Pod() Foo foo(@Value('#{app.name:default}') String name)`).
+  ///
+  /// Resolves the placeholder expression against the application environment and
+  /// converts the result to [targetType] through the pod factory conversion service.
+  static const String _valueResolver = '''
+/// Resolves an `@Value` placeholder expression against the application environment,
+/// then converts the result to [targetType] via the pod factory conversion service.
+/// Used by `@Pod` factory suppliers that bind `@Value`-annotated parameters.
+Future<Object?> _resolveConfigValue<T>(PodFactory factory, String expression, Class<T> targetType) async {
+  final Object? contextObject = await factory.get(Class<ApplicationContext>());
+  final dynamic context = contextObject;
+  final dynamic env = context.getEnvironment();
+  String resolved = env.resolvePlaceholders(expression) as String;
+  if (resolved == expression && expression.contains('#{')) {
+    resolved = env.resolvePlaceholders(expression.replaceAll('#{', r'\${')) as String;
+  }
+  if (resolved == expression && (expression.contains('#{') || expression.contains(r'\${'))) {
+    throw IllegalStateException(
+      'Failed to resolve @Value placeholder "\$expression". '
+      'Ensure it is defined in your configuration (e.g. resources/application.yaml) '
+      'or provide a default, e.g. "#{key:default}".',
+    );
+  }
+  final Object? configurable = factory is ConfigurablePodFactory ? factory : null;
+  final Object? converted = configurable != null
+    ? (configurable as ConfigurablePodFactory).getConversionService().convert<T>(resolved, targetType)
+    : null;
+  return converted ?? resolved;
+}''';
   /// Extracts the root package name segment from a `package:...` URI string.
   ///
   /// Examples:

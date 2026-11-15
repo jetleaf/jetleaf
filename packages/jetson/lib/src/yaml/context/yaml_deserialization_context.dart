@@ -81,7 +81,7 @@ class YamlDeserializationContext implements DeserializationContext<YamlParser> {
       return deserializer;
     }
 
-    deserializer = deserializers.values.find((ss) => ss.toClass() == type || ss.toClass().getType() == type.getType());
+    deserializer = deserializers.values.find((ss) => ss.toClass() == type || (type.getType() != Object && type.getType() != dynamic && ss.toClass().getType() == type.getType()));
     return deserializer;
   }
 

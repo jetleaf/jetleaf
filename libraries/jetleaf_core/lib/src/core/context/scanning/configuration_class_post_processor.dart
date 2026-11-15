@@ -680,7 +680,15 @@ abstract class AnnotatedPodMethodBuilder extends ConfigurationClassCandidateScan
       final methodName = method.getName();
 
       if (podFactory.containsDefinition(methodName)) {
-        podName ??= "${configClass.podName}.${method.getName()}";
+        // Another pod already holds the bare name; fall back to qualified
+        // podName. But that could cause false duplication - check if the
+        // pre-existing definition is from the same factory method.
+        final existing = podFactory.getDefinition(methodName);
+        if (existing.factoryMethod.podName != configClass.podName || existing.factoryMethod.methodName != method.getName()) {
+          podName ??= "${configClass.podName}.${method.getName()}";
+        } else {
+          podName ??= methodName;
+        }
       } else {
         podName ??= methodName;
       }

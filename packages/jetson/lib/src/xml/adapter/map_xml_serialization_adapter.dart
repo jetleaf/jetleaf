@@ -25,7 +25,7 @@ final class MapXmlSerializationAdapter extends XmlSerializationAdapter<Map> {
   const MapXmlSerializationAdapter();
 
   @override
-  bool canDeserialize(Class type) => type == Class<Map>() || type.getType() == Map;
+  bool canDeserialize(Class type) => type == Class<Map>() || type.isKeyValuePaired();
 
   @override
   Map? deserialize(XmlParser parser, XmlDeserializationContext ctxt, Class toClass) {
@@ -48,7 +48,7 @@ final class MapXmlSerializationAdapter extends XmlSerializationAdapter<Map> {
   }
 
   @override
-  bool canSerialize(Class type) => type == Class<Map>() || type.getType() == Map;
+  bool canSerialize(Class type) => type == Class<Map>() || type.isKeyValuePaired();
 
   @override
   void serialize(Map value, XmlGenerator generator, XmlSerializationContext serializer) {

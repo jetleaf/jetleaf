@@ -1,6 +1,6 @@
 import 'dart:io' show File;
 
-import '../../file_utility/abstract_file_utility.dart';
+import '../file_utility/abstract_file_utility.dart';
 import 'package:jetleaf_core/lang.dart';
 
 /// Runtime metadata policies supported by the Jetleaf project descriptor.

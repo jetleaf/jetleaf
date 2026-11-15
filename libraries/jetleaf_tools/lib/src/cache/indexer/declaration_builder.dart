@@ -476,8 +476,12 @@ final class DeclarationBuilder {
     }
 
     final enumValues = <EnumFieldDeclaration>[];
-    for (var i = 0; i < node.constants.length; i++) {
-      final constant = node.constants[i];
+    final enumBody = node.body;
+    final enumConstants = enumBody is ast.BlockEnumBody
+        ? enumBody.constants
+        : const <ast.EnumConstantDeclaration>[];
+    for (var i = 0; i < enumConstants.length; i++) {
+      final constant = enumConstants[i];
       enumValues.add(StandardEnumFieldDeclaration(
         name: constant.name.lexeme,
         type: Object,
@@ -662,7 +666,7 @@ final class DeclarationBuilder {
     final annotations = _buildAnnotations(node.metadata, library);
 
     return StandardMethodDeclaration(
-      name: node.name.lexeme,
+      name: node.isSetter ? '${node.name.lexeme}=' : node.name.lexeme,
       type: Object,
       returnType: returnLink,
       parameters: params,
@@ -713,27 +717,39 @@ final class DeclarationBuilder {
       dynamic defaultValue;
       bool isUnresolvedSuperParam = false;
 
-      ast.FormalParameter inner = param;
-      if (param is ast.DefaultFormalParameter) {
-        hasDefaultValue = param.defaultValue != null;
-        defaultValue = _evalAstExpression(param.defaultValue);
-        inner = param.parameter;
+      if (param.defaultClause != null) {
+        hasDefaultValue = true;
+        defaultValue = _evalAstExpression(param.defaultClause!.value);
       }
 
-      if (inner is ast.SimpleFormalParameter) {
-        name = inner.name?.lexeme;
-        link = _buildTypeAnnotationLink(inner.type);
-        isNullable = _isNullableType(inner.type);
-      } else if (inner is ast.FieldFormalParameter) {
-        name = inner.name.lexeme;
-        if (inner.type != null) {
-          link = _buildTypeAnnotationLink(inner.type);
-          isNullable = _isNullableType(inner.type);
-        } else if (fieldLinks != null && fieldLinks.containsKey(name)) {
-          link = fieldLinks[name]!;
-          isNullable = fieldNullability != null ? (fieldNullability[name] ?? false) : false;
+      // Parameter resolution is uniform since analyzer 14: parameters are a
+      // flat sealed hierarchy; field/super params distinguish themselves by
+      // who owns the link, function-typed by the presence of a suffix.
+      name = param.name?.lexeme ?? '';
+      final tagged = param;
+
+      if (param.functionTypedSuffix != null) {
+        link = _registerLink(StandardLinkDeclaration(
+          name: 'Function',
+          type: Function,
+          isPublic: true,
+          isSynthetic: false,
+          pointerType: Function,
+          qualifiedName: 'Function',
+        ));
+        isNullable = param.functionTypedSuffix?.question != null;
+      } else if (tagged.type != null) {
+        link = _buildTypeAnnotationLink(tagged.type);
+        isNullable = _isNullableType(tagged.type);
+      } else if (tagged is ast.FieldFormalParameter || tagged is ast.SuperFormalParameter) {
+        // Untyped field/super parameter: look up the declared field type via
+        // the primary-constructor field map so the link round-trips.
+        final fallbackName = name;
+        if (fieldLinks != null && fallbackName.isNotEmpty && fieldLinks.containsKey(fallbackName)) {
+          link = fieldLinks[fallbackName]!;
+          isNullable = fieldNullability != null ? (fieldNullability[fallbackName] ?? false) : false;
         } else {
-          final fallbackType = (fieldTypes != null ? fieldTypes[name] : null) ?? 'dynamic';
+          final fallbackType = (fieldTypes != null ? fieldTypes[fallbackName] : null) ?? 'dynamic';
           final clean = fallbackType.endsWith('?') ? fallbackType.substring(0, fallbackType.length - 1) : fallbackType;
           link = _registerLink(StandardLinkDeclaration(
             name: clean,
@@ -745,68 +761,51 @@ final class DeclarationBuilder {
           ));
           isNullable = fallbackType.endsWith('?');
         }
-      } else if (inner is ast.SuperFormalParameter) {
-        name = inner.name.lexeme;
-        if (inner.type != null) {
-          link = _buildTypeAnnotationLink(inner.type);
-          isNullable = _isNullableType(inner.type);
-        } else {
+        if (tagged is ast.SuperFormalParameter && tagged.type == null) {
           isUnresolvedSuperParam = true;
-          link = _registerLink(StandardLinkDeclaration(
-            name: 'dynamic',
-            type: Object,
-            isPublic: true,
-            isSynthetic: false,
-            pointerType: Object,
-            qualifiedName: 'dynamic',
-          ));
-          isNullable = !isRequired;
         }
-      } else if (inner is ast.FunctionTypedFormalParameter) {
-        name = inner.name.lexeme;
+      } else {
         link = _registerLink(StandardLinkDeclaration(
-          name: 'Function',
-          type: Function,
+          name: 'dynamic',
+          type: Object,
           isPublic: true,
           isSynthetic: false,
-          pointerType: Function,
-          qualifiedName: 'Function',
+          pointerType: Object,
+          qualifiedName: 'dynamic',
         ));
-        isNullable = inner.question != null;
+        isNullable = !isRequired;
       }
 
       final paramAnnotations = <AnnotationDeclaration>[
         ..._buildAnnotations(param.metadata, library),
-        if (!identical(inner, param)) ..._buildAnnotations(inner.metadata, library),
       ];
 
-      if (name != null && link != null) {
-        final paramDecl = StandardParameterDeclaration(
-          name: name,
-          type: Object,
-          typeDeclaration: link,
-          isNullable: isNullable,
-          isRequired: isRequired,
-          isOptional: isOptional,
-          isNamed: isNamed,
-          hasDefaultValue: hasDefaultValue,
-          defaultValue: defaultValue,
-          index: index,
-          isPublic: !_isPrivateName(name),
-          isSynthetic: false,
-          sourceLocation: null,
-          annotations: paramAnnotations,
-        );
-        if (isUnresolvedSuperParam && className != null) {
-          _pendingSuperParams.add(_PendingSuperParam(
-            parameter: paramDecl,
-            className: className,
-            paramName: name,
-          ));
-        }
-        parameters.add(paramDecl);
-        index++;
+      // `link` is assigned in every branch above, so it is non-null here.
+      final paramDecl = StandardParameterDeclaration(
+        name: name,
+        type: Object,
+        typeDeclaration: link,
+        isNullable: isNullable,
+        isRequired: isRequired,
+        isOptional: isOptional,
+        isNamed: isNamed,
+        hasDefaultValue: hasDefaultValue,
+        defaultValue: defaultValue,
+        index: index,
+        isPublic: !_isPrivateName(name),
+        isSynthetic: false,
+        sourceLocation: null,
+        annotations: paramAnnotations,
+      );
+      if (isUnresolvedSuperParam && className != null) {
+        _pendingSuperParams.add(_PendingSuperParam(
+          parameter: paramDecl,
+          className: className,
+          paramName: name,
+        ));
       }
+      parameters.add(paramDecl);
+      index++;
     }
 
     return parameters;
@@ -816,8 +815,9 @@ final class DeclarationBuilder {
   List<AnnotationDeclaration> _buildAnnotations(ast.NodeList<ast.Annotation> metadata, LibraryDeclaration library) {
     if (metadata.isEmpty) return const [];
     return [
-      for (final meta in metadata)
-        _buildAnnotation(meta, library),
+      for (final meta in metadata) ...[
+        _buildAnnotation(meta, library)
+      ],
     ];
   }
 
@@ -840,10 +840,11 @@ final class DeclarationBuilder {
 
     if (meta.arguments case final argList?) {
       for (final arg in argList.arguments) {
-        if (arg is ast.NamedExpression) {
-          namedArgs[arg.name.label.name] = _evalAstExpression(arg.expression);
+        final expression = arg.argumentExpression;
+        if (arg is ast.NamedArgument) {
+          namedArgs[arg.name.lexeme] = _evalAstExpression(expression);
         } else {
-          positionalArgs.add(_evalAstExpression(arg));
+          positionalArgs.add(_evalAstExpression(expression));
         }
       }
     }
@@ -1015,8 +1016,20 @@ final class DeclarationBuilder {
   /// Enriches all [_PendingAnnotation]s with constructor parameter names, field metadata, and defaults.
   void _resolveAnnotations(Map<String, ClassDeclaration> classByName) {
     for (final pending in _pendingAnnotations) {
-      final annClass = classByName[pending.name];
-      if (annClass == null) continue;
+      var annClass = classByName[pending.name];
+
+      // Built-in Dart SDK annotations (e.g. @Deprecated, @Todo) are not
+      // declared in project sources, so the AST scan never sees them.
+      // Synthesize a minimal declaration so positional parameters are mapped
+      // to their declared names — matching how jit scanning handles them.
+      if (annClass == null) {
+        if (_builtInAnnotationPositionalParameters.containsKey(pending.name)) {
+          annClass = _synthesizeBuiltInAnnotation(pending.name);
+          classByName[pending.name] = annClass;
+        } else {
+          continue;
+        }
+      }
 
       final userValues = <String, dynamic>{
         ...pending.declaration.getUserProvidedValues(),
@@ -1096,16 +1109,14 @@ final class DeclarationBuilder {
 
       for (final fieldName in fieldNames) {
         final fieldDecl = allFields[fieldName];
-        final link = fieldDecl?.getLinkDeclaration() ??
-            paramLinks[fieldName] ??
-            _registerLink(StandardLinkDeclaration(
-              name: 'Object',
-              type: Object,
-              pointerType: Object,
-              qualifiedName: 'Object',
-              isPublic: true,
-              isSynthetic: false,
-            ));
+        final link = fieldDecl?.getLinkDeclaration() ?? paramLinks[fieldName] ?? _registerLink(StandardLinkDeclaration(
+          name: 'Object',
+          type: Object,
+          pointerType: Object,
+          qualifiedName: 'Object',
+          isPublic: true,
+          isSynthetic: false,
+        ));
         final hasDefault = paramHasDefault[fieldName] ?? false;
         final defaultVal = paramDefaults[fieldName];
         final hasUser = userValues.containsKey(fieldName);
@@ -1245,8 +1256,7 @@ final class DeclarationBuilder {
       return items;
     }
     if (expr is ast.SetOrMapLiteral) {
-      final isMap = expr.elements.any((e) => e is ast.MapLiteralEntry) ||
-          (expr.typeArguments?.arguments.length == 2);
+      final isMap = expr.elements.any((e) => e is ast.MapLiteralEntry) || (expr.typeArguments?.arguments.length == 2);
       if (isMap) {
         final map = <String, dynamic>{};
         for (final el in expr.elements) {
@@ -1335,9 +1345,9 @@ final class DeclarationBuilder {
     int microseconds = 0;
 
     for (final arg in argumentList.arguments) {
-      if (arg is ast.NamedExpression) {
-        final name = arg.name.label.name;
-        final val = _evalAstExpression(arg.expression);
+      if (arg is ast.NamedArgument) {
+        final name = arg.name.lexeme;
+        final val = _evalAstExpression(arg.argumentExpression);
         final intVal = val is int ? val : (int.tryParse(val?.toString() ?? '') ?? 0);
         switch (name) {
           case 'days':
@@ -1413,16 +1423,141 @@ final class DeclarationBuilder {
       return 'package:$packageName/$relativePath';
     }
 
-    final currentProjectLibPath =
-        p.normalize(p.join(Directory.current.path, 'lib'));
+    final currentProjectLibPath = p.normalize(p.join(Directory.current.path, 'lib'));
     if (p.isWithin(currentProjectLibPath, normalizedPath)) {
-      final relativePath =
-          p.relative(normalizedPath, from: currentProjectLibPath);
-      final cleanedRelativePath =
-          relativePath.startsWith('/') ? relativePath.substring(1) : relativePath;
+      final relativePath = p.relative(normalizedPath, from: currentProjectLibPath);
+      final cleanedRelativePath = relativePath.startsWith('/') ? relativePath.substring(1) : relativePath;
       return 'package:$packageName/$cleanedRelativePath';
     }
 
     return 'file://$normalizedPath';
+  }
+
+  /// Positional parameter names for Dart SDK built-in annotations that are
+  /// never declared in package source trees.
+  ///
+  /// The scan never sees these; the values supplied positionally at the
+  /// annotation site are mapped through this table so that consumers reading
+  /// `annotation.fieldName` receive the intended runtime value.
+  static const Map<String, List<String>> _builtInAnnotationPositionalParameters = {
+    'Deprecated': ['message'],
+  };
+
+  /// Builds a minimal declaration for a Dart SDK built-in annotation so
+  /// callers can resolve field names and user-provided values uniformly.
+  /// Synthesizes a minimal declaration for a Dart SDK built-in annotation
+  /// so that project scans treat it like an ordinary class.
+  ///
+  /// The returned class has a single named positional parameter per Dart
+  /// constructor parameter name declared on the built-in annotation, which is
+  /// precisely what `_resolveAnnotations` needs to map user-provided
+  /// positional arguments to their declared names (e.g. `@Deprecated('msg')`
+  /// resolves `message: 'msg'`).
+  ClassDeclaration _synthesizeBuiltInAnnotation(String name) {
+    final positionalOrder = _builtInAnnotationPositionalParameters[name] ?? const <String>[];
+
+    final library = StandardLibraryDeclaration(
+      uri: 'dart:core',
+      name: 'dart:core',
+      isPublic: true,
+      isSynthetic: true,
+      parentPackage: MaterialPackage(
+        name: 'dart:core',
+        version: '0.0.0',
+        isRootPackage: false,
+        filePath: null,
+        rootUri: null,
+        dependencies: const [],
+        devDependencies: const [],
+        jetleafDependencies: const [],
+      ),
+    );
+
+    final qualifiedName = 'dart:core.$name';
+    final parentLink = _registerLink(StandardLinkDeclaration(
+      name: name,
+      type: Object,
+      pointerType: Object,
+      qualifiedName: qualifiedName,
+      isPublic: true,
+      isSynthetic: true,
+    ));
+
+    final fields = <FieldDeclaration>[];
+    final params = <ParameterDeclaration>[];
+    for (var i = 0; i < positionalOrder.length; i++) {
+      fields.add(StandardFieldDeclaration(
+        name: positionalOrder[i],
+        type: Object,
+        parentClass: parentLink,
+        linkDeclaration: _registerLink(StandardLinkDeclaration(
+          name: positionalOrder[i],
+          type: Object,
+          pointerType: Object,
+          qualifiedName: positionalOrder[i],
+          isPublic: true,
+          isSynthetic: false,
+        )),
+        isPublic: true,
+        isSynthetic: true,
+        isFinal: true,
+      ));
+
+      params.add(StandardParameterDeclaration(
+        name: positionalOrder[i],
+        type: Object,
+        typeDeclaration: _registerLink(StandardLinkDeclaration(
+          name: 'String',
+          type: Object,
+          pointerType: Object,
+          qualifiedName: 'String',
+          isPublic: true,
+          isSynthetic: false,
+        )),
+        isPublic: true,
+        isSynthetic: true,
+        index: i,
+      ));
+    }
+
+    final ctors = <ConstructorDeclaration>[
+      StandardConstructorDeclaration(
+        name: '',
+        type: Object,
+        parentClass: parentLink,
+        parameters: params,
+        isPublic: true,
+        isSynthetic: true,
+        isConst: true,
+      ),
+    ];
+
+    return StandardClassDeclaration(
+      name: name,
+      type: Object,
+      isPublic: true,
+      isSynthetic: true,
+      library: library,
+      constructors: ctors,
+      fields: fields,
+      methods: const [],
+      superClass: null,
+      interfaces: const [],
+      mixins: const [],
+      typeArguments: const [],
+      annotations: const [],
+      sourceLocation: null,
+      isAbstract: false,
+      isMixin: false,
+      isSealed: false,
+      isBase: false,
+      isInterface: false,
+      qualifiedName: qualifiedName,
+      isFinal: false,
+      isRecord: false,
+      packageUri: 'dart:core',
+      simpleName: name,
+      kind: TypeKind.classType,
+    );
   }
 }

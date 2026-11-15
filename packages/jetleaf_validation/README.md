@@ -1,6 +1,6 @@
 # ✅ Jetleaf Validation — Data Validation & Constraints
 
-[![pub package](https://img.shields.io/badge/version-1.0.0-blue)](https://pub.dev/packages/jetleaf_validation)
+[![pub package](https://img.shields.io/badge/version-2.1.0-blue)](https://pub.dev/packages/jetleaf_validation)
 [![License](https://img.shields.io/badge/license-Jetleaf-green)](#license)
 [![Dart SDK](https://img.shields.io/badge/sdk-%3E%3D3.9.0-blue)](https://dart.dev)
 
@@ -25,7 +25,7 @@ Comprehensive data validation framework with declarative constraints and custom 
 
 ```yaml
 dependencies:
-  jetleaf_validation: ^1.0.0
+  jetleaf_validation: ^2.1.0
 ```
 
 ### Basic Validation

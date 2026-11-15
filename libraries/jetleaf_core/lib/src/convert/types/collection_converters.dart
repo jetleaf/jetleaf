@@ -66,7 +66,7 @@ abstract class CollectionToCollectionConverter extends CommonPairedConditionalCo
 
   @override
   bool matches(Class sourceType, Class targetType) {
-    if (sourceType.getType() != _source.getType() || !_isSupportedTarget(targetType.getType())) {
+    if (!_source.isAssignableFrom(sourceType) || !_isSupportedTarget(targetType.getType())) {
       return false;
     }
 

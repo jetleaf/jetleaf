@@ -60,6 +60,23 @@ abstract class AotSubRegistrarWriter {
     '==',
   };
 
+  /// Escapes [value] for embedding inside a **single-quoted** Dart string
+  /// literal in generated code.
+  ///
+  /// Handles the three characters that terminate or corrupt a single-quoted
+  /// literal: `\`, `'`, and `$` (dollar starts interpolation — the source of
+  /// the `$$JLInterfaced$$…` codegen breakage where proxy class names were
+  /// emitted raw).
+  ///
+  /// Returns a *fragment* (no surrounding quotes) suitable for direct
+  /// interpolation into `'…'` sections of emitted source.
+  String escapeDartStringLiteral(String value) {
+    return value
+        .replaceAll('\\', '\\\\')
+        .replaceAll("'", "\\'")
+        .replaceAll('\$', r'\$');
+  }
+
   /// Validates whether [name] is a syntactically legal Dart identifier.
   ///
   /// Rejects operator names (`[]`, `+`, `*`), symbols, whitespace, and private/empty tokens

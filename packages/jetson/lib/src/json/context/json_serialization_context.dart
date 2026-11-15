@@ -148,7 +148,7 @@ class JsonSerializationContext implements SerializationContext<JsonGenerator> {
       return serializer;
     }
 
-    if (serializers.values.find((ss) => ss.toClass() == type || ss.toClass().getType() == type.getType()) case final serializer?) {
+    if (serializers.values.find((ss) => ss.toClass() == type || (type.getType() != Object && type.getType() != dynamic && ss.toClass().getType() == type.getType())) case final serializer?) {
       return serializer;
     }
 

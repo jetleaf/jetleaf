@@ -1,6 +1,6 @@
 # jetleaf_core example
 
-A runnable showcase demonstrating the core architectural features of `jetleaf_core` 2.0.0.
+A runnable showcase demonstrating the core architectural features of `jetleaf_core` 2.1.0.
 
 ## Running the Example
 

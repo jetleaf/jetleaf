@@ -123,9 +123,19 @@ final class ResponseBodyReturnValueHandler implements ReturnValueHandler {
       return;
     }
 
-    final contentType = WebUtils.resolveMediaTypeAsJson(response);
     final body = returnValue as ResponseBody;
     response.setStatus(body.status);
+
+    // Apply any headers carried by the ResponseBody (e.g. Content-Type) onto the
+    // response. These take precedence over content negotiation defaults.
+    final bodyHeaders = body.getHeaders();
+    if (bodyHeaders != null) {
+      for (final name in bodyHeaders.getHeaderNames()) {
+        final value = bodyHeaders.getFirst(name);
+        response.getHeaders().set(name, value);
+      }
+    }
+
     final valueToWrite = body.getBody();
 
     if (valueToWrite == null) {
@@ -133,6 +143,7 @@ final class ResponseBodyReturnValueHandler implements ReturnValueHandler {
     }
     
     final valueClass = Class.forObject(valueToWrite);
+    final contentType = _resolveContentType(request, response, valueClass);
     final writer = _converters.findWritable(valueClass, contentType);
 
     if (writer == null) {
@@ -140,5 +151,33 @@ final class ResponseBodyReturnValueHandler implements ReturnValueHandler {
     }
 
     return writer.write(valueToWrite, contentType, response);
+  }
+
+  /// Picks the most appropriate content type for [valueClass]:
+  /// 1. The response's existing Content-Type, if any.
+  /// 2. The first request `Accept` media type (ignoring `*/*`) that a registered
+  ///    converter can write — honors `Accept: text/html` for String HTML pages while
+  ///    keeping JSON semantics for API payloads.
+  /// 3. Falls back to `application/json`.
+  MediaType _resolveContentType(ServerHttpRequest request, ServerHttpResponse response, Class valueClass) {
+    final existing = response.getHeaders().getContentType();
+    if (existing != null) {
+      return existing;
+    }
+
+    final accepted = request
+      .getHeaders()
+      .getAccept()
+      .where((mediaType) => mediaType.getMimeType() != '*/*')
+      .toList();
+
+    for (final mediaType in accepted) {
+      if (_converters.findWritable(valueClass, mediaType) != null) {
+        response.getHeaders().setContentType(mediaType);
+        return mediaType;
+      }
+    }
+
+    return WebUtils.resolveMediaTypeAsJson(response);
   }
 }

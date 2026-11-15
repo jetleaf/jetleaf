@@ -25,7 +25,7 @@ final class ListYamlSerializationAdapter extends YamlSerializationAdapter<List> 
   const ListYamlSerializationAdapter();
 
   @override
-  bool canDeserialize(Class type) => type == Class<List>() || type.getType() == List;
+  bool canDeserialize(Class type) => type == Class<List>() || (type.isArray() && type.getType().toString().startsWith('List'));
 
   @override
   List? deserialize(YamlParser parser, YamlDeserializationContext ctxt, Class toClass) {
@@ -47,7 +47,7 @@ final class ListYamlSerializationAdapter extends YamlSerializationAdapter<List> 
   }
 
   @override
-  bool canSerialize(Class type) => type == Class<List>() || type.getType() == List;
+  bool canSerialize(Class type) => type == Class<List>() || (type.isArray() && type.getType().toString().startsWith('List'));
 
   @override
   void serialize(List value, YamlGenerator generator, YamlSerializationContext serializer) {

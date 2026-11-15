@@ -6,7 +6,7 @@ import 'package:jetleaf_core/declaration.dart';
 import '../jetleaf_paths.dart';
 import '../models.dart';
 import '../serializer/cacheable_serializer.dart';
-import '../../serialization/jetleaf_json.dart';
+import '../../utils/jetleaf_json.dart';
 import '../../file_utility/file_utility.dart';
 import 'cache_models.dart';
 

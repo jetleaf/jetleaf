@@ -1,6 +1,6 @@
 name: jtl
 description: Jetleaf Template Language — a lightweight, high-performance template engine for generating HTML, text, and dynamic content.
-version: 2.0.0
+version: 2.1.0
 
 homepage: https://jetleaf.hapnium.com
 repository: https://github.com/jetleaf/jetleaf
@@ -27,7 +27,7 @@ environment:
   sdk: ^3.9.0
 
 dependencies:
-  jetleaf_core: ^2.0.0
+  jetleaf_core: ^2.1.0
 
 dev_dependencies:
   test: ^1.29.0

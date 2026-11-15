@@ -1,3 +1,15 @@
+## [2.1.0]
+
+### Added
+
+- **@Primary Default**: Per-profile cache configuration pods registered by the resource auto-configuration now honour `@Primary`, avoiding ambiguous type-based injection when multiple cache configurations are on the classpath.
+
+### Changed
+
+- **Dependency Bump**: `jetleaf_core: ^2.1.0`.
+
+---
+
 ## [2.0.0]
 
 ### Breaking Changes

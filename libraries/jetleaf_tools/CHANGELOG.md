@@ -1,3 +1,15 @@
+## 1.1.0
+
+### Added & Improvements
+
+- **Test Runner AOT Registration**: `jl test` stubs now import and invoke `lib/_jetleaf/aot_registry.g.dart` (as `aot.registerJetleafAot()`) before any `@JetleafTest` entry runs — framework method dispatches through the `AotRuntimeExecutor` now resolve correctly in warm test VMs instead of failing with `MethodNotFoundException`.
+- **Test-scan Parity**: `jl dev` test scans request `skipTests: false`; production scans request `skipTests: true`.
+- **Pod Definition `@Pod` Factory-method AOT Emission**: `jl build` emits configuration `@Pod` factory methods statically into generated registries (mirrors `AnnotatedPodMethodBuilder` naming exactly — `@Named` > `@Pod('value')` > bare method name), unwraps `Future<X>` return types to their completeness type `X`, honours `@Primary` on factory methods, and registers `<configClass>`-qualified pod names alongside the bare name when both are free to avoid duplicate names.
+- **`.jetleaf` Project Detection**: `isJetLeafBuildProject` now recognises projects with a `.jetleaf/` state directory (how in-repo framework packages are detected).
+- **Annotation Constructor Calls**: The generated annotation-registry writer resolves `Clazz.namedCtor(...)` / `const Clazz.namedCtor(...)` constructor references, normalises list-like annotation arguments to `List<dynamic>`, and drops spurious empty-constructor `constructByName` lookups that previously produced invalid annotation instances.
+
+---
+
 ## 1.0.2
 
 ### Architecture & Tooling Refinement

@@ -1,3 +1,18 @@
+## [2.1.0]
+
+### Changed
+
+- **Dependency Bumps**: `jetleaf_core: ^2.1.0`, `jetson: ^2.1.0`, `jtl: ^2.1.0`.
+
+### Fixed
+
+- **MediaType in Annotations**: `@RequestMapping`/`produces`/`consumes` now filter raw entries through `whereType<MediaType>()` when routing — parameterized/annotation fragments can no longer leak non-MediaType values into handler lookup.
+- **Accept Header Negotiation**: `StringReturnValueHandler` now ignores wildcard `*/*` Accept entries and falls back to `text/plain`, matching RFC 7231 semantics.
+- **Test `_ControllerDefinition` Test Helper**: Default definition now points at the registered `HttpStatus` type instead of the unregistered `Object` type (AOT/JIT compatible).
+- Minor handler mapping/interceptor/adapter manager fixes and `int`/`String` content negotiation adjustments.
+
+---
+
 ## [2.0.0]
 
 ### Added

@@ -136,8 +136,8 @@ abstract final class _MaterialLibrary with EqualsAndHashCode implements Material
 
       for (var dir in startDirs) {
         for (int i = 0; i < 6; i++) {
-          for (final targetName in ['test', 'main']) {
-            final cacheDir = Directory(p.join(dir.path, '.jetleaf', 'cache', targetName));
+          for (final targetName in [Constant.TEST_DIR_NAME, Constant.MAIN_DIR_NAME]) {
+            final cacheDir = Directory(p.join(dir.path, Constant.WORKSPACE_DIR_NAME, Constant.CACHE_DIR_NAME, targetName));
             if (cacheDir.existsSync()) {
               final fpFile = File(p.join(cacheDir.path, 'fingerprint.txt'));
               File? targetBin;
@@ -181,24 +181,55 @@ abstract final class _MaterialLibrary with EqualsAndHashCode implements Material
     } catch (_) {}
   }
 
+  /// Real `dart:core` library files, kept in sync with the Dart SDK.
+  /// Synthetic declarations for these intrinsic types should report their
+  /// actual SDK source locations instead of the generic `package:synthetic`
+  /// URI.
+  static const Map<String, String> _dartCoreLibraries = {
+    'Object': 'dart:core/object.dart',
+    'String': 'dart:core/string.dart',
+    'int': 'dart:core/int.dart',
+    'num': 'dart:core/num.dart',
+    'double': 'dart:core/double.dart',
+    'bool': 'dart:core/bool.dart',
+    'Symbol': 'dart:core/symbol.dart',
+    'Null': 'dart:core/null.dart',
+    'Enum': 'dart:core/enum.dart',
+    'Function': 'dart:core/function.dart',
+    'Type': 'dart:core/type.dart',
+    'Iterable': 'dart:core/iterable.dart',
+    'List': 'dart:core/list.dart',
+    'Map': 'dart:core/map.dart',
+    'Set': 'dart:core/set.dart',
+    'DateTime': 'dart:core/date_time.dart',
+    'Duration': 'dart:core/duration.dart',
+    'Pattern': 'dart:core/pattern.dart',
+    'RegExp': 'dart:core/regexp.dart',
+    'StackTrace': 'dart:core/stacktrace.dart',
+    'Stopwatch': 'dart:core/stopwatch.dart',
+    'StringSink': 'dart:core/string_sink.dart',
+    'BigInt': 'dart:core/bigint.dart',
+    'Comparable': 'dart:core/comparable.dart',
+  };
+
   ClassDeclaration _synthesizeClassDeclaration(Type type, String typeString) {
-    final simpleName = typeString.contains('.')
-        ? typeString.split('.').last
-        : typeString;
-    const pkg = MaterialPackage(
-      name: 'synthetic',
+    final simpleName = typeString.contains('.') ? typeString.split('.').last : typeString;
+    final coreLibrary = _dartCoreLibraries[simpleName];
+    final libUri = coreLibrary ?? 'package:synthetic/$simpleName.dart';
+    final pkg = MaterialPackage(
+      name: coreLibrary == null ? 'synthetic' : 'dart:core',
       version: '0.0.0',
       isRootPackage: false,
       filePath: '',
-      rootUri: 'package:synthetic/',
+      rootUri: coreLibrary == null ? 'package:synthetic/' : 'dart:core',
       jetleafDependencies: [],
       dependencies: [],
       devDependencies: [],
     );
     final syntheticLib = StandardLibraryDeclaration(
-      uri: 'package:synthetic/$simpleName.dart',
+      uri: libUri,
       parentPackage: pkg,
-      name: 'synthetic',
+      name: coreLibrary == null ? 'synthetic' : 'dart:core',
       isPublic: true,
       isSynthetic: true,
     );
@@ -209,19 +240,19 @@ abstract final class _MaterialLibrary with EqualsAndHashCode implements Material
       isPublic: true,
       isSynthetic: true,
       qualifiedName: typeString.contains(':')
-          ? typeString
-          : (simpleName == 'Object' ||
-                  simpleName == 'String' ||
-                  simpleName == 'int' ||
-                  simpleName == 'double' ||
-                  simpleName == 'bool' ||
-                  simpleName == 'num' ||
-                  simpleName == 'Symbol' ||
-                  simpleName == 'Null' ||
-                  simpleName == 'Enum' ||
-                  simpleName == 'dynamic'
-              ? 'dart:core.$simpleName'
-              : 'package:synthetic/$simpleName.dart.$simpleName'),
+        ? typeString
+        : (simpleName == 'Object' ||
+            simpleName == 'String' ||
+            simpleName == 'int' ||
+            simpleName == 'double' ||
+            simpleName == 'bool' ||
+            simpleName == 'num' ||
+            simpleName == 'Symbol' ||
+            simpleName == 'Null' ||
+            simpleName == 'Enum' ||
+            simpleName == 'dynamic'
+            ? 'dart:core.$simpleName'
+            : 'package:synthetic/$simpleName.dart.$simpleName'),
     );
     final resolvedType = decl.getType();
     if (resolvedType != Object || simpleName == 'Object') {
@@ -240,8 +271,51 @@ abstract final class _MaterialLibrary with EqualsAndHashCode implements Material
   @override
   ClassDeclaration findClass<T>([String? package]) => findClassByType(T, package);
 
+  /// Normalizes the runtime [Type] of a Dart VM implementation class
+  /// (e.g. `_Map<String, dynamic>`) to its public interface counterpart
+  /// (`Map`) so reflection lookups resolve to registered declarations.
+  Type _normalizeType(Type type) {
+    switch (type.toString().split('<').first) {
+      case '_Map':
+      case '_HashMap':
+      case 'UnmodifiableMapView':
+        return Map;
+      case '_Set':
+      case '_HashSet':
+      case 'UnmodifiableSetView':
+        return Set;
+      case 'EmptyIterable':
+        return Iterable;
+      case 'ListQueue':
+        return Queue;
+      case 'CastList':
+        return List;
+      case 'CastMap':
+        return Map;
+      case 'CastSet':
+        return Set;
+      case 'UnmodifiableListView':
+        return List;
+      case '_ControllerStream':
+        return Stream;
+      case '_ByteDataView':
+        return ByteData;
+      case '_Int8ArrayView':
+        return Int8List;
+      case '_Uint8ArrayView':
+        return Uint8List;
+      default:
+        return type;
+    }
+  }
+
   @override
   ClassDeclaration findClassByType(Type type, [String? package]) {
+    final normalizedType = _normalizeType(type);
+    if (!identical(normalizedType, type)) {
+      return findClassByType(normalizedType, package);
+    }
+
     if (type == Object) {
       return _typeCache[Object] ?? _synthesizeClassDeclaration(Object, 'Object');
     }
@@ -258,7 +332,6 @@ abstract final class _MaterialLibrary with EqualsAndHashCode implements Material
     }
 
     final typeString = type.toString();
-    final baseTypeString = typeString.split('<').first;
 
     // 1. Scan qualified name cache for exact type match first
     for (final decl in _qualifiedNameCache.values) {
@@ -285,32 +358,11 @@ abstract final class _MaterialLibrary with EqualsAndHashCode implements Material
       }
     }
 
-    // 3. Fall back to base name match without generic type arguments
-    if (baseTypeString != typeString) {
-      for (final decl in _qualifiedNameCache.values) {
-        if (package != null && decl.getLibrary().getPackage().getName() != package) {
-          continue;
-        }
-        if (decl.getName() == baseTypeString) {
-          _typeCache[type] = decl;
-          return decl;
-        }
-      }
-    }
-
     // Check name cache as fallback
     if (_nameCache[typeString] case final decl?) {
       if (package == null || decl.getLibrary().getPackage().getName() == package) {
         _typeCache[type] = decl;
         return decl;
-      }
-    }
-    if (baseTypeString != typeString) {
-      if (_nameCache[baseTypeString] case final decl?) {
-        if (package == null || decl.getLibrary().getPackage().getName() == package) {
-          _typeCache[type] = decl;
-          return decl;
-        }
       }
     }
 
@@ -376,7 +428,17 @@ abstract final class _MaterialLibrary with EqualsAndHashCode implements Material
     }
 
     _missingNameCache.add(cacheKey);
-    throw ImmaterialClassException(name);
+
+    // Synthesize a best-effort declaration instead of hard-failing —
+    // mirrors `findClassByType` for core types such as `String`/`Function`.
+    try {
+      final resolved = StandardDeclaration.resolveType(name);
+      final synth = _synthesizeClassDeclaration(resolved, name);
+      _missingNameCache.remove(cacheKey);
+      return synth;
+    } catch (_) {
+      throw ImmaterialClassException(name);
+    }
   }
 
   @override

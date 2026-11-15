@@ -16,7 +16,6 @@ import 'package:jetleaf_core/lang.dart';
 import 'package:meta/meta_meta.dart';
 
 import '../http/http_method.dart';
-import '../http/media_type.dart';
 
 /// {@template request_mapping}
 /// Maps an HTTP request to a specific controller method or class within Jetleaf.
@@ -90,10 +89,10 @@ class RequestMapping extends ReflectableAnnotation with EqualsAndHashCode {
   final String? path;
 
   /// Supported content types for the request body.
-  final List<MediaType> consumes;
+  final List<dynamic> consumes;
 
   /// Produced content types for the response.
-  final List<MediaType> produces;
+  final List<dynamic> produces;
 
   /// {@macro request_mapping}
   const RequestMapping({

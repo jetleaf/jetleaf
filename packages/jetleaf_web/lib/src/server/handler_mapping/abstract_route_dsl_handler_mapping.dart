@@ -81,7 +81,7 @@ abstract class AbstractRouteDslHandlerMapping extends AbstractFrameworkHandlerMa
     // --- Discover RouteRegistrars ---
     
     final type = Class<RouterRegistrar>(null, PackageNames.WEB);
-    final values = await applicationContext.getPodsOf(type);
+    final values = await applicationContext.getPodsOf(type, allowEagerInit: true);
     final orderedRegistrars = AnnotationAwareOrderComparator.getOrderedItems(values.values);
     
     // Register registrars
@@ -95,7 +95,7 @@ abstract class AbstractRouteDslHandlerMapping extends AbstractFrameworkHandlerMa
     // --- Discover RouterBuilder pods ---
 
     final builderType = Class<RouterBuilder>(null, PackageNames.WEB);
-    final builders = await applicationContext.getPodsOf(builderType);
+    final builders = await applicationContext.getPodsOf(builderType, allowEagerInit: true);
     final orderedBuilders = AnnotationAwareOrderComparator.getOrderedItems(builders.values);
 
     // Collect all RouteDefinitions

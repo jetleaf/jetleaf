@@ -195,6 +195,20 @@ __/\__     | | ___| |_| | ___  __ _ / _| |  ___| __ __ _ _ __ ___   _____      _
   /// alias. Example: `_jetleaf/`.
   static const String JETLEAF_GENERATED_DIR_NAME = '_jetleaf';
 
+  /// Generated-source directory name for test-only AOT registries.
+  ///
+  /// Mirrors [JETLEAF_GENERATED_DIR_NAME] but holds the registration tables
+  /// for the **test** AST (production sources plus `test/` classes) so that
+  /// `jl test` / plain `dart test` can load annotation, constructor, type and
+  /// member registrations for classes declared in test files. Example:
+  /// `_jetleaf_test/`.
+  static const String TEST_JETLEAF_GENERATED_DIR_NAME = '_jetleaf_test';
+
+  /// Generated test-source path under the package library directory.
+  ///
+  /// Example: `lib/_jetleaf_test/`.
+  static const String TEST_GENERATED_DIR_NAME = "$LIB$TEST_JETLEAF_GENERATED_DIR_NAME";
+
   /// Active generated-source path under the package library directory.
   ///
   /// This is intentionally distinct from [GENERATED_DIRECTORY_NAME], which is

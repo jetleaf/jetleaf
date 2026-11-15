@@ -1,4 +1,12 @@
 // test_data.dart
+import 'package:jetleaf_core/_jetleaf_test/aot_registry.g.dart';
+
+/// Registers the test-only AOT registry. Call at the start of tests that
+/// rely on annotation materialisation; loading this library alone does not
+/// force initialisation (library-level laziness), but `main()` should
+/// `await ensureTestAotRegistered()` before exercising reflective paths.
+Future<void> ensureTestAotRegistered() => registerJetleafAot();
+
 
 // For basic class tests
 class TestUser {

@@ -878,6 +878,17 @@ abstract class AbstractAutowirePodFactory extends AbstractPodFactory implements 
   Future<PodHolder> createInstance(String podName, RootPodDefinition root, List<ArgumentValue>? args) async {
     Class podClass = root.type;
 
+    // Obtain from AOT-generated instance supplier (zero reflection).
+    // Factory-method pods created at build time always carry one, and it must
+    // take precedence over the reflective factory-method path below.
+    if (root.instanceSupplier case final supplier?) {
+      if (logger.getIsTraceEnabled()) {
+        logger.trace("Instantiating pod '$podName' via AOT instanceSupplier (zero reflection)");
+      }
+      final Object instance = await supplier(this);
+      return (instance, instance.getClass());
+    }
+
     // Obtain from provided instance
     if (root.instance != null) {
       Object instance = await instantiateFromSupplier(root.instance!);

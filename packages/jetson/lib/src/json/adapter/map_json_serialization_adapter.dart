@@ -68,7 +68,7 @@ final class MapJsonSerializationAdapter extends JsonSerializationAdapter<Map> {
   const MapJsonSerializationAdapter();
 
   @override
-  bool canSerialize(Class type) => type == Class<Map>() || type.getType() == Map;
+  bool canSerialize(Class type) => type == Class<Map>() || type.isKeyValuePaired();
 
   @override
   void serialize(Map value, JsonGenerator generator, JsonSerializationContext serializer) {
@@ -86,7 +86,7 @@ final class MapJsonSerializationAdapter extends JsonSerializationAdapter<Map> {
   }
 
   @override
-  bool canDeserialize(Class type) => type == Class<Map>() || type.getType() == Map;
+  bool canDeserialize(Class type) => type == Class<Map>() || type.isKeyValuePaired();
 
   @override
   Map? deserialize(JsonParser parser, JsonDeserializationContext ctxt, Class toClass) {

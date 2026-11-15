@@ -20,6 +20,7 @@ import '../../annotation/core.dart';
 import '../../annotation/request_mapping.dart';
 import '../../exception/exceptions.dart';
 import '../../http/http_method.dart';
+import '../../http/http_status.dart';
 import '../../http/media_type.dart';
 import '../../utils/web_utils.dart';
 import '../handler_method.dart';
@@ -124,8 +125,8 @@ abstract class AbstractAnnotatedHandlerMapping extends AbstractWebViewAnnotatedH
               : null;
 
         baseHttpMethod = baseMapping.method;
-        baseProduces = baseMapping.produces;
-        baseConsumes = baseMapping.consumes;
+        baseProduces = baseMapping.produces.whereType<MediaType>().toList();
+        baseConsumes = baseMapping.consumes.whereType<MediaType>().toList();
       }
 
       for (final method in definition.type.getMethods()) {
@@ -164,8 +165,8 @@ abstract class AbstractAnnotatedHandlerMapping extends AbstractWebViewAnnotatedH
           definition: definition,
           method: method,
           httpMethod: httpMethod,
-          produces: produces,
-          consumes: consumes,
+          produces: produces.whereType<MediaType>().toList(),
+          consumes: consumes.whereType<MediaType>().toList(),
         );
 
         // Register the handler in the parent URL mapping.
@@ -389,10 +390,16 @@ class TestControllerDefinition {
   ///
   /// Returns a [_ControllerDefinition] with sensible defaults:
   /// - [Controller] annotation
-  /// - [Object] type
-  /// - Empty target object
+  /// - [HttpStatus] type (a concrete class registered in the generated
+  ///   reflection registry so its methods can be invoked in AOT/JIT mode)
+  /// - [HttpStatus.OK] target object
   /// - Generic name
   static _ControllerDefinition createDefault() {
-    return _ControllerDefinition(Controller(), Class<Object>(), Object(), 'testController');
+    return _ControllerDefinition(
+      Controller(),
+      Class<HttpStatus>(),
+      HttpStatus.OK,
+      'testController',
+    );
   }
 }

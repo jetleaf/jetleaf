@@ -45,9 +45,7 @@ abstract final class Discoverable extends EntryWriter {
 
     if (only != null) {
       for (final raw in only) {
-        final abs = p.isAbsolute(raw)
-            ? p.normalize(raw)
-            : p.normalize(p.join(projectRoot.path, raw));
+        final abs = p.isAbsolute(raw) ? p.normalize(raw) : p.normalize(p.join(projectRoot.path, raw));
         final file = File(abs);
         if (!abs.endsWith('.dart') || !await file.exists()) {
           onWarning?.call('scoped path skipped (not a Dart file): $raw');
@@ -67,8 +65,7 @@ abstract final class Discoverable extends EntryWriter {
     for (final sub in ['lib', 'bin', 'test']) {
       final dir = Directory(p.join(projectRoot.path, sub));
       if (!await dir.exists()) continue;
-      await for (final entity
-          in dir.list(recursive: true, followLinks: false)) {
+      await for (final entity in dir.list(recursive: true, followLinks: false)) {
         if (entity is! File || !entity.path.endsWith('.dart')) continue;
         try {
           final record = await _scanEntryFile(projectRoot, entity, onWarning);
@@ -92,11 +89,7 @@ abstract final class Discoverable extends EntryWriter {
   ///
   /// **Returns:** the [EntryRecord], or null for bare mains and
   /// non-entry files (misuse still warns).
-  static Future<EntryRecord?> _scanEntryFile(
-    Directory projectRoot,
-    File file,
-    void Function(String message)? onWarning,
-  ) async {
+  static Future<EntryRecord?> _scanEntryFile(Directory projectRoot, File file, void Function(String message)? onWarning) async {
     final content = await file.readAsString();
     final result = parseString(content: content, throwIfDiagnostics: false);
     final relative = p.relative(file.path, from: projectRoot.path);
@@ -125,17 +118,14 @@ abstract final class Discoverable extends EntryWriter {
     // on the application class rather than putting @JetleafEntry on main.
     // Treat that established application contract as the production entry,
     // while keeping ordinary bare Dart mains out of the registry.
-    if (relative.startsWith('lib${p.separator}') &&
-        content.contains('JetleafApplication.run(') &&
-        content.contains('JetleafApplicationStarter')) {
+    if (relative.startsWith('lib${p.separator}') && content.contains('JetleafApplication.run(') && content.contains('JetleafApplicationStarter')) {
       return EntryRecord(file: relative, kind: EntryKind.entry);
     }
 
     // Annotations on non-main declarations are misuse — warn loudly since
     // the user likely expected discovery.
     if (_mentionsJetleafEntry(content)) {
-      onWarning?.call('$relative mentions @JetleafEntry/@JetleafTest '
-          'outside void main(); ignored (targets: void main() only).');
+      onWarning?.call('$relative mentions @JetleafEntry/@JetleafTest outside void main(); ignored (targets: void main() only).');
     }
     return null;
   }
@@ -188,10 +178,9 @@ abstract final class Discoverable extends EntryWriter {
     try {
       final args = meta.arguments?.arguments;
       if (args == null) return fallback;
-      for (final arg in args.whereType<ast.NamedExpression>()) {
-        if (arg.name.label.name == name &&
-            arg.expression is ast.IntegerLiteral) {
-          return (arg.expression as ast.IntegerLiteral).value ?? fallback;
+      for (final arg in args.whereType<ast.NamedArgument>()) {
+        if (arg.name.lexeme == name && arg.argumentExpression is ast.IntegerLiteral) {
+          return (arg.argumentExpression as ast.IntegerLiteral).value ?? fallback;
         }
       }
     } catch (_) {}
@@ -204,8 +193,7 @@ abstract final class Discoverable extends EntryWriter {
   /// - [content]: raw file content.
   ///
   /// **Returns:** true when either entry annotation name appears anywhere.
-  static bool _mentionsJetleafEntry(String content) =>
-      content.contains('JetleafEntry') || content.contains('JetleafTest');
+  static bool _mentionsJetleafEntry(String content) => content.contains('JetleafEntry') || content.contains('JetleafTest');
 }
 
 /// {@template entry_kind}
@@ -262,16 +250,14 @@ final class EntryRecord {
   ///
   /// **Returns:** `{file, kind, args, timeoutSeconds}`.
   Map<String, Object?> toJson() => {
-        'file': file,
-        'kind': kind.name,
-        'args': args,
-        'timeoutSeconds': timeoutSeconds,
-      };
+    'file': file,
+    'kind': kind.name,
+    'args': args,
+    'timeoutSeconds': timeoutSeconds,
+  };
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is EntryRecord && file == other.file && kind == other.kind;
+  bool operator ==(Object other) => identical(this, other) || other is EntryRecord && file == other.file && kind == other.kind;
 
   @override
   int get hashCode => Object.hash(file, kind);
@@ -297,14 +283,12 @@ final class EntryRegistry {
   /// Number of `@JetleafEntry` mains.
   ///
   /// **Returns:** the app entry count.
-  int get appCount =>
-      entries.where((e) => e.kind == EntryKind.entry).length;
+  int get appCount => entries.where((e) => e.kind == EntryKind.entry).length;
 
   /// Number of `@JetleafTest` mains.
   ///
   /// **Returns:** the test entry count.
-  int get testCount =>
-      entries.where((e) => e.kind == EntryKind.test).length;
+  int get testCount => entries.where((e) => e.kind == EntryKind.test).length;
 
   /// True when nothing was discovered.
   ///
@@ -314,6 +298,5 @@ final class EntryRegistry {
   /// Serializes to a JSON-compatible list.
   ///
   /// **Returns:** one object per entry.
-  List<Map<String, Object?>> toJson() =>
-      entries.map((e) => e.toJson()).toList();
+  List<Map<String, Object?>> toJson() => entries.map((e) => e.toJson()).toList();
 }

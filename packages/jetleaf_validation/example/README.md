@@ -1,6 +1,6 @@
 # Jetleaf Validation Example
 
-This example demonstrates how to use `jetleaf_validation` 2.0.0 for declarative constraint validation.
+This example demonstrates how to use `jetleaf_validation` 2.1.0 for declarative constraint validation.
 
 ## Features Covered
 - Inspecting constraint metadata (`@Email`, `@Size`, `@Min`)

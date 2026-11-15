@@ -1,5 +1,6 @@
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import 'test_data.dart';
 
 class TestClass {
   void method({
@@ -67,7 +68,8 @@ class GenericTestClass<T> {
 }
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('Parameter API', () {
     test('Parameter properties for required positional', () {      
       final classApi = Class<SimpleTestClass>();

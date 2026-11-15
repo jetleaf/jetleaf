@@ -66,7 +66,7 @@ final class AotFieldRegistryWriter extends AotSubRegistrarWriter {
 
     for (final component in components) {
       final rawName = component.getName();
-      if (rawName.startsWith('_') || rawName.contains(' ') || !component.getIsPublic() || component.getTypeArguments().isNotEmpty) {
+      if (rawName.startsWith('_') || rawName.contains(' ') || !component.getIsPublic()) {
         continue;
       }
 
@@ -81,7 +81,7 @@ final class AotFieldRegistryWriter extends AotSubRegistrarWriter {
       final prefix = '${libraryAliases[libraryUri] ?? ""}.';
 
       for (final field in component.getFields()) {
-        if (!field.getIsPublic() || field.getIsStatic()) continue;
+        if (!field.getIsPublic()) continue;
         final fieldName = field.getName();
         
         if (!isValidDartIdentifier(fieldName) || AotSubRegistrarWriter.skippedMemberNames.contains(fieldName)) {
@@ -91,15 +91,31 @@ final class AotFieldRegistryWriter extends AotSubRegistrarWriter {
         final memberKey = '$cleanClassName.$fieldName';
         if (!registeredMembers.add('field:$memberKey')) continue;
 
+        if (field.getIsStatic()) {
+          lines.add('''
+  AotRuntimeExecutor.registerFieldGetter(
+    '${escapeDartStringLiteral(memberKey)}',
+    (inst) => $prefix$cleanClassName.$fieldName,
+  );''');
+          if (!field.getIsFinal() && !field.getIsConst()) {
+            lines.add('''
+  AotRuntimeExecutor.registerFieldSetter(
+    '${escapeDartStringLiteral(memberKey)}',
+    (inst, val) => $prefix$cleanClassName.$fieldName = val as dynamic,
+  );''');
+          }
+          continue;
+        }
+
         lines.add('''
   AotRuntimeExecutor.registerFieldGetter(
-    '$memberKey',
+    '${escapeDartStringLiteral(memberKey)}',
     (inst) => (inst as $prefix$cleanClassName).$fieldName,
   );''');
         if (!field.getIsFinal() && !field.getIsConst()) {
           lines.add('''
   AotRuntimeExecutor.registerFieldSetter(
-    '$memberKey',
+    '${escapeDartStringLiteral(memberKey)}',
     (inst, val) => (inst as $prefix$cleanClassName).$fieldName = val as dynamic,
   );''');
         }

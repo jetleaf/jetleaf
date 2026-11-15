@@ -67,10 +67,10 @@ Add `jetleaf_core` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  jetleaf_core: ^2.0.0
+  jetleaf_core: ^2.1.0
 
 dev_dependencies:
-  jetleaf_tools: ^1.0.1
+  jetleaf_tools: ^1.1.0
 ```
 
 Fetch dependencies:
@@ -139,7 +139,7 @@ void main() async {
 
 ```text
 ┌────────────────────────────────────────────────────────────────────────┐
-│                          jetleaf_core (2.0.0)                          │
+│                          jetleaf_core (2.1.0)                          │
 ├──────────────┬──────────────┬──────────────┬──────────────┬────────────┤
 │  src/core/   │   src/pod/   │   src/env/   │ src/logging/ │src/convert/│
 │ Context,     │ IoC Container│ Environment, │ Structured   │ Type       │

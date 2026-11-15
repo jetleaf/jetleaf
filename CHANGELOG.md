@@ -1,3 +1,20 @@
+## [2.1.0]
+
+### Added
+
+- **Test VM AOT Rehydration**: The Jetleaf VM test runner (`jl test`) now imports and registers `lib/_jetleaf/aot_registry.g.dart` (when present) inside the test-driver isolate before declaring tests, so `AotRuntimeExecutor` dispatch tables are populated for framework method invocations in warm test VMs.
+- **Test-runtime Scan Parity**: `jl build`/`jl dev` now pass `skipTests: false` for test scans and `skipTests: true` for production scans, keeping test entries visible to the warm test runtime.
+
+### Fixed
+
+- **Logging Steps Parsing**: `logging.*.steps` values wrapped in brackets (e.g. `steps: [thread,location]`) are now normalised — bracket characters are stripped and empty entries dropped before converting to `LogStep`.
+
+### Changed
+
+- **Dependency Bumps**: `jetleaf_core: ^2.1.0`, `jetson: ^2.1.0`, `jtl: ^2.1.0`, `jetson` collection adapters, and `jetleaf_tools: ^1.1.0`.
+
+---
+
 ## [2.0.0]
 
 ### Breaking Changes

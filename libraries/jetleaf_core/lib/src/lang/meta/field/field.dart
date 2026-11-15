@@ -1,3 +1,4 @@
+import '../../runtime/executor/aot/aot_runtime_executor.dart';
 import '../../commons/version.dart';
 import '../../declaration/declaration.dart';
 import '../../exceptions.dart';

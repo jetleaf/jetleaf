@@ -658,6 +658,12 @@ abstract class AbstractServerDispatcher implements ConfigurableServerDispatcher 
 
       final multipartRequest = await resolver.resolveMultipart(request);
       request = copyFrom(request, multipartRequest);
+    } else if (WebUtils.isFormUrlencoded(request)) {
+      if (log.getIsTraceEnabled()) {
+        log.trace('📝 Resolving form-urlencoded request for ${request.getUri().path}');
+      }
+
+      request = copyFrom(request, await WebUtils.resolve(request));
     }
 
     return doDispatch(request, response);
@@ -716,7 +722,7 @@ abstract class AbstractServerDispatcher implements ConfigurableServerDispatcher 
     try {
       if (await getHandler(request) case final handler?) {
         handlerMethod = handler;
-        
+
         // Debug: entering dispatch
         if (log.getIsTraceEnabled()) {
           log.trace(

@@ -108,8 +108,7 @@ abstract final class EntryWriter {
   ///
   /// **Returns:** the `org-dartlang-root://` stub URI.
   @protected
-  String stubRootUriFor(Directory projectRoot, String entryKey) =>
-      'org-dartlang-root:///${stubFileFor(projectRoot, entryKey).absolute.path}';
+  String stubRootUriFor(Directory projectRoot, String entryKey) => 'org-dartlang-root:///${stubFileFor(projectRoot, entryKey).absolute.path}';
 
   /// Snapshot path for [entryKey]'s incremental compiler output.
   ///
@@ -182,10 +181,18 @@ ${_parkedMain()}
   }) async {
     final import = resolveEntryImport(projectRoot, entryFile);
     if (forTests) {
+      final testRegistry = File(p.join(projectRoot.path, 'lib', '_jetleaf_test', 'aot_registry.g.dart'));
+      final prodRegistry = File(p.join(projectRoot.path, 'lib', '_jetleaf', 'aot_registry.g.dart'));
+      final packageName = JetleafVM._resolvePackageName(projectRoot);
+      final aotImport = testRegistry.existsSync()
+        ? 'package:$packageName/_jetleaf_test/aot_registry.g.dart'
+        : (prodRegistry.existsSync()
+          ? 'package:$packageName/_jetleaf/aot_registry.g.dart'
+          : null);
       await _writeStub(
         projectRoot,
         entryKey,
-        _testDriverStub(entryKey, import),
+        _testDriverStub(entryKey, import, aotImport: aotImport),
       );
       return;
     }
@@ -244,11 +251,17 @@ Future<bool> _jlHandleCommand(Map<String, dynamic> message) async {
   /// **Parameters:**
   /// - [entryKey]: project-relative entry path (banner only).
   /// - [import]: entry import URI for the `entry` prefix.
+  /// - [aotImport]: when non-null, the generated AOT registry URI
+  ///   (`lib/_jetleaf/aot_registry.g.dart`) imported as `aot` and invoked
+  ///   before any test is declared, so the warm isolate has the
+  ///   type/constructor/method dispatch tables (`AotRuntimeExecutor`)
+  ///   populated — without this, framework method invocations dispatched
+  ///   through the registry fail with `MethodNotFoundException`.
   /// - [verbose]: stream scan logs to isolate stdout (`[scan] …` lines)
   ///   instead of silencing them.
   ///
   /// **Returns:** the runner stub source.
-  String _testDriverStub(String entryKey, String import) =>
+  String _testDriverStub(String entryKey, String import, {String? aotImport}) =>
       '''
 ${_generatedHeader(entryKey, true, 'Test-driver mode: executes the entry tests with the test engine in this isolate.')}
 import 'dart:async';
@@ -264,13 +277,13 @@ import 'package:test_core/src/runner/runner_suite.dart' show RunnerSuite;
 import 'package:test_core/src/util/os.dart' show currentOSGuess;
 import 'package:test_core/src/util/print_sink.dart' show PrintSink;
 import '$import' as entry;
-
+${aotImport == null ? '' : "import '$aotImport' as aot;\n"}
 bool _jlTestsPassed = false;
 
 Future<bool> runJetleafTests([List<String> args = const []]) async {
   _jlTestsPassed = false;
   try {
-  final declarer = Declarer(isStandalone: true);
+${aotImport == null ? '' : '  await aot.registerJetleafAot();\n'}  final declarer = Declarer(isStandalone: true);
   final dynamic registration = declarer.declare(() {
     try {
       return Function.apply(entry.main, [args]);
@@ -430,12 +443,12 @@ ${Constant.BANNER_ART.trim()}
 
   /// JetLeaf API import for `_ensureJetleafRuntime()`.
   ///
+  /// Uses the public `jetleaf_tools` surface only — no deep `src/` imports,
+  /// so the generated entry never goes stale when internal files move.
   /// **Returns:** the `jl` import line.
   String _ensureImport() =>
       "import 'dart:async';\n"
-      "import 'package:jetleaf_tools/jetleaf_tools.dart' as jl;\n"
-      "import 'package:jetleaf_tools/src/runtime/scanner/runtime_scanner_configuration.dart' "
-      "show RuntimeBuildMode, RuntimeScannerConfiguration;";
+      "import 'package:jetleaf_tools/jetleaf_tools.dart' as jl;";
 
   /// Imports used by the parked VM command server.
   String _commandImports() => "import 'dart:convert';\nimport 'dart:io';";
@@ -467,10 +480,10 @@ ${Constant.BANNER_ART.trim()}
       onError: (_, __) {},''';
     final String scanCall = forTests
         ? 'await jl.runTestScan(\n'
-              '      config: RuntimeScannerConfiguration(reload: false, forceLoadLibraries: true, buildMode: RuntimeBuildMode.compatibility),\n'
+              '      config: jl.RuntimeScannerConfiguration(reload: false, forceLoadLibraries: true, buildMode: jl.RuntimeBuildMode.compatibility, skipTests: false),\n'
               '      $logCallbacks\n    );'
         : 'await jl.runScan(\n'
-              '      config: RuntimeScannerConfiguration(reload: false, forceLoadLibraries: true, buildMode: RuntimeBuildMode.compatibility),\n'
+              '      config: jl.RuntimeScannerConfiguration(reload: false, forceLoadLibraries: true, buildMode: jl.RuntimeBuildMode.compatibility, skipTests: true),\n'
               '      $logCallbacks\n    );';
     final String kind = forTests ? 'test runtime' : 'production runtime';
     return '''

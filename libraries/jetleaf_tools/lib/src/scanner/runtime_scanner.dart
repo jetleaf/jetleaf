@@ -9,9 +9,5 @@ import 'runtime_scanner_configuration.dart';
 /// {@endtemplate}
 abstract interface class RuntimeScanner {
   /// Performs the scan and outputs a [RuntimeScannerSummary].
-  Future<RuntimeScannerSummary> scan(
-    RuntimeScannerConfiguration loader,
-    List<String> args, {
-    Directory? source,
-  });
+  Future<RuntimeScannerSummary> scan(RuntimeScannerConfiguration loader, List<String> args, {Directory? source});
 }

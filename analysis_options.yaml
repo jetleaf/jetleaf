@@ -20,6 +20,10 @@ analyzer:
     library_private_types_in_public_api: ignore
     non_constant_identifier_names: ignore
     unintended_html_in_doc_comment: ignore
+  exclude:
+    # Machine-generated AOT registries — do not lint or analyze.
+    - "**/_jetleaf/**"
+    - "**/_jetleaf_test/**"
 
 # Uncomment the following section to specify additional rules.
 

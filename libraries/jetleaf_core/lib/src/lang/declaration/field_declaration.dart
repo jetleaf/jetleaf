@@ -265,11 +265,14 @@ final class StandardFieldDeclaration extends StandardSourceDeclaration implement
   @override
   dynamic getValue(dynamic instance) {
     if (getIsPublic()) {
-      if (_isStatic) {
-        return Runtime.getRuntimeResolver().getValue(instance, _name);
-      } else {
-        return Runtime.getRuntimeResolver().getValue(instance, _name);
+      if (_isStatic && (instance == null || instance is Type)) {
+        final parentName = getParentClass()?.getName();
+        if (parentName != null && parentName.isNotEmpty) {
+          return Runtime.getRuntimeResolver().getValue(instance, '$parentName.$_name');
+        }
       }
+
+      return Runtime.getRuntimeResolver().getValue(instance, _name);
     }
 
     throw PrivateFieldAccessException(instance, getName());
@@ -282,11 +285,14 @@ final class StandardFieldDeclaration extends StandardSourceDeclaration implement
     }
     
     if (getIsPublic()) {
-      if (_isStatic) {
-        return Runtime.getRuntimeResolver().setValue(instance, _name, value);
-      } else {
-        return Runtime.getRuntimeResolver().setValue(instance, _name, value);
+      if (_isStatic && (instance == null || instance is Type)) {
+        final parentName = getParentClass()?.getName();
+        if (parentName != null && parentName.isNotEmpty) {
+          return Runtime.getRuntimeResolver().setValue(instance, '$parentName.$_name', value);
+        }
       }
+
+      return Runtime.getRuntimeResolver().setValue(instance, _name, value);
     } else {
       throw PrivateFieldAccessException(instance, getName());
     }

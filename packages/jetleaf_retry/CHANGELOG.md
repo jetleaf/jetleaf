@@ -1,3 +1,15 @@
+## [2.1.0]
+
+### Fixed
+
+- **Backoff Policy Resolution**: The exponential `BackoffPolicy` registered by the retry auto-configuration is now designated `@Primary` so type-based injection resolves to it when both exponential and fixed policies are registered; the fixed policy no longer claims `matchIfMissing: true`, eliminating the ambiguous `BackoffPolicy` diamond and divergent JIT/AOT injection order.
+
+### Changed
+
+- **Dependency Bump**: `jetleaf_core: ^2.1.0`.
+
+---
+
 ## [2.0.0]
 
 ### Breaking Changes

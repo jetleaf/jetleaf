@@ -25,7 +25,7 @@ final class SetXmlSerializationAdapter extends XmlSerializationAdapter<Set> {
   const SetXmlSerializationAdapter();
 
   @override
-  bool canDeserialize(Class type) => type == Class<Set>() || type.getType() == Set;
+  bool canDeserialize(Class type) => type == Class<Set>() || (type.isArray() && type.getType().toString().startsWith('Set'));
 
   @override
   Set? deserialize(XmlParser parser, XmlDeserializationContext ctxt, Class toClass) {
@@ -47,7 +47,7 @@ final class SetXmlSerializationAdapter extends XmlSerializationAdapter<Set> {
   }
 
   @override
-  bool canSerialize(Class type) => type == Class<Set>() || type.getType() == Set;
+  bool canSerialize(Class type) => type == Class<Set>() || (type.isArray() && type.getType().toString().startsWith('Set'));
 
   @override
   void serialize(Set value, XmlGenerator generator, XmlSerializationContext serializer) {

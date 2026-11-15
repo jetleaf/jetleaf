@@ -67,7 +67,7 @@ final class ListJsonSerializationAdapter extends JsonSerializationAdapter<List> 
   const ListJsonSerializationAdapter();
 
   @override
-  bool canDeserialize(Class type) => type == Class<List>() || type.getType() == List;
+  bool canDeserialize(Class type) => type == Class<List>() || (type.isArray() && type.getType().toString().startsWith('List'));
 
   @override
   List? deserialize(JsonParser parser, JsonDeserializationContext ctxt, Class toClass) {
@@ -139,7 +139,7 @@ final class ListJsonSerializationAdapter extends JsonSerializationAdapter<List> 
   }
 
   @override
-  bool canSerialize(Class type) => type == Class<List>() || type.getType() == List;
+  bool canSerialize(Class type) => type == Class<List>() || (type.isArray() && type.getType().toString().startsWith('List'));
 
   @override
   void serialize(List value, JsonGenerator generator, JsonSerializationContext serializer) {

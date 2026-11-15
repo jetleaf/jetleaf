@@ -174,7 +174,7 @@ final class DefaultCorsConfigurationManager implements CorsConfigurationManager,
   @protected
   Future<void> findAndRegisterCorsConfigurationSources() async {
     final type = Class<CorsConfigurationSource>(null, PackageNames.WEB);
-    final values = await _applicationContext.getPodsOf(type);
+    final values = await _applicationContext.getPodsOf(type, allowEagerInit: true);
     final ordered = AnnotationAwareOrderComparator.getOrderedItems(values.values);
 
     for (final value in ordered) {
@@ -214,7 +214,7 @@ final class DefaultCorsConfigurationManager implements CorsConfigurationManager,
   @protected
   Future<void> findAndRegisterCorsConfigurationUsingRegistrar() async {
     final registrarClass = Class<CorsConfigurationRegistrar>(null, PackageNames.WEB);
-    final registrars = await _applicationContext.getPodsOf(registrarClass);
+    final registrars = await _applicationContext.getPodsOf(registrarClass, allowEagerInit: true);
     final ordered = AnnotationAwareOrderComparator.getOrderedItems(registrars.values);
 
     for (final value in ordered) {

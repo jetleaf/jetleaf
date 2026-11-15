@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:jetleaf_tools/src/serialization/jetleaf_json.dart';
+import 'package:jetleaf_tools/src/utils/jetleaf_json.dart';
 import 'package:jetleaf_tools/src/vm/jetleaf_vm.dart';
 import 'package:test/test.dart';
 
