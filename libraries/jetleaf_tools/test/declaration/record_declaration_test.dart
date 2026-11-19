@@ -1,5 +1,6 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../helpers/aot_test_setup.dart';
 // Simple record types
 typedef SimpleRecord = (String, int);
 typedef NamedRecord = ({String name, int age});
@@ -73,6 +74,7 @@ extension PrivateRecordExtension on (String, int) {
 
 @JetleafTest()
 void main() async {
+  await ensureTestAotRegistered();
   group('RecordDeclaration Basic Properties', () {
     test('should find RecordUser class in runtime', () {
       final recordUserClass = Runtime.findClass<RecordUser>();

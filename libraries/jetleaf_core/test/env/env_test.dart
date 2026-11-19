@@ -2,9 +2,12 @@ import 'package:jetleaf_core/env.dart';
 import 'package:jetleaf_core/property.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import '../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('StandardEnvironment', () {
     late GlobalEnvironment env;
 

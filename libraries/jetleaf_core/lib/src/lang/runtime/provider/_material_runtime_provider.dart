@@ -177,14 +177,7 @@ final class _MaterialRuntimeProvider extends _MaterialLibrary implements Runtime
       return resolver;
     }
 
-    try {
-      return _runtimeResolver = DefaultRuntimeExecutor(
-        AotRuntimeExecutor(DefaultRuntimeHintDescriptor()),
-        JitRuntimeExecutor(),
-      );
-    } catch (_) {
-      return _runtimeResolver = AotRuntimeExecutor(DefaultRuntimeHintDescriptor());
-    }
+    return _runtimeResolver ??= AotRuntimeExecutor(DefaultRuntimeHintDescriptor());
   }
 
   @override

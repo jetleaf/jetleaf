@@ -227,7 +227,7 @@ final class _Field extends Source with EqualsAndHashCode implements Field {
     if(isEnumField()) {
       try {
         final parentName = _parent.getName();
-        final resolved = AotRuntimeExecutor.constructByName('$parentName.${getName()}');
+        final resolved = MaterializedLibrary.constructByName('$parentName.${getName()}');
         if (resolved != null) {
           return resolved;
         }

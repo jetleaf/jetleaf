@@ -6,7 +6,7 @@
 
 [![pub package](https://img.shields.io/pub/v/jetleaf.svg?logo=dart&logoColor=white&color=0b2ab5)](https://pub.dev/packages/jetleaf)
 [![tests](https://img.shields.io/badge/tests-137%2B%20passing-brightgreen.svg?logo=github)](https://github.com/jetleaf/jetleaf)
-[![pure AOT](https://img.shields.io/badge/AOT-100%25%20mirror--free-success.svg)](https://pub.dev/packages/jetleaf)
+[![pure AOT](https://img.shields.io/badge/AOT-100%25%20reflection--free-success.svg)](https://pub.dev/packages/jetleaf)
 [![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![platform](https://img.shields.io/badge/platform-dart%20%7C%20server%20%7C%20cli%20%7C%20web%20%7C%20docker-lightgrey)](https://pub.dev/packages/jetleaf)
 
@@ -28,7 +28,7 @@
 
 **Jetleaf** is a modern, modular, enterprise-grade backend application framework for Dart. Inspired by modern application paradigms and Spring Boot, Jetleaf brings declarative Inversion of Control (IoC), constructor & property dependency injection, automatic component discovery, hierarchical environment profiles, cross-cutting interceptors, and application lifecycle hooks to server-side Dart.
 
-Designed from the ground up for **pure Ahead-of-Time (AOT) compilation (`dart compile exe`)**, Jetleaf uses static AST scanning and zero-reflection registries — delivering enterprise developer productivity with blazing-fast native startup times and zero mirror overhead.
+Designed from the ground up for **pure Ahead-of-Time (AOT) compilation (`dart compile exe`)**, Jetleaf uses static AST scanning and zero-reflection registries — delivering enterprise developer productivity with blazing-fast native startup times and no runtime reflection overhead.
 
 ```dart
 import 'package:jetleaf/jetleaf.dart';
@@ -40,7 +40,7 @@ import 'package:jetleaf/jetleaf.dart';
 
 * **🚀 Declarative Application Bootstrap** — Rapid setup via `JetleafApplication.run()` with built-in banner rendering, PID tracking, environment resolution, and graceful shutdown signal handling (`SIGINT`, `SIGTERM`).
 * **💉 Inversion of Control (IoC) & Pods** — Complete container lifecycle managing singleton and prototype pods, eager and lazy initialization (`@Lazy`), primary candidates (`@Primary`), and priority ordering (`@Order`).
-* **⚡ 100% Mirror-Free AOT Compilation** — Ahead-of-Time static AST analysis synthesizes deterministic constructor and method invocation tables at build time, completely eliminating `dart:mirrors` and surviving Dart's aggressive tree-shaker.
+* **⚡ 100% AOT Compilation** — Ahead-of-Time static AST analysis synthesizes deterministic constructor and method invocation tables at build time, completely eliminating runtime reflection and surviving Dart's aggressive tree-shaker.
 * **📦 Component Stereotypes** — First-class declarative annotations: `@Component`, `@Service`, `@Repository`, `@Controller`, `@RestController`, `@Configuration`, and `@Pod`.
 * **⚙️ Hierarchical Configuration & Properties** — Type-safe property binding (`@ConfigurationProperties`), `@Value` expression resolution, and cascade loading across command-line flags, environment variables, `.properties`, `.yaml`, and `.json`.
 * **🎯 Multi-Profile Environments** — Activate granular profiles (`--jetleaf.profiles.active=dev,docker`) to load environment-specific properties (`application-dev.properties`) and conditional components.
@@ -130,7 +130,7 @@ Jetleaf applications follow a clean, decoupled layered architecture:
 ├─────────────────────┴──────────────────────┴───────────────────────────┤
 │                       AOT Static Dispatch Engine                       │
 ├────────────────────────────────────────────────────────────────────────┤
-│ • AotRuntimeExecutor │ • Type Token Map    │ • Zero Mirrors Reflection │
+│ • Type Token Map    │ • Zero-Reflection Dispatch │
 │ • Constructor Tables │ • Member Adapters   │ • Tree-Shaking Resilient  │
 └────────────────────────────────────────────────────────────────────────┘
 ```
@@ -276,7 +276,7 @@ await app.create(args, null);
 
 ## ⚡ Ahead-of-Time (AOT) Compilation
 
-Dart does not support `dart:mirrors` in native AOT compiled executables. Jetleaf solves this with **compile-time code synthesis** via `jetleaf_tools`.
+Dart does not support `runtime reflection` in native AOT compiled executables. Jetleaf solves this with **compile-time code synthesis** via `jetleaf_tools`.
 
 ### 1. Build Caches & Production Registry
 
@@ -287,21 +287,21 @@ dart run jetleaf_tools build
 ```
 
 This generates:
-- `lib/_jetleaf/aot_registry.g.dart` — Master registry linking typed constructor and member functions.
+- `lib/_jetleaf/main/registry.g.dart` — Master registry linking typed constructor and member functions.
 - `lib/_jetleaf/<pkg>/registry_pods.g.dart` — Typed instance suppliers and lifecycle hooks.
 
 ### 2. Pass Generated Registrar to Bootstrap
 
 ```dart
 import 'package:jetleaf/jetleaf.dart';
-import '_jetleaf/aot_registry.g.dart';
+import '_jetleaf/main.dart';
 
 void main(List<String> args) async {
   await JetleafApplication.run(
     MyApplication(),
     args,
     null,
-    registerGeneratedAotPods, // Pure Dart function pointers
+    registerGeneratedArtifacts, // Pure Dart function pointers
   );
 }
 ```
@@ -331,7 +331,7 @@ Jetleaf provides a modular suite of official extensions:
 | [`jetleaf_retry`](https://pub.dev/packages/jetleaf_retry) | `^2.1.0` | Declarative fault-tolerance with exponential backoff retries and `@Recover` methods. |
 | [`jetleaf_validation`](https://pub.dev/packages/jetleaf_validation) | `^2.1.0` | Bean and field validation framework (`@NotNull`, `@Size`, `@Email`, `@Pattern`). |
 | [`jetleaf_actuator`](https://pub.dev/packages/jetleaf_actuator) | `^1.1.0` | Health checks, metrics collectors, latency timers, and actuator endpoints. |
-| [`jetson`](https://pub.dev/packages/jetson) | `^2.1.0` | High-performance JSON serialization engine with zero mirrors. |
+| [`jetson`](https://pub.dev/packages/jetson) | `^2.1.0` | High-performance JSON serialization engine with no runtime reflection. |
 | [`jtl`](https://pub.dev/packages/jtl) | `^2.1.0` | Jetleaf Template Language for server-side HTML rendering. |
 
 ---
@@ -344,13 +344,13 @@ Jetleaf provides seamless integration with the `test` package:
 import 'package:test/test.dart';
 import 'package:jetleaf/jetleaf.dart';
 import 'package:my_app/my_app.dart';
-import 'package:my_app/_jetleaf/aot_registry.g.dart';
+import 'package:my_app/_jetleaf/main.dart';
 
 void main() {
   test('Boots application context and resolves service', () async {
     final app = JetleafApplication(MyApplication);
     app.setApplicationType(ApplicationType.NONE);
-    app.setAotRegistrar(registerGeneratedAotPods);
+    app.setAotRegistrar(registerGeneratedArtifacts);
 
     final context = await app.create([], null);
     expect(context, isNotNull);

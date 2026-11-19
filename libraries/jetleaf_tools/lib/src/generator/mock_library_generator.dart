@@ -8,8 +8,6 @@ base class MockLibraryGenerator extends DefaultLibraryGenerator {
   MockLibraryGenerator({
     required super.configuration,
     required super.packages,
-    super.mirrorSystem,
-    super.forceLoadedMirrors,
     super.refresh,
   });
 }

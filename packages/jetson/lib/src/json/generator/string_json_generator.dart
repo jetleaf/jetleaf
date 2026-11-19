@@ -13,7 +13,6 @@
 // 🔧 Powered by Hapnium — the Dart backend engine 🍃
 
 import 'dart:async';
-import 'dart:convert';
 
 import '../../exceptions.dart';
 import 'json_generator.dart';
@@ -132,10 +131,10 @@ final class StringJsonGenerator implements JsonGenerator {
       throw ObjectGeneratorException('writeEndObject() called without matching writeStartObject()');
     }
 
-    _contextStack.removeLast();
+    final context = _contextStack.removeLast();
     _depth--;
 
-    if (pretty) _newline();
+    if (pretty && context.elementCount > 0) _newline();
     _buffer.write('}');
   }
 
@@ -159,10 +158,10 @@ final class StringJsonGenerator implements JsonGenerator {
       throw ObjectGeneratorException('writeEndArray() called without matching writeStartArray()');
     }
 
-    _contextStack.removeLast();
+    final context = _contextStack.removeLast();
     _depth--;
 
-    if (pretty) _newline();
+    if (pretty && context.elementCount > 0) _newline();
     _buffer.write(']');
   }
 
@@ -273,114 +272,14 @@ final class StringJsonGenerator implements JsonGenerator {
       throw ObjectGeneratorException('Incomplete JSON: ${_contextStack.length} unclosed structure(s)');
     }
 
-    final raw = _buffer.toString();
+    final output = _buffer.toString();
 
     // Reset for potential reuse
     close();
 
-    return _cleanJson(raw);
-  }
-
-  /// Cleans and optionally pretty-prints a JSON string.
-  ///
-  /// This method attempts to:
-  /// 1. Parse the input JSON
-  /// 2. Recursively remove empty structures via [_removeEmpty], including:
-  ///    - Empty maps (`{}`)
-  ///    - Empty lists (`[]`)
-  ///    - Null values
-  /// 3. Re-serialize the cleaned result
-  ///
-  /// ### Formatting Behavior
-  ///
-  /// - If `pretty` is `false`, the output is returned as a compact JSON string.
-  /// - If `pretty` is `true`, the output is formatted using the configured
-  ///   indentation (`indentSize` spaces).
-  ///
-  /// ### Fail-Safe Behavior
-  ///
-  /// If parsing fails for any reason (e.g., malformed JSON), the original
-  /// `json` string is returned unchanged. This ensures that the method never
-  /// interrupts response rendering.
-  ///
-  /// ### Example
-  /// ```dart
-  /// final output = _cleanJson('{"a": null, "b": [], "c": 1}');
-  /// // → {"c":1}
-  /// ```
-  String _cleanJson(String json) {
-    try {
-      final decoded = jsonDecode(json);
-      final cleaned = _removeEmpty(decoded);
-
-      if (!pretty) {
-        return jsonEncode(cleaned);
-      }
-
-      final encoder = JsonEncoder.withIndent(' ' * indentSize);
-      return encoder.convert(cleaned);
-
-    } catch (_) {
-      // fail-safe — never break responses
-      return json;
-    }
-  }
-
-  /// Recursively removes empty and null values from JSON-compatible structures.
-  ///
-  /// This utility processes nested values and returns a cleaned version by:
-  ///
-  /// - Removing:
-  ///   - Empty maps (`{}`)
-  ///   - Empty lists (`[]`)
-  ///   - Null values
-  ///
-  /// - Preserving:
-  ///   - Non-empty collections
-  ///   - Scalar types (e.g., `String`, `num`, `bool`)
-  ///
-  /// ### Behavior Details
-  ///
-  /// - When given a `Map`, each entry is processed and only retained if
-  ///   the cleaned value is non-empty and non-null.
-  ///
-  /// - When given a `List`, all items are recursively processed and filtered
-  ///   using the same rules.
-  ///
-  /// - For all other types, the value is returned unchanged.
-  ///
-  /// ### Example
-  /// ```dart
-  /// _removeEmpty({"a": {}, "b": [null, {}], "c": 1});
-  /// // → {"c": 1}
-  /// ```
-  dynamic _removeEmpty(dynamic value) {
-    if (value is Map) {
-      final result = <String, dynamic>{};
-
-      for (final entry in value.entries) {
-        final cleaned = _removeEmpty(entry.value);
-
-        final isEmptyMap  = cleaned is Map && cleaned.isEmpty;
-        final isEmptyList = cleaned is List && cleaned.isEmpty;
-
-        if (!isEmptyMap && !isEmptyList && cleaned != null) {
-          result[entry.key] = cleaned;
-        }
-      }
-
-      return result;
-    }
-
-    if (value is List) {
-      return value.map(_removeEmpty).where((v) {
-        final isEmptyMap  = v is Map && v.isEmpty;
-        final isEmptyList = v is List && v.isEmpty;
-        return !isEmptyMap && !isEmptyList && v != null;
-      }).toList();
-    }
-
-    return value;
+    // Output is emitted verbatim — empty objects, empty arrays and null values
+    // are preserved exactly as written.
+    return output;
   }
 
   @override

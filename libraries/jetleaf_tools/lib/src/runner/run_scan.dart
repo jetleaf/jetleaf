@@ -8,9 +8,6 @@ import '../scanner/runtime_scanner_configuration.dart';
 import '../scanner/runtime_scanner_summary.dart';
 import 'package:jetleaf_core/lang.dart';
 
-// import 'jet_runtime_stub_scanner.dart'
-//     if (dart.library.mirrors) '../runtime/runtime_scanner/application_runtime_scanner.dart';
-
 /// Executes a **full application runtime scan**, builds a runtime context,
 /// and registers it globally.
 ///

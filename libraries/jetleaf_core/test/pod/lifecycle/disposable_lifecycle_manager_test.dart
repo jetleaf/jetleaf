@@ -5,6 +5,8 @@ import 'package:jetleaf_core/src/pod/lifecycle/pod_processors.dart';
 import 'package:test/test.dart';
 import 'package:jetleaf_core/src/pod/lifecycle/disposable_lifecycle_manager.dart';
 import 'package:jetleaf_core/src/pod/definition/pod_definition.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
 
 class TestDisposablePod implements DisposablePod {
   bool destroyed = false;
@@ -80,7 +82,8 @@ class MockPodDestructionProcessor extends PodDestructionProcessor {
 }
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('DisposableLifecycleManager', () {
     test('should create with disposable pod', () {
       final pod = TestDisposablePod();

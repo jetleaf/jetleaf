@@ -172,7 +172,7 @@ abstract final class Parameter extends Source {
   /// ```
   ///
   /// ## Notes
-  /// - This does not consider runtime modifications from mirrors or proxies.
+  /// - This does not consider runtime modifications from proxies.
   /// {@endtemplate}
   LinkDeclaration getLinkDeclaration();
   

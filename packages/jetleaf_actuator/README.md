@@ -10,7 +10,7 @@
 
 ## 🚀 Key Features
 
-- **⚡ Zero Reflection & AOT Safe:** Built entirely for native ahead-of-time compilation with strict typing and no `dart:mirrors`.
+- **⚡ Zero Reflection & AOT Safe:** Built entirely for native ahead-of-time compilation with strict typing and no `runtime reflection`.
 - **💻 Host & Process Diagnostics:** Inspect operating system details, CPU cores, hostnames, and resident memory (RSS) in real time.
 - **📈 Memory Trend Analytics:** Sample chronological memory readings and compute statistical summaries (min, max, average, and current memory consumption).
 - **⏱️ Performance & Method Interception:** Non-intrusive method-level and pod-level execution profiling with the `@Monitor` annotation.

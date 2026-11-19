@@ -1,5 +1,7 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
+
 import '../cache/jetleaf_paths.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'aot_annotation_registry_writer.dart';
@@ -17,8 +19,8 @@ import 'aot_type_registry_writer.dart';
 /// reflection and pod registration infrastructure under `lib/_jetleaf/` (configured via
 /// [Constant.GENERATED_DIR_NAME]).
 ///
-/// In pure Dart AOT execution (such as compiled native executables produced by `dart compile exe`
-/// or Flutter production releases), `dart:mirrors` is entirely unavailable. Jetleaf resolves
+/// When running compiled (such as a native executable produced by `dart compile exe`
+/// or a Flutter production release), runtime reflection is entirely unavailable. Jetleaf resolves
 /// all reflection, dependency injection, lifecycle hooks, and member dispatching through
 /// statically generated closures compiled ahead-of-time.
 ///
@@ -30,7 +32,7 @@ import 'aot_type_registry_writer.dart';
 ///
 /// ```text
 /// lib/_jetleaf/
-/// ├── aot_registry.g.dart               <-- Master library file (orchestrator & SPI)
+/// ├── registry.g.dart                    <-- Master library file (orchestrator & SPI)
 /// ├── registry_annotations.g.dart       <-- Annotation instance deserializer & factory
 /// ├── <current_package>/
 /// │   ├── registry_pods.g.dart          <-- Direct IoC pod definitions & suppliers
@@ -39,7 +41,7 @@ import 'aot_type_registry_writer.dart';
 /// │   ├── registry_fields.g.dart        <-- Direct field getters and setters
 /// │   └── registry_methods.g.dart       <-- Method invokers with dynamic argument unpacking
 /// └── <external_package>/
-///     └── ... (mirrored sub-registries for scanned dependencies)
+///     └── ... (matching sub-registries for scanned dependencies)
 /// ```
 ///
 /// ## 🔄 Bootstrap Lifecycle Pipeline
@@ -50,7 +52,7 @@ import 'aot_type_registry_writer.dart';
 /// Application Bootstrap
 ///        │
 ///        ▼
-/// [registerJetleafAot(factory)]
+/// [registerGeneratedArtifacts(factory)]
 ///        │
 ///        ├─────────────────────────────────────────────────┐
 ///        ▼                                                 ▼
@@ -123,8 +125,10 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
   /// 3. **Package Partitioning**: Segregates components by their originating package name.
   /// 4. **Sub-Registry Generation**: Invokes [_podWriter], [_typeWriter], [_constructorWriter],
   ///    [_fieldWriter], [_methodWriter], and [_annotationWriter] to output package-scoped `part` files.
-  /// 5. **Master File Assembly**: Emits `lib/_jetleaf/aot_registry.g.dart` referencing all parts,
-  ///    exposing [registerJetleafAot] and [GeneratedAotApplicationModule].
+  /// 5. **Master File Assembly**: Emits the master registry under
+  ///    `lib/_jetleaf/main/registry.g.dart` (or `lib/_jetleaf/test/registry.g.dart`
+  ///    for `[forTests]`), exposing the runtime registration entry point and
+  ///    [GeneratedAotApplicationModule].
   /// 6. **Manifest Redirection**: Emits `.jetleaf/generated/jetleaf_aot.g.dart` re-exporting the master file.
   ///
   /// Returns the master registry [File].
@@ -226,7 +230,7 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
 
         if (!isPodMethod) continue;
         // `@Pod` methods returning `Future<X>` are exposed to the container
-        // under the completeness type `X` (mirrors `isAsync ? componentType() :
+        // under the completeness type `X` (matching `isAsync ? componentType() :
         // getReturnClass()` in `AnnotatedPodMethodBuilder`), so gather the
         // mapping under the same name the container will see.
         final returnType = method.getReturnType();
@@ -274,7 +278,7 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
         podMethodByReturnType: podMethodByReturnType,
       );
       if (podFn != null) {
-        partPaths.add('$pkg/${Constant.AOT_REGISTRY_PODS_FILE_NAME}');
+        partPaths.add('$pkg/${Constant.REGISTRY_PODS_FILE_NAME}');
         podFns.add(podFn);
       }
 
@@ -286,7 +290,7 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
         registeredTypes: registeredTypes,
       );
       if (typeFn != null) {
-        partPaths.add('$pkg/${Constant.AOT_REGISTRY_TYPES_FILE_NAME}');
+        partPaths.add('$pkg/${Constant.REGISTRY_TYPES_FILE_NAME}');
         typeFns.add(typeFn);
       }
 
@@ -298,7 +302,7 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
         registeredConstructors: registeredConstructors,
       );
       if (ctorFn != null) {
-        partPaths.add('$pkg/${Constant.AOT_REGISTRY_CONSTRUCTORS_FILE_NAME}');
+        partPaths.add('$pkg/${Constant.REGISTRY_CONSTRUCTORS_FILE_NAME}');
         constructorFns.add(ctorFn);
       }
 
@@ -310,7 +314,7 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
         registeredMembers: registeredMembers,
       );
       if (fieldFn != null) {
-        partPaths.add('$pkg/${Constant.AOT_REGISTRY_FIELDS_FILE_NAME}');
+        partPaths.add('$pkg/${Constant.REGISTRY_FIELDS_FILE_NAME}');
         fieldFns.add(fieldFn);
       }
 
@@ -322,15 +326,15 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
         registeredMembers: registeredMembers,
       );
       if (methodFn != null) {
-        partPaths.add('$pkg/${Constant.AOT_REGISTRY_METHODS_FILE_NAME}');
+        partPaths.add('$pkg/${Constant.REGISTRY_METHODS_FILE_NAME}');
         methodFns.add(methodFn);
       }
     }
 
     final annotationFn = await _annotationWriter.write(generatedRootDir: generatedRootDir);
-    partPaths.add(Constant.AOT_REGISTRY_ANNOTATIONS_FILE_NAME);
+    partPaths.add(Constant.REGISTRY_ANNOTATIONS_FILE_NAME);
 
-    // 3. Write master library file `lib/_jetleaf/aot_registry.g.dart`
+    // 3. Write master library file `lib/_jetleaf/<main|test>/registry.g.dart`
     final buffer = StringBuffer();
     writeGeneratedHeader(buffer, 'AOT Master Registry for [$packageName]');
     for (final imp in baseImports) {
@@ -346,25 +350,23 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
     buffer.writeln();
     buffer.writeln(_valueResolver);
     buffer.writeln(_optionalHelper);
-    buffer.writeln('bool _aotRuntimeInitialized = false;');
+    final registrarName = forTests ? 'registerTestGeneratedArtifacts' : 'registerGeneratedArtifacts';
+    buffer.writeln('bool _runtimeInitialized = false;');
     buffer.writeln();
-    buffer.writeln('/// Registers all compile-time AOT declarations, members, and pods into [factory].');
-    buffer.writeln('/// Pure Dart closures — zero reflection, 100% native AOT compatible.');
-    buffer.writeln('Future<void> registerJetleafAot([DefaultListablePodFactory? factory]) async {');
-    buffer.writeln('  _initAotRuntime();');
+    buffer.writeln('/// Registers generated declarations, members, and pods into [factory].');
+    buffer.writeln('/// Pure Dart closures — zero runtime reflection.');
+    buffer.writeln('Future<void> $registrarName([DefaultListablePodFactory? factory]) async {');
+    buffer.writeln('  _initRuntime();');
     buffer.writeln('  if (factory == null) return;');
     for (final fn in podFns) {
       buffer.writeln('  await $fn(factory);');
     }
     buffer.writeln('}');
     buffer.writeln();
-    buffer.writeln('/// Backwards compatibility alias for [registerJetleafAot].');
-    buffer.writeln('const registerGeneratedAotPods = registerJetleafAot;');
-    buffer.writeln();
-    buffer.writeln('/// Registers runtime hints and constructors for AOT execution without mirrors.');
-    buffer.writeln('void _initAotRuntime() {');
-    buffer.writeln('  if (_aotRuntimeInitialized) return;');
-    buffer.writeln('  _aotRuntimeInitialized = true;');
+    buffer.writeln('/// Registers runtime hints and constructors.');
+    buffer.writeln('void _initRuntime() {');
+    buffer.writeln('  if (_runtimeInitialized) return;');
+    buffer.writeln('  _runtimeInitialized = true;');
     for (final fn in typeFns) {
       buffer.writeln('  $fn();');
     }
@@ -380,13 +382,13 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
     buffer.writeln('  $annotationFn();');
     buffer.writeln('}');
     buffer.writeln();
-    buffer.writeln('/// Auto-discovered [ApplicationModule] SPI that installs generated AOT pods.');
+    buffer.writeln('/// Auto-discovered [ApplicationModule] SPI that installs generated pods.');
     buffer.writeln('final class GeneratedAotApplicationModule implements ApplicationModule {');
     buffer.writeln('  @override');
     buffer.writeln('  Future<void> configure(ApplicationContext context) async {');
     buffer.writeln('    final podFactory = context.getPodFactory();');
     buffer.writeln('    if (podFactory is DefaultListablePodFactory) {');
-    buffer.writeln('      await registerJetleafAot(podFactory);');
+    buffer.writeln('      await $registrarName(podFactory);');
     buffer.writeln('    }');
     buffer.writeln('  }');
     buffer.writeln();
@@ -395,8 +397,40 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
     buffer.writeln('}');
 
     final masterContent = buffer.toString();
-    final masterFile = File('${generatedRootDir.path}/${Constant.AOT_REGISTRY_FILE_NAME}');
+    final masterFile = File('${generatedRootDir.path}/${Constant.REGISTRY_FILE_NAME}');
     await masterFile.writeAsString(masterContent);
+
+    // Also write the facade `lib/_jetleaf/<main|test>.dart` that re-exports the
+    // master registry so consumers can `import 'package:<pkg>/_jetleaf/<main|test>.dart'`.
+    final facadeDir = Directory(p.join(projectRoot.path, 'lib', Constant.JETLEAF_GENERATED_DIR_NAME));
+    if (!facadeDir.existsSync()) {
+      facadeDir.createSync(recursive: true);
+    }
+    final facadeName = forTests ? 'test.dart' : 'main.dart';
+    final facadeFile = File('${facadeDir.path}/$facadeName');
+    await facadeFile.writeAsString('''
+// ---------------------------------------------------------------------------
+// 🍃 Jetleaf Framework - https://jetleaf.hapnium.com
+//
+// Copyright © 2025 Hapnium & Jetleaf Contributors. All rights reserved.
+//
+// This source file is part of the Jetleaf Framework and is protected
+// under copyright law. You may not copy, modify, or distribute this file
+// except in compliance with the Jetleaf license.
+//
+// For licensing terms, see the LICENSE file in the root of this project.
+// ---------------------------------------------------------------------------
+//
+// 🔧 Powered by Hapnium — the Dart backend engine 🍃
+
+/// Jetleaf ${forTests ? 'test' : 'production'} artifact registry exports.
+///
+/// Re-exports [registry.g.dart] so applications can import this file instead of
+/// deep-importing the generated registry.
+library;
+
+export '${forTests ? 'test' : 'main'}/${Constant.REGISTRY_FILE_NAME}';
+''');
 
     // Also write summary manifest in .jetleaf/generated
     final outDir = JetleafPaths.generatedDir(projectRoot);
@@ -405,8 +439,8 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
     }
     final targetFile = File('${outDir.path}/jetleaf_aot.g.dart');
     await targetFile.writeAsString(
-      "// Generated AOT Registry located at ${Constant.GENERATED_DIR_NAME}/${Constant.AOT_REGISTRY_FILE_NAME}\n"
-      "export '../../${Constant.GENERATED_DIR_NAME}/${Constant.AOT_REGISTRY_FILE_NAME}';\n",
+      "// Generated AOT Registry located at ${Constant.GENERATED_DIR_NAME}/${Constant.REGISTRY_FILE_NAME}\n"
+      "export '../../${Constant.GENERATED_DIR_NAME}/${Constant.REGISTRY_FILE_NAME}';\n",
     );
 
     return masterFile;

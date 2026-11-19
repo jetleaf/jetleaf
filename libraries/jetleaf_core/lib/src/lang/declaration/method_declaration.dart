@@ -387,7 +387,7 @@ final class StandardMethodDeclaration extends StandardSourceDeclaration implemen
     
     return StandardMethodDeclaration(
       name: name,
-      type: StandardDeclaration.resolveType(typeName),
+      type: MaterializedLibrary.resolveType(typeName),
       isPublic: isPublic,
       isSynthetic: isSynthetic,
       returnType: returnType,

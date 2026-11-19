@@ -129,7 +129,7 @@ void main() {
         expect(() => jsonDecode(json), returnsNormally);
       });
 
-      test('generates null values (stripped by _cleanJson)', () {
+      test('generates null values', () {
         final gen = StringJsonGenerator();
         gen.writeStartObject();
         gen.writeFieldName('value');
@@ -137,8 +137,8 @@ void main() {
         gen.writeEndObject();
 
         final json = gen.toString();
-        // _cleanJson strips null values, so the output is an empty object
-        expect(json, '{}');
+        // null values are preserved exactly as written
+        expect(json, '{"value":null}');
         expect(() => jsonDecode(json), returnsNormally);
       });
 
@@ -152,8 +152,8 @@ void main() {
         gen.writeEndObject();
 
         final json = gen.toString();
-        // null value for 'age' is stripped
-        expect(json, '{"name":"Alice"}');
+        // null values are preserved
+        expect(json, '{"name":"Alice","age":null}');
         expect(() => jsonDecode(json), returnsNormally);
       });
 

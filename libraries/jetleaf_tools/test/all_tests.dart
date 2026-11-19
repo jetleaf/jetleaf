@@ -1,5 +1,6 @@
 import 'package:test/test.dart';
 
+import 'aot/aot_proxy_writer_test.dart' as aot_proxy_writer_test;
 import 'declaration/mixin_declaration_test.dart' as mixin_declaration_test;
 import 'declaration/method_declaration_test.dart' as method_declaration_test;
 import 'declaration/class_declaration_test.dart' as class_declaration_test;
@@ -26,6 +27,9 @@ import 'vm/jetleaf_vm_file_test.dart' as jetleaf_vm_file_test;
 import 'vm/packages_json_test.dart' as packages_json_test;
 
 void main() {
+  group('aot/aot_proxy_writer', () {
+    aot_proxy_writer_test.main();
+  });
   group('declaration/mixin', () {
     mixin_declaration_test.main();
   });

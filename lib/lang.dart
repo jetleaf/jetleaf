@@ -24,7 +24,7 @@
 /// │         │                        │                        │            │
 /// │      [Class]                  [Method]                 [Field]         │
 /// ├──────────────────────────────────┴─────────────────────────────────────┤
-/// │ • Pure AOT Tokenization: Maps static class types without dart:mirrors  │
+/// │ • Pure AOT Tokenization: Maps static class types without runtime reflection  │
 /// │ • Zero-Overhead Reflection: Fast field access & method invocation      │
 /// └────────────────────────────────────────────────────────────────────────┘
 /// ```

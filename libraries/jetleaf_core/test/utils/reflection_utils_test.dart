@@ -2,13 +2,13 @@ import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
 
 /// A dummy class used for testing reflection.
-class User {
+class ReflectUser {
   final String name;
-  User(this.name);
+  ReflectUser(this.name);
 }
 
 /// Another dummy class to verify multiple types.
-class Admin extends User {
+class Admin extends ReflectUser {
   Admin(super.name);
 }
 
@@ -21,7 +21,7 @@ int anotherFunction(double d) => d.toInt();
 void main() {
   group('ReflectionUtils', () {
     test('findQualifiedName returns a fully qualified name for an instance', () {
-      final user = User('Alice');
+      final user = ReflectUser('Alice');
       final qualifiedName = ReflectionUtils.findQualifiedName(user);
 
       expect(qualifiedName, contains('User'));
@@ -42,7 +42,7 @@ void main() {
 
       expect(ReflectionUtils.isThisARecord('not a record'), isFalse);
       expect(ReflectionUtils.isThisARecord(123), isFalse);
-      expect(ReflectionUtils.isThisARecord(User('Bob')), isFalse);
+      expect(ReflectionUtils.isThisARecord(ReflectUser('Bob')), isFalse);
     });
 
     test('isThisAFunction detects functions and closures', () {
@@ -52,7 +52,7 @@ void main() {
 
       expect(ReflectionUtils.isThisAFunction('string'), isFalse);
       expect(ReflectionUtils.isThisAFunction(123), isFalse);
-      expect(ReflectionUtils.isThisAFunction(User('Charlie')), isFalse);
+      expect(ReflectionUtils.isThisAFunction(ReflectUser('Charlie')), isFalse);
     });
 
     test('buildQualifiedName builds canonical dot-separated qualified names', () {

@@ -12,7 +12,7 @@ import '../jetleaf_application.dart';
 /// Logs application startup events in a structured and user-friendly format.
 ///
 /// This logger generates standardized startup messages including:
-/// - Compiler mode (JIT, AOT, DILL)
+/// - Compiler mode (AOT, DILL)
 /// - Application name and version
 /// - Dart runtime version
 /// - Process ID (PID)
@@ -163,7 +163,6 @@ class StartupLogger {
   void _appendCompilerMode(StringBuffer message) {
     _append(message, '', () =>
       System.isRunningAot() ? 'AOT' :
-      System.isRunningJit() ? 'JIT' :
       System.isRunningFromDill() ? 'DILL' : null
     );
   }

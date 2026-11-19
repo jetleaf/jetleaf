@@ -27,7 +27,7 @@ part '_enum_value.dart';
 /// - Nullability checking
 ///
 /// ## Implementation Notes
-/// Concrete implementations typically wrap analyzer- or mirror-based metadata
+/// Concrete implementations typically wrap analyzer- or reflection-based metadata
 /// to unify enum reflection across build-time and runtime environments.
 /// {@endtemplate}
 abstract final class EnumValue extends PermissionManager {

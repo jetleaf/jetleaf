@@ -2,14 +2,14 @@ import 'package:jetleaf/jetleaf.dart';
 import 'package:jetleaf_resource/jetleaf_resource.dart';
 import 'package:jetleaf_web/jetleaf_web.dart';
 import 'package:supabase/supabase.dart';
-import '_jetleaf/aot_registry.g.dart';
+import '_jetleaf/main.dart';
 
 Future<void> main(List<String> args) async {
   final context = await JetleafApplication.run(
     BuilderApplication(),
     args,
     null,
-    registerGeneratedAotPods,
+    registerGeneratedArtifacts,
   );
   if (context != null) {
     print("Application is up and running");

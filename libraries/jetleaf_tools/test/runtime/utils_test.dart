@@ -101,10 +101,6 @@ void main() {
       expect(RuntimeUtils.isPartOf("// part of main.dart"), false); // Commented out
     });
 
-    test('hasMirrorImport should detect mirror imports', () {
-      expect(RuntimeUtils.hasMirrorImport("import 'dart:mirrors';"), true);
-      expect(RuntimeUtils.hasMirrorImport("import 'package:test/test.dart';"), false);
-    });
 
     test('isTest should detect test imports', () {
       expect(RuntimeUtils.isTest("import 'package:test/test.dart';"), true);

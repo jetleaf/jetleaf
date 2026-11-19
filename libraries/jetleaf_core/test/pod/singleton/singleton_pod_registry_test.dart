@@ -9,6 +9,8 @@ import 'package:jetleaf_core/src/pod/exceptions.dart';
 import 'package:jetleaf_core/src/pod/helpers/object.dart';
 import 'package:jetleaf_core/src/pod/singleton/default_singleton_pod_registry.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
 
 // Mock classes for testing
 class MockDisposablePod implements DisposablePod {
@@ -65,7 +67,8 @@ class TestObjectFactory implements ObjectFactory<Object> {
 }
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('DefaultSingletonPodRegistry', () {
     late DefaultSingletonPodRegistry registry;
     

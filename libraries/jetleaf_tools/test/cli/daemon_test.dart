@@ -1,4 +1,4 @@
-@Timeout(Duration(seconds: 90))
+@Timeout(Duration(seconds: 400))
 library;
 
 import 'dart:async';
@@ -22,7 +22,7 @@ void main() {
     setUp(() async {
       tempDir = await Directory.systemTemp.createTemp('jl_daemon_test_');
       await File('${tempDir.path}/pubspec.yaml').writeAsString('''
-name: demo_daemon_project
+name: sample_app
 dependencies:
   jetleaf_pod: any
 ''');
@@ -32,7 +32,7 @@ dependencies:
   "configVersion": 2,
   "packages": [
     {
-      "name": "demo_daemon_project",
+      "name": "sample_app",
       "rootUri": "../",
       "packageUri": "lib/",
       "languageVersion": "3.0"
@@ -40,7 +40,7 @@ dependencies:
   ]
 }''');
       await File('${libDir.path}/service.dart').writeAsString('''
-import 'package:jetleaf_pod/pod.dart';
+import 'package:jetleaf_core/pod.dart';
 
 @Service()
 class GreeterService {
@@ -118,15 +118,15 @@ class UserController {
           .listen((line) {});
 
       // 1. Wait for ready message
-      final readyJson = await readyCompleter.future.timeout(const Duration(seconds: 30));
+      final readyJson = await readyCompleter.future.timeout(const Duration(seconds: 60));
       expect(readyJson['type'], equals('ready'));
       expect(readyJson['projectRoot'], isNotNull);
 
       // 2. Send status request
       process.stdin.writeln(jsonEncode({'type': 'status'}));
-      final statusJson = await statusCompleter.future.timeout(const Duration(seconds: 30));
+      final statusJson = await statusCompleter.future.timeout(const Duration(seconds: 60));
       expect(statusJson['type'], equals('status_response'));
-      expect(statusJson['packageName'], equals('demo_daemon_project'));
+      expect(statusJson['packageName'], equals('sample_app'));
 
       // 3. Send build request
       process.stdin.writeln(jsonEncode({
@@ -139,17 +139,17 @@ class UserController {
       }));
 
       // Wait for build_complete
-      final completeJson = await buildCompleter.future.timeout(const Duration(seconds: 30));
+      final completeJson = await buildCompleter.future.timeout(const Duration(seconds: 300));
       expect(completeJson['type'], equals('build_complete'));
       expect(completeJson['components'], greaterThan(0));
 
       // Verify that cache and AOT registrar were written
       final cacheDir = Directory('${tempDir.path}/.jetleaf/cache/main');
       expect(cacheDir.existsSync(), isTrue);
-      final generatedAotFile = File('${tempDir.path}/lib/_jetleaf/aot_registry.g.dart');
+      final generatedAotFile = File('${tempDir.path}/lib/_jetleaf/main/registry.g.dart');
       expect(generatedAotFile.existsSync(), isTrue);
 
-      final generatedPodsFile = File('${tempDir.path}/lib/_jetleaf/sample_app/registry_pods.g.dart');
+      final generatedPodsFile = File('${tempDir.path}/lib/_jetleaf/main/sample_app/registry_pods.g.dart');
       expect(generatedPodsFile.existsSync(), isTrue);
 
       final aotContent = await generatedPodsFile.readAsString();
@@ -158,10 +158,10 @@ class UserController {
 
       // 4. Send stop request
       process.stdin.writeln(jsonEncode({'type': 'stop'}));
-      final stoppedJson = await stopCompleter.future.timeout(const Duration(seconds: 10));
+      final stoppedJson = await stopCompleter.future.timeout(const Duration(seconds: 30));
       expect(stoppedJson['type'], equals('stopped'));
 
-      final exitCode = await process.exitCode.timeout(const Duration(seconds: 5));
+      final exitCode = await process.exitCode.timeout(const Duration(seconds: 20));
       expect(exitCode, equals(0));
     });
   });

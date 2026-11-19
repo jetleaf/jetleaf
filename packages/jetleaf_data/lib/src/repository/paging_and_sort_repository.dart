@@ -1,0 +1,42 @@
+// ---------------------------------------------------------------------------
+// 🍃 JetLeaf Framework - https://jetleaf.hapnium.com
+//
+// Copyright © 2025 Hapnium & JetLeaf Contributors. All rights reserved.
+//
+// This source file is part of the JetLeaf Framework and is protected
+// under copyright law. You may not copy, modify, or distribute this file
+// except in compliance with the JetLeaf license.
+//
+// For licensing terms, see the LICENSE file in the root of this project.
+// ---------------------------------------------------------------------------
+// 
+// 🔧 Powered by Hapnium — the Dart backend engine 🍃
+
+import 'package:jetleaf_core/lang.dart';
+
+import '../paging/page.dart';
+import '../paging/pageable.dart';
+import '../paging/sort.dart';
+import '../../repository.dart';
+
+export 'list_paging_and_sort_repository.dart';
+
+/// {@template jetleaf_paging_and_sorting_repository}
+/// A generic **repository with paging and sorting capabilities**, extending
+/// [Repository] and providing methods to retrieve sorted collections or
+/// paginated results.
+/// {@endtemplate}
+@Generic(PagingAndSortRepository)
+abstract class PagingAndSortRepository<T, ID> extends Repository<T, ID> {
+  /// The reflective [Class] handle representing the `PagingAndSortRepository` interface.
+  static final Class<PagingAndSortRepository> CLASS =
+      Class<PagingAndSortRepository>(null, PackageNames.DATA);
+
+  /// Retrieves all entities sorted according to the given [sort].
+  Future<Iterable<T>> findAllSorted(Sort sort) async =>
+      await getExecutor()?.findAllSorted(sort, this) ?? const [];
+
+  /// Retrieves a page of entities according to [pageable] constraints.
+  Future<Page<T>> findPage(Pageable pageable) async =>
+      await getExecutor()?.findPage(pageable, this) ?? Page.empty();
+}

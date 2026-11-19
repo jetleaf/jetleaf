@@ -5,7 +5,6 @@ import '../meta/class/class.dart';
 import '../meta/class/class_type.dart';
 import '../meta/protection_domain/protection_domain.dart';
 import '../runtime/provider/runtime_provider.dart' show Runtime;
-import 'generic_type_parser.dart';
 
 /// {@template lang_utils}
 /// Utility class providing **type resolution helpers** for Jetleaf meta-APIs.
@@ -142,7 +141,7 @@ abstract final class LangUtils {
         return DYNAMIC_CLASS;
       }
 
-      if (declaration.getType() == Void || declaration.getPointerQualifiedName() == Void.getQualifiedName()) {
+      if (declaration.getType() == Void || declaration.getPointerQualifiedName() == Void.getQualifiedName() || declaration.getName() == 'void') {
         return VOID_CLASS;
       }
 
@@ -269,7 +268,7 @@ abstract final class LangUtils {
   /// - Generic metadata is incomplete
   /// - The type cannot be materialized directly
   static Class _handleTypeLogic<K>(LinkDeclaration link, ProtectionDomain pd) {
-    if (GenericTypeParser.shouldCheckGeneric(link.getType())) {
+    if (link.getTypeArguments().isNotEmpty) {
       if (Dynamic.isDynamic<K>()) {
         return Class.fromQualifiedName(link.getPointerQualifiedName(), pd);
       }
@@ -312,7 +311,7 @@ abstract final class LangUtils {
       return Class<K>.fromQualifiedName(link.getPointerQualifiedName());
     }
 
-    if (GenericTypeParser.shouldCheckGeneric(link.getPointerType())) {
+    if (link.getTypeArguments().isNotEmpty) {
       if (Dynamic.isDynamic<K>()) {
         return Class.fromQualifiedName(link.getPointerQualifiedName(), pd);
       }
@@ -351,7 +350,7 @@ abstract final class LangUtils {
       return Class<K>.fromQualifiedName(link.getPointerQualifiedName());
     }
     
-    if (GenericTypeParser.shouldCheckGeneric(link.getPointerType())) {
+    if (link.getTypeArguments().isNotEmpty) {
       if (Dynamic.isDynamic<K>()) {
         return Class.fromQualifiedName(link.getPointerQualifiedName(), pd);
       }
@@ -359,7 +358,7 @@ abstract final class LangUtils {
       return Class<K>.fromQualifiedName(link.getPointerQualifiedName(), pd);
     }
     
-    if (GenericTypeParser.shouldCheckGeneric(link.getType())) {
+    if (link.getTypeArguments().isNotEmpty) {
       if (Dynamic.isDynamic<K>()) {
         return Class.fromQualifiedName(link.getPointerQualifiedName(), pd);
       }
@@ -389,7 +388,7 @@ abstract final class LangUtils {
   /// - Generic fidelity may be reduced
   /// - Type correctness is prioritized over structure
   static Class _handleTypeFallback<K>(LinkDeclaration link, ProtectionDomain pd) {
-    if (GenericTypeParser.shouldCheckGeneric(link.getType())) {
+    if (link.getTypeArguments().isNotEmpty) {
       if (Dynamic.isDynamic<K>()) {
         return Class.forType(link.getPointerType(), pd);
       }
@@ -451,7 +450,7 @@ abstract final class LangUtils {
       return Class.forType<K>(link.getType() as K, pd);
     }
     
-    if (GenericTypeParser.shouldCheckGeneric(link.getPointerType())) {
+    if (link.getTypeArguments().isNotEmpty) {
       if (Dynamic.isDynamic<K>()) {
         return Class.forType(link.getType(), pd);
       }
@@ -459,7 +458,7 @@ abstract final class LangUtils {
       return Class.forType<K>(link.getType() as K, pd);
     }
     
-    if (GenericTypeParser.shouldCheckGeneric(link.getType())) {
+    if (link.getTypeArguments().isNotEmpty) {
       if (Dynamic.isDynamic<K>()) {
         return Class.forType(link.getPointerType(), pd);
       }

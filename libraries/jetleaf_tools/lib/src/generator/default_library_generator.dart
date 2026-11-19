@@ -20,8 +20,6 @@ base class DefaultLibraryGenerator extends LibraryGenerator {
     required super.configuration,
     required super.packages,
     this.refresh = true,
-    super.mirrorSystem,
-    super.forceLoadedMirrors,
   });
 
   @override

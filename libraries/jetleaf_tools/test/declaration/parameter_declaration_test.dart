@@ -2,6 +2,7 @@
 
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../helpers/aot_test_setup.dart';
 typedef WhenChecked = Map<String, bool>;
 final record = (String, bool);
 typedef Rrec = ({String name, int age});
@@ -174,6 +175,7 @@ class SuperConstructorParamClass extends SimpleParamClass {
 
 @JetleafTest()
 void main() async {
+  await ensureTestAotRegistered();
   group('ParameterDeclaration Basic Properties', () {
     test('should correctly identify nullable vs non-nullable parameters', () {
       final nullableClass = Runtime.findClass<NullableParamClass>();

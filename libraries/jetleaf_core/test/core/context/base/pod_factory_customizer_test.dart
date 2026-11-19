@@ -2,6 +2,8 @@ import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_core/env.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import '../../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
 
 class TestPodFactoryCustomizer implements PodFactoryCustomizer<ApplicationContext> {
   bool customized = false;
@@ -13,7 +15,8 @@ class TestPodFactoryCustomizer implements PodFactoryCustomizer<ApplicationContex
 }
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('PodFactoryCustomizer', () {
     test('should customize factory', () async {
       final customizer = TestPodFactoryCustomizer();

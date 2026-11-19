@@ -108,7 +108,7 @@ import 'models.dart';
 /// - This class is **not** meant for direct instantiation.
 /// - All key operations are `@protected` to guide subclassing while preventing
 ///   misuse.
-/// - The design mirrors Jetleaf’s philosophy of *user-first configuration
+/// - The design follows Jetleaf’s philosophy of *user-first configuration
 ///   precedence with deterministic behavior*.
 ///
 ///
@@ -729,7 +729,7 @@ abstract class AbstractEnvironmentSupport extends AbstractEnvironmentLoggingSupp
   /// ### Notes
   /// - The method assumes that [sources] have already been grouped and merged by
   ///   profile using `getEnvironmentSources`.
-  /// - The ordering strategy mirrors Jetleaf's package-aware configuration loading
+  /// - The ordering strategy follows Jetleaf's package-aware configuration loading
   ///   model.
   ///
   /// ### Internal Use

@@ -597,7 +597,7 @@ final class StandardClassDeclaration extends StandardSourceDeclaration implement
 
   @override
   Type getType() {
-    final resolved = StandardDeclaration.resolveType(_qualifiedName);
+    final resolved = MaterializedLibrary.resolveType(_qualifiedName);
     if (resolved != Object && resolved != dynamic) return resolved;
     return super.getType();
   }
@@ -716,7 +716,10 @@ final class StandardClassDeclaration extends StandardSourceDeclaration implement
 
   @override
   dynamic newInstance(Map<String, dynamic> arguments) {
-    if (GenericTypeParser.isMirrored(getType().toString())) {
+    // A synthesized fallback declaration models a type whose constructors
+    // are unknown at declaration-build time; instantiating it would always
+    // fail at constructor lookup anyway.
+    if (getIsSynthetic()) {
       throw UnresolvedTypeInstantiationException(getType());
     }
 
@@ -911,7 +914,7 @@ final class StandardClassDeclaration extends StandardSourceDeclaration implement
 
     return StandardClassDeclaration(
       name: name,
-      type: StandardDeclaration.resolveType(typeName),
+      type: MaterializedLibrary.resolveType(typeName),
       isPublic: isPublic,
       isSynthetic: isSynthetic,
       library: lib,

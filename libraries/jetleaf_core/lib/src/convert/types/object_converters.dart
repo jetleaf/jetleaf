@@ -1,4 +1,5 @@
 import 'package:jetleaf_core/lang.dart';
+import 'dart:collection' as col;
 
 import '../exceptions.dart';
 import '../core/conversion_service.dart';
@@ -141,6 +142,24 @@ class ListToObjectConverter extends CommonPairedConditionalConverter {
 /// print(converter.convert({1, 2, 3})); // prints: 1
 /// ```
 /// {@endtemplate}
+/// Returns true when [type] denotes a Map-like declaration (any parameterised
+/// `Map`, `HashMap` or Dart built-in map subtype) — used in place of strict
+/// `getType() == Map` comparisons, which fail for `Map<String, dynamic>` and
+/// similar parameterised declarations.
+bool _isMapLike(Class type) {
+  final typeName = type.getType().toString();
+  return type.getType() == Map ||
+      typeName.startsWith('Map') ||
+      typeName.startsWith('HashMap') ||
+      typeName.startsWith('col.HashMap') ||
+      type.getName() == 'Map' ||
+      type.getName().startsWith('Map<') ||
+      type.getName().startsWith('HashMap') ||
+      type.isAssignableTo(Class<Map>(null, PackageNames.LANG)) ||
+      type.isAssignableTo(Class<Map>(null, PackageNames.DART)) ||
+      type.isAssignableTo(Class<col.HashMap>(null, PackageNames.DART));
+}
+
 class SetToObjectConverter extends CommonPairedConditionalConverter {
   final ConversionService _conversionService;
 
@@ -211,12 +230,12 @@ class ObjectToObjectConverter extends CommonPairedConditionalConverter {
   @override
   bool matches(Class sourceType, Class targetType) {
     if (sourceType.getType() == targetType.getType()) return false;
-    if (targetType.getType() == Map) return true;
+    if (_isMapLike(targetType)) return true;
     if (sourceType.isPrimitive()) return false;
     // Lightweight check for Map→Object: source is Map, target is not Map and not raw Object.
     // The actual fromMap constructor lookup happens in convert() via determineMapFromMethod(),
     // which calls getConstructors() — but only when the converter is actually selected.
-    if (sourceType.getType() == Map && targetType.getType() != Map && targetType.getType() != Object) return true;
+    if (_isMapLike(sourceType) && !_isMapLike(targetType) && targetType.getType() != Object) return true;
     return hasConversionMethodOrConstructor(targetType, sourceType);
   }
 
@@ -302,7 +321,7 @@ class ObjectToObjectConverter extends CommonPairedConditionalConverter {
       final params = ctor.getParameters();
       if (params.length == 1) {
         final param = params.elementAt(0);
-        if (param.getReturnClass().getType() == Map) {
+        if (_isMapLike(param.getReturnClass())) {
           return ctor;
         }
       }
@@ -316,7 +335,7 @@ class ObjectToObjectConverter extends CommonPairedConditionalConverter {
       final name = ctor.getName();
       if (name == 'fromMap' || name == 'from') {
         final params = ctor.getParameters();
-        if (params.length == 1 && params.elementAt(0).getReturnClass().getType() == Map) {
+        if (params.length == 1 && _isMapLike(params.elementAt(0).getReturnClass())) {
           return ctor;
         }
       }
@@ -348,7 +367,7 @@ class ObjectToObjectConverter extends CommonPairedConditionalConverter {
       }
     }
 
-    if (targetType.getType() == Map) {
+    if (_isMapLike(targetType)) {
       try {
         final map = <String, dynamic>{};
         for (final member in sourceType.getDeclaredMembers()) {

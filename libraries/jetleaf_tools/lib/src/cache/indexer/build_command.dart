@@ -193,13 +193,17 @@ bool _isReachableComponent(
     final rootPath = root.isAbsolute
         ? root.toFilePath()
         : p.join(projectRoot.path, root.path);
-    var filePath = p.join(rootPath, 'lib');
-    for (final part in parts.skip(1)) {
-      filePath = p.join(filePath, part);
+    final rel = parts.skip(1).join(p.separator);
+    // Package roots may hold test/tool/bin sources directly (e.g.
+    // `package:pkg/test/x_test.dart`) — prefer package-root-relative
+    // locations when they exist, otherwise fall back to `lib/`.
+    final candidates = <String>[p.join(rootPath, rel), p.join(rootPath, 'lib', rel)];
+    for (final filePath in candidates) {
+      if (reachability.reachablePaths.contains(p.normalize(File(filePath).absolute.path))) {
+        return true;
+      }
     }
-    return reachability.reachablePaths.contains(
-      p.normalize(File(filePath).absolute.path),
-    );
+    return false;
   }
   return true;
 }

@@ -416,7 +416,7 @@ abstract class AbstractFileLocatorUtility extends AbstractFileUtility {
   /// The package itself is considered part of the framework when its own name
   /// is a Jetleaf package — the framework's base packages (e.g.
   /// `jetleaf_core`) are leaves of the dependency tree which may depend on no
-  /// Jetleaf package themselves and must still be scanned. This mirrors the
+  /// Jetleaf package themselves and must still be scanned. This matches the
   /// runtime's own classification, which treats any package named
   /// `jetleaf*` as a Jetleaf package.
   ///

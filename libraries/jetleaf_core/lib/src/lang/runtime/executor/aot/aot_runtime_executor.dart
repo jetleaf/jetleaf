@@ -1,14 +1,9 @@
 import 'package:jetleaf_core/lang.dart';
 
-typedef MethodExecutable = Object? Function(Object? instance, ExecutableArgument argument);
-typedef ConstructorExecutable = Object Function([ExecutableArgument? argument]);
-typedef FieldGetterExecutable = Object? Function(Object? instance);
-typedef FieldSetterExecutable = void Function(Object? instance, Object? value);
-
 /// {@template aot_runtime_executor}
 /// An [RuntimeExecutor] implementation that leverages Ahead-of-Time (AOT) 
 /// generative hints to perform instance creation, method invocation, and 
-/// field access at runtime without relying on mirrors or dynamic reflection.
+/// field access at runtime without relying on runtime reflection.
 ///
 /// ## Purpose
 /// The [AotRuntimeExecutor] is designed for environments where:
@@ -27,25 +22,18 @@ typedef FieldSetterExecutable = void Function(Object? instance, Object? value);
 ///   or [FieldMutationException]).
 ///
 /// ## Example
+/// Generated registries register every closure they emit against [MaterializedLibrary]
+/// (`registerNamedConstructor`, `registerMethod`, `registerFieldGetter`, ...).
+/// The executor then resolves through that registry:
 /// ```dart
-/// // Register AOT constructor
-/// AotRuntimeExecutor.registerNamedConstructor('UserService', ([args]) => UserService());
-///
-/// // Register AOT method
-/// AotRuntimeExecutor.registerMethod('UserService.findUser', (inst, args) {
-///   final id = args.getPositionalArguments()[0] as String;
-///   return (inst as UserService).findUser(id);
-/// });
-///
-/// // Execute
-/// final user = AotRuntimeExecutor.constructByName('UserService');
 /// final executor = AotRuntimeExecutor(DefaultRuntimeHintDescriptor());
+/// final user = MaterializedLibrary.constructByName('UserService');
 /// final result = executor.invokeMethod(user, 'findUser', ExecutableArgument.unmodified(const {}, ['u123']));
 /// ```
 ///
 /// ## Use Cases
 /// - Performing runtime operations in a fully AOT compiled Dart environment.
-/// - Replacing mirror-based reflection with precomputed generative resolutions.
+/// - Replacing reflection-based reflection with precomputed generative resolutions.
 /// - Integrating with Jetleaf's hint system for deterministic and type-safe execution.
 ///
 /// ## Field
@@ -53,64 +41,6 @@ typedef FieldSetterExecutable = void Function(Object? instance, Object? value);
 ///   for all types that this executor may operate on.
 /// {@endtemplate}
 class AotRuntimeExecutor implements RuntimeExecutor {
-  /// Named factory registry for AOT instantiation without mirrors.
-  static final Map<String, ConstructorExecutable> _namedConstructors = {};
-
-  /// Type-based factory registry for AOT instantiation without mirrors.
-  static final Map<Type, ConstructorExecutable> _typeConstructors = {};
-
-  /// Registers a runtime [Type] for a class name and optional qualified name.
-  static void registerType(String name, Type type, [String? qualifiedName]) {
-    StandardDeclaration.registerType(name, type, qualifiedName);
-  }
-
-  /// Registers a named constructor factory for AOT instantiation.
-  static void registerNamedConstructor(String name, ConstructorExecutable factory) {
-    _namedConstructors[name] = factory;
-  }
-
-  /// Instantiates a registered named constructor by [name] with optional [argument].
-  static Object? constructByName(String name, [ExecutableArgument? argument]) {
-    final factory = _namedConstructors[name];
-    if (factory != null) {
-      try {
-        return factory(argument);
-      } catch (_) {
-        return null;
-      }
-    }
-    return null;
-  }
-
-  /// Registers a typed constructor factory for AOT instantiation.
-  static void registerConstructor<T>(ConstructorExecutable factory) {
-    _typeConstructors[T] = factory;
-  }
-
-  /// Method registry for AOT method invocation without mirrors.
-  static final Map<String, MethodExecutable> _methodInvokers = {};
-
-  /// Registers a method invoker for AOT execution.
-  static void registerMethod(String methodKey, MethodExecutable invoker) {
-    _methodInvokers[methodKey] = invoker;
-  }
-
-  /// Field getter registry for AOT field access without mirrors.
-  static final Map<String, FieldGetterExecutable> _fieldGetters = {};
-
-  /// Field setter registry for AOT field mutation without mirrors.
-  static final Map<String, FieldSetterExecutable> _fieldSetters = {};
-
-  /// Registers a field getter for AOT execution.
-  static void registerFieldGetter(String fieldKey, FieldGetterExecutable getter) {
-    _fieldGetters[fieldKey] = getter;
-  }
-
-  /// Registers a field setter for AOT execution.
-  static void registerFieldSetter(String fieldKey, FieldSetterExecutable setter) {
-    _fieldSetters[fieldKey] = setter;
-  }
-
   /// The registry used to resolve and execute generative descriptors.
   ///
   /// This descriptor maintains a mapping of types to [RuntimeHint]
@@ -127,28 +57,33 @@ class AotRuntimeExecutor implements RuntimeExecutor {
     final parentQualifiedName = constructor.getParentClass()?.getPointerQualifiedName();
 
     if (name.isNotEmpty) {
-      if (parentClassName != null && _namedConstructors.containsKey('$parentClassName.$name')) {
-        return _namedConstructors['$parentClassName.$name']!(argument) as T;
+      final forParent = MaterializedLibrary.lookupNamedConstructor('$parentClassName.$name') ??
+          (parentQualifiedName != null ? MaterializedLibrary.lookupNamedConstructor('$parentQualifiedName.$name') : null);
+      if (forParent != null) {
+        return forParent(argument) as T;
       }
-      if (parentQualifiedName != null && _namedConstructors.containsKey('$parentQualifiedName.$name')) {
-        return _namedConstructors['$parentQualifiedName.$name']!(argument) as T;
-      }
-      if (_namedConstructors.containsKey(name)) {
-        return _namedConstructors[name]!(argument) as T;
+      final direct = MaterializedLibrary.lookupNamedConstructor(name);
+      if (direct != null) {
+        return direct(argument) as T;
       }
     }
 
-    if (parentClassName != null && _namedConstructors.containsKey(parentClassName)) {
-      return _namedConstructors[parentClassName]!(argument) as T;
+    final byParent = MaterializedLibrary.lookupNamedConstructor(parentClassName ?? '') ??
+        (parentQualifiedName != null ? MaterializedLibrary.lookupNamedConstructor(parentQualifiedName) : null);
+    if (byParent != null) {
+      return byParent(argument) as T;
     }
-    if (parentQualifiedName != null && _namedConstructors.containsKey(parentQualifiedName)) {
-      return _namedConstructors[parentQualifiedName]!(argument) as T;
+    if (returnType != null) {
+      final byReturnType = MaterializedLibrary.lookupTypeConstructor(returnType);
+      if (byReturnType != null) {
+        return byReturnType(argument) as T;
+      }
     }
-    if (returnType != null && _typeConstructors.containsKey(returnType)) {
-      return _typeConstructors[returnType]!(argument) as T;
-    }
-    if (T != dynamic && T != Object && _typeConstructors.containsKey(T)) {
-      return _typeConstructors[T]!(argument) as T;
+    if (T != dynamic && T != Object) {
+      final typed = MaterializedLibrary.lookupTypeConstructor(T);
+      if (typed != null) {
+        return typed(argument) as T;
+      }
     }
 
     final hint = descriptor.getHint<T>(type: returnType ?? T);
@@ -216,13 +151,14 @@ class AotRuntimeExecutor implements RuntimeExecutor {
       final rawClassName = instance.runtimeType.toString();
       final className = rawClassName.split('<').first;
       for (final candidate in _hierarchyNames(className)) {
-        final fullKey = '$candidate.$method';
-        if (_methodInvokers.containsKey(fullKey)) {
-          return _methodInvokers[fullKey]!(instance as Object, argument);
+        final invoker = MaterializedLibrary.lookupMethodInvoker('$candidate.$method');
+        if (invoker != null) {
+          return invoker(instance as Object, argument);
         }
       }
-      if (_methodInvokers.containsKey(method)) {
-        return _methodInvokers[method]!(instance as Object, argument);
+      final direct = MaterializedLibrary.lookupMethodInvoker(method);
+      if (direct != null) {
+        return direct(instance as Object, argument);
       }
     }
 
@@ -243,11 +179,13 @@ class AotRuntimeExecutor implements RuntimeExecutor {
   Object? getValue<T>(T instance, String name) {
     // Class-qualified key (e.g. 'DataClass.property') — static accessor registered by the AOT registry.
     if (name.contains('.')) {
-      if (_fieldGetters.containsKey(name)) {
-        return _fieldGetters[name]!(null as dynamic);
+      final getter = MaterializedLibrary.lookupFieldGetter(name);
+      if (getter != null) {
+        return getter(null as dynamic);
       }
-      if (_methodInvokers.containsKey(name)) {
-        return _methodInvokers[name]!(null as dynamic, ExecutableArgument.unmodified(const {}, const []));
+      final invoker = MaterializedLibrary.lookupMethodInvoker(name);
+      if (invoker != null) {
+        return invoker(null as dynamic, ExecutableArgument.unmodified(const {}, const []));
       }
     }
 
@@ -256,11 +194,13 @@ class AotRuntimeExecutor implements RuntimeExecutor {
       final className = rawClassName.split('<').first;
       for (final candidate in _hierarchyNames(className)) {
         final fullKey = '$candidate.$name';
-        if (_fieldGetters.containsKey(fullKey)) {
-          return _fieldGetters[fullKey]!(instance as Object);
+        final getter = MaterializedLibrary.lookupFieldGetter(fullKey);
+        if (getter != null) {
+          return getter(instance as Object);
         }
-        if (_methodInvokers.containsKey(fullKey)) {
-          return _methodInvokers[fullKey]!(instance as Object, ExecutableArgument.unmodified(const {}, const []));
+        final invoker = MaterializedLibrary.lookupMethodInvoker(fullKey);
+        if (invoker != null) {
+          return invoker(instance as Object, ExecutableArgument.unmodified(const {}, const []));
         }
       }
     }
@@ -282,12 +222,14 @@ class AotRuntimeExecutor implements RuntimeExecutor {
   void setValue<T>(T instance, String name, Object? value) {
     // Class-qualified key (e.g. 'DataClass.property') — static accessor registered by the AOT registry.
     if (name.contains('.')) {
-      if (_fieldSetters.containsKey(name)) {
-        _fieldSetters[name]!(null as dynamic, value);
+      final setter = MaterializedLibrary.lookupFieldSetter(name);
+      if (setter != null) {
+        setter(null as dynamic, value);
         return;
       }
-      if (_methodInvokers.containsKey(name)) {
-        _methodInvokers[name]!(null as dynamic, ExecutableArgument.unmodified(const {}, [value]));
+      final invoker = MaterializedLibrary.lookupMethodInvoker(name);
+      if (invoker != null) {
+        invoker(null as dynamic, ExecutableArgument.unmodified(const {}, [value]));
         return;
       }
     }
@@ -297,12 +239,14 @@ class AotRuntimeExecutor implements RuntimeExecutor {
       final className = rawClassName.split('<').first;
       for (final candidate in _hierarchyNames(className)) {
         final fullKey = '$candidate.$name';
-        if (_fieldSetters.containsKey(fullKey)) {
-          _fieldSetters[fullKey]!(instance as Object, value);
+        final setter = MaterializedLibrary.lookupFieldSetter(fullKey);
+        if (setter != null) {
+          setter(instance as Object, value);
           return;
         }
-        if (_methodInvokers.containsKey(fullKey)) {
-          _methodInvokers[fullKey]!(instance as Object, ExecutableArgument.unmodified(const {}, [value]));
+        final invoker = MaterializedLibrary.lookupMethodInvoker(fullKey);
+        if (invoker != null) {
+          invoker(instance as Object, ExecutableArgument.unmodified(const {}, [value]));
           return;
         }
       }

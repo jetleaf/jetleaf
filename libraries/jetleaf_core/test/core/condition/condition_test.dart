@@ -3,6 +3,8 @@ import 'package:jetleaf_core/property.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_core/pod.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
 
 final class UserService {}
 
@@ -100,7 +102,8 @@ class MockEnvironment extends ApplicationEnvironment {
 }
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('OnPropertyCondition', () {
     test('should pass when property exists with correct value', () async {
       final env = MockEnvironment(properties: {'server.ssl.enabled': 'true'});

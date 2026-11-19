@@ -3,7 +3,7 @@ part of 'runtime_provider.dart';
 /// A [RuntimeProvider] subclass optimized for cache-mode operation.
 ///
 /// When the runtime is loaded from a pre-built `.jetleaf/` cache instead of
-/// a full mirror scan, expensive operations like `getSubClasses()` and
+/// a full declared-program scan, expensive operations like `getSubClasses()` and
 /// `collectAnnotatedMethods()` can use pre-computed JSON indexes instead of
 /// walking `_ClassReference` trees.
 ///
@@ -150,7 +150,7 @@ final class CachedRuntimeProvider extends _MaterialRuntimeProvider {
         yield* deduped;
         return;
       }
-      // Key not in index — fall through to mirror-based search
+      // Key not in index — fall through to reflection-based search
     }
     yield* super.getSubClasses(classDeclaration);
   }
@@ -184,8 +184,8 @@ final class CachedRuntimeProvider extends _MaterialRuntimeProvider {
   ///
   /// Tries multiple strategies:
   /// 1. Qualified name cache / _sourceLibraries lookup
-  /// 2. Bare name cache / mirror lookup
-  /// 3. Direct mirror search across all libraries
+  /// 2. Bare name cache / fallback lookup
+  /// 3. Direct declared-program search across all libraries
   ClassDeclaration? _resolveChildClass(String childName) {
     // Strategy 1: standard qualified name lookup
     try {
@@ -249,7 +249,7 @@ final class CachedRuntimeProvider extends _MaterialRuntimeProvider {
       yield* results;
       return;
     }
-    // Slow path: delegate to parent (mirror-based scan)
+    // Slow path: delegate to parent (reflection-based scan)
     yield* super.collectAnnotatedMethods<T>(onlyJetleafPackages);
   }
 }

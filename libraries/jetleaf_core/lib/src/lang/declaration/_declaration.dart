@@ -23,7 +23,7 @@ final class StandardDeclaration extends Declaration with EqualsAndHashCode {
   @override
   Type getType() {
     if (_type != Object && _type != dynamic) return _type;
-    return resolveType(_name);
+    return MaterializedLibrary.resolveType(_name);
   }
 
   @override
@@ -49,138 +49,6 @@ final class StandardDeclaration extends Declaration with EqualsAndHashCode {
     builder.writeString(_name);
     builder.writeBool(_isPublic);
     builder.writeBool(_isSynthetic);
-  }
-
-  /// Registered runtime types by simple name and qualified name.
-  static final Map<String, Type> _registeredTypes = {
-    'String': String,
-    'dart:core.String': String,
-    'int': int,
-    'dart:core.int': int,
-    'double': double,
-    'dart:core.double': double,
-    'bool': bool,
-    'dart:core.bool': bool,
-    'num': num,
-    'dart:core.num': num,
-    'Object': Object,
-    'dart:core.Object': Object,
-    'Null': Null,
-    'dart:core.Null': Null,
-    'List': List,
-    'dart:core.List': List,
-    'Map': Map,
-    'dart:core.Map': Map,
-    'Set': Set,
-    'dart:core.Set': Set,
-    'Iterable': Iterable,
-    'dart:core.Iterable': Iterable,
-    'Future': Future,
-    'dart:async.Future': Future,
-    'Stream': Stream,
-    'dart:async.Stream': Stream,
-    'Duration': Duration,
-    'dart:core.Duration': Duration,
-    'Uri': Uri,
-    'dart:core.Uri': Uri,
-    'Symbol': Symbol,
-    'dart:core.Symbol': Symbol,
-    'Type': Type,
-    'dart:core.Type': Type,
-    'Function': Function,
-    'dart:core.Function': Function,
-    'Record': Record,
-    'dart:core.Record': Record,
-    'DateTime': DateTime,
-    'dart:core.DateTime': DateTime,
-    'RegExp': RegExp,
-    'dart:core.RegExp': RegExp,
-    'BigInt': BigInt,
-    'dart:core.BigInt': BigInt,
-    // dart:io types:
-    'HttpClient': HttpClient,
-    'dart:io.HttpClient': HttpClient,
-    'File': File,
-    'dart:io.File': File,
-    'Directory': Directory,
-    'dart:io.Directory': Directory,
-    'Socket': Socket,
-    'dart:io.Socket': Socket,
-    'HttpRequest': HttpRequest,
-    'dart:io.HttpRequest': HttpRequest,
-    'HttpResponse': HttpResponse,
-    'dart:io.HttpResponse': HttpResponse,
-    'HttpHeaders': HttpHeaders,
-    'dart:io.HttpHeaders': HttpHeaders,
-    'HttpServer': HttpServer,
-    'dart:io.HttpServer': HttpServer,
-    'Platform': Platform,
-    'dart:io.Platform': Platform,
-    'Process': Process,
-    'dart:io.Process': Process,
-    // dart:collection types:
-    'Queue': Queue,
-    'dart:collection.Queue': Queue,
-    'MapEntry': MapEntry,
-    'dart:core.MapEntry': MapEntry,
-    // dart:typed_data types:
-    'ByteData': ByteData,
-    'dart:typed_data.ByteData': ByteData,
-    'Int8List': Int8List,
-    'dart:typed_data.Int8List': Int8List,
-    'Uint8List': Uint8List,
-    'dart:typed_data.Uint8List': Uint8List,
-    'Int16List': Int16List,
-    'dart:typed_data.Int16List': Int16List,
-    'Uint16List': Uint16List,
-    'dart:typed_data.Uint16List': Uint16List,
-    'Int32List': Int32List,
-    'dart:typed_data.Int32List': Int32List,
-    'Uint32List': Uint32List,
-    'dart:typed_data.Uint32List': Uint32List,
-    'Int64List': Int64List,
-    'dart:typed_data.Int64List': Int64List,
-    'Uint64List': Uint64List,
-    'dart:typed_data.Uint64List': Uint64List,
-    'Float32List': Float32List,
-    'dart:typed_data.Float32List': Float32List,
-    'Float64List': Float64List,
-    'dart:typed_data.Float64List': Float64List,
-  };
-
-  /// Registers a runtime [Type] for [name] and optionally [qualifiedName].
-  static void registerType(String name, Type type, [String? qualifiedName]) {
-    _registeredTypes[name] = type;
-    if (qualifiedName != null && qualifiedName.isNotEmpty) {
-      _registeredTypes[qualifiedName] = type;
-    }
-  }
-
-  /// Resolves a type name string to an actual Dart [Type].
-  ///
-  /// Falls back to [Object] if the type cannot be resolved.
-  static Type resolveType(String name, [String? fallbackName]) {
-    final clean = name.endsWith('?') ? name.substring(0, name.length - 1) : name;
-    final base = clean.split('<').first;
-    if (_registeredTypes.containsKey(clean)) return _registeredTypes[clean]!;
-    if (_registeredTypes.containsKey(base)) return _registeredTypes[base]!;
-    if (base.startsWith('dart:') && base.contains('.')) {
-      final short = base.split('.').last;
-      if (_registeredTypes.containsKey(short)) return _registeredTypes[short]!;
-    }
-    if (fallbackName != null && fallbackName.isNotEmpty) {
-      final cleanFallback = fallbackName.endsWith('?')
-          ? fallbackName.substring(0, fallbackName.length - 1)
-          : fallbackName;
-      final baseFallback = cleanFallback.split('<').first;
-      if (_registeredTypes.containsKey(cleanFallback)) return _registeredTypes[cleanFallback]!;
-      if (_registeredTypes.containsKey(baseFallback)) return _registeredTypes[baseFallback]!;
-      if (baseFallback.startsWith('dart:') && baseFallback.contains('.')) {
-        final short = baseFallback.split('.').last;
-        if (_registeredTypes.containsKey(short)) return _registeredTypes[short]!;
-      }
-    }
-    return Object;
   }
 
   @override
@@ -409,9 +277,11 @@ ExecutableArgument _resolveArgument(Map<String, dynamic> arguments, List<Paramet
         }
       } else if (param.getHasDefaultValue() && param.getDefaultValue() != null) {
         positional.add(param.getDefaultValue());
-      } else if (param.getIsNullable() && !param.getIsOptional()) {
+      } else if (param.getIsNullable()) {
         positional.add(null);
       }
+      // Required non-nullable param with no default: deliberately not added;
+      // the positional-count check below reports it as missing.
     }
   }
   

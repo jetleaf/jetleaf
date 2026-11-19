@@ -240,7 +240,7 @@ final class StandardConstructorDeclaration extends StandardSourceDeclaration imp
 
     return StandardConstructorDeclaration(
       name: name,
-      type: StandardDeclaration.resolveType(typeName),
+      type: MaterializedLibrary.resolveType(typeName),
       isPublic: isPublic,
       isSynthetic: isSynthetic,
       parentClass: parentClass,

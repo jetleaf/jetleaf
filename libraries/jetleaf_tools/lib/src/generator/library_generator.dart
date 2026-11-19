@@ -21,8 +21,6 @@ abstract class LibraryGenerator {
   LibraryGenerator({
     required this.configuration,
     required this.packages,
-    dynamic mirrorSystem,
-    dynamic forceLoadedMirrors,
   });
 
   /// Generates declaration metadata.

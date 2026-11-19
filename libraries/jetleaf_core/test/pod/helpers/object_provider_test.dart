@@ -3,6 +3,8 @@ import 'package:jetleaf_core/src/pod/exceptions.dart';
 import 'package:jetleaf_core/src/pod/helpers/object.dart';
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
 
 class TestObjectProvider extends ObjectProvider<String> {
   final List<ObjectHolder<String>> objects;
@@ -14,7 +16,8 @@ class TestObjectProvider extends ObjectProvider<String> {
 }
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('ObjectProvider', () {
     test('get should return single object', () async {
       final provider = TestObjectProvider([ObjectHolder('test', packageName: 'test')]);

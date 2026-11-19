@@ -14,9 +14,9 @@ dart run lib/main.dart
 
 1. **AST Codebase Analysis (`DeclarationBuilder`, `FileDiscovery`)**
    - Automatically crawls and parses Dart source files via the Dart Analyzer.
-   - Extracts complete structural metadata (`ClassDeclaration`, `ConstructorDeclaration`, `MethodDeclaration`, `FieldDeclaration`, parameter types, and nullability) without loading code into mirrors or running the VM.
+   - Extracts complete structural metadata (`ClassDeclaration`, `ConstructorDeclaration`, `MethodDeclaration`, `FieldDeclaration`, parameter types, and nullability) without running the VM.
 2. **Runtime Manifest Generation (`RuntimeManifest`)**
    - Serializes discovered component qualified names and metadata into structured JSON manifests for production build verification.
 3. **AOT Runtime Executor (`AotRuntimeExecutor`)**
    - Direct function-pointer registration and invocation for constructors and methods.
-   - Demonstrates how Jetleaf achieves pure Dart AOT compatibility with zero reliance on `dart:mirrors`.
+   - Demonstrates how Jetleaf achieves pure Dart AOT compatibility with zero reliance on `runtime reflection`.

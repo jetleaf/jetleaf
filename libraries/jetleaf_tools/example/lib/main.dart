@@ -121,26 +121,26 @@ class InvoiceService extends BaseEntity {
     print('\n[3] AOT Runtime Executor (Zero-Reflection Dispatch):');
 
     // Register AOT constructor factory
-    AotRuntimeExecutor.registerNamedConstructor('OrderProcessor', ([argument]) {
+    MaterializedLibrary.registerNamedConstructor('OrderProcessor', ([argument]) {
       final named = argument?.getNamedArguments() ?? {};
       final region = named['region'] as String? ?? 'US-WEST';
       return OrderProcessor(region: region);
     });
 
     // Register AOT method invoker
-    AotRuntimeExecutor.registerMethod('OrderProcessor.processOrder', (inst, argument) {
+    MaterializedLibrary.registerMethod('OrderProcessor.processOrder', (inst, argument) {
       final pos = argument.getPositionalArguments();
       final processor = inst as OrderProcessor;
       return processor.processOrder(pos[0] as String, (pos[1] as num).toDouble());
     });
 
     // Register AOT field getter
-    AotRuntimeExecutor.registerFieldGetter('OrderProcessor.processedCount', (inst) {
+    MaterializedLibrary.registerFieldGetter('OrderProcessor.processedCount', (inst) {
       return (inst as OrderProcessor).processedCount;
     });
 
     // Instantiate via AotRuntimeExecutor
-    final instance = AotRuntimeExecutor.constructByName(
+    final instance = MaterializedLibrary.constructByName(
       'OrderProcessor',
       ExecutableArgument.unmodified({'region': 'EU-CENTRAL'}, const []),
     ) as OrderProcessor;

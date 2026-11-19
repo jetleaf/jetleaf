@@ -14,14 +14,14 @@ import 'src/services/items_repository.dart';
 import 'src/services/task_scheduler_service.dart';
 
 // Import generated AOT pod registrar
-import '_jetleaf/aot_registry.g.dart';
+import '_jetleaf/main.dart';
 
 Future<void> main(List<String> args) async {
   await JetleafApplication.run(
     UltimateApplication,
     args,
     null,
-    registerGeneratedAotPods,
+    registerGeneratedArtifacts,
   );
 }
 

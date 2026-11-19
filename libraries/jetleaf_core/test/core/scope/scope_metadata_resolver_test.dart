@@ -2,6 +2,8 @@ import 'package:jetleaf_core/core.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_core/pod.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
 
 @Scope("singleton")
 final class MyService {}
@@ -13,7 +15,8 @@ final class PrototypeService {}
 final class RequestScopedService {}
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('ScopeMetadataResolver', () {
     late ScopeMetadataResolver resolver;
 

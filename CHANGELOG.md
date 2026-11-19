@@ -1,8 +1,23 @@
+## Unreleased
+
+### Added
+
+- **Loud, actionable diagnostics for web apps**: Booting a web application without `lib/_jetleaf/main.dart` (or stale `.jetleaf/` cache) now fails fast with a specific remediation hint — `cli flag`, `jl run`, `jl dev`, or `-Djetleaf.application.type=none`.
+- **CLI application type override**: `--jetleaf.application.type=none` boots as a non-web application; previously CLI arguments were ignored and the framework always auto-detected `WEB` (because `jetleaf_web` is always on the classpath), so web apps always attempted web boot and then crashed when the AOT registry was absent.
+- **Fail-fast instead of silent downgrade**: `DefaultApplicationContextFactory` no longer silently instantiates an `AnnotationConfigApplicationContext` for web applications when the registry is missing or the context can't be constructed — it throws `IllegalStateException` with the remediation the user needs.
+
+### Changed
+
+- **Compile-time terminology refresh**: "dart:mirrors" / "mirror(-free)" → "runtime reflection" throughout the framework.
+- **README/Documents**: Updated to the unified `_jetleaf/main/registry.g.dart` and `_jetleaf/test/registry.g.dart` layout; legacy `_jetleaf/aot_registry.g.dart` / `_jetleaf/proxies/` paths removed; wording refreshed.
+
+---
+
 ## [2.1.0]
 
 ### Added
 
-- **Test VM AOT Rehydration**: The Jetleaf VM test runner (`jl test`) now imports and registers `lib/_jetleaf/aot_registry.g.dart` (when present) inside the test-driver isolate before declaring tests, so `AotRuntimeExecutor` dispatch tables are populated for framework method invocations in warm test VMs.
+- **Test VM AOT Rehydration**: The Jetleaf VM test runner (`jl test`) now imports and registers `lib/_jetleaf/test.dart` (when present) inside the test-driver isolate before declaring tests, so the generated dispatch tables are populated for framework method invocations in warm test VMs.
 - **Test-runtime Scan Parity**: `jl build`/`jl dev` now pass `skipTests: false` for test scans and `skipTests: true` for production scans, keeping test entries visible to the warm test runtime.
 
 ### Fixed
@@ -21,7 +36,7 @@
 
 - **Unified Core Architecture**: Replaced separate split runtime packages (`jetleaf_pod`, `jetleaf_lang`, `jetleaf_env`, `jetleaf_logging`, `jetleaf_convert`, `jetleaf_utils`) with the unified `jetleaf_core` package (`version: ^2.0.0`).
 - **Modern Export Submodules**: Modular library imports are now exposed directly through `package:jetleaf/jetleaf.dart` or submodules (`package:jetleaf/core.dart`, `package:jetleaf/pod.dart`, `package:jetleaf/env.dart`, `package:jetleaf/logging.dart`, `package:jetleaf/convert.dart`, `package:jetleaf/utils.dart`, `package:jetleaf/lang.dart`).
-- **AOT Tooling Unification**: Integrated `jetleaf_tools` (`jl build`, `jl dev`) replacing legacy build runners with native, mirror-free Ahead-Of-Time (AOT) compile-time registries.
+- **AOT Tooling Unification**: Integrated `jetleaf_tools` (`jl build`, `jl dev`) replacing legacy build runners with native, reflection-free Ahead-Of-Time (AOT) compile-time registries.
 - **Dart SDK Constraint**: Bumped minimum Dart SDK constraint to `^3.9.0`.
 
 ### Added

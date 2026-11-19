@@ -490,6 +490,7 @@ final class DeclarationBuilder {
         value: null,
         position: i,
         isNullable: false,
+        parentName: name,
         linkDeclaration: _registerLink(StandardLinkDeclaration(
           name: constant.name.lexeme,
           type: Object,
@@ -719,7 +720,9 @@ final class DeclarationBuilder {
 
       if (param.defaultClause != null) {
         hasDefaultValue = true;
-        defaultValue = _evalAstExpression(param.defaultClause!.value);
+        final declaredType = param.type?.toSource()
+            ?? (fieldLinks != null ? fieldLinks[param.name?.lexeme ?? '']?.getName() : null);
+        defaultValue = _evalAstExpression(param.defaultClause!.value, declaredType);
       }
 
       // Parameter resolution is uniform since analyzer 14: parameters are a
@@ -1186,7 +1189,7 @@ final class DeclarationBuilder {
   }
 
   /// Evaluates a constant AST expression into a Dart runtime value.
-  dynamic _evalAstExpression(ast.Expression? expr) {
+  dynamic _evalAstExpression(ast.Expression? expr, [String? declaredType]) {
     if (expr == null) return null;
     if (expr is ast.NullLiteral) return null;
     if (expr is ast.BooleanLiteral) return expr.value;
@@ -1256,7 +1259,11 @@ final class DeclarationBuilder {
       return items;
     }
     if (expr is ast.SetOrMapLiteral) {
-      final isMap = expr.elements.any((e) => e is ast.MapLiteralEntry) || (expr.typeArguments?.arguments.length == 2);
+      var isMap = expr.elements.any((e) => e is ast.MapLiteralEntry) || (expr.typeArguments?.arguments.length == 2);
+      if (!isMap && declaredType != null) {
+        final base = declaredType.trim().split('<').first.trim();
+        if (base == 'Map' || base == 'LinkedHashMap' || base == 'HashMap') isMap = true;
+      }
       if (isMap) {
         final map = <String, dynamic>{};
         for (final el in expr.elements) {
@@ -1422,6 +1429,7 @@ final class DeclarationBuilder {
       final relativePath = normalizedPath.substring(libIndex + libSep.length);
       return 'package:$packageName/$relativePath';
     }
+
 
     final currentProjectLibPath = p.normalize(p.join(Directory.current.path, 'lib'));
     if (p.isWithin(currentProjectLibPath, normalizedPath)) {

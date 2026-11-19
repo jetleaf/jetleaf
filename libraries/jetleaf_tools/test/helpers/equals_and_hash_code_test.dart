@@ -13,11 +13,11 @@ class SimpleClass with EqualsAndHashCode {
   List<Object?> equalizedProperties() => [name, value];
 }
 
-class ComplexClass with EqualsAndHashCode {
+class EqualityTestClass with EqualsAndHashCode {
   final SimpleClass nested;
   final List<int> numbers;
 
-  ComplexClass(this.nested, this.numbers);
+  EqualityTestClass(this.nested, this.numbers);
 
   @override
   List<Object?> equalizedProperties() => [nested, numbers];
@@ -65,9 +65,9 @@ void main() {
       final nested2 = SimpleClass('nested', 1);
       final nested3 = SimpleClass('different', 1);
 
-      final complex1 = ComplexClass(nested1, [1, 2, 3]);
-      final complex2 = ComplexClass(nested2, [1, 2, 3]);
-      final complex3 = ComplexClass(nested3, [1, 2, 3]);
+      final complex1 = EqualityTestClass(nested1, [1, 2, 3]);
+      final complex2 = EqualityTestClass(nested2, [1, 2, 3]);
+      final complex3 = EqualityTestClass(nested3, [1, 2, 3]);
 
       expect(complex1 == complex2, isTrue);
       expect(complex1 == complex3, isFalse);
@@ -107,9 +107,9 @@ void main() {
     });
 
     test('should handle lists in properties', () {
-      final list1 = ComplexClass(SimpleClass('test', 1), [1, 2, 3]);
-      final list2 = ComplexClass(SimpleClass('test', 1), [1, 2, 3]);
-      final list3 = ComplexClass(SimpleClass('test', 1), [1, 2, 4]);
+      final list1 = EqualityTestClass(SimpleClass('test', 1), [1, 2, 3]);
+      final list2 = EqualityTestClass(SimpleClass('test', 1), [1, 2, 3]);
+      final list3 = EqualityTestClass(SimpleClass('test', 1), [1, 2, 4]);
 
       expect(list1 == list2, isTrue);
       expect(list1 == list3, isFalse);
@@ -117,8 +117,8 @@ void main() {
     });
 
     test('should handle different list orders', () {
-      final list1 = ComplexClass(SimpleClass('test', 1), [1, 2, 3]);
-      final list2 = ComplexClass(SimpleClass('test', 1), [3, 2, 1]);
+      final list1 = EqualityTestClass(SimpleClass('test', 1), [1, 2, 3]);
+      final list2 = EqualityTestClass(SimpleClass('test', 1), [3, 2, 1]);
 
       expect(list1 == list2, isFalse);
     });
@@ -133,9 +133,9 @@ void main() {
     });
 
     test('should handle complex nested structures', () {
-      final nested1 = ComplexClass(SimpleClass('a', 1), [1]);
-      final nested2 = ComplexClass(SimpleClass('a', 1), [1]);
-      final nested3 = ComplexClass(SimpleClass('b', 1), [1]);
+      final nested1 = EqualityTestClass(SimpleClass('a', 1), [1]);
+      final nested2 = EqualityTestClass(SimpleClass('a', 1), [1]);
+      final nested3 = EqualityTestClass(SimpleClass('b', 1), [1]);
 
       expect(nested1 == nested2, isTrue);
       expect(nested1 == nested3, isFalse);
@@ -143,8 +143,8 @@ void main() {
 
     test('should handle large property lists', () {
       final largeList = List.generate(100, (i) => i);
-      final obj1 = ComplexClass(SimpleClass('test', 1), largeList);
-      final obj2 = ComplexClass(SimpleClass('test', 1), largeList);
+      final obj1 = EqualityTestClass(SimpleClass('test', 1), largeList);
+      final obj2 = EqualityTestClass(SimpleClass('test', 1), largeList);
 
       expect(obj1 == obj2, isTrue);
       expect(obj1.hashCode, equals(obj2.hashCode));

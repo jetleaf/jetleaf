@@ -81,6 +81,7 @@ class BinaryReader {
         if (items.isNotEmpty) {
           if (items.every((e) => e is String)) return items.cast<String>();
           if (items.every((e) => e is int)) return items.cast<int>();
+          if (items.every((e) => e is double)) return items.cast<double>();
           if (items.every((e) => e is bool)) return items.cast<bool>();
         }
         return items;
@@ -90,12 +91,14 @@ class BinaryReader {
         for (var i = 0; i < len; i++) {
           items.add(readDynamicValue());
         }
-        if (items.isNotEmpty) {
-          if (items.every((e) => e is String)) return items.cast<String>().toSet();
-          if (items.every((e) => e is int)) return items.cast<int>().toSet();
-          if (items.every((e) => e is bool)) return items.cast<bool>().toSet();
+        if (items.isEmpty) {
+          return <dynamic>{};
         }
-        return items;
+        if (items.every((e) => e is String)) return items.cast<String>().toSet();
+        if (items.every((e) => e is int)) return items.cast<int>().toSet();
+        if (items.every((e) => e is double)) return items.cast<double>().toSet();
+        if (items.every((e) => e is bool)) return items.cast<bool>().toSet();
+        return items.toSet();
       case 7:
         final len = readUint32();
         final map = <dynamic, dynamic>{};

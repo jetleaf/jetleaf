@@ -305,12 +305,6 @@ class RuntimeUtils {
     caseSensitive: false,
   );
 
-  static final RegExp _mirrorImportRegex = RegExp(
-    r'''^\s*import\s+(['"])dart:mirrors\1\s*(?:as\s+\w+)?\s*(?:show\s+[^;]+)?\s*(?:hide\s+[^;]+)?\s*;''',
-    multiLine: true,
-    caseSensitive: false,
-  );
-
   static final RegExp _testImportRegex = RegExp(
     r'''^\s*(?:import|export)\s+(['"])package:test/[\w/]*\.dart\1\s*;''',
     multiLine: true,
@@ -331,13 +325,6 @@ class RuntimeUtils {
   /// ```
   /// {@endtemplate}
   static bool isPartOf(String content) => _partOfDirectiveRegex.hasMatch(content);
-
-  /// {@template is_mirror_import}
-  /// Checks if content imports `dart:mirrors`.
-  /// 
-  /// Returns `true` if the content imports the mirrors library.
-  /// {@endtemplate}
-  static bool hasMirrorImport(String content) => _mirrorImportRegex.hasMatch(content);
 
   /// {@template is_test}
   /// Checks if content is a test file.

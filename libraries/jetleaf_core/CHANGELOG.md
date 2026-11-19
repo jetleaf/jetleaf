@@ -1,3 +1,35 @@
+## Unreleased
+
+### Added
+
+- **`hasClass` probe**: The runtime package now exposes `RuntimeProvider.hasClass(String name, [String? package])` — a strict, non-synthesizing existence check for a class known to the registry (used in place of defensive type-lookup gymnastics that synthesized fallback declarations).
+- **`MaterializedLibrary.hasRegisteredType`**: Strict type-registry lookup without synthesizing fallback entries.
+- **`Class.forType` Type-token support**: `Class.forType(int)`, `Class.forType(List<String>)` and similar type-token calls resolve deterministically through `Runtime.findClassByType` instead of synthesizing placeholder declarations.
+- **Parameterized generic hierarchy**: `ClassUtils.getClassHierarchy(...)` now walks the raw base classes of parameterized generics (`List<T>`, `Set<T>`, `Map<K, V>`, `Iterable<T>`) so ancestor matching works for parameterized component types.
+- **`_typeSignature()`**: `Class` instances created from erased runtime `Type`s (e.g. through `Class.declared(...)`) now recover reified type arguments from the declaration when `T` has no generic arguments — `Class<List<int>>().componentType()` resolves.
+- **`_MaterialLibrary.hasClass`**: Strict provider probe reused everywhere that needs truthful class-existence before synthesis.
+- **Parameterized `findClassByName(…)` fallback**: Unknown simple names synthesize a best-effort declaration rooted at `package:synthetic/SimpleName.dart` instead of throwing (kept for call sites that probe existence first).
+
+### Changed
+
+- **Terminology**: "mirrors" / "dart:mirrors" has been replaced with "runtime reflection" throughout documentation, examples and source comments. `Class` is described as a reflective bridge (reflection-agnostic).
+- **`isClass` semantics**: `ClassUtils.isClass(name)` now probes `Runtime.hasClass(name)` strictly instead of relying on permissive synth fallbacks — truly missing class names correctly report `false`.
+- **`Class.forType`**: Passing a `Type` token returns `Class<Type>`; value instances still return `Class<C>`.
+- **`_Class` parameterized preference**: When constructing parameterized classes, scanned base declarations are preferred over synthesized ones only when they are real (scanned) declarations — synthetic `List` bases no longer shadow the synthesized `List<int>` declaration carrying reified arguments.
+- **Helper consolidation**: `conversion_adapter_utils.dart` rewritten — generic `x == Class<Y>() || x.getType() is Y` chains replaced by `x.getType() == Y` throughout.
+- **`DefaultConversionService.remove()`** restores the built-in converter snapshot instead of clearing the bucket (custom converters removed first; builtins survive `remove()`).
+- **`Iterable` to `String` conversion** emits comma-separated values (Spring semantics) instead of leaking through an arbitrary `toString()`.
+- **`ConfigurationPropertyPodProcessor`** no longer crashes with a null-check exception when the annotation is present via `hasDirectAnnotation` but cannot be constructed at this stage (AOT/JIT visibility gap) — the bean is silently skipped instead of failing.
+- **`fromUri`** on `StandardLibraryDeclaration` rejects empty package names (e.g. `''`) and resolves nearest pubspec `name:` for `file://` URIs.
+- **Private VM implementation types** (e.g. `_Map<String, dynamic>`, `_BigIntImpl`, `_RegExp`, `_SimpleUri`) are normalized to their public interface declarations for reflection sites.
+
+### Removed
+
+- **Legacy executor stubs**: Removed `default_runtime_executor.dart`, `jit_runtime_executor.dart`, and `runtime_executor_resolving.dart` — dead code from the pre-unified executor design. Runtime execution unifies behind `AotRuntimeExecutor`.
+- **`_mirrorImportRegex` / `hasMirrorImport`** (in `jetleaf_tools`): mirror-related helpers removed.
+
+---
+
 ## 2.1.0
 
 ### Fixes & Improvements
@@ -32,7 +64,7 @@
   * `lib/src/core/` — Application context, event bus, condition evaluators, lifecycle processors, availability indicators, and diagnostic reporters.
   * `lib/src/env/` — Unified environment abstractions, profile management (`dev`, `prod`, `test`), and hierarchical property source resolution.
   * `lib/src/pod/` — Dependency injection container, pod factories (`DefaultListablePodFactory`), scoping engines, lifecycle callbacks, and alias registries.
-  * `lib/src/lang/` — Metaprogramming mirror interfaces (`Class`, `Field`, `Method`, `Constructor`), high-performance collections (`ArrayList`, `LinkedList`, `Stack`, `Queue`, `HashMap`), primitive wrappers, I/O streams, and time utilities.
+  * `lib/src/lang/` — Metaprogramming metadata interfaces (`Class`, `Field`, `Method`, `Constructor`), high-performance collections (`ArrayList`, `LinkedList`, `Stack`, `Queue`, `HashMap`), primitive wrappers, I/O streams, and time utilities.
   * `lib/src/logging/` — Structured logging pipeline with ANSI console formatting, customizable log levels, and configurable printers.
   * `lib/src/convert/` — Type conversion engine (`ConversionService`), standard converters, and extensible registry.
   * `lib/src/utils/` — Placeholder resolution, configuration parsers (YAML, JSON, XML, Properties), assertion helpers, and stack trace sanitization.
@@ -40,7 +72,7 @@
   * `package:jetleaf_core/jetleaf_core.dart` — Umbrella export re-exporting the entire framework runtime.
   * Individual entry points for focused imports: `package:jetleaf_core/core.dart`, `package:jetleaf_core/pod.dart`, `package:jetleaf_core/env.dart`, `package:jetleaf_core/logging.dart`, `package:jetleaf_core/convert.dart`, `package:jetleaf_core/utils.dart`, `package:jetleaf_core/lang.dart`.
   * Preserved full backwards compatibility with sub-library exports: `annotation.dart`, `context.dart`, `format.dart`, `intercept.dart`, `message.dart`, `collections.dart`, `design.dart`, `extensions.dart`, `io.dart`, `printers.dart`, and `property.dart`.
-* **Pure AOT Compliance**: Completely eliminated runtime mirrors (`dart:mirrors`) and dynamic evaluation bottlenecks. Full compatibility with Dart AOT native compilation (`dart compile exe`).
+* **Pure AOT Compliance**: Completely eliminated runtime reflection and dynamic evaluation bottlenecks. Full compatibility with Dart AOT native compilation (`dart compile exe`).
 * **Tooling Integration**: Updated compiler interface to depend on `jetleaf_tools: ^1.0.1`.
 
 ---

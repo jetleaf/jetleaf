@@ -20,6 +20,7 @@ import '../primitives/float.dart';
 import '../primitives/integer.dart';
 import '../meta/method/method.dart';
 import '../meta/class/class.dart';
+import '../meta/protection_domain/protection_domain.dart';
 import '../runtime/provider/runtime_provider.dart' show Runtime;
 import 'constant.dart';
 import 'reflection_utils.dart';
@@ -361,6 +362,14 @@ final class ClassUtils {
         yield* walk(interface);
       }
 
+      // 2.5️⃣ Generic base — walk the raw base class too, so converter
+      // lookups registered under the raw type (e.g. `List` / `Set` / `Map`)
+      // resolve for parameterized requests (`List<String>`).
+      final currentName = current.getName();
+      if (currentName.contains('<')) {
+        yield* _walkRawGenericBase(currentName, walk);
+      }
+
       // 3️⃣ Array handling — parent first, THEN component type
       if (current.isArray()) {
         final component = current.componentType();
@@ -395,6 +404,32 @@ final class ClassUtils {
 
     // Cache materialized result
     _classHierarchy[type] = collected;
+  }
+
+  /// Walks the raw (non-parameterized) base of a generic class name, so
+  /// lookups registered under the raw type match parameterized requests.
+  ///
+  /// `List<String>` yields `[List, Iterable]`, `Set<int>` yields `[Set, Iterable]`,
+  /// `Map<String, int>` yields `[Map]`.
+  static Iterable<Class> _walkRawGenericBase(String parameterizedName, Iterable<Class> Function(Class) walk) sync* {
+    final baseName = parameterizedName.split('<').first.trim();
+    if (baseName.isEmpty) return;
+
+    final candidates = <String>[baseName];
+    switch (baseName) {
+      case 'List':
+      case 'Set':
+      case 'Queue':
+        candidates.add('Iterable');
+        break;
+    }
+
+    for (final name in candidates) {
+      try {
+        final decl = Runtime.findClassByName(name);
+        yield* walk(Class.declared(decl, ProtectionDomain.current()));
+      } catch (_) {}
+    }
   }
 
   /// {@template get_qualified_name}
@@ -851,18 +886,21 @@ final class ClassUtils {
   static bool isClass(String name) {
     _ensureInitialized();
 
-    try {
-      Class.fromQualifiedName(name);
-      return true;
-    } catch (_) {
-      if (name.isNotEmpty && name[0] == name[0].toUpperCase() && name[0] != name[0].toLowerCase()) {
-        try {
-          Runtime.findClassByName(name);
-          return true;
-        } catch (_) {}
-      }
-      return false;
+    // Strict, non-synthesizing probe: classes must actually exist in the
+    // registry (the same registry the AOT cache fills), so callers probing
+    // for existence — such as `@ConditionalOnClass` — see the truth.
+    if (name.isEmpty) return false;
+    if (Runtime.hasClass(name)) return true;
+
+    // For simple names, fall back to the simple-name findBy syntax used by
+    // user code and to qualified-name lookups, all of which are strict in
+    // what they miss.
+    if (name[0] == name[0].toUpperCase()) {
+      final base = name.contains('<') ? name.substring(0, name.indexOf('<')) : name;
+      if (Runtime.hasClass(base)) return true;
     }
+
+    return false;
   }
 
   /// Attempts to resolve and load a [`Class`] instance from a given [object].

@@ -372,7 +372,7 @@ final class MaterialPackage extends Package with EqualsAndHashCode {
 /// Base class representing a **package resource with a no-args constructor**.
 ///
 /// Designed primarily for **code generation scenarios**, where subclasses
-/// are instantiated reflectively (e.g., via mirrors or generated code).
+/// are instantiated reflectively (typically via generated code).
 ///
 /// Subclasses are expected to override the core getters to provide package
 /// metadata:

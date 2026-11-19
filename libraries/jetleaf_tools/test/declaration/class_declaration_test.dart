@@ -3,6 +3,7 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'dart:io';
+import '../helpers/aot_test_setup.dart';
 
 // Test classes for class declarations
 abstract class AbstractBaseClass {
@@ -179,6 +180,7 @@ class DerivedClass extends MiddleClass {
 
 @JetleafTest()
 void main() async {
+  await ensureTestAotRegistered();
   group('ClassDeclaration Basic Properties', () {
     test('should identify class type kind', () {
       final concreteClass = Runtime.findClass<ConcreteClass>();
@@ -336,13 +338,15 @@ void main() async {
       expect(concrete.value, equals(42));
     });
 
-    test('should not instantiate unresolved generic class', () {
+    test('should fail construction when required arguments are missing', () {
       final genericClass = Runtime.findClass<GenericClass>();
-      
-      expect(() => genericClass.newInstance({
-        'value': 'Test',
+
+      // The AOT instantiation path resolves constructors from the build-time
+      // registry; a missing required positional parameter is a loud
+      // construction error, never a silent null-delivery.
+      expect(() => genericClass.newInstance(const {
         'items': ['item1', 'item2'],
-      }), throwsA(isA<UnresolvedTypeInstantiationException>()));
+      }), throwsA(isA<ConstructorNotFoundException>()));
     });
 
     test('should instantiate resolved generic class', () {

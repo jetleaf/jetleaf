@@ -6,7 +6,7 @@ import 'src/lifecycle/cli_lifecycle.dart';
 import 'src/runners/app_runner.dart';
 import 'src/runners/batch_runner.dart';
 import 'src/exit/cli_exit_code_generator.dart';
-import '_jetleaf/aot_registry.g.dart';
+import '_jetleaf/main.dart';
 
 @JetleafApplicationStarter()
 class CliApp {
@@ -19,7 +19,7 @@ Future<int> main(List<String> args) async {
   
   final app = JetleafApplication(CliApp);
   app.setApplicationType(ApplicationType.NONE);
-  app.setAotRegistrar(registerGeneratedAotPods);
+  app.setAotRegistrar(registerGeneratedArtifacts);
   
   final context = await app.create(effectiveArgs, null);
   

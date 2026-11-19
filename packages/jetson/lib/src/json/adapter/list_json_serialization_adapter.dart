@@ -81,7 +81,7 @@ final class ListJsonSerializationAdapter extends JsonSerializationAdapter<List> 
       throw IllegalArgumentException('Expected START_ARRAY, got $token');
     }
 
-    final list = <Object>[];
+    final list = <Object?>[];
 
     while (parser.nextToken()) {
       final currentToken = parser.getCurrentToken();
@@ -102,6 +102,8 @@ final class ListJsonSerializationAdapter extends JsonSerializationAdapter<List> 
       }
 
       if (currentToken == JsonToken.VALUE_NULL) {
+        // Preserve null elements exactly as written.
+        list.add(null);
         continue;
       }
 
@@ -109,7 +111,8 @@ final class ListJsonSerializationAdapter extends JsonSerializationAdapter<List> 
       // declared component type or from the runtime value's class.
       final value = parser.getCurrentValue();
       if (value == null) {
-        // Nothing to do for unexpected nulls; push null and continue.
+        // Preserve null elements exactly as written.
+        list.add(null);
         continue;
       }
 

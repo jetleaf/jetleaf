@@ -594,7 +594,7 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
     );
 
     // 4. Regenerate the test-only AOT registry (production registry is
-    //    untouched — `lib/_jetleaf_test/` carries the full src+test
+    //    untouched — `lib/_jetleaf/test/` carries the full src+test
     //    component set for the warm test runtime and `jl test` stubs).
     try {
       onEvent?.call({
@@ -610,7 +610,7 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
     } catch (e) {
       onEvent?.call({
         'type': 'warm_warning',
-        'message': 'failed to write _jetleaf_test/: $e',
+        'message': 'failed to write _jetleaf/test/: $e',
       });
     }
 
@@ -738,9 +738,7 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
         _entries[record.file] = record;
         _states[record.file] = EntryStatus(record: record);
         if (log) {
-          final tag = record.kind == EntryKind.test
-              ? '@JetleafTest'
-              : '@JetleafEntry';
+          final tag = record.kind == EntryKind.test ? '@JetleafTest' : '@JetleafEntry';
 
           _log(
             '${record.kind == EntryKind.test ? 'test  ' : 'entry '} '
@@ -782,9 +780,9 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
   ///
   /// **Returns:** true on the VM-service banner line.
   static bool _isVmServiceLine(String line) =>
-      line.contains('Observatory listening on') ||
-      line.contains('VM service is listening on') ||
-      line.contains('VM Service is listening on');
+    line.contains('Observatory listening on') ||
+    line.contains('VM service is listening on') ||
+    line.contains('VM Service is listening on');
 
   /// Boots one entry VM: parked stub -> frontend compile -> snapshot
   /// -> VM process -> VM-service connect. Sets `warming`, then
@@ -860,9 +858,7 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
           _log('  compile: $line');
         }
 
-        throw StateError(
-          'Frontend compile failed (${compilation.errorCount} errors)',
-        );
+        throw StateError('Frontend compile failed (${compilation.errorCount} errors)');
       }
 
       live.frontend!.accept();
@@ -918,45 +914,45 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
     live.process = process;
 
     process.stdout
-        .transform(utf8.decoder)
-        .transform(const LineSplitter())
-        .listen(
-          (line) {
-            _vmLog(key, line);
-            if (line == '[jl] runtime ready' && !live.runtimeReadySignal.isCompleted) {
-              live.runtimeReadySignal.complete();
-            }
+      .transform(utf8.decoder)
+      .transform(const LineSplitter())
+      .listen(
+        (line) {
+          _vmLog(key, line);
+          if (line == '[jl] runtime ready' && !live.runtimeReadySignal.isCompleted) {
+            live.runtimeReadySignal.complete();
+          }
 
-            if (line.startsWith('[jl] runtime error:') && !live.runtimeReadySignal.isCompleted) {
-              live.runtimeReadySignal.completeError(StateError(line.substring('[jl] runtime error:'.length).trim()));
-            }
+          if (line.startsWith('[jl] runtime error:') && !live.runtimeReadySignal.isCompleted) {
+            live.runtimeReadySignal.completeError(StateError(line.substring('[jl] runtime error:'.length).trim()));
+          }
 
-            if (line.startsWith('[jl] control port:') && !live.commandPortReady.isCompleted) {
-              final port = int.tryParse(line.substring('[jl] control port:'.length).trim());
+          if (line.startsWith('[jl] control port:') && !live.commandPortReady.isCompleted) {
+            final port = int.tryParse(line.substring('[jl] control port:'.length).trim());
 
-              if (port == null) {
-                live.commandPortReady.completeError(StateError('Invalid control port for $key'));
-              } else {
-                live.commandPortReady.complete(port);
-              }
+            if (port == null) {
+              live.commandPortReady.completeError(StateError('Invalid control port for $key'));
+            } else {
+              live.commandPortReady.complete(port);
             }
+          }
 
-            if (!ready.isCompleted && _isVmServiceLine(line)) {
-              final wsUri = '${line.split(' ').last.replaceFirst('http', 'ws').replaceFirst('/ws', '')}ws';
-              live.vmServiceUri = wsUri;
-              vmServiceConnectUri(wsUri).then(ready.complete, onError: ready.completeError);
-            }
-          },
-          onError: (Object e) {
-            if (!ready.isCompleted) ready.completeError(e);
-          },
-        );
+          if (!ready.isCompleted && _isVmServiceLine(line)) {
+            final wsUri = '${line.split(' ').last.replaceFirst('http', 'ws').replaceFirst('/ws', '')}ws';
+            live.vmServiceUri = wsUri;
+            vmServiceConnectUri(wsUri).then(ready.complete, onError: ready.completeError);
+          }
+        },
+        onError: (Object e) {
+          if (!ready.isCompleted) ready.completeError(e);
+        },
+      );
     process.stderr
-        .transform(utf8.decoder)
-        .transform(const LineSplitter())
-        .listen((line) {
-          _vmLog(key, line, stream: 'stderr');
-        });
+      .transform(utf8.decoder)
+      .transform(const LineSplitter())
+      .listen((line) {
+        _vmLog(key, line, stream: 'stderr');
+      });
 
     unawaited(
       process.exitCode.then((code) {
@@ -1046,10 +1042,7 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
       if (errorFlag != null) {
         final failure = await service.evaluate(isolateId, rootLibId, errorFlag);
 
-        if (failure is InstanceRef &&
-          failure.classRef?.name != 'Null' &&
-          (failure.valueAsString?.isNotEmpty ?? false)
-        ) {
+        if (failure is InstanceRef && failure.classRef?.name != 'Null' && (failure.valueAsString?.isNotEmpty ?? false)) {
           throw StateError('Failed for $key: ${failure.valueAsString}');
         }
       }
@@ -1165,8 +1158,8 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
       if (!live.runtimeReady) {
         emit?.call({'type': 'run_step', 'step': 'ensure-runtime:start'});
         final ensureCall = await service
-            .evaluate(id, rootLibId, '_ensureJetleafRuntime()')
-            .timeout(const Duration(seconds: 60));
+          .evaluate(id, rootLibId, '_ensureJetleafRuntime()')
+          .timeout(const Duration(seconds: 60));
         if (ensureCall is ErrorRef) {
           throw StateError('Failed to ensure runtime: ${ensureCall.message}');
         }
@@ -1229,11 +1222,11 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
       socket.writeln(jsonEncode(command));
       await socket.flush();
       final line = await socket
-          .cast<List<int>>()
-          .transform(utf8.decoder)
-          .transform(const LineSplitter())
-          .first
-          .timeout(timeout);
+        .cast<List<int>>()
+        .transform(utf8.decoder)
+        .transform(const LineSplitter())
+        .first
+        .timeout(timeout);
       final response = jsonDecode(line) as Map<String, dynamic>;
       if (response['error'] != null) {
         throw StateError('Entry command failed for $key: ${response['error']}');
@@ -1340,9 +1333,7 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
       }
       live = _live[key];
     }
-    if (live == null ||
-        status.state == EntryState.failed ||
-        status.state == EntryState.stopped) {
+    if (live == null || status.state == EntryState.failed || status.state == EntryState.stopped) {
       _log('booting $key on demand ...');
       await _bootEntry(key);
       live = _live[key];
@@ -1374,9 +1365,7 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
     final started = {'type': 'run_started', 'entry': key};
     _emit(started);
     emit?.call(started);
-    _log(
-      'running $key${effectiveArgs.isEmpty ? '' : ' ${effectiveArgs.join(' ')}'} ...',
-    );
+    _log('running $key${effectiveArgs.isEmpty ? '' : ' ${effectiveArgs.join(' ')}'} ...');
 
     _LiveEntry? current = live;
     try {
@@ -1393,10 +1382,7 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
         await _bootEntry(key);
         final fresh = _live[key];
         if (fresh == null) {
-          throw StateError(
-            'Reboot failed for $key '
-            '(${_states[key]?.lastError ?? 'unknown error'})',
-          );
+          throw StateError('Reboot failed for $key (${_states[key]?.lastError ?? 'unknown error'})');
         }
         fresh.busy = true;
         fresh.activeEmit = emit;
@@ -1524,8 +1510,8 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
     if (_stopping || _warming) return;
     _warming = true;
     final displayPaths = changedPaths
-        .map((abs) => p.relative(abs, from: _root.path))
-        .toList();
+      .map((abs) => p.relative(abs, from: _root.path))
+      .toList();
     
     try {
       _log(
@@ -1609,9 +1595,9 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
   Future<void> _serveControl(Socket socket) async {
     try {
       final lines = socket
-          .cast<List<int>>()
-          .transform(utf8.decoder)
-          .transform(const LineSplitter());
+        .cast<List<int>>()
+        .transform(utf8.decoder)
+        .transform(const LineSplitter());
       await for (final line in lines) {
         if (line.trim().isEmpty) continue;
         try {
@@ -1623,9 +1609,11 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
           });
           if (done) break;
         } catch (e) {
-          socket.writeln(
-            jsonEncode({'type': 'error', 'error': 'Invalid message: $e'}),
-          );
+          try {
+            socket.writeln(jsonEncode({'type': 'error', 'error': 'Invalid message: $e'}));
+          } catch (_) {
+            // Peer went away during error reporting — stop writing.
+          }
         }
       }
     } catch (_) {
@@ -1945,8 +1933,7 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
   /// - [absolutePath]: absolute file path.
   ///
   /// **Returns:** the invalidation URI for incremental compiles.
-  Uri _rootUriFor(String absolutePath) =>
-      Uri.parse('org-dartlang-root:///$absolutePath');
+  Uri _rootUriFor(String absolutePath) => Uri.parse('org-dartlang-root:///$absolutePath');
 
   /// Same as [_rootUriFor] for a [File].
   ///
@@ -1996,8 +1983,8 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
     String? stream,
   }) {
     final level = stream == 'stderr' || message.startsWith('[jl] runtime error:')
-        ? JetleafLogLevel.error
-        : JetleafLogLevel.info;
+      ? JetleafLogLevel.error
+      : JetleafLogLevel.info;
     final event = JetleafLogRecord(
       timestamp: DateTime.now(),
       level: level,

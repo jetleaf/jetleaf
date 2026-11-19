@@ -288,7 +288,12 @@ final class StandardAnnotationDeclaration extends StandardEntityDeclaration impl
   LinkDeclaration getLinkDeclaration() => _linkDeclaration;
 
   @override
-  dynamic getInstance() => _instance;
+  dynamic getInstance() {
+    if (_instance != null) return _instance;
+    // Deserialized from the build cache — materialize through the resolver
+    // registered by the generated registry.
+    return MaterializedLibrary.resolveAnnotationInstance(getName(), getUserProvidedValues());
+  }
 
   @override
   Map<String, dynamic> getUserProvidedValues() => Map.unmodifiable(_userProvidedValues);
@@ -538,6 +543,9 @@ final class StandardAnnotationFieldDeclaration extends StandardFieldDeclaration 
     builder.writeUint32(_position);
     builder.writeBool(getIsPublic());
     builder.writeBool(getIsSynthetic());
+    builder.writeBool(isNullable());
+    builder.writeBool(getIsFinal());
+    builder.writeBool(getIsConst());
   }
 
   /// Deserializes a [StandardAnnotationFieldDeclaration] from binary format.
@@ -551,10 +559,13 @@ final class StandardAnnotationFieldDeclaration extends StandardFieldDeclaration 
     final position = reader.readUint32();
     final isPublic = reader.readBool();
     final isSynthetic = reader.readBool();
+    final isNullable = reader.readBool();
+    final isFinal = reader.readBool();
+    final isConst = reader.readBool();
     
     return StandardAnnotationFieldDeclaration(
       name: name,
-      type: StandardDeclaration.resolveType(typeName),
+      type: MaterializedLibrary.resolveType(typeName),
       isPublic: isPublic,
       isSynthetic: isSynthetic,
       defaultValue: defaultValue,
@@ -564,12 +575,15 @@ final class StandardAnnotationFieldDeclaration extends StandardFieldDeclaration 
       position: position,
       linkDeclaration: StandardLinkDeclaration(
         name: name,
-        type: StandardDeclaration.resolveType(typeName),
-        pointerType: StandardDeclaration.resolveType(typeName),
+        type: MaterializedLibrary.resolveType(typeName),
+        pointerType: MaterializedLibrary.resolveType(typeName),
         qualifiedName: name,
         isPublic: isPublic,
         isSynthetic: isSynthetic,
       ),
+      isNullable: isNullable,
+      isFinal: isFinal,
+      isConst: isConst,
     );
   }
 

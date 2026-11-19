@@ -66,7 +66,7 @@ abstract class CollectionToCollectionConverter extends CommonPairedConditionalCo
 
   @override
   bool matches(Class sourceType, Class targetType) {
-    if (!_source.isAssignableFrom(sourceType) || !_isSupportedTarget(targetType.getType())) {
+    if (!_isSourceAssignable(sourceType) || !_isSupportedTarget(targetType.getType())) {
       return false;
     }
 
@@ -81,6 +81,29 @@ abstract class CollectionToCollectionConverter extends CommonPairedConditionalCo
     return ConversionUtils.canConvert(sourceElementType, targetElementType, _conversionService);
   }
 
+  /// Checks if [sourceType] can be assigned to this converter's `_source`
+  /// declaration class. Synthetic parameterised declarations (e.g.
+  /// `List<String>`) do not carry supertype links in the AOT cache, so the
+  /// plain [isAssignableFrom] check fails; match by base type-name segment.
+  bool _isSourceAssignable(Class sourceType) {
+    if (_source.isAssignableFrom(sourceType)) {
+      return true;
+    }
+    final sourceName = sourceType.getName();
+    final sourceBase = sourceName.contains('<') ? sourceName.substring(0, sourceName.indexOf('<')).trim() : sourceName;
+    final sourceSimple = sourceType.getSimpleName();
+    final sourceSimpleBase = sourceSimple.contains('<') ? sourceSimple.substring(0, sourceSimple.indexOf('<')).trim() : sourceSimple;
+    final sourceQualifiedLast = sourceType.getQualifiedName().split('.').last;
+    final sourceQualifiedBase = sourceQualifiedLast.contains('<')
+        ? sourceQualifiedLast.substring(0, sourceQualifiedLast.indexOf('<')).trim()
+        : sourceQualifiedLast;
+    final sourceTypeStringBase = sourceType.getType().toString().split('<').first.trim();
+    return _source.getName() == sourceBase ||
+        _source.getName() == sourceSimpleBase ||
+        _source.getName() == sourceQualifiedBase ||
+        _source.getName() == sourceTypeStringBase;
+  }
+
   /// {@template collection_to_collection_is_supported_target}
   /// Checks if the given Dart type is a supported collection type.
   ///
@@ -91,20 +114,19 @@ abstract class CollectionToCollectionConverter extends CommonPairedConditionalCo
   /// ```
   /// {@endtemplate}
   bool _isSupportedTarget(Type dartType) {
-    return dartType == List ||
-        dartType == Set ||
-        dartType == Iterable ||
-        dartType == Queue ||
-        dartType == ArrayList ||
-        dartType == HashSet ||
-        dartType == LinkedQueue ||
-        dartType == LinkedList ||
-        dartType == LinkedStack ||
-        dartType == Stack ||
-        dartType == col.LinkedHashSet ||
-        dartType == col.ListBase ||
-        dartType == col.SetBase ||
-        dartType == col.Queue;
+    // Normalise away generic instantiations (e.g. `List<int>` → `List`) so
+    // that parameterised collection targets are recognised.
+    final raw = dartType.toString().split('<').first.trim();
+    return raw.startsWith('List') ||
+        raw.startsWith('Set') ||
+        raw.startsWith('Iterable') ||
+        raw.startsWith('Queue') ||
+        raw.startsWith('ArrayList') ||
+        raw.startsWith('HashSet') ||
+        raw.startsWith('LinkedQueue') ||
+        raw.startsWith('LinkedList') ||
+        raw.startsWith('LinkedStack') ||
+        raw.startsWith('Stack');
   }
 
   @override

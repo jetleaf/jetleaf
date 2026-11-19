@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import '../cache/indexer/build_command.dart' as builder;
+import '../utils/workspace.dart';
 import 'jl_command.dart';
 
 /// Builds declaration caches and the Jetleaf production runtime manifest.
@@ -22,7 +23,9 @@ Builds declaration metadata, indexes, runtime hints, and a production
 runtime manifest under .jetleaf/build/.
 
 Options:
-  --root <dir>          Project root (default: current directory).
+  --root <dir>          Project root (default: current directory). A pub
+                        workspace root (pubspec.yaml declares `workspace:`)
+                        builds every member in sequence.
   --test                Include test declarations in the manifest.
   --skip-tree-shaking   Generate a complete manifest without optimization.
   -h, --help            Show this help.
@@ -41,6 +44,20 @@ Options:
       return 1;
     }
     try {
+      // Workspace fan-out: `jl build` at a workspace root builds each member
+      // in turn and fails if any member fails.
+      if (isWorkspaceRoot(directory)) {
+        var failures = 0;
+        for (final member in workspaceMembers(directory)) {
+          print('==> Building workspace member: ${member.path}');
+          final exitCode = await builder.runBuild(args, root: member);
+          if (exitCode != 0) {
+            failures++;
+            stderr.writeln('==> member build failed: ${member.path} (exit $exitCode)');
+          }
+        }
+        return failures == 0 ? 0 : 1;
+      }
       return await builder.runBuild(args, root: directory);
     } catch (error, stack) {
       stderr.writeln('Error: Jetleaf build failed: $error');

@@ -8,47 +8,37 @@ import 'abstract_file_locator_utility.dart';
 /// {@template abstract_file_loader_utility}
 /// A high-level loading and URI-resolution utility built on top of
 /// [AbstractFileLocatorUtility], responsible for converting discovered files
-/// into loadable Dart libraries and ensuring they are safely introduced into
-/// a mirror system.
+/// into loadable Dart libraries and resolving their package URIs.
 ///
-/// This class serves as the final step in Jetleaf’s file-introspection pipeline:
+/// This class serves as the final step in Jetleaf's file-introspection pipeline:
 /// after files have been located and filtered by the locator utilities, this
 /// loader resolves their correct URIs, determines which files are allowed to be
-/// loaded, and forces them into the active isolate or mirror system.
+/// loaded, and maps them to `package:` URIs.
 ///
 /// ### Core Responsibilities
-/// - Convert absolute file system paths to `package:` URIs when possible  
-/// - Fallback to `file://` URIs for non-mappable files  
+/// - Convert absolute file system paths to `package:` URIs when possible
+/// - Fallback to `file://` URIs for non-mappable files
 /// - Apply all skip and exclusion rules inherited from
-///   [AbstractFileUtility.shouldSkipFile]  
-/// - Load libraries into the mirror system, with isolate-based safety and
-///   fallback strategies  
-/// - Distinguish user-project errors from dependency errors for accurate logging  
-///
-/// ### Library Loading Semantics
-/// Loading a Dart library through mirrors requires special handling:
-/// - Part files must never be loaded directly  
-/// - Some libraries execute top-level initialization and should be loaded inside
-///   an isolate for safety  
-/// - URIs may fail to load depending on how they were generated, so this class
-///   provides automated fallback attempts  
-/// - Internal Jetleaf build/runtime files may intentionally be excluded  
+///   [AbstractFileUtility.shouldSkipFile]
+/// - Map libraries to loadable `package:` URIs, with isolate-based safety and
+///   fallback strategies
+/// - Distinguish user-project errors from dependency errors for accurate logging
 ///
 /// ### Intended Use
 /// Concrete implementations typically integrate this loader into:
-/// - Jetleaf's runtime analysis workflows  
-/// - Code generation pipelines  
-/// - Dynamic plugin or extension systems where libraries must be introspected  
+/// - Jetleaf's runtime analysis workflows
+/// - Code generation pipelines
+/// - Dynamic plugin or extension systems where libraries must be introspected
 ///
 /// This class does **not** concern itself with *how* files were discovered—only
-/// with turning them into safely loadable mirror libraries.
+/// with turning them into safely resolvable `package:` URIs.
 /// {@endtemplate}
 abstract class AbstractFileLoaderUtility extends AbstractFileLocatorUtility {
   /// {@macro abstract_file_loader_utility}
   AbstractFileLoaderUtility(super.configuration, super.onError, super.onInfo, super.onWarning, super.tryOutsideIsolate);
 
   /// Resolves a list of files to their corresponding package or file URIs.
-  /// 
+  ///
   /// This method attempts to produce a usable `Uri` for every file in [files],
   /// prioritizing **package: URIs** whenever possible. If a file cannot be
   /// resolved to a package URI (e.g., it lives outside any package `lib/`
@@ -56,12 +46,12 @@ abstract class AbstractFileLoaderUtility extends AbstractFileLocatorUtility {
   /// so the file is still loadable.
   ///
   /// Files are skipped **only** when `shouldSkipFile` indicates they should be,
-  /// such as for user-excluded paths or files that cannot safely be mirrored.
+  /// such as for user-excluded paths or files that cannot safely be loaded.
   ///
   /// A summary of skipped files is logged for diagnostic purposes.
   ///
   /// Returns a mapping of each resolved file to the URI that should be used
-  /// when loading it into the mirror system.
+  /// when loading it.
   ///
   /// - [files]: The set of Dart or non-Dart files to resolve.
   /// - [package]: The current project’s package name, used when generating
@@ -109,15 +99,6 @@ abstract class AbstractFileLoaderUtility extends AbstractFileLocatorUtility {
     final currentProjectPath = p.normalize(Directory.current.path);
     return p.isWithin(currentProjectPath, filePath);
   }
-
-  /// Forces a Dart library represented by [uri] to be loaded into the provided
-  /// [mirrorSystem].
-  ///
-  /// This method exists because the Dart mirrors API does **not** eagerly load
-  /// libraries referenced in the package graph. Many analyses require fully
-  /// loaded libraries, so this method enforces loading with fallback strategies.
-  ///
-
 
   /// Resolves an absolute file system path into a Dart `package:` URI, if possible.
   ///

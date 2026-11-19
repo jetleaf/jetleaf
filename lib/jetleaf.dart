@@ -36,7 +36,7 @@
 ///   manage the startup sequence, environment parsing, banner display, and shutdown hooks.
 /// - **Inversion of Control (IoC):** Advanced pod container supporting constructor,
 ///   field (`@Autowired`), and factory method (`@Pod`) dependency injection.
-/// - **Ahead-Of-Time (AOT) Tooling:** 100% mirror-free execution compatible with
+/// - **Ahead-Of-Time (AOT) Tooling:** 100% reflection-free execution compatible with
 ///   `dart compile exe` via compile-time static AST code synthesis (`jetleaf_tools`).
 /// - **Hierarchical Environment:** Dynamic profile activation (`@Profile`, `--jetleaf.profiles.active`)
 ///   and cascading configuration property resolution.

@@ -4,6 +4,8 @@ import 'package:jetleaf_core/src/pod/name_generator/pod_name_generator.dart';
 import 'package:test/test.dart';
 import 'package:jetleaf_core/src/pod/definition/pod_definition.dart';
 import 'package:jetleaf_core/src/pod/definition/pod_definition_registry.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
 
 class MockPodDefinition implements PodDefinition {
   @override
@@ -33,7 +35,8 @@ class TestPodNameGenerator implements PodNameGenerator {
 }
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('PodNameGenerator', () {
     test('should be an abstract interface', () {
       final generator = TestPodNameGenerator();

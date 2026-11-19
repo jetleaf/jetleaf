@@ -2,10 +2,12 @@ import 'package:jetleaf_core/intercept.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
 
+import '../../lang/meta/test_data.dart' show TestComparable;
+
 void main() {
   group('SimpleMethodInvocation', () {
     test('proceed executes the request and caches result', () async {
-      final targetClass = Class<String>();
+      final targetClass = Class<TestComparable>();
       final method = targetClass.getMethod('compareTo')!;
       final invocation = SimpleMethodInvocation<String>(
         'hello',
@@ -26,7 +28,7 @@ void main() {
     });
 
     test('hijack short-circuits and caches value', () async {
-      final targetClass = Class<String>();
+      final targetClass = Class<TestComparable>();
       final method = targetClass.getMethod('compareTo')!;
       var executed = false;
       final invocation = SimpleMethodInvocation<String>(
@@ -49,7 +51,7 @@ void main() {
     });
 
     test('flush resets state', () async {
-      final targetClass = Class<String>();
+      final targetClass = Class<TestComparable>();
       final method = targetClass.getMethod('compareTo')!;
       final invocation = SimpleMethodInvocation<String>(
         'hello',

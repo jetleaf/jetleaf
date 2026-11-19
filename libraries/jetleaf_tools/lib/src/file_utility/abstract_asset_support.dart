@@ -52,7 +52,6 @@ typedef _Filter = bool Function(String filePath, String extension);
 ///
 /// - The current application project
 /// - All resolved package dependencies
-/// - Reflective (mirror-based) generative asset providers
 ///
 /// ---
 ///
@@ -64,7 +63,7 @@ typedef _Filter = bool Function(String filePath, String extension);
 /// - Applying configurable asset filters
 /// - Preventing duplicate asset discovery
 /// - Associating assets with their originating packages
-/// - Handling I/O and reflection errors gracefully
+/// - Handling I/O errors gracefully
 ///
 /// ---
 ///
@@ -146,7 +145,6 @@ abstract class AbstractAssetSupport extends AbstractPartFileUtility {
   /// including:
   /// - Project-local resources
   /// - Dependency resources
-  /// - Generated (mirror-based) assets
   ///
   /// This method serves as the **primary asset discovery pipeline** in Jetleaf.
   /// It aggregates assets from multiple sources into a single, unified list.
@@ -170,17 +168,11 @@ abstract class AbstractAssetSupport extends AbstractPartFileUtility {
   /// - They appear in `configuration.packagesToExclude`, or
   /// - They are not listed in `configuration.packagesToScan` (when non-empty)
   ///
-  /// ### 3️⃣ Mirror-Based Generation
-  /// Optionally scans runtime mirrors for **generative assets**, such as
-  /// resources produced by annotations, code generation, or reflection-based
-  /// providers.
-  ///
   /// ---
   ///
   /// ## Parameters
   /// - [currentPackageName]: Name of the root application package
-  /// - [mirrorSystem]: Optional [mirrors.MirrorSystem] used to discover generative assets
-  /// - [libraries]: Optional subset of libraries to restrict mirror scanning
+  /// - [projectRoot]: Optional root directory of the project (defaults to the current directory)
   ///
   /// ## Returns
   /// A flat list of all discovered [Asset] instances, including duplicates
@@ -203,7 +195,7 @@ abstract class AbstractAssetSupport extends AbstractPartFileUtility {
   ///   print('${asset.packageName}: ${asset.fileName}');
   /// }
   /// ```
-  Future<List<Asset>> discoverAllResources(String currentPackageName, [Object? mirrorSystem, Object? libraries, Directory? projectRoot]) async {
+  Future<List<Asset>> discoverAllResources(String currentPackageName, [Directory? projectRoot]) async {
     if (packageConfigCache == null) {
       await loadPackageConfig(projectRoot);
     }
@@ -669,39 +661,4 @@ abstract class AbstractAssetSupport extends AbstractPartFileUtility {
     return includePackage && !excludePackage;
   }
 
-  /// Scans loaded Dart libraries (via `dart:mirrors`) for classes that define
-  /// **generative assets** — i.e., classes that extend [GenerativeAsset] and
-  /// expose a zero-argument constructor.
-  ///
-  /// This reflective scan supplements file-based resource discovery by allowing
-  /// assets to be defined programmatically. Any class that:
-  ///
-  /// 1. Extends or implements [GenerativeAsset] (directly or indirectly),
-  /// 2. Has a callable zero-argument constructor,
-  ///
-  /// will be instantiated and collected.
-  ///
-  /// **How discovery works:**
-  /// - Iterate over all libraries in the provided [mirrorSystem] or a filtered
-  ///   list of [libraries].
-  /// - Inspect each class declaration.
-  /// - Determine whether the class is a subtype of [GenerativeAsset] using
-  ///   [isSubclassOf].
-  /// - Look for a zero-argument constructor via `_findZeroArgsConstructorSymbol`
-  ///   (defined elsewhere in this class).
-  /// - Attempt instantiation via `ClassMirror.newInstance`.
-  ///
-  /// If instantiation succeeds and the reflected instance is a
-  /// [GenerativeAsset], it is added to the returned list.
-  ///
-  /// **Fault tolerance:**
-  /// - Constructor invocation errors are silently ignored to prevent a single
-  ///   broken class from interrupting the entire discovery pipeline.
-  ///
-  /// **Parameters:**
-  /// - [mirrorSystem]: The active reflective view of the Dart program.
-  /// - [libraries]: Optional subset of libraries to restrict the scan.
-  ///
-  /// **Returns:**
-  /// A list of instantiated generative assets discovered through reflection.
 }

@@ -403,7 +403,7 @@ final class StandardFunctionDeclaration extends StandardClassDeclaration impleme
     
     return StandardFunctionDeclaration(
       name: name,
-      type: StandardDeclaration.resolveType(typeName),
+      type: MaterializedLibrary.resolveType(typeName),
       isPublic: isPublic,
       isSynthetic: isSynthetic,
       library: StandardLibraryDeclaration.empty(),

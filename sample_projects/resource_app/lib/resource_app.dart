@@ -2,7 +2,7 @@ import 'dart:io';
 import 'package:jetleaf/jetleaf.dart';
 import 'src/services/resource_service.dart';
 import 'src/runners/resource_verification_runner.dart';
-import '_jetleaf/aot_registry.g.dart';
+import '_jetleaf/main.dart';
 
 @JetleafApplicationStarter()
 class ResourceApp {
@@ -13,7 +13,7 @@ Future<void> main(List<String> args) async {
   ResourceApp._logger.info('Starting ResourceApp...');
   final app = JetleafApplication(ResourceApp);
   app.setApplicationType(ApplicationType.NONE);
-  app.setAotRegistrar(registerGeneratedAotPods);
+  app.setAotRegistrar(registerGeneratedArtifacts);
 
   final context = await app.create(args, null);
   if (context == null) {

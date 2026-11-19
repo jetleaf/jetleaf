@@ -26,7 +26,7 @@
 ///
 /// ### Notes
 /// - Features provide compatibility and fault-tolerance for varying JSON formats.
-/// - Most options mirror Jackson’s configuration model for familiarity.
+/// - Most options align with Jackson’s configuration model for familiarity.
 ///
 /// ### See also
 /// - [SerializationFeature]

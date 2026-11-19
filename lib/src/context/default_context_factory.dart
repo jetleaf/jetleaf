@@ -91,13 +91,31 @@ final class DefaultApplicationContextFactory implements ApplicationContextFactor
         if (source is ConfigurableApplicationContext && source.supports(applicationType)) {
           return source;
         } else if(_logger.getIsWarnEnabled()) {
-          _logger.warn("${cls.getName()} does not have a no-arg constructor or not a type of configurable application context");
+          _logger.warn("${cls.getName()} does not support application type $applicationType, or is not a configurable application context");
         }
-      } catch (_) {
-        // No-op
+      } catch (e) {
+        if (_logger.getIsDebugEnabled()) {
+          _logger.debug('Failed to instantiate ${cls.getName()}: $e');
+        }
       }
     }
 
-    return AnnotationConfigApplicationContext();
+    // Falling back to the annotation config context is a last resort and is
+    // only valid for non-web applications. For web, a silently non-web context
+    // would boot with no HTTP server at all — better to fail loudly with clear
+    // remediation steps.
+    if (applicationType == ApplicationType.NONE) {
+      return AnnotationConfigApplicationContext();
+    }
+
+    throw IllegalStateException(
+      'No configurable application context available for application type $applicationType. '
+      'For web applications, ServerWebApplicationContext is registered by the Jetleaf AOT '
+      'runtime registry — without it (plain `dart run` without importing the generated '
+      '`lib/_jetleaf/main.dart` and passing `registerGeneratedArtifacts` to '
+      '`JetleafApplication.run`, or a stale `.jetleaf/` cache), no web context can be '
+      'instantiated. Run the app with `jl run <entry>`/`jl dev`, or pass the AOT registrar '
+      'manually, or set `-Djetleaf.application.type=none` to boot as a non-web application.',
+    );
   }
 }

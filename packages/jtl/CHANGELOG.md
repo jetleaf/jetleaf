@@ -1,3 +1,11 @@
+## Unreleased
+
+### Documentation
+
+- **Terminology refresh**: "dart:mirrors" / "mirrors" mentions replaced by "runtime reflection"; no functional changes.
+
+---
+
 # Changelog
 
 All notable changes to this project will be documented in this file.  
@@ -22,7 +30,7 @@ This project follows a simple, human-readable changelog format inspired by
 
 ### Breaking Changes
 - **Unified Core Dependency**: Migrated from individual satellite dependencies (`jetleaf_lang`, `jetleaf_logging`) to the unified `jetleaf_core: ^2.0.0` architecture.
-- **Pure Dart Ahead-Of-Time (AOT) Compatibility**: 100% compliant with ahead-of-time compilation — zero reflection, zero `dart:mirrors`.
+- **Pure Dart Ahead-Of-Time (AOT) Compatibility**: 100% compliant with ahead-of-time compilation — zero reflection, zero `runtime reflection`.
 
 ### Enhancements
 - High-performance streaming and string template interpolation engine.

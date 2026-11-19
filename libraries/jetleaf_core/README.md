@@ -6,7 +6,7 @@
 
 [![pub package](https://img.shields.io/pub/v/jetleaf_core.svg?logo=dart&logoColor=white&color=0b2ab5)](https://pub.dev/packages/jetleaf_core)
 [![tests](https://img.shields.io/badge/tests-3600%2B%20passing-brightgreen.svg?logo=github)](https://github.com/jetleaf/jetleaf)
-[![pure AOT](https://img.shields.io/badge/AOT-100%25%20mirror--free-success.svg)](https://pub.dev/packages/jetleaf_core)
+[![pure AOT](https://img.shields.io/badge/AOT-100%25%20reflection--free-success.svg)](https://pub.dev/packages/jetleaf_core)
 [![license](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
 [![platform](https://img.shields.io/badge/platform-dart%20%7C%20server%20%7C%20cli%20%7C%20web%20%7C%20flutter-lightgrey)](https://pub.dev/packages/jetleaf_core)
 
@@ -52,7 +52,7 @@ import 'package:jetleaf_core/lang.dart';
 * **Unified 7-in-1 Architecture** — Consolidates the complete Jetleaf runtime (core context, pods/IoC, environment, logging, conversion, utilities, and language extensions) into a single cohesive package.
 * **Declarative Inversion of Control (IoC)** — Full container lifecycle management (`GenericApplicationContext`, `AnnotationConfigApplicationContext`, `DefaultListablePodFactory`) supporting singleton and prototype scopes, eager/lazy initialization, constructor/property autowiring, and circular dependency resolution.
 * **Hierarchical Environment & Properties** — Type-safe configuration binding (`@ConfigurationProperties`), multi-profile support (`dev`, `prod`, `test`), and hierarchical property resolution across environment variables, CLI options, YAML/JSON/Properties files, and custom property sources.
-* **Pure AOT Native Compilation** — Completely mirror-free (`dart:mirrors` free). Generates deterministic dispatch registries at build time that survive Dart's aggressive tree-shaker without reflection compromises.
+* **Pure AOT Native Compilation** — Completely reflection-free (`runtime reflection` free). Generates deterministic dispatch registries at build time that survive Dart's aggressive tree-shaker without reflection compromises.
 * **Decoupled Event Bus** — Synchronous and asynchronous application event dispatching (`ApplicationEvent`, `@EventListener`, `SimpleApplicationEventBus`) with ordering and payload validation.
 * **Extensible Type Conversion Service** — Robust conversion pipeline (`ConversionService`, `ConverterRegistry`) covering primitives, collections, custom objects, enums, dates, and localized strings with bidirectional adapters.
 * **Structured Leveled Logging** — Pluggable ANSI-formatted console logging with customizable log levels (`TRACE` through `FATAL`), formatters (`PrettyPrinter`, `FlatStructuredPrinter`, `FmtPrinter`), and filter pipelines.
@@ -340,7 +340,7 @@ final totalOrderAmount = GenericStream.of(orders)
 ## ⚙️ AOT Compilation
 
 `jetleaf_core` is architected for Dart's ahead-of-time (AOT) compiler:
-1. Zero usage of `dart:mirrors`.
+1. Zero usage of `runtime reflection`.
 2. Static dispatch registries generated via `jetleaf_tools`.
 3. Fully compatible with `dart compile exe` producing standalone, native OS binaries without external VM dependencies.
 
@@ -356,11 +356,21 @@ dart compile exe bin/main.dart -o build/server.exe
 
 ## 🧪 Testing
 
-The repository includes over 3,600 automated tests exercising the container, factories, converters, logging formats, environment resolution, and collections:
+The repository includes ~3,300 automated tests exercising the container, factories, converters, logging formats, environment resolution, and collections:
 
 ```sh
 # Run the test suite
-dart test test/all_tests.dart
+dart test
+
+# Run individual directories (faster, more reliable on large machines)
+dart test test/convert
+dart test test/pod
+dart test test/core
+
+# Invoke test AOT registry explicitly when tests reach for reflection
+# (if you write your own @JetleafTest entries that call `ensureTestAotRegistered()`)
+import 'package:jetleaf_core/_jetleaf/test/registry.g.dart' show registerTestGeneratedArtifacts;
+Future<void> ensureTestAotRegistered() => registerTestGeneratedArtifacts();
 ```
 
 ---

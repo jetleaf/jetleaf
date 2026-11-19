@@ -23,7 +23,7 @@ abstract final class ClosureDeclaration extends ClassDeclaration with EqualsAndH
   ///
   /// Example:
   /// ```dart
-  /// final closureDecl = runtime.generateMirroredClass(reflect(() => 42)) as ClosureDeclaration;
+  /// final closureDecl = /* obtain a closure declaration from the runtime */;
   /// final function = closureDecl.getFunction();
   /// print(function.name); // 'Closure' or inferred name
   /// print(function.parameters.map((p) => p.name));
@@ -38,7 +38,7 @@ abstract final class ClosureDeclaration extends ClassDeclaration with EqualsAndH
   ///
   /// Example:
   /// ```dart
-  /// final closureDecl = runtime.generateMirroredClass(reflect(() => 42)) as ClosureDeclaration;
+  /// final closureDecl = /* obtain a closure declaration from the runtime */;
   /// final classDecl = closureDecl.getClassDeclaration();
   /// print(classDecl.getQualifiedName());
   /// ```
@@ -76,7 +76,7 @@ final class StandardClosureDeclaration extends StandardClassDeclaration implemen
   /// and associated class declaration.
   ///
   /// Typically used internally by the Jetleaf runtime when materializing
-  /// closure mirrors.
+  /// closure declarations.
   StandardClosureDeclaration({
     required MethodDeclaration function,
     required ClassDeclaration classDeclaration,
@@ -135,7 +135,7 @@ final class StandardClosureDeclaration extends StandardClassDeclaration implemen
       function: function,
       classDeclaration: StandardClassDeclaration(
         name: name,
-        type: StandardDeclaration.resolveType(typeName),
+        type: MaterializedLibrary.resolveType(typeName),
         isPublic: isPublic,
         isSynthetic: isSynthetic,
         library: StandardLibraryDeclaration.empty(),

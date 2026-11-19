@@ -27,7 +27,7 @@ import 'json_adapter.dart';
 ///
 /// The [SetJsonSerializationAdapter] is responsible for converting JSON arrays
 /// into Dart `Set` instances and serializing Dart sets back into JSON arrays.
-/// It mirrors the behavior of the List adapter but produces a `Set` to preserve
+/// It matches the behavior of the List adapter but produces a `Set` to preserve
 /// uniqueness of elements.
 ///
 /// ### Core Responsibilities
@@ -96,7 +96,7 @@ final class SetJsonSerializationAdapter extends JsonSerializationAdapter<Set> {
       throw FormatException('Expected START_ARRAY, got $token');
     }
 
-    final set = <Object>{};
+    final set = <Object?>{};
 
     while (parser.nextToken()) {
       final currentToken = parser.getCurrentToken();
@@ -114,11 +114,15 @@ final class SetJsonSerializationAdapter extends JsonSerializationAdapter<Set> {
       }
 
       if (currentToken == JsonToken.VALUE_NULL) {
+        // Preserve null elements exactly as written.
+        set.add(null);
         continue;
       }
 
       final value = parser.getCurrentValue();
       if (value == null) {
+        // A token-typed null (e.g. an explicit `null` element).
+        set.add(null);
         continue;
       }
 

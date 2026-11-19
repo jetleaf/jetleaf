@@ -1,3 +1,20 @@
+## Unreleased
+
+### Added
+
+- **Component-scan scope**: `AbstractAnnotatedHandlerMapping` now honours `@ComponentScan` — controllers whose package is not in the declared `basePackages` / `basePackageClasses` are not mapped, mirroring the scan semantics of the annotation processor.
+- **`jetleaf.jetson.naming-strategy`**: New environment property selecting the global Jetson mapper naming strategy. Supported: `snake-case` (default), `kebab-case`, `camel-case` / `none` / `identity` (no transformation). Unknown values throw `IllegalArgumentException` with the supported list.
+- **`test_helpers.dart`**: Shared test bootstrapper calling `ensureTestAotRegistered()` for warm-test-VM registrar loading.
+- **Test bootstrap**: `@JetleafTest` entries import `../test_helpers.dart` and `await ensureTestAotRegistered()` — previously the AOT registrar was not loaded in tests that reach beyond annotation reads, producing `MethodNotFoundException` for framework reflection calls.
+
+### Changed
+
+- **Test AOT registry**: Warm test VMs now import `lib/_jetleaf/test/registry.g.dart` as a package root (`package:jetleaf_web/_jetleaf/test/registry.g.dart`) — previously `package:jetleaf_web/_jetleaf/aot_registry.g.dart`.
+- **Component-scan scope filters**: Registrar-based scan now honours `@ComponentScan(includeFilters: [FilterType.ANNOTATION])` scopes for handler mapping resolution.
+- **`handler_test.dart`**: Jetson-constructed request DTO tests updated to reflect null-field round-trip preservation.
+
+---
+
 ## [2.1.0]
 
 ### Changed

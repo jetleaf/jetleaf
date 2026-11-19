@@ -4,6 +4,8 @@ import 'dart:async';
 import 'package:jetleaf_core/src/pod/helpers/object.dart';
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
 
 class TestPodProvider extends PodProvider<String> {
   final String value;
@@ -37,7 +39,8 @@ class TestPodProvider extends PodProvider<String> {
 }
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('PodProvider', () {
     test('should create and return object', () async {
       final provider = TestPodProvider(value: 'test_value');

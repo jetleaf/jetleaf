@@ -7,9 +7,9 @@ import 'aot_sub_registrar_writer.dart';
 /// 🏷️ **Ahead-Of-Time (AOT) Type Token Registry Code Generator**
 ///
 /// Generates package-scoped `registry_types.g.dart` sub-registry part files containing
-/// statically registered [Type] tokens registered with `AotRuntimeExecutor.registerType`.
+/// statically registered [Type] tokens registered via `MaterializedLibrary.registerType`.
 ///
-/// In pure Dart AOT execution (no `dart:mirrors`), resolving a [Type] token from a runtime
+/// When running compiled, resolving a [Type] token from a runtime
 /// string identifier (e.g. `'UserService'`) or fully qualified URI is impossible because
 /// Dart tree-shakers strip runtime symbol metadata.
 ///
@@ -24,15 +24,15 @@ import 'aot_sub_registrar_writer.dart';
 ///
 /// ```dart
 /// // Generated in lib/_jetleaf/my_app/registry_types.g.dart
-/// part of '../aot_registry.g.dart';
+/// part of '../registry.g.dart';
 ///
 /// void _registerTypes_my_app() {
-///   AotRuntimeExecutor.registerType(
+///   MaterializedLibrary.registerType(
 ///     'UserService',
 ///     p0.UserService,
 ///     'package:my_app/user_service.dart/UserService',
 ///   );
-///   AotRuntimeExecutor.registerType(
+///   MaterializedLibrary.registerType(
 ///     'DatabaseConfig',
 ///     p0.DatabaseConfig,
 ///     'package:my_app/config.dart/DatabaseConfig',
@@ -59,8 +59,10 @@ final class AotTypeRegistryWriter extends AotSubRegistrarWriter {
     required Set<String> registeredTypes,
   }) async {
     final lines = <String>[];
+    final scanRoots = resolveComponentScanRoots(components);
 
     for (final component in components) {
+      if (scanRoots != null && !isComponentScanned(component, scanRoots)) continue;
       final rawName = component.getName();
       if (rawName.startsWith('_') || rawName.contains(' ') || !component.getIsPublic()) {
         continue;
@@ -76,9 +78,17 @@ final class AotTypeRegistryWriter extends AotSubRegistrarWriter {
       final prefix = libraryAliases[libraryUri] != null ? '${libraryAliases[libraryUri]}.' : '';
       final qName = component.getQualifiedName();
 
-      if (component.getTypeArguments().isEmpty && registeredTypes.add(qName)) {
+      // Emit the raw class Type for every public, non-synthetic class —
+      // generic classes included. The raw class literal (e.g. `p0.HashMap`)
+      // is a valid Type expression and the runtime needs those tokens for
+      // converter pair matching and declaration lookup. For non-generic types,
+      // also pass `<$prefix$cleanClassName>` so `MaterializedLibrary` captures
+      // a `StandardTypeReifier<T>` for reified List<T>, Set<T>, and Map<K, T>.
+      if (component.getIsPublic() && isValidDartIdentifier(cleanClassName) && registeredTypes.add(qName)) {
+        final hasTypeParams = component.getTypeArguments().isNotEmpty;
+        final typeArgClause = hasTypeParams ? '' : '<$prefix$cleanClassName>';
         lines.add('''
-  AotRuntimeExecutor.registerType(
+  MaterializedLibrary.registerType$typeArgClause(
     '${escapeDartStringLiteral(cleanClassName)}',
     $prefix$cleanClassName,
     '${escapeDartStringLiteral(qName)}',
@@ -100,7 +110,7 @@ final class AotTypeRegistryWriter extends AotSubRegistrarWriter {
     if (!packageDir.existsSync()) {
       packageDir.createSync(recursive: true);
     }
-    final file = File('${packageDir.path}/${Constant.AOT_REGISTRY_TYPES_FILE_NAME}');
+    final file = File('${packageDir.path}/${Constant.REGISTRY_TYPES_FILE_NAME}');
     await file.writeAsString(buffer.toString());
     return fnName;
   }

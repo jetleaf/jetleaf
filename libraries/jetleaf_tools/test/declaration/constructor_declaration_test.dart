@@ -2,6 +2,7 @@
 
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../helpers/aot_test_setup.dart';
 // Test classes for constructor declarations
 class SimpleConstructorClass {
   final String name;
@@ -124,6 +125,7 @@ class ConcreteConstructorClass extends AbstractConstructorClass {
 
 @JetleafTest()
 void main() async {
+  await ensureTestAotRegistered();
   group('ConstructorDeclaration Basic Properties', () {
     test('should retrieve all constructors', () {
       final testClass = Runtime.findClass<SimpleConstructorClass>();

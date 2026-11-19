@@ -51,7 +51,7 @@ final class JetsonAutoConfiguration implements EnvironmentAware {
   /// ```
   ///
   /// When set to `true`, Jetson’s `ObjectMapper` automatically enables
-  /// [`SerializationFeature.INDENT_OUTPUT`], producing neatly formatted JSON.
+  /// [SerializationFeature.INDENT_OUTPUT], producing neatly formatted JSON.
   /// When `false` or unspecified, output remains compact (no extra whitespace).
   ///
   /// ### Default
@@ -61,6 +61,29 @@ final class JetsonAutoConfiguration implements EnvironmentAware {
   /// - [SerializationFeature.INDENT_OUTPUT]
   /// - [ObjectMapper]
   static const String PRETTY_PRINT = "jetleaf.jetson.pretty-print";
+
+  /// Environment property key that selects the **naming strategy** used by the
+  /// global Jetson object mapper.
+  ///
+  /// ### Property Name
+  /// ```
+  /// jetleaf.jetson.naming-strategy
+  /// ```
+  ///
+  /// ### Supported values
+  /// | Value | Effect |
+  /// |-------|--------|
+  /// | `snake-case` (default) | `userName` → `user_name` (Dart → wire) and back. |
+  /// | `kebab-case` | `userName` → `user-name` and back. |
+  /// | `camel-case` | No transformation — keys are written exactly as declared. |
+  ///
+  /// ### Why this exists
+  /// Jetson snake_cases raw map keys on the wire by design (its default),
+  /// while `@RequestBody` input maps are read as-sent — the asymmetry is by
+  /// design but was previously not configurable or documented. Setting this
+  /// property lets an application pin the whole mapper to the strategy its
+  /// API contract expects.
+  static const String NAMING_STRATEGY = "jetleaf.jetson.naming-strategy";
 
   /// The active environment available to the context, at runtime.
   late Environment _environment;
@@ -83,7 +106,21 @@ final class JetsonAutoConfiguration implements EnvironmentAware {
     final prettyPrint = _environment.getPropertyAs(JetsonAutoConfiguration.PRETTY_PRINT, Class<bool>()) ?? true;
 
     final mapper = ObjectMapper();
-    
+
+    // Naming strategy — opt-in override; default stays snake_case to match
+    // Jetson's documented wire contract.
+    final strategyName = _environment.getProperty(NAMING_STRATEGY)?.toString().trim().toLowerCase();
+    if (strategyName != null && strategyName.isNotEmpty) {
+      final strategy = switch (strategyName) {
+        'snake-case' || 'snake_case' || 'snakecase' => const SnakeCaseNamingStrategy(),
+        'kebab-case' || 'kebab_case' || 'kebabcase' => const KebabCaseNamingStrategy(),
+        'camel-case' || 'camel_case' || 'camelcase' || 'none' || 'identity' => const CamelCaseNamingStrategy(),
+        _ => throw IllegalArgumentException(
+            "Unsupported value '$strategyName' for '$NAMING_STRATEGY'. Supported values: 'snake-case', 'kebab-case', 'camel-case' (no transformation)."),
+      };
+      mapper.setNamingStrategy(strategy);
+    }
+
     if (prettyPrint) {
       mapper.enableFeature(SerializationFeature.INDENT_OUTPUT.name);
     }

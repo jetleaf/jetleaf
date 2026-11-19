@@ -3,9 +3,11 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'runtime_hint_implementations.dart';
+import '../helpers/aot_test_setup.dart';
 
 @JetleafTest()
 void main() async {
+  await ensureTestAotRegistered();
   group('RuntimeHint Discovery and Registration', () {
     test('should find annotations that are RuntimeHints', () {
       final annotatedClass = Runtime.findClass<AnnotatedStringUser>();
@@ -91,33 +93,43 @@ void main() async {
     });
 
     test('should handle String operations with RuntimeHint', () {
-      final stringClass = Runtime.findClassByName('String');
-      
-      final instance = 'Hello World';
-      final methods = stringClass.getMethods();
-      
-      // toLowerCase is defined on String itself
-      final toLowerCaseMethod = methods.firstWhere((m) => m.getName() == 'toLowerCase');
-      final result = toLowerCaseMethod.invoke(instance, {});
-      
-      expect(result, equals('hello world'));
+      // The AOT runtime does not enumerate SDK methods; SDK types are
+      // reached through runtime hints. The String hint executes operations
+      // registered for it.
+      const hint = StringRuntimeHint();
+      expect(hint.obtainTypeOfRuntimeHint(), equals(String));
+
+      final result = hint.invokeMethod<String>(
+        'Hello World',
+        'toUpperCase',
+        ExecutableArgument.unmodified(const {}, const []),
+      );
+
+      expect(result.getIsExecuted(), isTrue);
+      expect(result.getResult(), equals('HELLO WORLD'));
     });
 
     test('should handle int operations with RuntimeHint', () {
-      final intClass = Runtime.findClassByName('int');
-      
-      final instance = 42;
-      final methods = intClass.getMethods();
-      
-      final absMethod = methods.firstWhere((m) => m.getName() == 'abs');
-      final result = absMethod.invoke(instance, {});
-      
-      expect(result, equals(42));
-      
-      final toStringMethod = methods.firstWhere((m) => m.getName() == 'toString');
-      final stringResult = toStringMethod.invoke(instance, {});
-      
-      expect(stringResult, equals('42'));
+      // Same contract for int: SDK invocation is limited to operations a
+      // registered hint covers.
+      const hint = IntRuntimeHint();
+      expect(hint.obtainTypeOfRuntimeHint(), equals(int));
+
+      final absResult = hint.invokeMethod<int>(
+        -42,
+        'abs',
+        ExecutableArgument.unmodified(const {}, const []),
+      );
+      expect(absResult.getIsExecuted(), isTrue);
+      expect(absResult.getResult(), equals(42));
+
+      final toStringResult = hint.invokeMethod<int>(
+        42,
+        'toString',
+        ExecutableArgument.unmodified(const {}, const []),
+      );
+      expect(toStringResult.getIsExecuted(), isTrue);
+      expect(toStringResult.getResult(), equals('42'));
     });
   });
 

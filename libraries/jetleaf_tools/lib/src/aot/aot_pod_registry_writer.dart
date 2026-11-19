@@ -19,7 +19,7 @@ import 'aot_sub_registrar_writer.dart';
 ///
 /// ```dart
 /// // Generated in lib/_jetleaf/my_app/registry_pods.g.dart
-/// part of '../aot_registry.g.dart';
+/// part of '../registry.g.dart';
 ///
 /// Future<void> _registerPods_my_app(DefaultListablePodFactory factory) async {
 ///   if (!factory.containsDefinition('userService')) {
@@ -278,7 +278,13 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
     Map<String, ClassDeclaration> classByName = const {},
     Map<String, String> podMethodByReturnType = const {},
   }) async {
-    final podComponents = components.where((c) => isPodComponent(c, classByName)).toList();
+    final scanRoots = resolveComponentScanRoots(components);
+    final podComponents = components.where((c) {
+      if (!isPodComponent(c, classByName)) return false;
+      // Component scan roots: register only classes in the declared packages.
+      if (scanRoots != null && !isComponentScanned(c, scanRoots)) return false;
+      return true;
+    }).toList();
     if (podComponents.isEmpty) return null;
 
     final fnName = '_registerPods_${sanitizePackageIdentifier(packageName)}';
@@ -319,17 +325,23 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
       final isLazy = _hasAnnotation(component, {_lazyName}, classByName);
       final isPrimary = _hasAnnotation(component, {_primaryName}, classByName);
       final scopeDesign = _scopeDesignExpression(component, classByName);
+      final definitionArguments = <String>[
+        "      type: Class<$prefix$className>.fromQualifiedName('${escapeDartStringLiteral(component.getQualifiedName())}'),",
+        if (supplierCode != null) '      instanceSupplier: $supplierCode,',
+        if (initInvokerCode != null) '      initMethodInvoker: $initInvokerCode,',
+        if (destroyInvokerCode != null) '      destroyMethodInvoker: $destroyInvokerCode,',
+      ];
+      final definitionCascades = <String>[
+        "      ..name = '${escapeDartStringLiteral(podName)}'",
+        if (scopeDesign != null) '      ..scope = $scopeDesign',
+        '      ..design.isPrimary = $isPrimary',
+        '      ..lifecycle.isLazy = $isLazy',
+      ];
       buffer.writeln('''  if (!factory.containsDefinition('${escapeDartStringLiteral(podName)}')) {
     await factory.registerDefinition('${escapeDartStringLiteral(podName)}', RootPodDefinition(
-      type: Class<$prefix$className>.fromQualifiedName('${escapeDartStringLiteral(component.getQualifiedName())}'),
-      ${supplierCode != null ? 'instanceSupplier: $supplierCode,' : ''}
-      ${initInvokerCode != null ? 'initMethodInvoker: $initInvokerCode,' : ''}
-      ${destroyInvokerCode != null ? 'destroyMethodInvoker: $destroyInvokerCode,' : ''}
+${definitionArguments.join('\n')}
     )
-      ..name = '${escapeDartStringLiteral(podName)}'
-      ${scopeDesign != null ? '..scope = $scopeDesign' : ''}
-      ..design.isPrimary = $isPrimary
-      ..lifecycle.isLazy = $isLazy
+${definitionCascades.join('\n')}
     );
   }''');
     }
@@ -352,7 +364,7 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
 
         // `@Pod` methods returning `Future<X>` are registered under the
         // completeness type `X` — fall out of `Future` whose runtime value
-        // is awaited by the container before the pod is published (mirrors
+        // is awaited by the container before the pod is published (matching
         // `isAsync ? componentType() : getReturnClass()` in `AnnotatedPodMethodBuilder`).
         final returnType = method.getReturnType();
         final effectiveReturnType = method.isAsynchronous() && returnType.getTypeArguments().length == 1
@@ -384,6 +396,11 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
 
         final methodIsPrimary = _methodHasAnnotation(method, {_primaryName}, classByName);
         final scopeDesign = _scopeDesignExpressionForMethod(method, classByName);
+        final factoryMethodCascades = <String>[
+          if (scopeDesign != null) '        ..scope = $scopeDesign',
+          "        ..factoryMethod = FactoryMethodDesign('${escapeDartStringLiteral(configurationName)}', '${escapeDartStringLiteral(method.getName())}')",
+          '        ..design.isPrimary = $methodIsPrimary',
+        ];
 
         final effectiveReturnTypeRef = returnTypePrefix != null
           ? 'Class<$returnTypePrefix$returnTypeName>()'
@@ -395,9 +412,7 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
         instanceSupplier: $supplierCode,
       )
         ..name = '${escapeDartStringLiteral(preferredName)}'
-        ${scopeDesign != null ? '..scope = $scopeDesign' : ''}
-        ..factoryMethod = FactoryMethodDesign('${escapeDartStringLiteral(configurationName)}', '${escapeDartStringLiteral(method.getName())}')
-        ..design.isPrimary = $methodIsPrimary
+${factoryMethodCascades.join('\n')}
       );
     } else if (!_isSameFactoryMethod('${escapeDartStringLiteral(preferredName)}', '${escapeDartStringLiteral(configurationName)}', '${escapeDartStringLiteral(method.getName())}') && !factory.containsDefinition('${escapeDartStringLiteral(qualifiedName)}')) {
       await factory.registerDefinition('${escapeDartStringLiteral(qualifiedName)}', RootPodDefinition(
@@ -405,9 +420,7 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
         instanceSupplier: $supplierCode,
       )
         ..name = '${escapeDartStringLiteral(qualifiedName)}'
-        ${scopeDesign != null ? '..scope = $scopeDesign' : ''}
-        ..factoryMethod = FactoryMethodDesign('${escapeDartStringLiteral(configurationName)}', '${escapeDartStringLiteral(method.getName())}')
-        ..design.isPrimary = $methodIsPrimary
+${factoryMethodCascades.join('\n')}
       );
     }''');
         factoryMethodPodsEmitted++;
@@ -432,7 +445,7 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
     if (!packageDir.existsSync()) {
       packageDir.createSync(recursive: true);
     }
-    final file = File('${packageDir.path}/${Constant.AOT_REGISTRY_PODS_FILE_NAME}');
+    final file = File('${packageDir.path}/${Constant.REGISTRY_PODS_FILE_NAME}');
     await file.writeAsString(buffer.toString());
     return fnName;
   }
@@ -469,7 +482,7 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
 
   /// Resolves the user-facing name for a `@Pod`-annotated factory method.
   ///
-  /// Mirrors the JIT `AnnotatedPodMethodBuilder` naming policy exactly:
+  /// Matches the historical `AnnotatedPodMethodBuilder` naming policy exactly:
   ///
   /// 1. `@Named('name')` wins outright
   /// 2. `@Pod('value')` wins when non-empty

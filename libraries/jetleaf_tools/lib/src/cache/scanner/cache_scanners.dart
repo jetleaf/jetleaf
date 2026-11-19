@@ -90,7 +90,7 @@ final class _AssetScanner extends CacheableWriter {
   }) async {
     try {
       final fileUtil = FileUtility.withDefaults();
-      final discovered = await fileUtil.discoverAllResources(packageName, null, null, projectRoot);
+      final discovered = await fileUtil.discoverAllResources(packageName, projectRoot);
       if (discovered.isNotEmpty) {
         return discovered;
       }
@@ -795,7 +795,7 @@ CacheableWriter CacheWriter(Directory projectRoot) =>
 
 /// Reads all cache data from disk.
 ///
-/// This class mirrors the writer hierarchy but for the read path.
+/// This class matches the writer hierarchy but for the read path.
 /// It loads all cached metadata and converts it into usable forms.
 final class CacheableReader extends _RuntimeHintScanner {
   const CacheableReader(super.projectRoot);

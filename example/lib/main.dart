@@ -15,14 +15,14 @@
 import 'package:jetleaf/jetleaf.dart';
 import 'package:jetleaf_resource/jetleaf_resource.dart';
 import 'package:jetleaf_scheduling/jetleaf_scheduling.dart';
-import '_jetleaf/aot_registry.g.dart';
+import '_jetleaf/main.dart';
 
 void main(List<String> args) async {
   final context = await JetleafApplication.run(
     ExampleApplication(),
     args,
     null,
-    registerGeneratedAotPods,
+    registerGeneratedArtifacts,
   );
 
   if (context != null) {

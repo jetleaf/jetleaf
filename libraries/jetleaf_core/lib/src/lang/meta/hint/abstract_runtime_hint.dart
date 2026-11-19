@@ -40,7 +40,7 @@ import 'runtime_hint.dart';
 ///
 /// - Associate the hint with its target type  
 /// - Produce optimized invocation paths  
-/// - Avoid reflective type inference or mirror lookups  
+/// - Avoid reflective type inference or reflection lookups  
 ///
 /// ## Default Behavior
 /// All RuntimeHint methods in this class return `Hint.notExecuted()`.

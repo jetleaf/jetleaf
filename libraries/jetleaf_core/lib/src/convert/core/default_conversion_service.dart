@@ -3,6 +3,8 @@ import 'package:jetleaf_core/lang.dart';
 import 'conversion_service.dart';
 import 'simple_conversion_service.dart';
 import 'converter_registry.dart';
+import 'converters.dart';
+import '../helpers/convertible_pair.dart';
 
 import '../types/time_converters.dart';
 import '../types/map_converters.dart';
@@ -87,12 +89,18 @@ import '../helpers/_commons.dart';
 class DefaultConversionService extends SimpleConversionService {
   static DefaultConversionService? _sharedInstance;
   static ZoneId defaultZone = ZoneId.systemDefault();
+
+  /// Built-in converters registered by [addDefaultConverters] at construction
+  /// time, keyed by converter pair. Used by [remove] to reset a pair to its
+  /// default state instead of erasing the built-in converters.
+  late final Map<ConvertiblePair, List<PairedConverter>> _builtInConverters;
   
   /// Create a new [DefaultConversionService] with the set of default converters.
   /// 
   /// {@macro jetleaf_default_conversion_service}
   DefaultConversionService([super.protectionDomain]) {
     addDefaultConverters(this);
+    _builtInConverters = snapshotConverters();
   }
   
   /// Returns a shared default [ConversionService] instance.
@@ -124,6 +132,23 @@ class DefaultConversionService extends SimpleConversionService {
     return cs;
   }
   
+  /// Resets the converters registered for [sourceType] and [targetType] to the
+  /// built-in converters shipped with this service, discarding any custom
+  /// converters registered after construction for that pair.
+  ///
+  /// Pairs that were never registered by the built-in setup are removed
+  /// entirely (as with the base implementation).
+  @override
+  void remove(Class sourceType, Class targetType) {
+    final pair = ConvertiblePair(sourceType, targetType);
+    final builtIns = _builtInConverters[pair];
+    if (builtIns == null) {
+      super.remove(sourceType, targetType);
+      return;
+    }
+    restoreConverters(pair, builtIns);
+  }
+
   /// Registers a comprehensive set of converters suitable for most environments.
   ///
   /// This method combines scalar, collection, map, Jetleaf-specific, Dart built-in,

@@ -379,7 +379,7 @@ final class StandardFieldDeclaration extends StandardSourceDeclaration implement
     
     return StandardFieldDeclaration(
       name: name,
-      type: StandardDeclaration.resolveType(typeName, linkDeclaration.getName()),
+      type: MaterializedLibrary.resolveType(typeName, linkDeclaration.getName()),
       isFinal: isFinal,
       isConst: isConst,
       isLate: isLate,

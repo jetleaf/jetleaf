@@ -19,6 +19,7 @@ import 'package:jetleaf_core/lang.dart';
 import '../base/object_mapper_type.dart';
 import '../naming_strategy/naming_strategies.dart';
 import '../naming_strategy/naming_strategy.dart';
+import '../serialization/serialization_feature.dart';
 import 'abstract_aware_object_mapper.dart';
 
 /// {@template jetleaf_jetson_object_mapper}
@@ -163,7 +164,12 @@ final class JetsonObjectMapper extends AbstractAwareObjectMapper {
   ///
   /// Creates a new [JetsonObjectMapper] and registers all standard
   /// serializers and deserializers.
-  JetsonObjectMapper([super.autoRegisterStandardAdapters]);
+  ///
+  /// Null DTO fields are written by default (`"key": null`); call
+  /// `disableFeature(WRITE_NULL_MAP_VALUES)` to omit them.
+  JetsonObjectMapper([super.autoRegisterStandardAdapters]) {
+    _features.add(SerializationFeature.WRITE_NULL_MAP_VALUES.name);
+  }
 
   @override
   void disableFeature(String featureName) {

@@ -12,7 +12,7 @@ import 'runtime_scanner_summary.dart';
 
 /// {@template application_runtime_scanner}
 /// A pure Dart AOT runtime scanner responsible for analyzing application code
-/// and generating declaration metadata without `dart:mirrors`.
+/// and generating declaration metadata without `runtime reflection`.
 /// {@endtemplate}
 final class ApplicationRuntimeScanner implements RuntimeScanner {
   /// Optional callback invoked for informational log messages.

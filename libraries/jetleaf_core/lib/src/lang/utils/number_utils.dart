@@ -54,7 +54,7 @@ abstract final class NumberUtils {
   ///
   /// ### Parameters
   /// - [number]: The active numeric primitive context instance carrying the runtime scalar value.
-  /// - [targetClass]: The reflective type token mirror pinpointing the destination execution architecture.
+  /// - [targetClass]: The reflective type token identifying the destination execution architecture.
   /// 
   /// ### Failures & Boundary Safety
   /// * Throws an [IllegalArgumentException] if [targetClass] is omitted from the [STANDARD_NUMBER_TYPES] compatibility matrix.
@@ -160,7 +160,7 @@ abstract final class NumberUtils {
   ///
   /// ### Parameters
   /// - [text]: The raw incoming alphanumeric input block to decode.
-  /// - [targetClass]: The reflective type token mirror specifying the destination numerical standard.
+  /// - [targetClass]: The reflective type token identifying the destination numerical standard.
   ///
   /// ### Failures & State Handling
   /// Throws an [IllegalArgumentException] if the [text] string is malformed or violates the formatting constraints of the destination type.

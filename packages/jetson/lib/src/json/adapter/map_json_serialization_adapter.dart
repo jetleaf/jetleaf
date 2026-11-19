@@ -100,7 +100,7 @@ final class MapJsonSerializationAdapter extends JsonSerializationAdapter<Map> {
       throw FormatException('Expected START_OBJECT, got $token');
     }
 
-    final map = <String, Object>{};
+    final map = <String, Object?>{};
     final naming = ctxt.getNamingStrategy();
 
     while (parser.nextToken()) {
@@ -128,11 +128,15 @@ final class MapJsonSerializationAdapter extends JsonSerializationAdapter<Map> {
         }
 
         if (currentValueToken == JsonToken.VALUE_NULL) {
+          // Preserve null values exactly as written.
+          map[dartKey] = null;
           continue;
         }
 
         final value = parser.getCurrentValue();
         if (value == null) {
+          // A token-typed null (e.g. an explicit `null` field name value).
+          map[dartKey] = null;
           continue;
         }
 

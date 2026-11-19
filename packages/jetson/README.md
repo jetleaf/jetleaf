@@ -350,6 +350,8 @@ final mapper = JetsonObjectMapperBuilder()
 final json = mapper.writeValueAsString(obj);
 ```
 
+**Note:** as of this release, `JetsonObjectMapper()` (and the builder) enables `SerializationFeature.WRITE_NULL_MAP_VALUES` by default, so null fields are written as `"key": null` instead of being dropped. Call `.disableFeature(SerializationFeature.WRITE_NULL_MAP_VALUES)` if you need to omit nulls from output.
+
 ## 📖 Naming Strategies
 
 | Strategy | Example | Use Case |
@@ -482,8 +484,7 @@ final config = mapper.readValue(configJson, Class<AppConfig>());
 
 ## 📦 Dependencies
 
-- **`jetleaf_lang`** — Language utilities
-- **`jetleaf_convert`** — Type conversion
+- **`jetleaf_core`** — Core framework
 - **`meta`** — Annotations
 
 ## 📄 License
@@ -493,8 +494,8 @@ This package is part of the Jetleaf Framework. See LICENSE in the root directory
 ## 🔗 Related Packages
 
 - **`jetleaf_web`** — HTTP integration
-- **`jetleaf_convert`** — Type conversion utilities
-- **`jetleaf_env`** — Configuration
+- **`jtl`** — Template rendering
+- **`jetleaf_core`** — Core framework
 
 ## 📞 Support
 

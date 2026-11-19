@@ -7,7 +7,7 @@
 /// and extensible type conversion into a single, cohesive framework.
 ///
 /// Engineered from the ground up for **pure Dart Ahead-Of-Time (AOT)** compilation
-/// (`dart compile exe`) with zero reliance on `dart:mirrors` and zero reflection runtime overhead.
+/// (`dart compile exe`) with zero reliance on `runtime reflection` and zero reflection runtime overhead.
 ///
 /// ---
 ///
@@ -23,7 +23,7 @@
 /// │ Event Bus    │ Lifecycles   │ Sources      │ Colorized    │ Registry   │
 /// ├──────────────┴──────────────┴──────────────┴──────────────┴────────────┤
 /// │                          lang/ & utils/                                │
-/// │  Class<T>, Mirrorless Introspection, Custom Collections, Stream I/O   │
+/// │  Class<T>, Reflection-Free Introspection, Custom Collections, Stream I/O   │
 /// └────────────────────────────────────────────────────────────────────────┘
 /// ```
 ///

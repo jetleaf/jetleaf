@@ -146,11 +146,11 @@ final class AdaptableList extends ArrayList<Object> {
 /// - [AdaptableSet]
 /// {@endtemplate}
 final class AdaptableMap extends HashMap<Object, Object> {
-  /// Represents the metadata class for `AdaptableSet`.
+  /// Represents the metadata class for `AdaptableMap`.
   /// 
   /// This can be used for reflection or type identification purposes.
   /// The `PackageNames.LANG` indicates that this class belongs to the core language package.
-  static final Class<AdaptableSet> CLASS = Class<AdaptableSet>(null, PackageNames.LANG);
+  static final Class<AdaptableMap> CLASS = Class<AdaptableMap>(null, PackageNames.LANG);
 
   /// {@macro jetleaf_adaptable_map}
   AdaptableMap();
@@ -249,11 +249,11 @@ final class AdaptableMap extends HashMap<Object, Object> {
 /// - [AdaptableMap]
 /// {@endtemplate}
 final class AdaptableSet extends HashSet<Object> {
-  /// Represents the metadata class for `AdaptableMap`.
+  /// Represents the metadata class for `AdaptableSet`.
   /// 
   /// This can be used for reflection or type identification purposes.
   /// The `PackageNames.LANG` indicates that this class belongs to the core language package.
-  static final Class<AdaptableMap> CLASS = Class<AdaptableMap>(null, PackageNames.LANG);
+  static final Class<AdaptableSet> CLASS = Class<AdaptableSet>(null, PackageNames.LANG);
 
   /// {@macro jetleaf_adaptable_set}
   AdaptableSet();

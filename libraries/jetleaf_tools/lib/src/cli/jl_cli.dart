@@ -6,6 +6,7 @@ import 'dev_command.dart';
 import 'entry_commands.dart';
 import 'help_command.dart';
 import 'jl_command.dart';
+import 'proxy_command.dart';
 import 'version_command.dart';
 
 /// {@template jl_cli}
@@ -16,7 +17,7 @@ import 'version_command.dart';
 ///
 /// {@endtemplate}
 final class JlCli {
-  /// Registry of subcommands (mirrored in [_help] for `jl help`).
+  /// Registry of subcommands (kept in sync with [_help] for `jl help`).
   final List<JlCommand> _commands;
 
   /// {@macro jl_cli}
@@ -29,6 +30,7 @@ final class JlCli {
         const TestCommand(),
         const StatusCommand(),
         const StopCommand(),
+        const ProxyCommand(),
         const VersionCommand(),
         HelpCommand(const [
           BuildCommand(),
@@ -38,6 +40,7 @@ final class JlCli {
           TestCommand(),
           StatusCommand(),
           StopCommand(),
+          ProxyCommand(),
           VersionCommand(),
         ]),
       ];
@@ -85,6 +88,7 @@ final class JlCli {
     TestCommand(),
     StatusCommand(),
     StopCommand(),
+    ProxyCommand(),
     VersionCommand(),
   ]);
 }

@@ -1,0 +1,35 @@
+name: jetleaf_data
+description: Core data module for JetLeaf — provides unified access to databases, caching, and storage backends.
+version: 2.2.0
+
+homepage: https://jetleaf.hapnium.com
+repository: https://github.com/jetleaf/jetleaf
+issue_tracker: https://github.com/jetleaf/jetleaf/issues
+documentation: https://jetleaf.hapnium.com/docs/data
+
+topics:
+  - data
+  - database
+  - storage
+  - jetleaf
+  - orm
+
+keywords:
+  - jetleaf
+  - data
+  - database
+  - storage
+  - orm
+
+resolution: workspace
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  meta: ^1.18.0
+  jetleaf_core: ^2.1.0
+
+dev_dependencies:
+  test: ^1.29.0
+  lints: ^6.0.0

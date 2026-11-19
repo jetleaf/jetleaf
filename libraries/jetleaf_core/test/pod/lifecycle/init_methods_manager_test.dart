@@ -5,6 +5,8 @@ import 'package:jetleaf_core/src/pod/lifecycle/init_methods_manager.dart';
 import 'package:jetleaf_core/src/pod/lifecycle/lifecycle.dart';
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
 
 // Test classes
 class TestInitializingPod implements InitializingPod {
@@ -45,7 +47,8 @@ class TestPodWithoutInit {
 }
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('InitMethodsManager', () {
     late InitMethodsManager manager;
 

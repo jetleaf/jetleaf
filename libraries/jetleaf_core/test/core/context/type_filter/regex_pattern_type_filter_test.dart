@@ -1,6 +1,8 @@
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import '../../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
 
 // Test classes with various naming patterns
 final class UserController {}
@@ -11,7 +13,8 @@ final class DatabaseHelper {}
 final class MyCustomImpl {}
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('RegexPatternTypeFilter', () {
     test('should match classes ending with Controller', () {
       final filter = RegexPatternTypeFilter(RegExp(r'Controller$'));

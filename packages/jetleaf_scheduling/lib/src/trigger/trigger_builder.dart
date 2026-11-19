@@ -108,7 +108,7 @@ import 'trigger.dart';
 /// ## Integration with Scheduling Annotations
 /// 
 /// This builder can be used to programmatically create triggers that
-/// mirror the behavior of scheduling annotations:
+/// match the behavior of scheduling annotations:
 /// 
 /// ```dart
 /// // Equivalent to @Scheduled(cron: '0 0 * * * *', zone: 'UTC')

@@ -220,7 +220,7 @@ final class MaterialAsset extends Asset with EqualsAndHashCode {
 /// Base class representing a **resource asset with a no-args constructor**.
 ///
 /// Designed primarily for **code generation scenarios**, where subclasses
-/// are instantiated reflectively (e.g., via mirrors or generated code).
+/// are instantiated reflectively (typically via generated code).
 ///
 /// Subclasses are expected to override the core getters to provide asset
 /// metadata and content:

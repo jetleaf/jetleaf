@@ -29,6 +29,7 @@ workspace:
   - libraries/jetleaf_tools
   - packages/jtl
   - packages/jetson
+  - packages/jetleaf_data
   - packages/jetleaf_resource
   - packages/jetleaf_retry
   - packages/jetleaf_scheduling

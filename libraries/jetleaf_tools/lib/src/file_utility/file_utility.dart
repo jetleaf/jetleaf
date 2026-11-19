@@ -95,24 +95,14 @@ final class FileUtility extends AbstractAssetSupport {
   /// If `package_config.json` is missing, unreadable, or incomplete,
   /// this method gracefully **falls back** to using only the package graph.
   ///
-  /// ### Runtime Reflection
-  /// If the optional [mirrorSystem] is provided, the method also scans the
-  /// runtime environment for classes extending [GenerativePackage] and having
-  /// a zero-argument constructor. These “generative" packages behave like
-  /// dynamically declared package metadata at runtime and are added to the
-  /// final list.
-  ///
   /// ### Parameters
   /// - [projectRoot]: Root directory of the Dart project whose dependencies
   ///   should be resolved.
-  /// - [mirrorSystem]: Optional runtime reflection system.  
-  /// - [libraries]: A filtered list of library mirrors, if reflection
-  ///   should be restricted.
   ///
   /// ### Returns
   /// A list of concrete [Package] implementations describing all detected
   /// project dependencies.
-  Future<List<Package>> readPackageGraphDependencies(Directory projectRoot, [Object? mirrorSystem, Object? libraries]) async {
+  Future<List<Package>> readPackageGraphDependencies(Directory projectRoot) async {
     final configFile = findPackageConfigFile(projectRoot) ?? File(p.join(projectRoot.path, '.dart_tool', 'package_config.json'));
     final graphFile = File(p.join(configFile.parent.path, 'package_graph.json'));
 

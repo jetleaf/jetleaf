@@ -81,7 +81,7 @@ final BIG_INT = Class<BigInt>(null, PackageNames.DART);
 /// Reference to the Dart core [Runes] type.
 ///
 /// The Dart VM represents [Runes] through an iterable implementation during
-/// mirror inspection. Keeping the framework's canonical type reference here
+/// declaration inspection. Keeping the framework's canonical type reference here
 /// allows built-in Runes converters to register their source and target types
 /// explicitly when generic superclass metadata is unavailable.
 final RUNES = Class<Runes>(null, PackageNames.DART);

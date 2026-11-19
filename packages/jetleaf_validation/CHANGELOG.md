@@ -1,3 +1,11 @@
+## Unreleased
+
+### Documentation
+
+- **Terminology refresh**: "dart:mirrors" / "mirrors" mentions replaced by "runtime reflection"; no functional changes.
+
+---
+
 ## [2.1.0]
 
 ### Changed
@@ -10,7 +18,7 @@
 
 ### Breaking Changes
 - **Unified Core Dependency**: Migrated from individual satellite dependencies (`jetleaf_lang`, `jetleaf_env`, `jetleaf_logging`) to unified `jetleaf_core: ^2.0.0`.
-- **Pure Dart Ahead-Of-Time (AOT) Compatibility**: 100% compliant with Ahead-Of-Time compilation (zero reflection, zero `dart:mirrors`).
+- **Pure Dart Ahead-Of-Time (AOT) Compatibility**: 100% compliant with Ahead-Of-Time compilation (zero reflection, zero `runtime reflection`).
 
 ### Enhancements
 - Comprehensive validator constraints: `@NotNull`, `@NotBlank`, `@NotEmpty`, `@Min`, `@Max`, `@Size`, `@Pattern`, `@Email`, `@Future`, `@Past`, and custom constraints.

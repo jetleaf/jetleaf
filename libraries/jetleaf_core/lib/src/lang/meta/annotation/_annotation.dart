@@ -221,7 +221,7 @@ final class _Annotation extends PermissionManager implements Annotation {
     }
 
     final name = _declaration.getName();
-    for (final factory in Annotation._instanceFactories) {
+    for (final factory in MaterializedLibrary.getAnnotations()) {
       final created = factory(name, this);
       if (created != null) {
         _cachedInstance = created;

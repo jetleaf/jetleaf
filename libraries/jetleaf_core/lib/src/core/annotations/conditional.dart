@@ -679,7 +679,7 @@ class ConditionalOnMissingPod extends WhenConditional {
 
   /// Returns a list of ignored [Class] types derived from [ignoredTypes].
   ///
-  /// This method mirrors [getClasses] but applies specifically to the
+  /// This method parallels [getClasses] but applies specifically to the
   /// [ignoredTypes] field.
   ///
   /// Supports `ClassType`, `Type`, and qualified name `String`s.

@@ -14,7 +14,7 @@ part of 'executable_argument.dart';
 /// This class is the canonical container used throughout the runtime pipeline
 /// when arguments must cross boundaries between:
 /// - AOT resolvers  
-/// - JIT/mirror executors  
+/// - Runtime executors  
 /// - Generative hint processors  
 /// - Internal dispatchers and fallback strategies  
 ///
@@ -28,7 +28,7 @@ part of 'executable_argument.dart';
 /// the system. It is especially critical in scenarios where:
 /// - The same argument packet is forwarded to multiple resolvers  
 /// - Hint processors capture arguments for delayed execution  
-/// - The JIT/mirror executor reconstructs invocations dynamically  
+/// - A runtime executor reconstructs invocations dynamically  
 ///
 /// Because the runtime relies heavily on argument stability to produce
 /// deterministic results, immutability is a core guarantee of this type.
@@ -39,7 +39,7 @@ part of 'executable_argument.dart';
 /// has already normalized the inputs. Its sole responsibilities are:
 ///
 /// - Storing arguments in a minimal, structured form  
-/// - Projecting named arguments into symbolic keys for mirror compatibility  
+/// - Projecting named arguments into symbolic keys for dynamic dispatch  
 /// - Providing read-only accessors that uphold the `ExecutableArgument` contract  
 ///
 /// ## Typical Usage
@@ -68,7 +68,7 @@ part of 'executable_argument.dart';
 /// at higher levels of the Jetleaf execution stack.
 ///
 /// It forms the backbone of how Jetleaf models execution contexts across AOT,
-/// JIT, generative, and mirror-based resolution environments.
+/// JIT, generative, and reflection-based resolution environments.
 /// {@endtemplate}
 final class _UnmodifableExecutableArgument implements ExecutableArgument {
   /// The raw list of **positional arguments** exactly as they were provided
@@ -87,7 +87,7 @@ final class _UnmodifableExecutableArgument implements ExecutableArgument {
   /// The Jetleaf runtime uses this field as the authoritative source of
   /// positional argument data when dispatching calls through:
   /// - AOT resolvers  
-  /// - JIT/mirror method invocation  
+  /// - dynamic method invocation  
   /// - Generated or hinted executables  
   ///
   /// Consumers should always access positional arguments through
@@ -106,7 +106,7 @@ final class _UnmodifableExecutableArgument implements ExecutableArgument {
   /// compatibility across:
   /// - AOT-generated executables  
   /// - Runtime hint processors  
-  /// - Fallback mirror-based invocation  
+  /// - Fallback reflection-based invocation  
   ///
   /// When a symbolic form is required (such as during reflective invocation),
   /// the map is lazily projected into a `Map<Symbol, Object?>` via

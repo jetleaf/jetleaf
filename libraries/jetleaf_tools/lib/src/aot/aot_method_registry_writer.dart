@@ -7,9 +7,9 @@ import 'aot_sub_registrar_writer.dart';
 /// ⚡ **Ahead-Of-Time (AOT) Method Registry Code Generator**
 ///
 /// Generates package-scoped `registry_methods.g.dart` sub-registry part files containing
-/// statically compiled method invocation closures registered with `AotRuntimeExecutor.registerMethod`.
+/// statically compiled method invocation closures registered via `MaterializedLibrary.registerMethod`.
 ///
-/// In pure Dart AOT execution (no `dart:mirrors`), classes cannot have their methods dynamically
+/// When running compiled, classes cannot have their methods dynamically
 /// invoked by name. [AotMethodRegistryWriter] generates high-performance invocation closures that
 /// safely cast the target instance to its concrete static type and dispatch to the method:
 /// - Explicit getters (`(inst, _) => (inst as p0.MyClass).property`)
@@ -21,29 +21,29 @@ import 'aot_sub_registrar_writer.dart';
 ///
 /// ```dart
 /// // Generated in lib/_jetleaf/my_app/registry_methods.g.dart
-/// part of '../aot_registry.g.dart';
+/// part of '../registry.g.dart';
 ///
 /// void _registerMethods_my_app() {
 ///   // Getter
-///   AotRuntimeExecutor.registerMethod(
+///   MaterializedLibrary.registerMethod(
 ///     'Session.isActive',
 ///     (inst, _) => (inst as p0.Session).isActive,
 ///   );
 ///
 ///   // Setter
-///   AotRuntimeExecutor.registerMethod(
+///   MaterializedLibrary.registerMethod(
 ///     'Session.isActive',
 ///     (inst, args) => (inst as p0.Session).isActive = args.getPositionalArguments()[0] as dynamic,
 ///   );
 ///
 ///   // Parameterless method
-///   AotRuntimeExecutor.registerMethod(
+///   MaterializedLibrary.registerMethod(
 ///     'Session.refresh',
 ///     (inst, _) => (inst as p0.Session).refresh(),
 ///   );
 ///
 ///   // Multi-argument method with positional and named unpacking
-///   AotRuntimeExecutor.registerMethod(
+///   MaterializedLibrary.registerMethod(
 ///     'UserService.findUsers',
 ///     (inst, args) {
 ///       final pos = args.getPositionalArguments();
@@ -114,14 +114,14 @@ final class AotMethodRegistryWriter extends AotSubRegistrarWriter {
 
         if (method.getIsGetter()) {
           lines.add('''
-  AotRuntimeExecutor.registerMethod(
+  MaterializedLibrary.registerMethod(
     '${escapeDartStringLiteral(memberKey)}',
     (inst, _) => (inst as $prefix$cleanClassName).$methodName,
   );''');
         } else if (method.getIsSetter()) {
           final setterBase = baseMethodName;
           lines.add('''
-  AotRuntimeExecutor.registerMethod(
+  MaterializedLibrary.registerMethod(
     '${escapeDartStringLiteral(memberKey)}',
     (inst, args) => (inst as $prefix$cleanClassName).$setterBase = args.getPositionalArguments()[0] as dynamic,
   );''');
@@ -129,16 +129,23 @@ final class AotMethodRegistryWriter extends AotSubRegistrarWriter {
           final params = method.getParameters();
           if (params.isEmpty) {
             lines.add('''
-  AotRuntimeExecutor.registerMethod(
+  MaterializedLibrary.registerMethod(
     '${escapeDartStringLiteral(memberKey)}',
     (inst, _) => (inst as $prefix$cleanClassName).$methodName(),
   );''');
           } else {
             final posParams = params.where((p) => !p.getIsNamed()).toList();
             final namedParams = params.where((p) => p.getIsNamed()).toList();
+            final typeParamNames = component.getTypeArguments().map((t) => t.getName()).toSet();
+
+            String wrapCoerce(String expr, ParameterDeclaration p) {
+              final sig = renderCollectionTypeSignature(p.getLinkDeclaration(), typeParamNames);
+              if (sig == null) return expr;
+              return "MaterializedLibrary.coerceValue($expr, '${escapeDartStringLiteral(sig)}')";
+            }
 
             final body = StringBuffer();
-            body.writeln("  AotRuntimeExecutor.registerMethod(");
+            body.writeln("  MaterializedLibrary.registerMethod(");
             body.writeln("    '${escapeDartStringLiteral(memberKey)}',");
             body.writeln("    (inst, args) {");
             body.writeln("      final pos = args.getPositionalArguments();");
@@ -149,12 +156,13 @@ final class AotMethodRegistryWriter extends AotSubRegistrarWriter {
               final p = posParams[i];
               final pName = p.getName();
               if (p.getIsRequired()) {
-                body.writeln("      pArgs.add(pos.length > $i ? pos[$i] : named['$pName']);");
+                final rawExpr = "pos.length > $i ? pos[$i] : named['$pName']";
+                body.writeln("      pArgs.add(${wrapCoerce(rawExpr, p)});");
               } else {
                 body.writeln("      if (pos.length > $i) {");
-                body.writeln("        pArgs.add(pos[$i]);");
+                body.writeln("        pArgs.add(${wrapCoerce('pos[$i]', p)});");
                 body.writeln("      } else if (named.containsKey('$pName')) {");
-                body.writeln("        pArgs.add(named['$pName']);");
+                body.writeln("        pArgs.add(${wrapCoerce("named['$pName']", p)});");
                 body.writeln("      }");
               }
             }
@@ -164,14 +172,14 @@ final class AotMethodRegistryWriter extends AotSubRegistrarWriter {
               for (final p in namedParams) {
                 final pName = p.getName();
                 if (p.getIsRequired()) {
-                  body.writeln("      nArgs[#$pName] = named['$pName'];");
+                  body.writeln("      nArgs[#$pName] = ${wrapCoerce("named['$pName']", p)};");
                 } else if (p.getIsNullable()) {
                   body.writeln("      if (named.containsKey('$pName')) {");
-                  body.writeln("        nArgs[#$pName] = named['$pName'];");
+                  body.writeln("        nArgs[#$pName] = ${wrapCoerce("named['$pName']", p)};");
                   body.writeln("      }");
                 } else {
                   body.writeln("      if (named.containsKey('$pName') && named['$pName'] != null) {");
-                  body.writeln("        nArgs[#$pName] = named['$pName'];");
+                  body.writeln("        nArgs[#$pName] = ${wrapCoerce("named['$pName']", p)};");
                   body.writeln("      }");
                 }
               }
@@ -204,7 +212,7 @@ final class AotMethodRegistryWriter extends AotSubRegistrarWriter {
     if (!packageDir.existsSync()) {
       packageDir.createSync(recursive: true);
     }
-    final file = File('${packageDir.path}/${Constant.AOT_REGISTRY_METHODS_FILE_NAME}');
+    final file = File('${packageDir.path}/${Constant.REGISTRY_METHODS_FILE_NAME}');
     await file.writeAsString(buffer.toString());
     return fnName;
   }

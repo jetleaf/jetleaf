@@ -4,6 +4,7 @@ import 'dart:collection';
 import '../../annotation/reflectable_annotations.dart';
 import '../../classes.dart';
 import '../../declaration/declaration.dart';
+import '../materialized_library.dart';
 import '../../commons/version.dart';
 import '../../extensions/primitives/iterable.dart';
 import '../../extensions/primitives/string.dart';
@@ -64,7 +65,7 @@ part '_class.dart';
 ///
 /// ## Implementation Notes
 /// - Concrete implementations wrap platform-specific reflection objects
-///   (e.g., `dart:mirrors`, analyzer elements, or runtime descriptors).
+///   (e.g., `runtime reflection`, analyzer elements, or runtime descriptors).
 /// - Provides a **consistent, cross-platform interface** for introspection
 ///   and code generation pipelines.
 /// 
@@ -509,7 +510,7 @@ abstract final class Class<T> extends Source implements FieldAccess, QualifiedNa
   ///
   /// When `true`, this declaration:
   /// - Represents a runtime **function object** rather than a named class
-  /// - Is typically generated from a `ClosureMirror`
+  /// - Is typically generated from a [ClosureDeclaration]
   /// - Wraps an executable function via a [ClosureDeclaration]
   ///
   /// ---
@@ -1826,7 +1827,7 @@ abstract final class Class<T> extends Source implements FieldAccess, QualifiedNa
   ///
   /// Throws:
   /// - [ConstructorNotFoundException] if no default constructor exists
-  /// - [UnresolvedTypeInstantiationException] if the type is unresolved. Normally represented with `_ClassMirror`.
+  /// - [UnresolvedTypeInstantiationException] if the type is unresolved or is a synthesized fallback declaration.
   /// - [PrivateConstructorInvocationException] if the constructor being invoked is a private constructor
   /// - [InvalidArgumentException] for invalid arguments
   /// - [GenericResolutionException] if the type cannot be resolved by Jetleaf
@@ -1866,9 +1867,17 @@ abstract final class Class<T> extends Source implements FieldAccess, QualifiedNa
   /// ```
   /// {@endtemplate}
   static Class<C> forType<C>(C type, [ProtectionDomain? domain, String? package, LinkDeclaration? link]) {
-    // `type` may be a `Type` object (`Class.forType<int>()`), or
-    // a value instance (`Class.forType<int>(0)`). Use the right name source.
-    final typeString = type is Type ? type.toString() : type.runtimeType.toString();
+    // `type` is a Type token (e.g. `Class.forType(int)`): resolve the
+    // declaration for that Type directly — the extra `_Class` generic only
+    // exists as a carrier for the name, so the declared `T` is irrelevant.
+    if (type is Type) {
+      final decl = Runtime.findClassByType(type, package);
+      return Class<Type>.declared(decl, domain ?? ProtectionDomain.current()) as Class<C>;
+    }
+
+    // `type` is a value instance (e.g. `Class.forType<int>(0)`): use the
+    // runtime type as the declaration source.
+    final typeString = type.runtimeType.toString();
     return _Class<C>(typeString, domain ?? ProtectionDomain.current(), package, link);
   }
 

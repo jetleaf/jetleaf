@@ -3,7 +3,11 @@ import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_core/pod.dart';
 import 'package:test/test.dart';
 
-void main() {
+import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
+@JetleafTest()
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('AnnotatedScopeMetadataResolver', () {
     final resolver = AnnotatedScopeMetadataResolver();
 

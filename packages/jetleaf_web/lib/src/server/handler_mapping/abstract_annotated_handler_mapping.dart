@@ -12,6 +12,7 @@
 // 
 // 🔧 Powered by Hapnium — the Dart backend engine 🍃
 
+import 'package:jetleaf_core/annotation.dart';
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:meta/meta.dart';
@@ -86,9 +87,16 @@ abstract class AbstractAnnotatedHandlerMapping extends AbstractWebViewAnnotatedH
     List<_ControllerDefinition> definitions = [];
     final names = applicationContext.getDefinitionNames();
 
+    // Component scan scope declared via @ComponentScan on any configuration
+    // class (e.g. the application starter): only controllers whose package is
+    // in the declared scan roots are mapped. Absent roots ⇒ unrestricted.
+    final scanRoots = _resolveComponentScanRoots(names);
+
     for (final name in names) {
       final definition = applicationContext.getDefinition(name);
       final type = definition.type;
+
+      if (!_isInScanRoots(type, scanRoots)) continue;
 
       // Identify classes annotated as controllers.
       if (type.hasDirectAnnotation<Controller>() || type.hasDirectAnnotation<RestController>()) {
@@ -179,6 +187,47 @@ abstract class AbstractAnnotatedHandlerMapping extends AbstractWebViewAnnotatedH
     }
 
     return super.onReady();
+  }
+
+  /// Computes the set of package names declared as scan roots via
+  /// `@ComponentScan(basePackages: [...])` or `(basePackageClasses: [...])`
+  /// among the registered definitions.
+  ///
+  /// Returns `null` when no `ComponentScan` declares any usable root — in which
+  /// case controllers are not restricted.
+  Set<String>? _resolveComponentScanRoots(List<String> names) {
+    final roots = <String>{};
+
+    for (final name in names) {
+      final type = applicationContext.getDefinition(name).type;
+      final scan = type.getDirectAnnotation<ComponentScan>();
+      if (scan == null) continue;
+
+      for (final root in scan.basePackages) {
+        final s = root.toString().trim();
+        if (s.isNotEmpty) roots.add(s);
+      }
+
+      for (final anchor in scan.basePackageClasses) {
+        try {
+          final cls = anchor.toClass();
+          final pkg = cls.getPackage().getName();
+          if (pkg.isNotEmpty) roots.add(pkg);
+        } catch (_) {
+          // Unresolvable anchor — ignore it; absent usable roots mean unrestricted.
+        }
+      }
+    }
+
+    return roots.isEmpty ? null : roots;
+  }
+
+  /// Whether [type] belongs to one of the declared [scanRoots].
+  bool _isInScanRoots(Class type, Set<String>? scanRoots) {
+    if (scanRoots == null) return true;
+    final pkg = type.getPackage().getName();
+    if (pkg.isEmpty) return true; // synthetic/unknown — don't hide the component
+    return scanRoots.contains(pkg);
   }
 }
 

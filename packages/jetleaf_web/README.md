@@ -504,11 +504,25 @@ Common HTTP response status codes:
 ## 📦 Dependencies
 
 - **`jetleaf_core`** — Core framework
-- **`jetleaf_lang`** — Language utilities
+- **`meta`** — Annotations
 - **`jetson`** — JSON serialization
 - **`jtl`** — Template rendering
-- **`jetleaf_logging`** — Structured logging
-- **`jetleaf_env`** — Configuration
+
+## 🎛️ Environment Properties
+
+`jetleaf_web` reads the following environment properties at startup — all are optional.
+
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `jetleaf.jetson.naming-strategy` | String | `snake-case` | Naming strategy for the global Jetson mapper registered by the web stack. Supported values: `snake-case` (`userName` → `user_name`), `kebab-case` (`userName` → `user-name`), `camel-case` / `none` / `identity` (no transformation). Unknown values throw with the supported list. |
+| `jetleaf.jetson.pretty-print` | bool | `true` | Pretty-prints JSON output from the web mapper when enabled. |
+
+## Component-scan scope
+
+`@ComponentScan` declarations (including `basePackages:` and `basePackageClasses:` attributes) **restrict handler registration** to controllers whose package is in the declared roots. Controllers outside these roots are not mapped at startup, matching the semantics of the annotation processor's classpath scanner.
+
+- If no `@ComponentScan` declares any usable root, the mapping is unrestricted (all discovered controllers are mapped).
+- Synthetic/unresolvable packages are always allowed — they never lose the chance to be mapped due to a missing package declaration.
 
 ## 📄 License
 
@@ -519,7 +533,6 @@ This package is part of the Jetleaf Framework. See LICENSE in the root directory
 - **`jetson`** — Object mapping and serialization
 - **`jtl`** — Template engine
 - **`jetleaf_validation`** — Data validation
-- **`jetleaf_security`** — Security utilities
 
 ## 📞 Support
 

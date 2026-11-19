@@ -392,7 +392,7 @@ void main() {
 
 ```dart
 import 'package:jetleaf_resource/jetleaf_resource.dart';
-import 'package:jetleaf_pod/jetleaf_pod.dart';
+import 'package:jetleaf_core/pod.dart';
 
 @Service()
 class CachedUserService {
@@ -617,16 +617,12 @@ void main() {
 
 ## 📦 Dependencies
 
-- **`jetleaf_lang`** — Language utilities
-- **`jetleaf_logging`** — Logging support
-- **`jetleaf_pod`** — Pod integration
 - **`jetleaf_core`** — Core framework
-- **`jetleaf_env`** — Configuration
+- **`meta`** — Annotations
 
 ## 🔗 Related Packages
 
 - **`jetleaf_web`** — HTTP caching headers
-- **`jetleaf_pod`** — Pod lifecycle
 - **`jetleaf_core`** — Application lifecycle
 
 ## 📄 License

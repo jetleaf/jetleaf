@@ -123,6 +123,8 @@ final class StandardLibraryDeclaration extends StandardSourceDeclaration with Eq
       final slashIndex = afterDart.indexOf('/');
       final part = slashIndex != -1 ? afterDart.substring(0, slashIndex) : afterDart;
       packageName = part == 'core' ? 'dart' : part;
+    } else if (uri.startsWith('file://')) {
+      packageName = _filePackageName(uri) ?? '';
     }
     return StandardLibraryDeclaration(
       uri: uri,
@@ -140,6 +142,44 @@ final class StandardLibraryDeclaration extends StandardSourceDeclaration with Eq
       isPublic: true,
       isSynthetic: false,
     );
+  }
+
+  /// Best-effort resolution of the owning package for a `file://` URI by
+  /// walking up to the nearest `pubspec.yaml`. Cached per URI because cache
+  /// deserialization calls this once per registered library.
+  static final Map<String, String?> _filePackageNameCache = <String, String?>{};
+
+  static String? _filePackageName(String uri) {
+    if (_filePackageNameCache.containsKey(uri)) {
+      return _filePackageNameCache[uri];
+    }
+    String? resolved;
+    try {
+      var dir = File(Uri.parse(uri).toFilePath()).parent;
+      for (var depth = 0; depth < 12; depth++) {
+        final pubspec = File('${dir.path}/pubspec.yaml');
+        if (pubspec.existsSync()) {
+          try {
+            for (final line in pubspec.readAsLinesSync()) {
+              final trimmed = line.trim();
+              if (trimmed.startsWith('name:')) {
+                final name = trimmed.substring('name:'.length).trim();
+                if (name.isNotEmpty) {
+                  resolved = name;
+                }
+                break;
+              }
+            }
+          } catch (_) {}
+          break;
+        }
+        final parent = dir.parent;
+        if (parent.path == dir.path) break;
+        dir = parent;
+      }
+    } catch (_) {}
+    _filePackageNameCache[uri] = resolved;
+    return resolved;
   }
 
   @override

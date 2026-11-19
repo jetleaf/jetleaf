@@ -149,13 +149,13 @@ final class StandardLinkDeclaration extends StandardDeclaration implements LinkD
   @override
   Type getPointerType() {
     if (_pointerType != Object && _pointerType != dynamic) return _pointerType;
-    return StandardDeclaration.resolveType(_pointerQualifiedName, _name);
+    return MaterializedLibrary.resolveType(_pointerQualifiedName, _name);
   }
 
   @override
   Type getType() {
     if (_type != Object && _type != dynamic) return _type;
-    return StandardDeclaration.resolveType(_pointerQualifiedName, _name);
+    return MaterializedLibrary.resolveType(_pointerQualifiedName, _name);
   }
 
   @override
@@ -216,8 +216,8 @@ final class StandardLinkDeclaration extends StandardDeclaration implements LinkD
     
     return StandardLinkDeclaration(
       name: name,
-      type: StandardDeclaration.resolveType(typeName),
-      pointerType: StandardDeclaration.resolveType(typeName),
+      type: MaterializedLibrary.resolveType(typeName),
+      pointerType: MaterializedLibrary.resolveType(typeName),
       qualifiedName: qualifiedName,
       canonicalUri: canonicalUri,
       referenceUri: referenceUri,

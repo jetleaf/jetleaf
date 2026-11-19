@@ -646,7 +646,7 @@ abstract class Executable extends Source {
   /// ```
   ///
   /// Notes:
-  /// - Order always mirrors the source declaration.
+  /// - Order always matches the source declaration.
   /// - Optional positional parameters appear after required positional ones.
   /// {@endtemplate}
   Iterable<Parameter> getPositionalParameters() => getParameters().where((p) => p.isPositional()).toList();

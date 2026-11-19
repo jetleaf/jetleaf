@@ -4,6 +4,8 @@ import 'package:jetleaf_core/src/core/context/base/pod_registrar.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_core/pod.dart';
 import 'package:test/test.dart';
+import '../../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
 
 class MockSpecContext implements SpecContext {
   @override
@@ -20,7 +22,8 @@ class MockSpecContext implements SpecContext {
 class TestPod {}
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('PodSpec', () {
     late PodSpec<TestPod> podSpec;
     late MockSpecContext context;

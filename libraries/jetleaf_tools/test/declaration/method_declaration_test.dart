@@ -2,6 +2,7 @@
 
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../helpers/aot_test_setup.dart';
 // Classes with various method types
 class MethodTestClass {
   // Regular methods
@@ -248,7 +249,8 @@ class OperatorTest {
 }
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('MethodDeclaration Basic Properties', () {
     test('should identify method types correctly', () {
       final testClass = Runtime.obtainClassDeclaration(MethodTestClass);

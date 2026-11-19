@@ -308,7 +308,7 @@ final class StandardParameterDeclaration extends StandardSourceDeclaration imple
     
     return StandardParameterDeclaration(
       name: name,
-      type: StandardDeclaration.resolveType(typeName),
+      type: MaterializedLibrary.resolveType(typeName),
       index: index,
       isNullable: isNullable,
       isRequired: isRequired,

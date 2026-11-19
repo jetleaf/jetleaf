@@ -33,7 +33,6 @@ class _SystemProperties implements SystemProperties {
   CompilationMode _compilationMode;
   bool _runningFromDill;
   bool _runningAot;
-  bool _runningJit;
   String _entrypoint;
   String _launchCommand;
   bool _ideRunning;
@@ -46,7 +45,6 @@ class _SystemProperties implements SystemProperties {
     required CompilationMode compilationMode,
     required bool runningFromDill,
     required bool runningAot,
-    required bool runningJit,
     required String entrypoint,
     required String launchCommand,
     required bool ideRunning,
@@ -56,7 +54,6 @@ class _SystemProperties implements SystemProperties {
   })  : _compilationMode = compilationMode,
         _runningFromDill = runningFromDill,
         _runningAot = runningAot,
-        _runningJit = runningJit,
         _entrypoint = entrypoint,
         _launchCommand = launchCommand,
         _ideRunning = ideRunning,
@@ -68,14 +65,13 @@ class _SystemProperties implements SystemProperties {
   ///
   /// By default:
   /// - [CompilationMode.debug]
-  /// - JIT enabled
+  /// - Not running from a `.dill` file
   /// - No dependencies or configuration
   /// - Watch mode disabled
   _SystemProperties.none()
       : _compilationMode = CompilationMode.debug,
         _runningFromDill = false,
         _runningAot = false,
-        _runningJit = true,
         _entrypoint = '',
         _launchCommand = '',
         _ideRunning = false,
@@ -91,9 +87,6 @@ class _SystemProperties implements SystemProperties {
 
   @override
   bool isRunningAot() => _runningAot;
-
-  @override
-  bool isRunningJit() => _runningJit;
 
   @override
   String getEntrypoint() => _entrypoint;
@@ -133,7 +126,6 @@ class _SystemProperties implements SystemProperties {
     'compilationMode': _compilationMode.name,
     'runningFromDill': _runningFromDill,
     'runningAot': _runningAot,
-    'runningJit': _runningJit,
     'entrypoint': _entrypoint,
     'launchCommand': _launchCommand,
     'ideRunning': _ideRunning,
@@ -148,7 +140,6 @@ class _SystemProperties implements SystemProperties {
       '  compilationMode: $_compilationMode,\n'
       '  runningFromDill: $_runningFromDill,\n'
       '  runningAot: $_runningAot,\n'
-      '  runningJit: $_runningJit,\n'
       '  entrypoint: $_entrypoint,\n'
       '  launchCommand: $_launchCommand,\n'
       '  ideRunning: $_ideRunning,\n'
@@ -195,12 +186,6 @@ class SystemPropertiesBuilder extends _SystemProperties {
   /// Sets whether the app is running in **AOT** mode.
   SystemPropertiesBuilder runningAot(bool value) {
     _runningAot = value;
-    return this;
-  }
-
-  /// Sets whether the app is running in **JIT** mode.
-  SystemPropertiesBuilder runningJit(bool value) {
-    _runningJit = value;
     return this;
   }
 
@@ -255,7 +240,6 @@ class SystemPropertiesBuilder extends _SystemProperties {
       compilationMode: _compilationMode,
       runningFromDill: _runningFromDill,
       runningAot: _runningAot,
-      runningJit: _runningJit,
       entrypoint: _entrypoint,
       launchCommand: _launchCommand,
       ideRunning: _ideRunning,

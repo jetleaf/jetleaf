@@ -2,6 +2,8 @@ import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_core/env.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import '../../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
 
 final class TestPod {}
 
@@ -49,7 +51,8 @@ class MockEnvironment extends Environment {
 }
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('PodRegistrar', () {
     test('should register pods', () {
       final registrar = TestPodRegistrar();

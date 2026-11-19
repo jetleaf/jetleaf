@@ -107,14 +107,21 @@ class ByteMultiConverter extends CommonPairedConditionalConverter {
   }
 
   bool _isConvertible(Class type) {
-    bool isList = type.isAssignableTo(LIST_TYPE) || type.getType() == LIST_TYPE.getType();
-    final child = type.componentType();
+    final typeName = type.getType().toString();
+    final isRawList = type.getType() == LIST_TYPE.getType();
+    final isTypedList = typeName.startsWith('List<');
+    if (!(isRawList || isTypedList)) return false;
 
-    if (isList && child != null && child.getType() == int) {
+    final child = type.componentType();
+    if (child == null) {
+      // Raw `List` type (no generic arguments on the declaration). The
+      // converter targets element type `int`, so accept it as eligible.
       return true;
     }
 
-    return false;
+    // A component resolving to `Object` carries no usable element type
+    // information — accept it (e.g. raw `List` whose component is `Object`).
+    return child.getType() == int || child.getType() == Object;
   }
 
   @override

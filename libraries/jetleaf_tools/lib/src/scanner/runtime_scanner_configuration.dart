@@ -14,7 +14,7 @@ import 'package:jetleaf_core/lang.dart';
 /// - [strict] requires valid generated metadata and is intended for
 ///   reproducible builds or CI.
 enum RuntimeBuildMode {
-  /// Always use the normal mirror scanner.
+  /// Always use the normal declaration scanner.
   development,
 
   /// Prefer the manifest/cache and fall back to scanning when necessary.
@@ -179,11 +179,11 @@ class RuntimeScannerConfiguration {
   ///
   /// When enabled, the scanner wraps the inner scanner with
   /// [CacheAwareScanner] for transparent cache support:
-  /// - On cache hit, the full mirror scan is bypassed entirely
+  /// - On cache hit, the full source scan is bypassed entirely
   /// - On cache miss, the scan runs normally and results are persisted
   ///
   /// When false, caching is completely skipped and every scan performs
-  /// a full mirror-based scan.
+  /// a full source scan.
   ///
   /// Defaults to `true`.
   final bool enableCaching;
@@ -191,7 +191,7 @@ class RuntimeScannerConfiguration {
   /// Maximum number of libraries to load concurrently during force-loading.
   ///
   /// Controls parallelism when loading libraries not yet present in the
-  /// mirror system. Higher values use more memory but can speed up
+  /// declared program. Higher values use more memory but can speed up
   /// initial loading. Lower values reduce memory pressure.
   ///
   /// Defaults to `4`. Set to `1` to disable parallel loading.

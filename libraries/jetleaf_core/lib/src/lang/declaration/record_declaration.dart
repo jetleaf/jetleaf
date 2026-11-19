@@ -241,14 +241,14 @@ final class StandardRecordDeclaration extends StandardClassDeclaration implement
     
     return StandardRecordDeclaration(
       name: name,
-      type: StandardDeclaration.resolveType(typeName),
+      type: MaterializedLibrary.resolveType(typeName),
       isPublic: isPublic,
       isSynthetic: isSynthetic,
       library: StandardLibraryDeclaration.empty(),
       qualifiedName: name,
       isNullable: isNullable,
       recordFields: recordFields,
-      pointerType: StandardDeclaration.resolveType(typeName),
+      pointerType: MaterializedLibrary.resolveType(typeName),
     );
   }
 
@@ -346,15 +346,15 @@ final class StandardRecordFieldDeclaration extends StandardFieldDeclaration impl
     
     return StandardRecordFieldDeclaration(
       name: name,
-      type: StandardDeclaration.resolveType(typeName),
+      type: MaterializedLibrary.resolveType(typeName),
       isPublic: isPublic,
       isSynthetic: isSynthetic,
       position: position,
       isNamed: isNamed,
       linkDeclaration: StandardLinkDeclaration(
         name: name,
-        type: StandardDeclaration.resolveType(typeName),
-        pointerType: StandardDeclaration.resolveType(typeName),
+        type: MaterializedLibrary.resolveType(typeName),
+        pointerType: MaterializedLibrary.resolveType(typeName),
         qualifiedName: name,
         isPublic: isPublic,
         isSynthetic: isSynthetic,

@@ -31,11 +31,16 @@ final class _Class<T> extends Source with EqualsAndHashCode implements Class<T> 
     }
 
     if (_name.contains('<')) {
-      // Parameterized classes have no declaration of their own — resolve the
-      // cached generic declaration by its base name instead.
+      // A parameterized class declaration exists only when it was scanned or
+      // registered with the full generic signature; otherwise we synthesize
+      // one whose `type` carries the reified type arguments. A base-name
+      // declaration is preferred only when it is a real (scanned) declaration —
+      // a synthetic base declaration (e.g. `List` with type `Type List`) would
+      // discard the reified type arguments carried by the synthesized
+      // `List<int>` declaration.
       try {
         final base = Runtime.findClassByName(baseName, _package);
-        if (!base.getIsSynthetic() || (decl?.getIsSynthetic() ?? true)) {
+        if (!base.getIsSynthetic()) {
           decl = base;
         }
       } on ClassNotFoundException catch (_) {}
@@ -102,14 +107,24 @@ final class _Class<T> extends Source with EqualsAndHashCode implements Class<T> 
         ),
       ),
     );
+    if (T != dynamic && T != Object && _declaration.getType() == T) {
+      MaterializedLibrary.registerTypeReifier<T>(_name, _declaration.getQualifiedName());
+    }
   }
 
   _Class.fromQualifiedName(this._name, [ProtectionDomain? pd, this._link]) : _package = null, _pd = pd ?? ProtectionDomain.current() {
     _declaration = Runtime.findClassByQualifiedName(_name);
     _name = _declaration.getName();
+    if (T != dynamic && T != Object && _declaration.getType() == T) {
+      MaterializedLibrary.registerTypeReifier<T>(_name, _declaration.getQualifiedName());
+    }
   }
 
-  _Class.declared(this._declaration, this._pd) : _link = null, _name = _declaration.getName(), _package = null;
+  _Class.declared(this._declaration, this._pd) : _link = null, _name = _declaration.getName(), _package = null {
+    if (T != dynamic && T != Object && _declaration.getType() == T) {
+      MaterializedLibrary.registerTypeReifier<T>(_name, _declaration.getQualifiedName());
+    }
+  }
 
   @override
   Declaration getDeclaration() {
@@ -802,13 +817,33 @@ final class _Class<T> extends Source with EqualsAndHashCode implements Class<T> 
     }
   }
 
+  /// The type-signature string used for reified generic parsing.
+  ///
+  /// `Class<List<int>>()` carries the signature in [T], but declarations created
+  /// from a runtime [Type] (e.g. `Class.declared(...)`) have [T] erased to
+  /// `Object` — so fall back to the declaration's own type when [T] carries no
+  /// generic arguments.
+  String _typeSignature() {
+    final s = T.toString();
+    if (s.contains('<')) return s;
+    try {
+      final declName = _declaration.getName();
+      if (declName.contains('<')) return declName;
+    } catch (_) {}
+    try {
+      final declType = _declaration.getType().toString();
+      if (declType.contains('<')) return declType;
+    } catch (_) {}
+    return s;
+  }
+
   /// Parses the type arguments of the reified [T] string — e.g. `'Map<String, int>'`.
   ///
   /// Returns the raw argument strings at the top level, preserving angle-depth
   /// awareness so nested generics (e.g. `'Map<K, V>'`) are handled.
   /// Returns an empty list when [T] carries no generic arguments.
   List<String> _parseReifiedTypeArguments() {
-    final s = T.toString();
+    final s = _typeSignature();
     final open = s.indexOf('<');
     if (open == -1) return const [];
 
@@ -880,7 +915,7 @@ final class _Class<T> extends Source with EqualsAndHashCode implements Class<T> 
       return null;
     }
     
-    final resolved = StandardDeclaration.resolveType(arg);
+    final resolved = MaterializedLibrary.resolveType(arg);
     return StandardClassDeclaration(
       name: arg,
       type: resolved,

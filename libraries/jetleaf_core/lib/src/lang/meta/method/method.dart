@@ -404,7 +404,7 @@ abstract final class Method extends Executable implements Member, GenericSource 
   /// ```
   ///
   /// ## Notes
-  /// - This does not consider runtime modifications from mirrors or proxies.
+  /// - This does not consider runtime modifications from proxies.
   /// {@endtemplate}
   LinkDeclaration getLinkDeclaration();
   

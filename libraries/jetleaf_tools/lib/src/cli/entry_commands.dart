@@ -2,7 +2,10 @@ import 'dart:io';
 
 import 'dart:convert';
 
+import 'package:path/path.dart' as p;
+
 import '../utils/utils.dart';
+import '../utils/workspace.dart';
 import '../vm/control_client.dart';
 import '../vm/jetleaf_vm.dart';
 import '../cache/indexer/build_command.dart' as builder;
@@ -55,9 +58,25 @@ Examples:
       return 0;
     }
     final root = _flagValue(args, '--root') ?? Directory.current.path;
-    final dir = Directory(root);
+    var dir = Directory(root);
     final positional = _commandPositionals(args);
-    if (positional.isEmpty) {
+
+    // Workspace fan-out: resolve the member owning the entry file and run
+    // against that member's manager. The entry path is rewritten to be
+    // relative to the member root (the manager keys entries relative to it).
+    var positionalEntry = positional.isEmpty ? null : positional.first;
+    if (positionalEntry != null && isWorkspaceRoot(dir)) {
+      final member = memberOwning(dir, positionalEntry);
+      if (member == null) {
+        stderr.writeln('Error: $positionalEntry is not inside a workspace member of $root');
+        return 1;
+      }
+      print('==> Workspace member: ${member.path}');
+      positionalEntry = p.relative(positionalEntry, from: member.path);
+      dir = member;
+    }
+
+    if (positionalEntry == null) {
       stderr.writeln('Error: missing <file>. See `jl run --help`.');
       return 1;
     }
@@ -65,7 +84,7 @@ Examples:
       stderr.writeln('Error: not a Jetleaf project: ${dir.path}');
       return 1;
     }
-    final entry = positional.first;
+    final entry = positionalEntry;
     final entryArgs = _applicationArguments(args);
 
     final manager = JetleafControlClient.readManagerFile(dir);
@@ -158,6 +177,49 @@ Examples:
     }
     final root = _flagValue(args, '--root') ?? Directory.current.path;
     final dir = Directory(root);
+    final positional = _commandPositionals(args);
+
+    // Workspace fan-out: `jl test --all` at a workspace root runs every
+    // member's tests in sequence.
+    if (args.contains('--all') && isWorkspaceRoot(dir)) {
+      var code = 0;
+      for (final member in workspaceMembers(dir)) {
+        print('==> Testing workspace member: ${member.path}');
+        final outcome = await _runChildJl(['test', '--all', '--root', member.path, ..._stripRootFlag(args).where((a) => a != '--all')]);
+        if (outcome != 0) code = outcome;
+      }
+      return code;
+    }
+
+    // Workspace fan-out: resolve the member owning the test file. The file
+    // path is rewritten to be relative to the member root so the member's
+    // manager can find the entry.
+    if (positional.isNotEmpty && isWorkspaceRoot(dir)) {
+      final member = memberOwning(dir, positional.first);
+      if (member == null) {
+        stderr.writeln('Error: ${positional.first} is not inside a workspace member of $root');
+        return 1;
+      }
+      print('==> Workspace member: ${member.path}');
+      // Rewrite the workspace-relative test-file positional to a
+      // member-relative path; everything else is forwarded unchanged.
+      final rest = <String>[];
+      for (var i = 0; i < args.length; i++) {
+        final a = args[i];
+        if (a == '--root' && i + 1 < args.length) {
+          i++;
+          continue;
+        }
+        if (a.startsWith('--root=')) continue;
+        if (a == positional.first) {
+          rest.add(p.relative(a, from: member.path));
+        } else {
+          rest.add(a);
+        }
+      }
+      return _runChildJl(['test', ...rest, '--root', member.path]);
+    }
+
     if (!RuntimeUtils.isJetLeafBuildProject(dir)) {
       stderr.writeln('Error: not a Jetleaf project: ${dir.path}');
       return 1;
@@ -182,11 +244,11 @@ Examples:
           }
           return code;
         }
-        final positional = _commandPositionals(args);
-        if (positional.isNotEmpty) {
+        final innerPositional = _commandPositionals(args);
+        if (innerPositional.isNotEmpty) {
           return await JetleafControlClient.sendControlRequest(dir, {
             'type': 'runTest',
-            'entry': positional.first,
+            'entry': innerPositional.first,
             'args': _applicationArguments(args),
           });
         }
@@ -197,10 +259,10 @@ Examples:
 
     // Direct Native Test Execution (Zero Daemon Required)
     await builder.runBuild(['--test'], root: dir);
-    final positional = _commandPositionals(args);
+    final directPositional = _commandPositionals(args);
     final testArgs = _applicationArguments(args);
 
-    final dartArgs = ['test', ...positional, ...testArgs];
+    final dartArgs = ['test', ...directPositional, ...testArgs];
     final process = await Process.start(
       Platform.resolvedExecutable,
       dartArgs,
@@ -285,6 +347,37 @@ String? _readFlagValue(List<String> args, String flag) {
   return null;
 }
 
+/// Removes `--root <dir>` / `--root=<dir>` from [args].
+List<String> _stripRootFlag(List<String> args) {
+  final stripped = <String>[];
+  for (var i = 0; i < args.length; i++) {
+    final a = args[i];
+    if (a == '--root' && i + 1 < args.length) {
+      i++;
+      continue;
+    }
+    if (a.startsWith('--root=')) continue;
+    stripped.add(a);
+  }
+  return stripped;
+}
+
+/// Spawns `jl` as a child process (used by workspace fan-out commands).
+///
+/// **Parameters:**
+/// - [childArgs]: arguments passed to `jl` after the script path.
+///
+/// **Returns:** the child process exit code.
+Future<int> _runChildJl(List<String> childArgs) async {
+  final script = Platform.script.toFilePath(windows: false);
+  final process = await Process.start(
+    Platform.resolvedExecutable,
+    ['run', script, ...childArgs],
+    mode: ProcessStartMode.inheritStdio,
+  );
+  return await process.exitCode;
+}
+
 /// {@template status_command}
 /// `jl status` — shows entry states from the running manager.
 ///
@@ -307,7 +400,8 @@ final class StatusCommand extends JlCommand {
 Usage: jl status [options]
 
 Options:
-  --root <dir>     Project root (default: current directory).
+  --root <dir>     Project root (default: current directory). At a pub
+                   workspace root, shows status for every member.
   -h, --help       Show this help.
 ''';
 
@@ -324,7 +418,18 @@ Options:
       return 0;
     }
     final root = _flagValue(args, '--root') ?? Directory.current.path;
-    return JetleafControlClient.sendControlRequest(Directory(root), {'type': 'status'});
+    final dir = Directory(root);
+    if (isWorkspaceRoot(dir)) {
+      // Fan out to every member's manager.
+      var code = 0;
+      for (final member in workspaceMembers(dir)) {
+        print('==> ${member.path.split('/').last}:');
+        final result = await JetleafControlClient.sendControlRequest(member, {'type': 'status'});
+        if (result != 0) code = result;
+      }
+      return code;
+    }
+    return JetleafControlClient.sendControlRequest(dir, {'type': 'status'});
   }
 
   /// Reads a `--flag value` / `--flag=value` option.
@@ -369,7 +474,8 @@ Description:
   Without <file>: stops all VMs and the manager.
 
 Options:
-  --root <dir>     Project root (default: current directory).
+  --root <dir>     Project root (default: current directory). At a pub
+                   workspace root without <file>, stops every member.
   -h, --help       Show this help.
 ''';
 
@@ -386,10 +492,21 @@ Options:
       return 0;
     }
     final root = _flagValue(args, '--root') ?? Directory.current.path;
+    final dir = Directory(root);
     final positional = args
         .where((a) => !a.startsWith('-') && a != _flagValue(args, '--root'))
         .toList();
-    return JetleafControlClient.sendControlRequest(Directory(root), {
+    if (isWorkspaceRoot(dir) && positional.isEmpty) {
+      // Fan out a blanket stop to every member's manager.
+      var code = 0;
+      for (final member in workspaceMembers(dir)) {
+        print('==> Stopping ${member.path.split('/').last}...');
+        final result = await JetleafControlClient.sendControlRequest(member, {'type': 'stop'});
+        if (result != 0) code = result;
+      }
+      return code;
+    }
+    return JetleafControlClient.sendControlRequest(dir, {
       'type': 'stop',
       if (positional.isNotEmpty) 'entry': positional.first,
     });

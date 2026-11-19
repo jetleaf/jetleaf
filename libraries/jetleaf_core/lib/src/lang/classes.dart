@@ -6,7 +6,7 @@
 /// Jetleaf uses this package URI for:
 /// - Constructing fully-qualified type identifiers
 /// - Linking metadata entries to their defining library
-/// - Runtime and build-time resolution where mirrors may be unavailable
+/// - Runtime and build-time resolution without runtime reflection
 ///
 /// The value is intentionally stable and must not change without updating all
 /// generated Jetleaf metadata systems.
@@ -42,7 +42,7 @@ abstract base class Void {
   /// Returns the fully-qualified Jetleaf type identifier for the [Void] marker class.
   ///
   /// This name is used internally for stable, cross-runtime type resolution,
-  /// especially in contexts where mirrors are unavailable or unreliable.
+  /// especially in contexts where runtime reflection is unavailable or unreliable.
   ///
   /// See the shared documentation block above for detailed explanation.
   static String getQualifiedName() => "$_PACKAGE_URI.Void";

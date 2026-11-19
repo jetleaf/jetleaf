@@ -9,10 +9,10 @@ import 'aot_sub_registrar_writer.dart';
 /// Generates the global `registry_annotations.g.dart` sub-registry part file under `lib/_jetleaf/`
 /// containing runtime annotation deserialization and instantiation logic.
 ///
-/// In pure Dart AOT execution (no `dart:mirrors`), classes cannot reflectively reconstruct
+/// When running compiled, classes cannot reflectively reconstruct
 /// live annotation instances from compile-time AST descriptors.
 /// [AotAnnotationRegistryWriter] generates an automated deserialization engine that binds to
-/// `Annotation.registerInstanceFactory`:
+/// `MaterializedLibrary.registerAnnotationInstanceResolver`:
 ///
 /// 1. **Argument Normalization**: Intercepts AST argument representations and normalizes:
 ///    - `ClassType<T>(...)` and `ClassType.qualified(...)` tokens into concrete [ClassType] instances
@@ -22,17 +22,17 @@ import 'aot_sub_registrar_writer.dart';
 ///    - Nested constructor invocations (`@ComponentScan(excludeFilters: [TypeFilter(...)])`)
 ///    - Primitive literals (`int`, `double`, `bool`, `String`, `null`)
 ///    - Strongly-typed list and map collections
-/// 2. **Instance Construction**: Dispatches the deserialized arguments to [AotRuntimeExecutor.constructByName],
+/// 2. **Instance Construction**: Dispatches the deserialized arguments to [MaterializedLibrary.constructByName],
 ///    instantiating the concrete annotation class dynamically.
 ///
 /// ## 🎯 Sample Generated Output
 ///
 /// ```dart
 /// // Generated in lib/_jetleaf/registry_annotations.g.dart
-/// part of 'aot_registry.g.dart';
+/// part of 'registry.g.dart';
 ///
 /// void _registerAnnotations() {
-///   Annotation.registerInstanceFactory((name, ann) {
+///   MaterializedLibrary.registerAnnotationInstanceFactory((name, ann) {
 ///     final userValues = ann.getUserProvidedValues();
 ///     final namedValues = <String, dynamic>{};
 ///     final posArgs = <Object?>[];
@@ -44,7 +44,7 @@ import 'aot_sub_registrar_writer.dart';
 ///       }
 ///     }
 ///     final args = ExecutableArgument.unmodified(namedValues, posArgs);
-///     return AotRuntimeExecutor.constructByName(name, args);
+///     return MaterializedLibrary.constructByName(name, args);
 ///   });
 /// }
 /// ```
@@ -68,7 +68,7 @@ final class AotAnnotationRegistryWriter extends AotSubRegistrarWriter {
     buffer.writeln(r"""final _qualifiedClassTypePattern = RegExp(r'''^ClassType\.qualified\(\s*['"]([^'"]+)['"]\s*\)$''');""");
     buffer.writeln(r"final _annotatedTypeFilterPattern = RegExp(r'^AnnotatedTypeFilter<([^>]+)>\(\)$');");
     buffer.writeln(r"final _eventTypePattern = RegExp(r'^(?:const\s+)?EventType<([^>]+)>\((.*)\)$');");
-    buffer.writeln(r"final _enumOrStaticPattern = RegExp(r'^([A-Z][A-Za-z0-9_]*)\.([A-Za-z0-9_]+)$');");
+    buffer.writeln(r"final _enumOrStaticPattern = RegExp(r'^([A-Za-z_][A-Za-z0-9_]*)\.([A-Za-z0-9_]+)$');");
     buffer.writeln(r"final _ctorCallPattern = RegExp(r'^(?:const\s+)?([A-Za-z_][A-Za-z0-9_]*)(?:<[^>]+>)?(?:\.([A-Za-z_][A-Za-z0-9_]*))?\((.*)\)$', dotAll: true);");
     buffer.writeln();
     buffer.writeln('List<String> _splitTopLevelArgs(String input) {');
@@ -140,7 +140,7 @@ final class AotAnnotationRegistryWriter extends AotSubRegistrarWriter {
     buffer.writeln('    }');
     buffer.writeln('    final enumMatch = _enumOrStaticPattern.firstMatch(trimmed);');
     buffer.writeln('    if (enumMatch != null) {');
-    buffer.writeln('      final resolved = AotRuntimeExecutor.constructByName(trimmed);');
+    buffer.writeln('      final resolved = MaterializedLibrary.constructByName(trimmed);');
     buffer.writeln('      if (resolved != null) return resolved;');
     buffer.writeln('    }');
     buffer.writeln('    final ctorMatch = _ctorCallPattern.firstMatch(trimmed);');
@@ -150,7 +150,7 @@ final class AotAnnotationRegistryWriter extends AotSubRegistrarWriter {
     buffer.writeln('      final rawArgs = ctorMatch.group(3)!.trim();');
     buffer.writeln("      final targetName = callee == null || callee == '_' ? className : '\$className.\$callee';");
     buffer.writeln('      if (rawArgs.isEmpty) {');
-    buffer.writeln('        final constructed = AotRuntimeExecutor.constructByName(targetName) ?? AotRuntimeExecutor.constructByName(className);');
+    buffer.writeln('        final constructed = MaterializedLibrary.constructByName(targetName) ?? MaterializedLibrary.constructByName(className);');
     buffer.writeln('        if (constructed != null) return constructed;');
     buffer.writeln('      } else {');
     buffer.writeln('        final parts = _splitTopLevelArgs(rawArgs);');
@@ -179,8 +179,8 @@ final class AotAnnotationRegistryWriter extends AotSubRegistrarWriter {
     buffer.writeln('            posArgs.add(_normalizeNestedRawArg(part));');
     buffer.writeln('          }');
     buffer.writeln('        }');
-    buffer.writeln('        final constructed = AotRuntimeExecutor.constructByName(targetName, ExecutableArgument.unmodified(namedArgs, posArgs))');
-    buffer.writeln('          ?? (callee == null ? null : AotRuntimeExecutor.constructByName(className, ExecutableArgument.unmodified(namedArgs, posArgs)));');
+    buffer.writeln('        final constructed = MaterializedLibrary.constructByName(targetName, ExecutableArgument.unmodified(namedArgs, posArgs))');
+    buffer.writeln('          ?? (callee == null ? null : MaterializedLibrary.constructByName(className, ExecutableArgument.unmodified(namedArgs, posArgs)));');
     buffer.writeln('        if (constructed != null) return constructed;');
     buffer.writeln('      }');
     buffer.writeln('    }');
@@ -198,18 +198,31 @@ final class AotAnnotationRegistryWriter extends AotSubRegistrarWriter {
     buffer.writeln('    if (mapped.every((e) => e is ComponentScanFilter)) return mapped.cast<ComponentScanFilter>().toList();');
     buffer.writeln('    if (mapped.every((e) => e is TypeFilter)) return mapped.cast<TypeFilter>().toList();');
     buffer.writeln('    if (mapped.every((e) => e is Type)) return mapped.cast<Type>().toList();');
-    buffer.writeln('    if (mapped.every((e) => e != null)) return List<dynamic>.from(mapped);');
-    buffer.writeln('    return mapped;');
+    buffer.writeln('    return MaterializedLibrary.reifyList(mapped);');
+    buffer.writeln('  }');
+    buffer.writeln('  if (val is Set) {');
+    buffer.writeln('    if (val.isEmpty) return val;');
+    buffer.writeln('    final mapped = val.map(_normalizeAnnotationValue).toList();');
+    buffer.writeln('    return MaterializedLibrary.reifySet(mapped);');
+    buffer.writeln('  }');
+    buffer.writeln('  if (val is Map) {');
+    buffer.writeln('    if (val.isEmpty) return val;');
+    buffer.writeln('    final mapped = {for (final e in val.entries) _normalizeAnnotationValue(e.key): _normalizeAnnotationValue(e.value)};');
+    buffer.writeln('    return MaterializedLibrary.reifyMap(mapped);');
     buffer.writeln('  }');
     buffer.writeln('  return val;');
     buffer.writeln('}');
     buffer.writeln();
     buffer.writeln('void $fnName() {');
-    buffer.writeln('  Annotation.registerInstanceFactory((name, ann) {');
-    buffer.writeln('    final userValues = ann.getUserProvidedValues();');
+    buffer.writeln("  MaterializedLibrary.registerTypeReifier<ClassType<Object>>('ClassType');");
+    buffer.writeln("  MaterializedLibrary.registerTypeReifier<ClassType<dynamic>>('ClassType<dynamic>');");
+    buffer.writeln("  MaterializedLibrary.registerTypeReifier<Condition>('Condition');");
+    buffer.writeln("  MaterializedLibrary.registerTypeReifier<ComponentScanFilter>('ComponentScanFilter');");
+    buffer.writeln("  MaterializedLibrary.registerTypeReifier<TypeFilter>('TypeFilter');");
+    buffer.writeln('  final resolver = (String name, Map<String, dynamic> userProvidedValues) {');
     buffer.writeln('    final namedValues = <String, dynamic>{};');
     buffer.writeln('    final posArgs = <Object?>[];');
-    buffer.writeln('    for (final entry in userValues.entries) {');
+    buffer.writeln('    for (final entry in userProvidedValues.entries) {');
     buffer.writeln("      if (entry.key.startsWith(r'\$')) {");
     buffer.writeln('        posArgs.add(_normalizeAnnotationValue(entry.value));');
     buffer.writeln('      } else {');
@@ -217,7 +230,12 @@ final class AotAnnotationRegistryWriter extends AotSubRegistrarWriter {
     buffer.writeln('      }');
     buffer.writeln('    }');
     buffer.writeln('    final args = ExecutableArgument.unmodified(namedValues, posArgs);');
-    buffer.writeln('    return AotRuntimeExecutor.constructByName(name, args);');
+    buffer.writeln('    return MaterializedLibrary.constructByName(name, args);');
+    buffer.writeln('  };');
+    buffer.writeln('  MaterializedLibrary.registerAnnotationInstanceResolver(resolver);');
+    buffer.writeln('  MaterializedLibrary.registerAnnotation((name, ann) {');
+    buffer.writeln('    final userValues = ann.getUserProvidedValues();');
+    buffer.writeln('    return resolver(name, userValues);');
     buffer.writeln('  });');
     buffer.writeln('}');
 
@@ -225,7 +243,7 @@ final class AotAnnotationRegistryWriter extends AotSubRegistrarWriter {
       generatedRootDir.createSync(recursive: true);
     }
     
-    final file = File('${generatedRootDir.path}/${Constant.AOT_REGISTRY_ANNOTATIONS_FILE_NAME}');
+    final file = File('${generatedRootDir.path}/${Constant.REGISTRY_ANNOTATIONS_FILE_NAME}');
     await file.writeAsString(buffer.toString());
     return fnName;
   }

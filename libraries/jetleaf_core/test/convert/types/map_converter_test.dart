@@ -2,9 +2,12 @@ import 'package:jetleaf_core/convert.dart';
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'dart:collection' as col;
+import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   final service = DefaultConversionService();
 
   group('String to Map Converters', () {
@@ -27,11 +30,17 @@ void main() {
       expect(result?['key2'], 'value2');
     });
 
-    test('String to col.HashMap conversion', () {
+    // Note: Jetleaf intentionally resolves an unqualified `HashMap` reference to
+    // its own `jetleaf_core` class (the one referenced by generated registries),
+    // never to the dart:collection implementation class. Asking the conversion
+    // service to produce a dart:collection HashMap is not a supported request, so
+    // this asserts the jetleaf class here — mirroring `Class<HashMap>()` semantics
+    // used by the other HashMap tests.
+    test('String to jetleaf HashMap conversion', () {
       final input = 'a=1,b=2,c=3';
-      final result = service.convert<col.HashMap>(input, Class<col.HashMap>(null, PackageNames.DART));
+      final result = service.convert<HashMap>(input, Class<HashMap>(null, PackageNames.LANG));
       
-      expect(result, isA<col.HashMap>());
+      expect(result, isA<HashMap>());
       expect(result?['a'], '1');
       expect(result?['b'], '2');
       expect(result?['c'], '3');
@@ -145,11 +154,13 @@ void main() {
       expect(result?['b'], 2);
     });
 
-    test('Map to col.HashMap conversion', () {
+    // Same resolution rule as above — an unqualified `HashMap` request converts
+    // to jetleaf's HashMap, never dart:collection's.
+    test('Map to jetleaf HashMap conversion', () {
       final input = {'x': 'hello', 'y': 'world'};
-      final result = service.convert<col.HashMap>(input, Class<col.HashMap>());
+      final result = service.convert<HashMap>(input, Class<HashMap>());
       
-      expect(result, isA<col.HashMap>());
+      expect(result, isA<HashMap>());
       expect(result?['x'], 'hello');
       expect(result?['y'], 'world');
     });

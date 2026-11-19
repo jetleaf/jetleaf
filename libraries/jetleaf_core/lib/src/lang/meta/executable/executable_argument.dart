@@ -19,7 +19,7 @@ part '_executable_argument.dart';
 /// ## Purpose
 /// Reflection APIs, hint systems, and runtime resolvers often need to:
 /// - Reconstruct invocation contexts
-/// - Forward argument sets to new execution paths (AOT, JIT, hints, or mirrors)
+/// - Forward argument sets to new execution paths (generated registries, hints, or resolvers)
 /// - Normalize arguments so that they can be serialized or compared
 ///
 /// [ExecutableArgument] provides a single contract that allows all components
@@ -29,7 +29,7 @@ part '_executable_argument.dart';
 /// Positional arguments preserve the **exact order** in which the caller
 /// supplied them. Named arguments preserve:
 /// - Their **string name** (preferred for userland reflection)  
-/// - Their **symbol key** (required for low-level `dart:mirrors` invocation)
+/// - Their **symbol key** (required for low-level `runtime reflection` invocation)
 ///
 /// Implementations ensure that these two representations remain aligned.
 ///
@@ -68,7 +68,7 @@ abstract interface class ExecutableArgument {
   /// provided to the original call site.
   ///
   /// Implementations must preserve the exact ordering, as many downstream
-  /// invocation paths—including AOT resolvers and mirror-based calls—depend on
+  /// invocation paths—including AOT resolvers and reflection-based calls—depend on
   /// positional accuracy.
   ///
   /// Null values are allowed and should be represented faithfully.
@@ -159,12 +159,12 @@ abstract interface class ExecutableArgument {
 
   /// Returns a map of **named arguments** keyed using [Symbol] objects.
   ///
-  /// This representation is primarily required for `dart:mirrors` invocations,
+  /// This representation is primarily required for `runtime reflection` invocations,
   /// which only accept symbolic named arguments.
   ///
   /// Implementations must ensure that:
   /// - The set of keys here corresponds one-to-one with [getNamedArguments]  
-  /// - The values mirror the same entries  
+  /// - The values match the same entries  
   ///
   /// Example:
   /// - `"count"` → `#count`

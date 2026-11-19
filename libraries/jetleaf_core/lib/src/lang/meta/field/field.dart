@@ -1,10 +1,10 @@
-import '../../runtime/executor/aot/aot_runtime_executor.dart';
 import '../../commons/version.dart';
 import '../../declaration/declaration.dart';
 import '../../exceptions.dart';
 import '../../helpers/equals_and_hash_code.dart';
 import '../../utils/lang_utils.dart';
 import '../core.dart';
+import '../materialized_library.dart';
 import '../annotation/annotation.dart';
 import '../class/class.dart';
 import '../protection_domain/protection_domain.dart';

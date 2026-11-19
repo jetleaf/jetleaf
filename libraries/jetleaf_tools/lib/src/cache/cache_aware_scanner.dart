@@ -97,8 +97,8 @@ class CacheAwareScanner implements RuntimeScanner {
         );
       }
 
-      // 2. Cache miss — run AST builder (Zero Mirrors)
-      RuntimeBuilder.logVerboseInfo("Building declarations via AST DeclarationBuilder (zero mirrors)...");
+      // 2. Cache miss — run AST builder
+      RuntimeBuilder.logVerboseInfo("Building declarations via AST DeclarationBuilder...");
       try {
         final discovery = FileDiscovery(effectiveSource);
         final files = await discovery.discover(

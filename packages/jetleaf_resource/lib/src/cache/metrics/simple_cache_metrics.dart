@@ -61,7 +61,7 @@ final class SimpleCacheMetrics implements CacheMetrics {
 
   /// Internal list of recorded **miss** events.
   ///
-  /// Mirrors the semantics of [_hits] but for failed lookups (cache misses).
+  /// Matches the semantics of [_hits] but for failed lookups (cache misses).
   /// Used to compute access totals and miss rates.
   final List<Object> _misses = [];
 

@@ -595,7 +595,7 @@ void main() {
     });
 
     // Note: Testing the `method.isFutureVoid()` path requires a real Method
-    // instance from dart:mirrors or the framework's reflection system.
+    // instance from runtime reflection or the framework's reflection system.
     // The null-method paths are covered by the other tests above.
 
     test('handleReturnValue does not override existing status when no status set', () async {

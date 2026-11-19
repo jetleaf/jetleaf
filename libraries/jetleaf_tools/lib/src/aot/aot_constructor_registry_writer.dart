@@ -7,9 +7,9 @@ import 'aot_sub_registrar_writer.dart';
 /// 🔨 **Ahead-Of-Time (AOT) Constructor Registry Code Generator**
 ///
 /// Generates package-scoped `registry_constructors.g.dart` sub-registry part files containing
-/// statically compiled constructor factory closures registered with `AotRuntimeExecutor.registerNamedConstructor`.
+/// statically compiled constructor factory closures registered via `MaterializedLibrary.registerNamedConstructor`.
 ///
-/// In pure Dart AOT execution (no `dart:mirrors`), classes cannot be reflectively instantiated
+/// When running compiled, classes cannot be reflectively instantiated
 /// by name or qualified token. [AotConstructorRegistryWriter] bridges this gap by generating
 /// static closures for:
 /// - Unnamed default constructors (`p0.MyClass.new`)
@@ -25,17 +25,17 @@ import 'aot_sub_registrar_writer.dart';
 ///
 /// ```dart
 /// // Generated in lib/_jetleaf/my_app/registry_constructors.g.dart
-/// part of '../aot_registry.g.dart';
+/// part of '../registry.g.dart';
 ///
 /// void _registerConstructors_my_app() {
 ///   // Unnamed zero-argument constructor
-///   AotRuntimeExecutor.registerNamedConstructor(
+///   MaterializedLibrary.registerNamedConstructor(
 ///     'DefaultConfig',
 ///     ([_]) => p0.DefaultConfig(),
 ///   );
 ///
 ///   // Parameterized constructor with argument unpacking
-///   AotRuntimeExecutor.registerNamedConstructor(
+///   MaterializedLibrary.registerNamedConstructor(
 ///     'DatabaseConfig',
 ///     ([args]) {
 ///       final pos = args?.getPositionalArguments() ?? const [];
@@ -52,7 +52,7 @@ import 'aot_sub_registrar_writer.dart';
 ///
 ///   // Enum values
 ///   for (final v in p0.LogLevel.values) {
-///     AotRuntimeExecutor.registerNamedConstructor('LogLevel.${v.name}', ([_]) => v);
+///     MaterializedLibrary.registerNamedConstructor('LogLevel.${v.name}', ([_]) => v);
 ///   }
 /// }
 /// ```
@@ -97,7 +97,8 @@ final class AotConstructorRegistryWriter extends AotSubRegistrarWriter {
           final prefix = libraryAliases[libraryUri] != null ? '${libraryAliases[libraryUri]}.' : '';
           lines.add('''
   for (final v in $prefix$cleanClassName.values) {
-    AotRuntimeExecutor.registerNamedConstructor('${escapeDartStringLiteral(cleanClassName)}.\${v.name}', ([_]) => v);
+    MaterializedLibrary.registerNamedConstructor('${escapeDartStringLiteral(cleanClassName)}.\${v.name}', ([_]) => v);
+    MaterializedLibrary.registerEnumValueResolver('${escapeDartStringLiteral(cleanClassName)}.\${v.name}', () => v);
   }''');
         }
         continue;
@@ -124,12 +125,12 @@ final class AotConstructorRegistryWriter extends AotSubRegistrarWriter {
         if (params.isEmpty) {
           final invocation = ctorName.isEmpty ? '$prefix$cleanClassName()' : '$prefix$cleanClassName.$ctorName()';
           lines.add('''
-  AotRuntimeExecutor.registerNamedConstructor(
+  MaterializedLibrary.registerNamedConstructor(
     '${escapeDartStringLiteral(ctorKey)}',
     ([_]) => $invocation
   );''');
           lines.add('''
-  AotRuntimeExecutor.registerNamedConstructor(
+  MaterializedLibrary.registerNamedConstructor(
     '${escapeDartStringLiteral(qualifiedKey)}',
     ([_]) => $invocation
   );''');
@@ -137,6 +138,13 @@ final class AotConstructorRegistryWriter extends AotSubRegistrarWriter {
           final ctorTearOff = ctorName.isEmpty ? '$prefix$cleanClassName.new' : '$prefix$cleanClassName.$ctorName';
           final posParams = params.where((p) => !p.getIsNamed()).toList();
           final namedParams = params.where((p) => p.getIsNamed()).toList();
+          final typeParamNames = component.getTypeArguments().map((t) => t.getName()).toSet();
+
+          String wrapCoerce(String expr, ParameterDeclaration p) {
+            final sig = renderCollectionTypeSignature(p.getLinkDeclaration(), typeParamNames);
+            if (sig == null) return expr;
+            return "MaterializedLibrary.coerceValue($expr, '${escapeDartStringLiteral(sig)}')";
+          }
 
           final body = StringBuffer();
           body.writeln("      final pos = args?.getPositionalArguments() ?? const [];");
@@ -147,14 +155,15 @@ final class AotConstructorRegistryWriter extends AotSubRegistrarWriter {
             final p = posParams[i];
             final pName = p.getName();
             if (p.getIsRequired()) {
-              body.writeln("      pArgs.add(pos.length > $i ? pos[$i] : (named['$pName'] ?? (named.containsKey('value') && $i == 0 ? named['value'] : null)));");
+              final rawExpr = "pos.length > $i ? pos[$i] : (named['$pName'] ?? (named.containsKey('value') && $i == 0 ? named['value'] : null))";
+              body.writeln("      pArgs.add(${wrapCoerce(rawExpr, p)});");
             } else {
               body.writeln("      if (pos.length > $i) {");
-              body.writeln("        pArgs.add(pos[$i]);");
+              body.writeln("        pArgs.add(${wrapCoerce('pos[$i]', p)});");
               body.writeln("      } else if (named.containsKey('$pName')) {");
-              body.writeln("        pArgs.add(named['$pName']);");
+              body.writeln("        pArgs.add(${wrapCoerce("named['$pName']", p)});");
               body.writeln("      } else if (named.containsKey('value') && $i == 0) {");
-              body.writeln("        pArgs.add(named['value']);");
+              body.writeln("        pArgs.add(${wrapCoerce("named['value']", p)});");
               body.writeln("      }");
             }
           }
@@ -164,18 +173,19 @@ final class AotConstructorRegistryWriter extends AotSubRegistrarWriter {
             for (final p in namedParams) {
               final pName = p.getName();
               if (p.getIsRequired()) {
-                body.writeln("      nArgs[#$pName] = named['$pName'] ?? (pos.isNotEmpty ? pos[0] : null);");
+                final rawExpr = "named['$pName'] ?? (pos.isNotEmpty ? pos[0] : null)";
+                body.writeln("      nArgs[#$pName] = ${wrapCoerce(rawExpr, p)};");
               } else if (p.getIsNullable()) {
                 body.writeln("      if (named.containsKey('$pName')) {");
-                body.writeln("        nArgs[#$pName] = named['$pName'];");
+                body.writeln("        nArgs[#$pName] = ${wrapCoerce("named['$pName']", p)};");
                 body.writeln("      } else if (pos.isNotEmpty && '$pName' == 'value') {");
-                body.writeln("        nArgs[#$pName] = pos[0];");
+                body.writeln("        nArgs[#$pName] = ${wrapCoerce('pos[0]', p)};");
                 body.writeln("      }");
               } else {
                 body.writeln("      if (named.containsKey('$pName') && named['$pName'] != null) {");
-                body.writeln("        nArgs[#$pName] = named['$pName'];");
+                body.writeln("        nArgs[#$pName] = ${wrapCoerce("named['$pName']", p)};");
                 body.writeln("      } else if (pos.isNotEmpty && '$pName' == 'value' && pos[0] != null) {");
-                body.writeln("        nArgs[#$pName] = pos[0];");
+                body.writeln("        nArgs[#$pName] = ${wrapCoerce('pos[0]', p)};");
                 body.writeln("      }");
               }
             }
@@ -185,14 +195,14 @@ final class AotConstructorRegistryWriter extends AotSubRegistrarWriter {
           }
 
           lines.add('''
-  AotRuntimeExecutor.registerNamedConstructor(
+  MaterializedLibrary.registerNamedConstructor(
     '${escapeDartStringLiteral(ctorKey)}',
     ([args]) {
 ${body.toString().trimRight()}
     },
   );''');
           lines.add('''
-  AotRuntimeExecutor.registerNamedConstructor(
+  MaterializedLibrary.registerNamedConstructor(
     '${escapeDartStringLiteral(qualifiedKey)}',
     ([args]) {
 ${body.toString().trimRight()}
@@ -219,7 +229,7 @@ ${body.toString().trimRight()}
       packageDir.createSync(recursive: true);
     }
 
-    final file = File('${packageDir.path}/${Constant.AOT_REGISTRY_CONSTRUCTORS_FILE_NAME}');
+    final file = File('${packageDir.path}/${Constant.REGISTRY_CONSTRUCTORS_FILE_NAME}');
     await file.writeAsString(buffer.toString());
     return fnName;
   }

@@ -33,60 +33,7 @@ class GenericTypeParser {
   /// {@macro generic_parser}
   GenericTypeParser._();
 
-  /// {@template mirror_type_to_format_with_generic}
-  /// The type name of the mirror type to format with generic parameters.
-  ///
-  /// This is used to check if a type should be checked for generic parameters.
-  ///
-  /// Example:
-  /// ```dart
-  /// final result = GenericTypeParser.shouldCheckGeneric(List);
-  /// print(result); // true
-  /// ```
-  /// {@endtemplate}
-  static const String MIRROR_TYPE_TO_FORMAT_WITH_GENERIC = "_ClassMirror";
 
-  /// {@template should_check_generic}
-  /// Checks if the given type should be checked for generic parameters.
-  ///
-  /// Parameters:
-  /// - [type]: The type to check
-  ///
-  /// Returns:
-  /// - `true` if the type should be checked for generic parameters
-  /// - `false` otherwise
-  ///
-  /// Example:
-  /// ```dart
-  /// final result = GenericTypeParser.shouldCheckGeneric(List);
-  /// print(result); // true
-  /// ```
-  /// {@endtemplate}
-  static bool shouldCheckGeneric(Type type) => isMirrored(type.toString());
-
-  /// {@template is_generic_mirror}
-  /// Checks if the given type string is a mirror type to format with generic parameters.
-  ///
-  /// Parameters:
-  /// - [typeString]: The type string to check
-  ///
-  /// Returns:
-  /// - `true` if the type string is a mirror type to format with generic parameters
-  /// - `false` otherwise
-  ///
-  /// Example:
-  /// ```dart
-  /// final result = GenericTypeParser.isMirrored("_ClassMirror");
-  /// print(result); // true
-  /// ```
-  /// {@endtemplate}
-  static bool isMirrored(String typeString) {
-    if (typeString == "_SpecialTypeMirror") {
-      return true;
-    }
-
-    return typeString == MIRROR_TYPE_TO_FORMAT_WITH_GENERIC;
-  }
 
   /// {@template extract_generic_part}
   /// Extracts the inner generic type parameters from a type string.

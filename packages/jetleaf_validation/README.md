@@ -406,11 +406,8 @@ class Order {
 
 ## 📦 Dependencies
 
-- **`jetleaf_lang`** — Language utilities
-- **`jetleaf_logging`** — Structured logging
-- **`jetleaf_pod`** — Pod lifecycle
 - **`jetleaf_core`** — Core framework
-- **`jetleaf_env`** — Environment configuration
+- **`meta`** — Annotations
 
 ## 📄 License
 

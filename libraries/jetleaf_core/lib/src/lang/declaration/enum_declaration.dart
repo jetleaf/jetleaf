@@ -216,7 +216,7 @@ final class StandardEnumDeclaration extends StandardClassDeclaration implements 
     
     return StandardEnumDeclaration(
       name: name,
-      type: StandardDeclaration.resolveType(typeName),
+      type: MaterializedLibrary.resolveType(typeName),
       isPublic: isPublic,
       isSynthetic: isSynthetic,
       library: StandardLibraryDeclaration.empty(),
@@ -314,15 +314,11 @@ final class StandardEnumFieldDeclaration extends StandardFieldDeclaration implem
   /// The enum field position
   final int _position;
 
-  /// Creates a standard enum field declaration
-  ///
-  /// {@template standard_enum_field_constructor}
-  /// Parameters:
-  /// - [_name]: The declared name of the enum value
-  /// - [_value]: The actual enum value instance  
-  ///
-  /// All parameters are required and immutable.
-  /// {@endtemplate}
+  /// The simple name of the enum that declares this value
+  /// (e.g. `Color` for `Color.red`). Required to resolve the live constant
+  /// from the value resolver registry.
+  final String? _parentName;
+
   const StandardEnumFieldDeclaration({
     required super.name,
     required super.type,
@@ -333,13 +329,20 @@ final class StandardEnumFieldDeclaration extends StandardFieldDeclaration implem
     super.annotations,
     required bool isNullable,
     required super.linkDeclaration,
-  }) : _value = value, _position = position;
+    String? parentName,
+  }) : _value = value, _position = position, _parentName = parentName;
 
   @override
   dynamic getValue(dynamic instance) => _value;
 
   @override
-  dynamic getEnumValue() => getValue(Object());
+  dynamic getEnumValue() {
+    if (_parentName != null) {
+      final resolved = MaterializedLibrary.resolveEnumValue('$_parentName.${getName()}');
+      if (resolved != null) return resolved;
+    }
+    return _value is String && _value.isEmpty ? null : _value;
+  }
 
   @override
   void setValue(instance, value) { }
@@ -374,6 +377,7 @@ final class StandardEnumFieldDeclaration extends StandardFieldDeclaration implem
     builder.writeUint32(_position);
     builder.writeBool(getIsPublic());
     builder.writeBool(getIsSynthetic());
+    builder.writeString(_parentName ?? '');
   }
 
   /// Deserializes a [StandardEnumFieldDeclaration] from binary format.
@@ -384,19 +388,21 @@ final class StandardEnumFieldDeclaration extends StandardFieldDeclaration implem
     final position = reader.readUint32();
     final isPublic = reader.readBool();
     final isSynthetic = reader.readBool();
+    final parentName = reader.readString();
     
     return StandardEnumFieldDeclaration(
       name: name,
-      type: StandardDeclaration.resolveType(typeName),
+      type: MaterializedLibrary.resolveType(typeName),
       isPublic: isPublic,
       isSynthetic: isSynthetic,
       value: valueStr,
       position: position,
       isNullable: false,
+      parentName: parentName.isEmpty ? null : parentName,
       linkDeclaration: StandardLinkDeclaration(
         name: name,
-        type: StandardDeclaration.resolveType(typeName),
-        pointerType: StandardDeclaration.resolveType(typeName),
+        type: MaterializedLibrary.resolveType(typeName),
+        pointerType: MaterializedLibrary.resolveType(typeName),
         qualifiedName: name,
         isPublic: isPublic,
         isSynthetic: isSynthetic,

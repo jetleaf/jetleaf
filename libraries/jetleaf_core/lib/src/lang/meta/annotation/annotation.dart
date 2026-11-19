@@ -9,6 +9,7 @@ import '../../utils/lang_utils.dart';
 import '../class/class.dart';
 import '../field/field.dart';
 import '../core.dart';
+import '../materialized_library.dart';
 import '../protection_domain/protection_domain.dart';
 
 part '_annotation.dart';
@@ -369,16 +370,4 @@ abstract final class Annotation extends PermissionManager implements FieldAccess
   /// ```
   /// {@endtemplate}
   factory Annotation.declared(AnnotationDeclaration declaration, ProtectionDomain domain) = _Annotation;
-
-  static final List<Object? Function(String name, Annotation annotation)> _instanceFactories = [];
-
-  /// Registers a factory function that creates an annotation instance from its name and reflection metadata.
-  static void registerInstanceFactory(Object? Function(String name, Annotation annotation) factory) {
-    _instanceFactories.add(factory);
-  }
-
-  /// Clears or resets all registered instance factories (useful for test isolation).
-  static void clearInstanceFactories() {
-    _instanceFactories.clear();
-  }
 }

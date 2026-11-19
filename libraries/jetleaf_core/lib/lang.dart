@@ -18,7 +18,7 @@ export 'src/lang/meta/resource/class_path/class_path_resource.dart' hide Default
 export 'src/lang/meta/resource/asset_path/asset_resource.dart' hide DefaultAssetBuilder, DefaultAssetPathResource, FileAssetPathResource;
 
 // ============================================================================
-// METAPROGRAMMING MIRRORS & TYPE INTROSPECTION SYSTEM
+// METAPROGRAMMING & TYPE INTROSPECTION SYSTEM
 // ============================================================================
 
 export 'src/lang/meta/class/class.dart';
@@ -30,6 +30,9 @@ export 'src/lang/meta/method/method.dart';
 export 'src/lang/meta/parameter/parameter.dart';
 export 'src/lang/meta/enum/enum_value.dart';
 export 'src/lang/meta/annotation/annotation.dart';
+export 'src/lang/meta/materialized_library.dart';
+export 'src/lang/meta/type_reifier.dart';
+export 'src/lang/meta/standard_type_reifier.dart';
 export 'src/lang/meta/protection_domain/protection_domain.dart';
 export 'src/lang/meta/package_identifier.dart';
 export 'src/lang/meta/core.dart';
@@ -71,10 +74,7 @@ export 'src/lang/utils/reflection_utils.dart';
 export 'src/lang/runtime/provider/runtime_provider.dart' hide StringExte;
 
 export 'src/lang/runtime/executor/aot/aot_runtime_executor.dart';
-export 'src/lang/runtime/executor/jit/jit_runtime_executor.dart';
-export 'src/lang/runtime/executor/default_runtime_executor.dart';
 export 'src/lang/runtime/executor/runtime_executor.dart';
-export 'src/lang/runtime/executor/resolving/runtime_executor_resolving.dart';
 
 export 'src/lang/system/system.dart';
 export 'src/lang/system/system_detector.dart' hide StandardSystemDetector;

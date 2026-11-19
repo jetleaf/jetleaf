@@ -52,7 +52,7 @@ abstract final class SystemDetector {
 ///
 /// Detection capabilities:
 /// - Compilation mode analysis (debug/profile/release)
-/// - AOT vs JIT runtime detection
+/// - AOT runtime detection
 /// - IDE launch detection via VM service flags
 /// - .dill file execution detection
 /// - Watch mode argument parsing
@@ -77,7 +77,6 @@ final class StandardSystemDetector implements SystemDetector {
     final entrypoint = io.Platform.script.toFilePath();
     final runningFromDill = entrypoint.endsWith('.dill');
     final runningAot = _isRunningAot();
-    final runningJit = !runningAot;
     final launchCommand = _buildLaunchCommand();
     final ideRunning = _isIdeRunning();
     final watchModeEnabled = _isWatchModeEnabled(args);
@@ -86,7 +85,6 @@ final class StandardSystemDetector implements SystemDetector {
       .compilationMode(compilationMode)
       .runningFromDill(runningFromDill)
       .runningAot(runningAot)
-      .runningJit(runningJit)
       .entrypoint(entrypoint)
       .launchCommand(launchCommand)
       .ideRunning(ideRunning)

@@ -22,7 +22,6 @@ import '../scanner/runtime_scanner_summary.dart';
 /// - Registers the produced runtime context into [Runtime]
 ///
 /// This makes it possible to test:
-/// - Reflection and mirror extraction
 /// - Runtime hint resolution
 /// - Type and link declaration generation
 /// - Scanner configuration behaviors
@@ -48,7 +47,7 @@ import '../scanner/runtime_scanner_summary.dart';
 ///
 /// #### `filesToLoad`
 /// A list of absolute or relative file paths that should be **force-loaded**
-/// into the mirror system before scanning.
+/// into the active runtime before scanning.
 ///
 /// This is useful when:
 /// - Testing isolated source files
@@ -122,7 +121,7 @@ import '../scanner/runtime_scanner_summary.dart';
 ///
 /// - Unit tests for runtime scanners
 /// - Integration tests for link generation
-/// - Debugging mirror extraction issues
+/// - Debugging declaration extraction issues
 /// - Validating hint-driven execution paths
 ///
 /// ---

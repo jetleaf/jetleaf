@@ -203,7 +203,7 @@ class SimpleConversionService implements ConfigurableConversionService {
   }
 
   /// Checks if the given type parameters are raw (unparameterized) types.
-  /// This happens when the v2 mirror system returns the superclass type parameters
+  /// This happens when the runtime type system returns the superclass type parameters
   /// instead of the actual type arguments from the concrete parameterized class.
   static bool _isRawTypeParams(Iterable<Class> types) {
     if (types.length < 2) return false;
@@ -259,6 +259,21 @@ class SimpleConversionService implements ConfigurableConversionService {
   @override
   void remove(Class sourceType, Class targetType) {
     _converters.remove(sourceType, targetType);
+    _invalidateCache();
+  }
+
+  /// Captures the converters registered for every pair so far, in queue
+  /// order (most recently registered first). Subclasses use this to snapshot
+  /// their built-in converter sets.
+  Map<ConvertiblePair, List<PairedConverter>> snapshotConverters() {
+    return _converters.snapshotAll();
+  }
+
+  /// Replaces the converters registered for [pair] with [converters],
+  /// preserving their order (most recently registered first). Invalidates
+  /// the converter-lookup cache.
+  void restoreConverters(ConvertiblePair pair, List<PairedConverter> converters) {
+    _converters.restore(pair, converters);
     _invalidateCache();
   }
 
@@ -529,6 +544,8 @@ class _ConverterCacheKey implements Comparable<_ConverterCacheKey> {
 /// {@endtemplate}
 @Generic(_ConvertersForPair)
 class _ConvertersForPair {
+  _ConvertersForPair();
+
   /// A queue of paired converters, maintained in insertion order.
   ///
   /// New converters are added to the front of the queue so that
@@ -571,6 +588,19 @@ class _ConvertersForPair {
     }
 
     return null;
+  }
+
+  /// Captures the queue in order (most recently added first).
+  List<PairedConverter> snapshot() => List<PairedConverter>.unmodifiable(_converters);
+
+  /// Creates a queue containing [converters] in the given order
+  /// (most recently added first).
+  factory _ConvertersForPair.fromConverters(List<PairedConverter> converters) {
+    final pair = _ConvertersForPair();
+    for (final converter in converters.reversed) {
+      pair.add(converter);
+    }
+    return pair;
   }
 
   @override
@@ -642,9 +672,23 @@ class _Converters {
     return _converters.putIfAbsent(pair, () => _ConvertersForPair());
   }
 
-  /// Removes all converters registered for a specific source/target type pair.
+  /// Removes all converters registered for the given source/target type pair.
   void remove(Class sourceType, Class targetType) {
     _converters.remove(ConvertiblePair(sourceType, targetType));
+  }
+
+  /// Captures the converters registered for every pair so far, in queue
+  /// order (most recently registered first).
+  Map<ConvertiblePair, List<PairedConverter>> snapshotAll() {
+    return <ConvertiblePair, List<PairedConverter>>{
+      for (final entry in _converters.entries) entry.key: entry.value.snapshot(),
+    };
+  }
+
+  /// Replaces the converters registered for [pair] with [converters],
+  /// preserving their order (most recently registered first).
+  void restore(ConvertiblePair pair, List<PairedConverter> converters) {
+    _converters[pair] = _ConvertersForPair.fromConverters(converters);
   }
 
   /// Finds a suitable [PairedConverter] to convert from [sourceType] to [targetType].

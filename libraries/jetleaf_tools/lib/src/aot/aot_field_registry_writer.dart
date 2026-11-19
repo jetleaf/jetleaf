@@ -7,10 +7,10 @@ import 'aot_sub_registrar_writer.dart';
 /// 🔍 **Ahead-Of-Time (AOT) Field Accessor Registry Code Generator**
 ///
 /// Generates package-scoped `registry_fields.g.dart` sub-registry part files containing
-/// statically compiled field getter and setter closures registered with `AotRuntimeExecutor.registerFieldGetter`
-/// and `AotRuntimeExecutor.registerFieldSetter`.
+/// statically compiled field getter and setter closures registered via `MaterializedLibrary.registerFieldGetter`
+/// and `MaterializedLibrary.registerFieldSetter`.
 ///
-/// In pure Dart AOT execution (no `dart:mirrors`), classes cannot have their fields read or
+/// When running compiled, classes cannot have their fields read or
 /// written dynamically. [AotFieldRegistryWriter] generates high-performance accessor closures that
 /// safely cast the target instance to its concrete static type:
 /// - Direct getters: `(inst) => (inst as p0.User).email`
@@ -23,21 +23,21 @@ import 'aot_sub_registrar_writer.dart';
 ///
 /// ```dart
 /// // Generated in lib/_jetleaf/my_app/registry_fields.g.dart
-/// part of '../aot_registry.g.dart';
+/// part of '../registry.g.dart';
 ///
 /// void _registerFields_my_app() {
 ///   // Mutable field: getter + setter
-///   AotRuntimeExecutor.registerFieldGetter(
+///   MaterializedLibrary.registerFieldGetter(
 ///     'Account.status',
 ///     (inst) => (inst as p0.Account).status,
 ///   );
-///   AotRuntimeExecutor.registerFieldSetter(
+///   MaterializedLibrary.registerFieldSetter(
 ///     'Account.status',
 ///     (inst, val) => (inst as p0.Account).status = val as dynamic,
 ///   );
 ///
 ///   // Read-only final field: getter only
-///   AotRuntimeExecutor.registerFieldGetter(
+///   MaterializedLibrary.registerFieldGetter(
 ///     'Account.id',
 ///     (inst) => (inst as p0.Account).id,
 ///   );
@@ -93,13 +93,13 @@ final class AotFieldRegistryWriter extends AotSubRegistrarWriter {
 
         if (field.getIsStatic()) {
           lines.add('''
-  AotRuntimeExecutor.registerFieldGetter(
+  MaterializedLibrary.registerFieldGetter(
     '${escapeDartStringLiteral(memberKey)}',
     (inst) => $prefix$cleanClassName.$fieldName,
   );''');
           if (!field.getIsFinal() && !field.getIsConst()) {
             lines.add('''
-  AotRuntimeExecutor.registerFieldSetter(
+  MaterializedLibrary.registerFieldSetter(
     '${escapeDartStringLiteral(memberKey)}',
     (inst, val) => $prefix$cleanClassName.$fieldName = val as dynamic,
   );''');
@@ -108,13 +108,13 @@ final class AotFieldRegistryWriter extends AotSubRegistrarWriter {
         }
 
         lines.add('''
-  AotRuntimeExecutor.registerFieldGetter(
+  MaterializedLibrary.registerFieldGetter(
     '${escapeDartStringLiteral(memberKey)}',
     (inst) => (inst as $prefix$cleanClassName).$fieldName,
   );''');
         if (!field.getIsFinal() && !field.getIsConst()) {
           lines.add('''
-  AotRuntimeExecutor.registerFieldSetter(
+  MaterializedLibrary.registerFieldSetter(
     '${escapeDartStringLiteral(memberKey)}',
     (inst, val) => (inst as $prefix$cleanClassName).$fieldName = val as dynamic,
   );''');
@@ -139,7 +139,7 @@ final class AotFieldRegistryWriter extends AotSubRegistrarWriter {
       packageDir.createSync(recursive: true);
     }
     
-    final file = File('${packageDir.path}/${Constant.AOT_REGISTRY_FIELDS_FILE_NAME}');
+    final file = File('${packageDir.path}/${Constant.REGISTRY_FIELDS_FILE_NAME}');
     await file.writeAsString(buffer.toString());
     return fnName;
   }

@@ -1,9 +1,12 @@
 import 'package:jetleaf_core/convert.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   final service = DefaultConversionService();
 
   group('URI Converters', () {

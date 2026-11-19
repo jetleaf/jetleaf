@@ -2,6 +2,7 @@
 
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../helpers/aot_test_setup.dart';
 // Test annotations
 class SimpleAnnotation {
   final String value;
@@ -177,6 +178,7 @@ class ComprehensiveAnnotationTest {
 
 @JetleafTest()
 void main() async {
+  await ensureTestAotRegistered();
   group('AnnotationDeclaration Basic Properties', () {
     test('should retrieve annotations from class', () {
       final annotatedClass = Runtime.findClass<AnnotatedClass>();
@@ -392,28 +394,30 @@ void main() async {
   group('AnnotationDeclaration Generic Annotations', () {
     test('should handle generic annotations', () {
       final multiClass = Runtime.findClass<MultiAnnotationClass>();
-      
+
       final annotations = multiClass.getAnnotations();
-      
-      final stringAnnotation = annotations.firstWhere((a) => a.getType() == GenericAnnotation<String>);
-      
-      expect(stringAnnotation.getInstance().value, equals('generic value'));
-      
-      final intAnnotation = annotations.firstWhere((a) => a.getType() == GenericAnnotation<int>);
-      
-      expect(intAnnotation.getInstance().value, equals(42));
+
+      // Type arguments are captured in the AOT metadata (`__typeArgument`);
+      // runtime Type specialization is not recoverable through the registry.
+      final stringAnnotation = annotations.firstWhere((a) => a.getUserProvidedValues()['__typeArgument'] == 'String');
+
+      expect(stringAnnotation.getUserProvidedValues()['value'], equals('generic value'));
+
+      final intAnnotation = annotations.firstWhere((a) => a.getUserProvidedValues()['__typeArgument'] == 'int');
+
+      expect(intAnnotation.getUserProvidedValues()['value'], equals(42));
     });
 
     test('should handle generic annotations on fields', () {
       final multiClass = Runtime.findClass<MultiAnnotationClass>();
-      
+
       final fields = multiClass.getFields();
       final itemsField = fields.firstWhere((f) => f.getName() == 'items');
-      
+
       final annotations = itemsField.getAnnotations();
-      final genericAnnotation = annotations.firstWhere((a) => a.getType() == GenericAnnotation<List<String>>);
-      
-      expect(genericAnnotation.getInstance().value, equals(['a', 'b', 'c']));
+      final genericAnnotation = annotations.firstWhere((a) => a.getUserProvidedValues()['__typeArgument'] == 'List<String>');
+
+      expect(genericAnnotation.getUserProvidedValues()['value'], equals(['a', 'b', 'c']));
     });
   });
 

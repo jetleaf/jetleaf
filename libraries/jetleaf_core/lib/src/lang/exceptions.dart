@@ -623,9 +623,9 @@ final class PrivateFieldAccessException extends RuntimeResolverException {
 ///
 /// This typically occurs with:
 /// - Generic type parameters (e.g., `T`, `U`, `E`) that have no concrete type
-/// - Types that cannot be determined through mirrors
+/// - Synthesized fallback declarations whose type metadata is unavailable
 /// - Missing or incomplete [RuntimeHint] registrations
-/// - AOT scenarios where type metadata is erased
+/// - Scenarios where type metadata is erased at runtime
 ///
 /// ### Example:
 /// ```dart
@@ -912,7 +912,7 @@ class ClassNotFoundException extends RuntimeException {
 ///
 /// ## Common Causes
 /// This typically occurs when:
-/// - A `dart:mirrors` type such as `ClassMirror` or `TypeMirror` is used
+/// - A type that cannot be resolved to a concrete runtime class is used
 /// - A generic class is referenced without resolved type arguments
 /// - Generic type information has been erased at runtime
 ///
@@ -922,12 +922,12 @@ class ClassNotFoundException extends RuntimeException {
 /// Jetleaf requires a **concrete, fully-resolved runtime type**
 /// to safely perform reflection, hierarchy analysis, and code generation.
 ///
-/// Mirror-only or erased generic types do not provide sufficient guarantees.
+/// Unresolved or erased generic types do not provide sufficient guarantees.
 ///
 /// ---
 ///
 /// ## How to Fix
-/// - Use a concrete class instead of a mirror-based type
+/// - Use a concrete class instead of an unresolved type
 /// - Annotate generic classes with `@Generic(MyResolvedClass)`
 /// - For Dart core generic types, use the fully qualified concrete type
 ///
@@ -940,14 +940,14 @@ final class ImmaterialClassException extends ClassNotFoundException {
   /// {@macro immaterial_class_exception}
   ImmaterialClassException(super.className) : super(message:
     'Class "$className" cannot be materialized.\n'
-    'This type originates from `dart:mirrors` or has lost generic information.\n\n'
+    'This type has lost its generic or runtime type information.\n\n'
     'Jetleaf requires a concrete, fully-resolved runtime type.\n\n'
     'This typically means:\n'
-    ' • A mirror type such as ClassMirror or TypeMirror was encountered.\n'
+    ' • A type could not be resolved to a concrete class.\n'
     ' • A generic class was used without resolution.\n'
     ' • Generic type arguments were erased at runtime.\n\n'
     'How to fix:\n'
-    ' • Use a concrete class instead of a mirror type.\n'
+    ' • Use a concrete class instead of an unresolved type.\n'
     ' • Annotate generic classes with @Generic(MyResolvedClass).\n'
     ' • For Dart core generic types, use the qualified name of the type.\n',
   );

@@ -1,11 +1,11 @@
 // test_data.dart
-import 'package:jetleaf_core/_jetleaf_test/aot_registry.g.dart';
+import 'package:jetleaf_core/_jetleaf/test/registry.g.dart' show registerTestGeneratedArtifacts;
 
 /// Registers the test-only AOT registry. Call at the start of tests that
 /// rely on annotation materialisation; loading this library alone does not
 /// force initialisation (library-level laziness), but `main()` should
 /// `await ensureTestAotRegistered()` before exercising reflective paths.
-Future<void> ensureTestAotRegistered() => registerJetleafAot();
+Future<void> ensureTestAotRegistered() => registerTestGeneratedArtifacts();
 
 
 // For basic class tests

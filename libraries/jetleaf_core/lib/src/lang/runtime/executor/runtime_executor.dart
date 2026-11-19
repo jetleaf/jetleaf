@@ -29,7 +29,7 @@ import 'package:jetleaf_core/lang.dart';
 /// - **Type safety when possible**: Returns typed results (`T` in `newInstance`)
 ///   while allowing dynamic invocation where needed.
 /// - **Consistency across Dart platforms**: Works on Dart VM, Flutter, or server
-///   environments depending on implementation strategy (reflection, mirrors, or
+///   environments depending on implementation strategy (reflection or
 ///   generated code).
 /// - **Extensibility**: Can be extended to support advanced runtime scenarios,
 ///   such as caching constructors/methods or enforcing runtime constraints.

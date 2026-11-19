@@ -39,7 +39,7 @@ void main() {
         expect(content, isNot(contains('as entry;')));
         // App entries ensure the production runtime.
       expect(content, contains('jl.runScan'));
-      expect(content, contains('show RuntimeBuildMode, RuntimeScannerConfiguration;'));
+      expect(content, contains('package:jetleaf_tools/jetleaf_tools.dart'));
       } finally {
         await dir.delete(recursive: true);
       }
@@ -57,7 +57,7 @@ void main() {
           '${dir.path}/.jetleaf/generated/entries/test__app_test.dart',
         ).readAsString();
       expect(content, contains('jl.runTestScan'));
-      expect(content, contains('show RuntimeBuildMode, RuntimeScannerConfiguration;'));
+      expect(content, contains('package:jetleaf_tools/jetleaf_tools.dart'));
       } finally {
         await dir.delete(recursive: true);
       }

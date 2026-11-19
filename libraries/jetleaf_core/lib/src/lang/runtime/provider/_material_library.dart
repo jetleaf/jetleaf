@@ -30,7 +30,7 @@ final class _UnresolvedClass implements UnresolvedClass {
 /// Pure Dart in-memory implementation of the [MaterialLibrary] interface.
 ///
 /// Manages class declarations, method discovery, and source library metadata
-/// entirely without reflection or `dart:mirrors`.
+/// entirely without reflection or `runtime reflection`.
 /// {@endtemplate}
 abstract final class _MaterialLibrary with EqualsAndHashCode implements MaterialLibrary {
   String _taggedLocation = "$MaterialLibrary";
@@ -276,8 +276,17 @@ abstract final class _MaterialLibrary with EqualsAndHashCode implements Material
   /// (`Map`) so reflection lookups resolve to registered declarations.
   Type _normalizeType(Type type) {
     switch (type.toString().split('<').first) {
+      case '_BigIntImpl':
+        return BigInt;
+      case '_RegExp':
+        return RegExp;
+      case '_SimpleUri':
+        return Uri;
+      case '_StringStackTrace':
+        return StackTrace;
       case '_Map':
       case '_HashMap':
+      case '_InternalLinkedHashMap':
       case 'UnmodifiableMapView':
         return Map;
       case '_Set':
@@ -309,15 +318,144 @@ abstract final class _MaterialLibrary with EqualsAndHashCode implements Material
     }
   }
 
+  /// Whether [name] is a bare simple name — no package, file extension,
+  /// path separator or generic marker. Used to distinguish unqualified
+  /// Dart-SDK names from qualified names that name a particular package.
+  static bool _isSimpleName(String name) {
+    if (name.isEmpty) return false;
+    return !name.contains(':') &&
+        !name.contains('/') &&
+        !name.contains('.') &&
+        !name.contains('<') &&
+        !name.contains('#') &&
+        !name.contains('_');
+  }
+
+  @override
+  bool hasClass(String name, [String? package]) {
+    if (!isPopulated) {
+      _autoWarmFromCache();
+    }
+
+    // Fast path: qualifiedName direct map (name keys are fully qualified).
+    if (_qualifiedNameCache.containsKey(name)) {
+      if (package == null || _qualifiedNameCache[name]!.getLibrary().getPackage().getName() == package) {
+        return true;
+      }
+    }
+
+    // Suffix match for boundary-qualified names.
+    for (final entry in _qualifiedNameCache.entries) {
+      final key = entry.key;
+      if (key == name || key.endsWith('.$name') || key.endsWith('#$name')) {
+        if (package == null || entry.value.getLibrary().getPackage().getName() == package) {
+          return true;
+        }
+      }
+    }
+
+    // Simple-name lookup via the name cache (non-synthetic declarations only).
+    if (_nameCache.containsKey(name)) {
+      final decl = _nameCache[name]!;
+      if (!decl.getIsSynthetic() &&
+          (package == null || decl.getLibrary().getPackage().getName() == package)) {
+        return true;
+      }
+    }
+
+    for (final decl in _nameCache.values) {
+      if (decl.getIsSynthetic()) continue;
+      if (package != null && decl.getLibrary().getPackage().getName() != package) {
+        continue;
+      }
+      if (decl.getName() == name || decl.getQualifiedName() == name || decl.getQualifiedName().endsWith('.$name')) {
+        return true;
+      }
+    }
+
+    // The AOT registry's type table (registered by generated code).
+    if (MaterializedLibrary.hasRegisteredType(name)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /// Private-implementation to public-interface mapping for Dart VM impls.
+  ///
+  /// The VM instantiates built-in generic classes with private implementation
+  /// types (e.g. `_Set<int>`, `_Map<K, V>`, `_InternalLinkedHashMap<K, V>`).
+  /// We can't fabricate `Type Set<int>` at runtime, so the declaration is
+  /// synthesized from the type string with the **public** base name but keeps
+  /// the reified type arguments in its `name` and `qualifiedName`.
+  static const Map<String, String> _privateImplToPublicBase = {
+    '_BigIntImpl': 'BigInt',
+    '_RegExp': 'RegExp',
+    '_RegExpImpl': 'RegExp',
+    '_SimpleUri': 'Uri',
+    '_StringStackTrace': 'StackTrace',
+    '_Map': 'Map',
+    '_HashMap': 'HashMap',
+    '_InternalLinkedHashMap': 'Map',
+    '_UnmodifiableMapView': 'Map',
+    '_Set': 'Set',
+    '_HashSet': 'HashSet',
+    '_InternalLinkedHashSet': 'Set',
+    '_UnmodifiableSetView': 'Set',
+    '_GrowableList': 'List',
+    '_ListBase': 'List',
+    '_UnmodifiableListView': 'List',
+    '_SyncIterable': 'Iterable',
+    '_SynchronousIterable': 'Iterable',
+    '_ControllerStream': 'Stream',
+  };
+
+  /// Synthesizes (or returns cached) a declaration for a private-impl generic
+  /// type like `_Set<int>`, exposing the public base name with the reified
+  /// argument string intact (`Set<int>`). Returns `null` when not applicable.
+  ClassDeclaration? _synthesizePrivateGenericDeclaration(Type type) {
+    final typeString = type.toString();
+    if (!typeString.contains('<')) return null;
+
+    final base = typeString.substring(0, typeString.indexOf('<')).trim();
+    final publicBase = _privateImplToPublicBase[base];
+    if (publicBase == null) return null;
+
+    final normalizedTypeString = '$publicBase${typeString.substring(typeString.indexOf('<'))}';
+
+    if (_nameCache[normalizedTypeString] case final decl?) {
+      return decl;
+    }
+
+    // The synthesized declaration exposes the public raw Type so that
+    // `getType()` compares equal with the public interface (e.g. a decl for
+    // `_Set<int>` has type `Type Set`), keeping pair matching consistent with
+    // declarations scanned from user sources.
+    final publicType = MaterializedLibrary.resolveType(publicBase);
+    final decl = _synthesizeClassDeclaration(publicType, normalizedTypeString);
+    // Keep the generic-qualified name under its own key so later lookups by
+    // the raw impl name still resolve (e.g. `findClassByName('_Set<int>')`).
+    _nameCache[typeString] = decl;
+    return decl;
+  }
+
   @override
   ClassDeclaration findClassByType(Type type, [String? package]) {
+    if (type == Object) {
+      return _typeCache[Object] ?? _synthesizeClassDeclaration(Object, 'Object');
+    }
+
+    // Private-impl generic types must preserve reified type arguments;
+    // synthesize a declaration from the original string BEFORE collapsing to
+    // the raw public Type (e.g. `_Set<int>` → `Set`).
+    final synth = _synthesizePrivateGenericDeclaration(type);
+    if (synth != null) {
+      return synth;
+    }
+
     final normalizedType = _normalizeType(type);
     if (!identical(normalizedType, type)) {
       return findClassByType(normalizedType, package);
-    }
-
-    if (type == Object) {
-      return _typeCache[Object] ?? _synthesizeClassDeclaration(Object, 'Object');
     }
 
     if (_typeCache[type] case final classDeclaration?) {
@@ -332,6 +470,9 @@ abstract final class _MaterialLibrary with EqualsAndHashCode implements Material
     }
 
     final typeString = type.toString();
+    // Generic classes: `Type.toString()` yields `List<int>`, `Map<String, int>`,
+    // `ResolvedClass<dynamic>` etc. — match on the bare base name too.
+    final baseTypeString = typeString.contains('<') ? typeString.split('<').first : typeString;
 
     // 1. Scan qualified name cache for exact type match first
     for (final decl in _qualifiedNameCache.values) {
@@ -347,7 +488,13 @@ abstract final class _MaterialLibrary with EqualsAndHashCode implements Material
       } catch (_) {}
     }
 
-    // 2. Fall back to name match if no exact type matched (exact name first)
+    // 2. Fall back to name match if no exact type matched (exact name first).
+    // A request for a generic type (e.g. `List<String>`) must NOT collapse onto a
+    // raw base-type declaration (e.g. the cached `List` with type `Type List`) —
+    // the declaration would then report `List<dynamic>` as its type and lose the
+    // reified arguments.
+    final requestedGeneric = typeString.contains('<');
+
     for (final decl in _qualifiedNameCache.values) {
       if (package != null && decl.getLibrary().getPackage().getName() != package) {
         continue;
@@ -356,10 +503,21 @@ abstract final class _MaterialLibrary with EqualsAndHashCode implements Material
         _typeCache[type] = decl;
         return decl;
       }
+      if (!requestedGeneric && decl.getName() == baseTypeString) {
+        _typeCache[type] = decl;
+        return decl;
+      }
     }
 
     // Check name cache as fallback
     if (_nameCache[typeString] case final decl?) {
+      if (package == null || decl.getLibrary().getPackage().getName() == package) {
+        _typeCache[type] = decl;
+        return decl;
+      }
+    }
+    if (!requestedGeneric && _nameCache.containsKey(baseTypeString)) {
+      final decl = _nameCache[baseTypeString]!;
       if (package == null || decl.getLibrary().getPackage().getName() == package) {
         _typeCache[type] = decl;
         return decl;
@@ -373,8 +531,17 @@ abstract final class _MaterialLibrary with EqualsAndHashCode implements Material
           _typeCache[type] = decl;
           return decl;
         }
+        if (!requestedGeneric && decl.getName() == baseTypeString) {
+          _typeCache[type] = decl;
+          return decl;
+        }
       }
       if (_nameCache[typeString] case final decl?) {
+        _typeCache[type] = decl;
+        return decl;
+      }
+      if (!requestedGeneric && _nameCache.containsKey(baseTypeString)) {
+        final decl = _nameCache[baseTypeString]!;
         _typeCache[type] = decl;
         return decl;
       }
@@ -388,6 +555,31 @@ abstract final class _MaterialLibrary with EqualsAndHashCode implements Material
     final cacheKey = package != null ? '$package:$name' : name;
     if (_missingNameCache.contains(cacheKey)) {
       throw ImmaterialClassException(name);
+    }
+
+    switch (name) {
+      case 'String' || 'dart:core.String':
+        return _synthesizeClassDeclaration(String, 'String');
+      case 'int' || 'dart:core.int':
+        return _synthesizeClassDeclaration(int, 'int');
+      case 'double' || 'dart:core.double':
+        return _synthesizeClassDeclaration(double, 'double');
+      case 'bool' || 'dart:core.bool':
+        return _synthesizeClassDeclaration(bool, 'bool');
+      case 'num' || 'dart:core.num':
+        return _synthesizeClassDeclaration(num, 'num');
+      case 'Object' || 'dart:core.Object':
+        return _synthesizeClassDeclaration(Object, 'Object');
+      case 'List' || 'dart:core.List':
+        return _synthesizeClassDeclaration(List, 'List');
+      case 'Set' || 'dart:core.Set':
+        return _synthesizeClassDeclaration(Set, 'Set');
+      case 'Map' || 'dart:core.Map':
+        return _synthesizeClassDeclaration(Map, 'Map');
+      case 'Queue' || 'dart:collection.Queue':
+        return _synthesizeClassDeclaration(Queue, 'Queue');
+      case 'Iterable' || 'dart:core.Iterable':
+        return _synthesizeClassDeclaration(Iterable, 'Iterable');
     }
 
     if (_nameCache[name] case final classDeclaration?) {
@@ -427,18 +619,23 @@ abstract final class _MaterialLibrary with EqualsAndHashCode implements Material
       }
     }
 
-    _missingNameCache.add(cacheKey);
-
-    // Synthesize a best-effort declaration instead of hard-failing —
-    // mirrors `findClassByType` for core types such as `String`/`Function`.
-    try {
-      final resolved = StandardDeclaration.resolveType(name);
-      final synth = _synthesizeClassDeclaration(resolved, name);
-      _missingNameCache.remove(cacheKey);
-      return synth;
-    } catch (_) {
-      throw ImmaterialClassException(name);
+    // A class with this simple name is not known to the registry. Synthesize
+    // a best-effort declaration when it is a bare simple name — the AOT
+    // registry emits plain names (e.g. `HttpClient`, `String`) for classes
+    // from un-scannable libraries such as dart:io, and callers matching on
+    // name must keep resolving. Names with a package qualifier or separators
+    // genuinely mean a particular package and are reported missing.
+    if (_isSimpleName(name)) {
+      try {
+        final resolved = MaterializedLibrary.resolveType(name);
+        final synth = _synthesizeClassDeclaration(resolved, name);
+        _nameCache[name] = synth; // do not cache misses into _missingNameCache
+        return synth;
+      } catch (_) {}
     }
+
+    _missingNameCache.add(cacheKey);
+    throw ImmaterialClassException(name);
   }
 
   @override
@@ -489,14 +686,41 @@ abstract final class _MaterialLibrary with EqualsAndHashCode implements Material
         return _synthesizeClassDeclaration(Object, 'Object');
       case 'dynamic' || 'dart:core.dynamic':
         return _synthesizeClassDeclaration(dynamic, 'dynamic');
+      case 'List' || 'dart:core.List':
+        return _synthesizeClassDeclaration(List, 'List');
+      case 'Set' || 'dart:core.Set':
+        return _synthesizeClassDeclaration(Set, 'Set');
+      case 'Map' || 'dart:core.Map':
+        return _synthesizeClassDeclaration(Map, 'Map');
+      case 'Queue' || 'dart:collection.Queue':
+        return _synthesizeClassDeclaration(Queue, 'Queue');
+      case 'Iterable' || 'dart:core.Iterable':
+        return _synthesizeClassDeclaration(Iterable, 'Iterable');
     }
 
-    return _synthesizeClassDeclaration(Object, qualifiedName);
+    // A declaration for this qualified name is not known to the registry.
+    // Synthesize a best-effort declaration for bare simple names — the AOT
+    // registry references classes from un-scannable libraries (e.g. dart:io)
+    // by plain name, and name-based lookups must keep resolving. Qualified
+    // names (containing separators) genuinely name a particular library and
+    // are reported missing so callers probing for existence (e.g.
+    // ClassUtils.isClass) get a correct negative.
+    if (_isSimpleName(qualifiedName)) {
+      try {
+        final resolved = MaterializedLibrary.resolveType(qualifiedName);
+        final synth = _synthesizeClassDeclaration(resolved, qualifiedName);
+        return synth;
+      } catch (_) {}
+    }
+
+    throw ImmaterialClassException(qualifiedName);
   }
 
   @override
   ClassDeclaration obtainClassDeclaration(Object object, [String? package]) {
-    return findClassByType(object.runtimeType, package);
+    // Accept either an instance (use its runtime type) or a bare [Type] token.
+    final type = object is Type ? object : object.runtimeType;
+    return findClassByType(type, package);
   }
 
   @override

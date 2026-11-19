@@ -89,7 +89,6 @@ import 'exceptions.dart';
 ///  • Property: "request.date"
 ///    Message : "must be in the future"
 ///    Invalid : 2023-01-01T00:00:00Z
-///    Source  : FieldMirrorImpl
 /// ```
 ///
 /// ### Design Notes

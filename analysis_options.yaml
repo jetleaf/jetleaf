@@ -23,7 +23,7 @@ analyzer:
   exclude:
     # Machine-generated AOT registries — do not lint or analyze.
     - "**/_jetleaf/**"
-    - "**/_jetleaf_test/**"
+    - "**/_jetleaf/test/**"
 
 # Uncomment the following section to specify additional rules.
 

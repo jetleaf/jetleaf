@@ -8,7 +8,7 @@ import 'runtime_hint.dart';
 /// Jetleaf discovers and instantiates runtime hints during both:
 ///
 /// - **AOT analysis** (via build-time scanning)  
-/// - **JIT / mirror-based reflection** (during runtime hint resolution)  
+/// - **JIT / reflection-based reflection** (during runtime hint resolution)  
 ///
 /// Implementations of this interface are typically lightweight and are used
 /// to *register* a hint type with the Jetleaf resolution system without

@@ -30,7 +30,7 @@ part '_cached_runtime_provider.dart';
 /// #### What This Class Represents
 ///
 /// [SourceLibrary] models a **single Dart library unit** as it exists in source
-/// form. Unlike analyzer `LibraryElement`s or mirror-based representations,
+/// form. Unlike analyzer `LibraryElement`s or reflection-based representations,
 /// this abstraction focuses on the **physical and textual identity** of a
 /// library:
 ///
@@ -399,7 +399,7 @@ abstract final class ClassReference with EqualsAndHashCode implements QualifiedN
 /// #### Role in the Jetleaf Architecture
 ///
 /// [MaterialLibrary] sits **above** low-level abstractions such as
-/// [SourceLibrary] and mirrors, and **below** high-level declaration models:
+/// [SourceLibrary] and reflective libraries, and **below** high-level declaration models:
 ///
 /// ```text
 /// Packages / Files / SDK
@@ -596,6 +596,17 @@ abstract final class MaterialLibrary with EqualsAndHashCode {
   /// print(clazz.getName()); // 'User'
   /// ```
   ClassDeclaration findClassByQualifiedName(String qualifiedName);
+
+  /// Whether a class is known to the materialized registry under [name]
+  /// (either as a simple name or as a fully qualified name), optionally
+  /// restricted to a specific [package].
+  ///
+  /// This is a strict, non-synthesizing probe — unlike [findClassByName]
+  /// and [findClassByQualifiedName], which may synthesize fallback
+  /// declarations for unresolved simple names, this method reports the
+  /// registry as it actually stands. Callers that probe for existence
+  /// (e.g. [ClassUtils.isClass]) must use this instead of the finding APIs.
+  bool hasClass(String name, [String? package]);
 
   /// Obtains a [ClassDeclaration] corresponding to a runtime [object],
   /// optionally restricted to a specific [package].

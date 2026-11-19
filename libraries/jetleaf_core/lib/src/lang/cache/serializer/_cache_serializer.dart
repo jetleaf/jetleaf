@@ -202,7 +202,7 @@ final class _CacheableSerializer extends CacheableSerializer {
     );
   }
 
-  /// Maps a component to its kind tag (mirrors [TypeKind]).
+  /// Maps a component to its kind tag (matches [TypeKind]).
   ///
   /// **Parameters:**
   /// - [decl]: component to classify.
@@ -238,7 +238,7 @@ final class _CacheableSerializer extends CacheableSerializer {
             (_) => StandardEnumFieldDeclaration.deserialize(reader));
         return StandardEnumDeclaration(
           name: name,
-          type: StandardDeclaration.resolveType(typeName),
+          type: MaterializedLibrary.resolveType(typeName),
           isPublic: base.getIsPublic(),
           isSynthetic: base.getIsSynthetic(),
           library: base.getLibrary(),
@@ -262,7 +262,7 @@ final class _CacheableSerializer extends CacheableSerializer {
             (_) => StandardLinkDeclaration.deserialize(reader));
         return StandardMixinDeclaration(
           name: name,
-          type: StandardDeclaration.resolveType(typeName),
+          type: MaterializedLibrary.resolveType(typeName),
           isPublic: base.getIsPublic(),
           isSynthetic: base.getIsSynthetic(),
           library: base.getLibrary(),

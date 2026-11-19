@@ -2,6 +2,7 @@
 
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../helpers/aot_test_setup.dart';
 // Classes with various field types
 class FieldTestClass {
   // Various field modifiers
@@ -103,6 +104,7 @@ class ComplexTypeFieldClass {
 
 @JetleafTest()
 void main() async {
+  await ensureTestAotRegistered();
   group('FieldDeclaration Basic Properties', () {
     test('should correctly identify field modifiers', () {
       final testClass = Runtime.findClassByType(FieldTestClass);

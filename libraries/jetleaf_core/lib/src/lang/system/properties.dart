@@ -52,18 +52,6 @@ abstract interface class SystemProperties {
   /// {@endtemplate}
   bool isRunningAot();
 
-  /// {@template system_environment_running_jit}
-  /// Returns `true` if the application is running with **JIT (Just-in-Time)** compilation.
-  ///
-  /// Example:
-  /// ```dart
-  /// if (env.isRunningJit()) {
-  ///   print('Dynamic JIT runtime');
-  /// }
-  /// ```
-  /// {@endtemplate}
-  bool isRunningJit();
-
   /// {@template system_environment_running_dill}
   /// Returns `true` if the application is running from a precompiled `.dill` file.
   ///

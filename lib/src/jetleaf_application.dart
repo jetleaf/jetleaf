@@ -764,8 +764,17 @@ final class JetleafApplication {
 
     try {
       final aargs = DefaultApplicationArguments(args);
-      _applicationType = _detectApplicationType();
+      _applicationType = _detectApplicationType(aargs);
       context = _applicationContextFactory.create(_applicationType);
+
+      if (!context.supports(_applicationType)) {
+        throw IllegalStateException(
+          'The application context \'${context.getDisplayName()}\' does not support application type '
+          '${_applicationType.getName()}. For web applications, run with `jl run`/`jl dev` or the generated '
+          'registry (`lib/_jetleaf/main.dart`, passing `registerGeneratedArtifacts` to '
+          '`JetleafApplication.run(...)`). Set `-Djetleaf.application.type=none` to boot as a non-web application.',
+        );
+      }
 
       final environment = await _setupEnvironment(aargs, context.getSupportingEnvironment());
 
@@ -984,12 +993,20 @@ final class JetleafApplication {
   ///
   /// Returns the detected [ApplicationType]
   /// {@endtemplate}
-  ApplicationType _detectApplicationType() {
+  ApplicationType _detectApplicationType([ApplicationArguments? args]) {
     if (_isApplicationTypeSet) {
       return _applicationType;
     }
 
-    // 1. We will check from environment
+    // 1. Explicit command-line configuration (takes priority) — the switch is
+    // honoured even without a pre-built environment since the environment is
+    // assembled from the same CLI arguments only after detection.
+    final cliConfig = args?.getOptionValues(JETLEAF_APPLICATION_TYPE);
+    if (cliConfig != null && cliConfig.isNotEmpty && cliConfig.first.isNotEmpty) {
+      return ApplicationType.fromString(cliConfig.first);
+    }
+
+    // 2. We will check from environment
     final envType = _environment?.getProperty(JETLEAF_APPLICATION_TYPE);
     if(envType != null) {
       return ApplicationType.fromString(envType);

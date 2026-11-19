@@ -4,13 +4,13 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import '../meta/executable/executable_argument.dart';
+import '../meta/materialized_library.dart';
 import '../byte/binary_reader.dart';
 import '../byte/binary_builder.dart';
 import '../exceptions.dart';
 import '../helpers/equals_and_hash_code.dart';
 import '../helpers/qualified_name.dart';
 import '../helpers/to_string.dart';
-import '../utils/generic_type_parser.dart';
 import '../runtime/provider/runtime_provider.dart';
 
 part '_declaration.dart';

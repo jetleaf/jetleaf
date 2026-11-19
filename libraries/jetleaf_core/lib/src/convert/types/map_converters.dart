@@ -288,7 +288,11 @@ bool _isMalformedTypeName(String name) {
 /// Returns `true` if [type] is a Map or Map subtype; otherwise, `false`.
 bool _isMapLike(Class type) {
   final t = type.getType();
-  return t == Map ||
+  final typeName = t.toString();
+  return typeName.startsWith('Map') ||
+         typeName.startsWith('HashMap') ||
+         typeName.startsWith('col.HashMap') ||
+         t == Map ||
          t == HashMap ||
          t == col.HashMap ||
          type.isAssignableTo(Class<Map>(null, PackageNames.DART));

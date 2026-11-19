@@ -34,7 +34,7 @@ import '../web_configurer.dart';
 /// HTTP response status codes from annotated methods or classes.
 /// 
 /// Resolves `application/x-www-form-urlencoded` request bodies into form
-/// parameters, mirroring how the multipart resolver handles
+/// parameters, following how the multipart resolver handles
 /// `multipart/form-data`.
 ///
 /// The body is read exactly once and cached; the resulting [IoFormRequest]

@@ -3,9 +3,12 @@ import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
 
 import '_test_models.dart';
+import '../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
 
 @JetleafTest()
-void main() async {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   final service = DefaultConversionService();
 
   group('ConverterRegistry and Custom Converters', () {

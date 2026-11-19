@@ -5,6 +5,8 @@ import 'package:jetleaf_core/src/pod/definition/pod_definition_registry.dart';
 import 'package:jetleaf_core/src/pod/definition/simple_pod_definition_registry.dart';
 import 'package:jetleaf_core/src/pod/exceptions.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
 
 // Mock PodDefinition for testing
 class MockPodDefinition extends PodDefinition {
@@ -17,7 +19,8 @@ class MockPodDefinition extends PodDefinition {
 }
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('SimplePodDefinitionRegistry', () {
     late SimplePodDefinitionRegistry registry;
 

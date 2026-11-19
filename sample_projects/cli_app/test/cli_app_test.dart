@@ -6,14 +6,14 @@ import 'package:cli_app/src/lifecycle/cli_lifecycle.dart';
 import 'package:cli_app/src/runners/app_runner.dart';
 import 'package:cli_app/src/runners/batch_runner.dart';
 import 'package:cli_app/src/exit/cli_exit_code_generator.dart';
-import 'package:cli_app/_jetleaf/aot_registry.g.dart';
+import 'package:cli_app/_jetleaf/main.dart';
 
 void main() {
   group('CliApp Tests', () {
     test('starts context in CLI mode and executes runners in priority order', () async {
       final app = JetleafApplication(CliApp);
       app.setApplicationType(ApplicationType.NONE);
-      app.setAotRegistrar(registerGeneratedAotPods);
+      app.setAotRegistrar(registerGeneratedArtifacts);
 
       final context = await app.create(['--mode=test', '--dry-run', 'sample.txt'], null);
 

@@ -20,9 +20,9 @@ import '../scanner/runtime_scanner_configuration.dart';
 /// - coordinate scanning strategies across isolates  
 /// - emit structured logging through user-provided callbacks  
 ///
-/// The utility does **not** prescribe how files are discovered or consumed;  
-/// instead, it serves as a reusable base for higher-level scanners, analyzers,  
-/// or runtime-mirroring systems that must interpret project structure while  
+/// The utility does **not** prescribe how files are discovered or consumed;
+/// instead, it serves as a reusable base for higher-level scanners and
+/// analyzers that must interpret project structure while
 /// respecting configuration and performance constraints.
 ///
 /// ### Responsibilities
@@ -130,9 +130,9 @@ abstract class AbstractFileUtility {
   ///    If `skipTests` is enabled and the file matches test-path patterns, it is
   ///    skipped *unless* explicitly included in `filesToScan`.
   ///
-  /// 4. **Part files**  
+  /// 4. **Part files**
   ///    Files containing a `part of` directive are skipped because they cannot be
-  ///    loaded independently into the mirror system.
+  ///    loaded independently by the analyzer.
   ///
   /// Returns `true` if the file must be skipped, otherwise `false`.
   bool shouldSkipFile(File file, Uri uri) {
@@ -218,8 +218,7 @@ abstract class AbstractFileUtility {
   ///   searched upwards so workspace setups — where only the workspace root
   ///   holds `.dart_tool/package_config.json` — resolve correctly. Without
   ///   this, `resolveToPackageUri` returns `null` for every file, all loads
-  ///   fall back to `file://` URIs, and `isolate.loadUri` on such files
-  ///   aborts the VM (`mirrors.cc: Non-library from tag handler`).
+  ///   fall back to `file://` URIs, which the analyzer cannot resolve reliably.
   /// - If no configuration file is found, a warning is emitted and
   ///   `packageConfigCache` is set to an empty list.
   /// - If the file exists but cannot be parsed, an error is logged and the
@@ -278,8 +277,8 @@ abstract class AbstractFileUtility {
   /// Returns `true` if the given file contains a `part of` directive, meaning
   /// it is a *part file* and cannot be loaded as a standalone library.
   ///
-  /// Mirrors cannot load part files directly; they must be loaded indirectly via
-  /// their parent library.
+  /// Part files cannot be analyzed as a standalone library; they must be
+  /// reached through their parent library.
   ///
   /// This uses a lightweight regex to avoid full parsing and may return `false`
   /// on unreadable files.

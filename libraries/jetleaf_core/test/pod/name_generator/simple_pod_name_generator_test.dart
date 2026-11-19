@@ -6,6 +6,8 @@ import 'package:jetleaf_core/src/pod/name_generator/simple_pod_name_generator.da
 import 'package:test/test.dart';
 import 'package:jetleaf_core/src/pod/definition/pod_definition.dart';
 import 'package:jetleaf_core/src/pod/definition/pod_definition_registry.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
 
 // Real classes for testing
 class UserService {}
@@ -52,7 +54,8 @@ class MockPodDefinitionRegistry implements PodDefinitionRegistry {
 }
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('SimplePodNameGenerator - generate method', () {
     late SimplePodNameGenerator generator;
     late PodDefinitionRegistry registry;

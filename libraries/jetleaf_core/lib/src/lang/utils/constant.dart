@@ -188,54 +188,65 @@ __/\__     | | ___| |_| | ___  __ _ / _| |  ___| __ __ _ _ __ ___   _____      _
   /// templates, or localization files.
   static const String RESOURCES_DIR_NAME = 'resources';
 
-  /// Active generated-source directory name used by the runtime and builders.
-  ///
-  /// This value is also passed as a runtime marker by the existing CLI and is
-  /// therefore an active part of the Jetleaf build contract, not a migration
-  /// alias. Example: `_jetleaf/`.
+  /// Root directory for all generated Jetleaf source files under the package
+  /// library directory. Example: `_jetleaf/`.
   static const String JETLEAF_GENERATED_DIR_NAME = '_jetleaf';
+
+  /// Generated-source directory name holding the **main** (production)
+  /// registries. Example: `lib/_jetleaf/main/`.
+  static const String MAIN_JETLEAF_GENERATED_DIR_NAME = 'main';
+
+  /// Generated-source directory name holding the **test** AOT registries.
+  ///
+  /// Mirrors [MAIN_JETLEAF_GENERATED_DIR_NAME] but holds the registration
+  /// tables for the **test** AST (production sources plus `test/` classes)
+  /// so that `jl test` / plain `dart test` can load annotation, constructor,
+  /// type and member registrations for classes declared in test files.
+  /// Example: `lib/_jetleaf/test/`.
+  static const String TEST_JETLEAF_GENERATED_DIR_NAME = 'test';
+
+  /// Generated-source directory name holding the AOT interceptable proxies
+  /// for stereotype-annotated components. Example: `lib/_jetleaf/proxies/`.
+  static const String PROXIES_JETLEAF_GENERATED_DIR_NAME = 'proxies';
 
   /// Active generated-source path under the package library directory.
   ///
   /// This is intentionally distinct from [GENERATED_DIRECTORY_NAME], which is
   /// the project-level `.jetleaf/generated` workspace directory. Example:
-  /// `lib/_jetleaf/`.
-  static const String GENERATED_DIR_NAME = "$LIB$JETLEAF_GENERATED_DIR_NAME";
-
-  /// Generated-source directory name for test-only AOT registries.
-  ///
-  /// Mirrors [JETLEAF_GENERATED_DIR_NAME] but holds the registration tables
-  /// for the **test** AST (production sources plus `test/` classes) so that
-  /// `jl test` / plain `dart test` can load annotation, constructor, type and
-  /// member registrations for classes declared in test files. Example:
-  /// `_jetleaf_test/`.
-  static const String TEST_JETLEAF_GENERATED_DIR_NAME = '_jetleaf_test';
+  /// `lib/_jetleaf/main/`.
+  static const String GENERATED_DIR_NAME = "$LIB$JETLEAF_GENERATED_DIR_NAME/$MAIN_JETLEAF_GENERATED_DIR_NAME";
 
   /// Generated test-source path under the package library directory.
   ///
-  /// Example: `lib/_jetleaf_test/`.
-  static const String TEST_GENERATED_DIR_NAME = "$LIB$TEST_JETLEAF_GENERATED_DIR_NAME";
+  /// Example: `lib/_jetleaf/test/`.
+  static const String TEST_GENERATED_DIR_NAME = "$LIB$JETLEAF_GENERATED_DIR_NAME/$TEST_JETLEAF_GENERATED_DIR_NAME";
 
-  /// File name of the master generated AOT registry library under [GENERATED_DIR_NAME].
-  static const String AOT_REGISTRY_FILE_NAME = 'aot_registry.g.dart';
+  /// Generated proxies path under the package library directory.
+  ///
+  /// Example: `lib/_jetleaf/proxies/`.
+  static const String PROXIES_GENERATED_DIR_NAME = "$LIB$JETLEAF_GENERATED_DIR_NAME/$PROXIES_JETLEAF_GENERATED_DIR_NAME";
 
-  /// File name of the per-package AOT pod definitions registry part file.
-  static const String AOT_REGISTRY_PODS_FILE_NAME = 'registry_pods.g.dart';
+  /// File name of the master generated registry library under [GENERATED_DIR_NAME]
+  /// and [TEST_GENERATED_DIR_NAME].
+  static const String REGISTRY_FILE_NAME = 'registry.g.dart';
 
-  /// File name of the per-package AOT runtime types registry part file.
-  static const String AOT_REGISTRY_TYPES_FILE_NAME = 'registry_types.g.dart';
+  /// File name of the per-package pod definitions registry part file.
+  static const String REGISTRY_PODS_FILE_NAME = 'registry_pods.g.dart';
 
-  /// File name of the per-package AOT constructors registry part file.
-  static const String AOT_REGISTRY_CONSTRUCTORS_FILE_NAME = 'registry_constructors.g.dart';
+  /// File name of the per-package runtime types registry part file.
+  static const String REGISTRY_TYPES_FILE_NAME = 'registry_types.g.dart';
 
-  /// File name of the per-package AOT methods registry part file.
-  static const String AOT_REGISTRY_METHODS_FILE_NAME = 'registry_methods.g.dart';
+  /// File name of the per-package constructors registry part file.
+  static const String REGISTRY_CONSTRUCTORS_FILE_NAME = 'registry_constructors.g.dart';
 
-  /// File name of the per-package AOT fields registry part file.
-  static const String AOT_REGISTRY_FIELDS_FILE_NAME = 'registry_fields.g.dart';
+  /// File name of the per-package methods registry part file.
+  static const String REGISTRY_METHODS_FILE_NAME = 'registry_methods.g.dart';
 
-  /// File name of the AOT annotations registry part file.
-  static const String AOT_REGISTRY_ANNOTATIONS_FILE_NAME = 'registry_annotations.g.dart';
+  /// File name of the per-package fields registry part file.
+  static const String REGISTRY_FIELDS_FILE_NAME = 'registry_fields.g.dart';
+
+  /// File name of the annotations registry part file.
+  static const String REGISTRY_ANNOTATIONS_FILE_NAME = 'registry_annotations.g.dart';
 
   /// Base library directory for Dart source files.
   ///

@@ -14,9 +14,9 @@ import '../protection_domain/protection_domain.dart';
 /// implicitly extends `Object`, making this the universal supertype for all
 /// non-nullable reference types.
 ///
-/// The underlying mirror is `null` because `Object` is a built-in type that
-/// does not require explicit class loading. It is registered under the
-/// Dart core package namespace.
+/// The class reference carries no declaration payload because `Object` is a
+/// built-in type that does not require explicit class loading. It is
+/// registered under the Dart core package namespace.
 ///
 /// Typically used in:
 /// - Type hierarchy resolution
@@ -31,7 +31,7 @@ final Class<Object> OBJECT_CLASS = Class<Object>(null, PackageNames.DART);
 /// type.  
 ///
 /// Since `dynamic` does not correspond to an actual class at runtime,
-/// this instance uses a `null` underlying mirror and is registered under the
+/// this instance carries no declaration payload and is registered under the
 /// build-system package namespace.
 ///
 /// Typically used in:
@@ -58,8 +58,8 @@ final Class<Dynamic> DYNAMIC_CLASS = Class<Dynamic>(null, PackageNames.BUILD);
 /// Future<void> bar() async {}
 /// ```
 ///
-/// Like [DYNAMIC_CLASS], the underlying mirror is `null` because `void` is
-/// not an instantiable runtime type.
+/// Like [DYNAMIC_CLASS], this instance carries no declaration payload
+/// because `void` is not an instantiable runtime type.
 final Class<Void> VOID_CLASS = Class<Void>(null, PackageNames.BUILD);
 
 /// {@template class_type}

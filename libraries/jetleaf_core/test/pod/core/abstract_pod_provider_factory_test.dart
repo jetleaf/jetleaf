@@ -5,6 +5,8 @@ import 'package:jetleaf_core/src/pod/core/abstract_pod_provider_factory.dart';
 import 'package:jetleaf_core/src/pod/helpers/object.dart';
 import 'package:jetleaf_core/src/pod/helpers/nullable_pod.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
 
 class _DummyProvider implements PodProvider<String> {
   final ObjectHolder<String>? _result;
@@ -37,7 +39,8 @@ class _TestProviderFactory extends AbstractPodProviderFactory {
 }
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('AbstractPodProviderFactory', () {
     test('returns object from non-singleton provider', () async {
       final factory = _TestProviderFactory();

@@ -1,21 +1,23 @@
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import '../../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+
 
 // Test interfaces and base classes
-abstract class Cache {
+abstract class AssignableCache {
   void put(String key, Object value);
   Object? get(String key);
 }
 
-abstract class Repository<T> {
+abstract class AssignableRepository<T> {
   Future<T?> findById(String id);
 }
 
-abstract class Service {}
+abstract class AssignableService {}
 
 // Test implementations
-final class MemoryCache implements Cache {
+final class AssignableMemoryCache implements AssignableCache {
   @override
   void put(String key, Object value) {}
   
@@ -23,21 +25,22 @@ final class MemoryCache implements Cache {
   Object? get(String key) => null;
 }
 
-final class UserRepository implements Repository<String> {
+final class AssignableUserRepository implements AssignableRepository<String> {
   @override
   Future<String?> findById(String id) async => null;
 }
 
-final class UserService implements Service {}
+final class AssignableUserService implements AssignableService {}
 
 final class PlainClass {}
 
 @JetleafTest()
-void main() {
+Future<void> main() async {
+  await ensureTestAotRegistered();
   group('AssignableTypeFilter', () {
     test('should match class implementing target interface', () {
-      final filter = AssignableTypeFilter(Class<Cache>());
-      final memoryCacheClass = Class<MemoryCache>();
+      final filter = AssignableTypeFilter(Class<AssignableCache>());
+      final memoryCacheClass = Class<AssignableMemoryCache>();
       final plainClass = Class<PlainClass>();
 
       expect(filter.matches(memoryCacheClass), isTrue);
@@ -45,8 +48,8 @@ void main() {
     });
 
     test('should match class implementing generic interface', () {
-      final filter = AssignableTypeFilter(Class<Repository>());
-      final repoClass = Class<UserRepository>();
+      final filter = AssignableTypeFilter(Class<AssignableRepository>());
+      final repoClass = Class<AssignableUserRepository>();
       final plainClass = Class<PlainClass>();
 
       expect(filter.matches(repoClass), isTrue);
@@ -54,9 +57,9 @@ void main() {
     });
 
     test('should match class implementing Service', () {
-      final filter = AssignableTypeFilter(Class<Service>());
-      final serviceClass = Class<UserService>();
-      final cacheClass = Class<MemoryCache>();
+      final filter = AssignableTypeFilter(Class<AssignableService>());
+      final serviceClass = Class<AssignableUserService>();
+      final cacheClass = Class<AssignableMemoryCache>();
 
       expect(filter.matches(serviceClass), isTrue);
       expect(filter.matches(cacheClass), isFalse);
@@ -70,9 +73,9 @@ void main() {
     });
 
     test('should not match unrelated classes', () {
-      final filter = AssignableTypeFilter(Class<Cache>());
-      final serviceClass = Class<UserService>();
-      final repoClass = Class<UserRepository>();
+      final filter = AssignableTypeFilter(Class<AssignableCache>());
+      final serviceClass = Class<AssignableUserService>();
+      final repoClass = Class<AssignableUserRepository>();
 
       expect(filter.matches(serviceClass), isFalse);
       expect(filter.matches(repoClass), isFalse);

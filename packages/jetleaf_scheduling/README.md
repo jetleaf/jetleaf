@@ -390,10 +390,8 @@ class HealthCheckService {
 
 ## 📦 Dependencies
 
-- **`jetleaf_lang`** — Language utilities
-- **`jetleaf_logging`** — Structured logging
-- **`jetleaf_pod`** — Pod lifecycle
 - **`jetleaf_core`** — Core framework
+- **`meta`** — Annotations
 
 ## 📄 License
 
@@ -402,7 +400,7 @@ This package is part of the Jetleaf Framework. See LICENSE in the root directory
 ## 🔗 Related Packages
 
 - **`jetleaf_core`** — Framework integration
-- **`jetleaf_logging`** — Task logging
+- **`jetson`** — Type conversion
 
 ## 📞 Support
 

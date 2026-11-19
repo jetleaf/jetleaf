@@ -3,14 +3,14 @@ import 'package:jetleaf/jetleaf.dart';
 import 'package:resource_app/resource_app.dart';
 import 'package:resource_app/src/services/resource_service.dart';
 import 'package:resource_app/src/runners/resource_verification_runner.dart';
-import 'package:resource_app/_jetleaf/aot_registry.g.dart';
+import 'package:resource_app/_jetleaf/main.dart';
 
 void main() {
   group('ResourceApp Tests', () {
     test('loads default profile configuration and assets', () async {
       final app = JetleafApplication(ResourceApp);
       app.setApplicationType(ApplicationType.NONE);
-      app.setAotRegistrar(registerGeneratedAotPods);
+      app.setAotRegistrar(registerGeneratedArtifacts);
 
       final context = await app.create([], null);
       expect(context, isNotNull);
@@ -32,7 +32,7 @@ void main() {
     test('loads dev profile with property overrides', () async {
       final app = JetleafApplication(ResourceApp);
       app.setApplicationType(ApplicationType.NONE);
-      app.setAotRegistrar(registerGeneratedAotPods);
+      app.setAotRegistrar(registerGeneratedArtifacts);
 
       final context = await app.create(['--jetleaf.profiles.active=dev'], null);
       expect(context, isNotNull);
@@ -50,7 +50,7 @@ void main() {
     test('loads prod profile with property overrides', () async {
       final app = JetleafApplication(ResourceApp);
       app.setApplicationType(ApplicationType.NONE);
-      app.setAotRegistrar(registerGeneratedAotPods);
+      app.setAotRegistrar(registerGeneratedArtifacts);
 
       final context = await app.create(['--jetleaf.profiles.active=prod'], null);
       expect(context, isNotNull);

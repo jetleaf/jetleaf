@@ -17,7 +17,7 @@
 /// ├─────────────────────┼──────────────────────┼───────────────────────────┤
 /// │ • jl dev (Watch/VM) │ • DeclarationBuilder │ • AotRuntimeExecutor      │
 /// │ • jl build (Kernel) │ • FileDiscovery      │ • RuntimeManifest         │
-/// │ • Resident Compiler │ • BinaryBuilder/Cache│ • Zero-Mirrors Execution  │
+/// │ • Resident Compiler │ • BinaryBuilder/Cache│ • Zero-Reflection Execution │
 /// └─────────────────────┴──────────────────────┴───────────────────────────┘
 /// ```
 ///
@@ -35,7 +35,7 @@
 /// - `ClassDeclaration`, `MethodDeclaration`, `FieldDeclaration`, `ConstructorDeclaration`.
 ///
 /// ### ⚡ AOT Runtime Execution
-/// - [AotRuntimeExecutor] — mirrorless invocation engine dispatching calls via registered function pointers.
+/// - [AotRuntimeExecutor] — reflection-free invocation engine dispatching calls via registered function pointers.
 /// - [RuntimeManifest] — build verification manifest tracking compiled components and fingerprints.
 ///
 /// ### 💾 Binary Cache & Paths
@@ -55,19 +55,19 @@
 ///
 /// void main() {
 ///   // 1. Register AOT constructor
-///   AotRuntimeExecutor.registerNamedConstructor('GreeterService', ([args]) {
+///   MaterializedLibrary.registerNamedConstructor('GreeterService', ([args]) {
 ///     return GreeterService();
 ///   });
 ///
 ///   // 2. Register AOT method invoker
-///   AotRuntimeExecutor.registerMethod('GreeterService.greet', (inst, args) {
+///   MaterializedLibrary.registerMethod('GreeterService.greet', (inst, args) {
 ///     final greeter = inst as GreeterService;
 ///     final name = args.getPositionalArguments()[0] as String;
 ///     return greeter.greet(name);
 ///   });
 ///
 ///   // 3. Dispatch instantiation and method execution with zero reflection
-///   final instance = AotRuntimeExecutor.constructByName('GreeterService');
+///   final instance = MaterializedLibrary.constructByName('GreeterService');
 ///   final executor = AotRuntimeExecutor(DefaultRuntimeHintDescriptor());
 ///   final message = executor.invokeMethod(
 ///     instance,

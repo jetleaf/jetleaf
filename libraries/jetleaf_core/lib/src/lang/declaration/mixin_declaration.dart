@@ -253,7 +253,7 @@ final class StandardMixinDeclaration extends StandardClassDeclaration implements
     
     return StandardMixinDeclaration(
       name: name,
-      type: StandardDeclaration.resolveType(typeName),
+      type: MaterializedLibrary.resolveType(typeName),
       isPublic: isPublic,
       isSynthetic: isSynthetic,
       library: StandardLibraryDeclaration.empty(),

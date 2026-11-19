@@ -14,8 +14,7 @@
 
 import 'dart:io';
 
-import 'package:analyzer/dart/analysis/utilities.dart'
-    show parseString;
+import 'package:analyzer/dart/analysis/utilities.dart' show parseString;
 import 'package:analyzer/dart/ast/ast.dart' as ast;
 import 'package:path/path.dart' as p;
 
@@ -53,22 +52,26 @@ const Set<String> _boringMembers = {
 /// Emits `$$JLInterfaced$$…` proxies for stereotype-annotated component
 /// classes in the **root package** of the project.
 ///
-/// The emitted files land in `<projectRoot>/lib/_proxies/` mirroring the
-/// lib-relative layout of their origin (e.g. `lib/service/user_service.dart`
-/// → `lib/_proxies/service/user_service.proxy.dart`). Every call starts by
+/// The emitted files land in `<projectRoot>/lib/_jetleaf/proxies/` matching
+/// the lib-relative layout of their origin (e.g. `lib/service/user_service.dart`
+/// → `lib/_jetleaf/proxies/service/user_service.proxy.dart`). Every call starts by
 /// purging the proxy directory, so generated proxies always reflect the
 /// current sources exactly.
 ///
 /// ## Correctness rules
 ///
-/// * Proxies must implement every instance member they publicly inherit.
+/// * Proxies must implement every instance member they publicly inherit —
+///   any class whose supertype declares public members the class does not
+///   re-declare is skipped with a warning, because the generated proxy cannot
+///   re-implement those members safely (their signatures may live outside
+///   the scanned sources).
 /// * Final/sealed/mixin classes cannot be implemented outside their library,
 ///   so they are skipped.
-/// * Any inherited members that must be re-implemented but belong to an
-///   unresolvable supertype are skipped with a warning — never emitted as a
+/// * Supertypes that cannot be resolved from the scanned sources (e.g. from
+///   an unscanned dependency) are skipped with a warning — never emitted as a
 ///   broken class.
 ///
-/// The generated classes mirror the legacy build_runner proxies: a delegate
+/// The generated classes follow the same shape as the interceptor proxies: a delegate
 /// wrapped in an [Interceptable], forwarding everything straight through.
 final class AotProxyWriter extends AotSubRegistrarWriter {
   const AotProxyWriter();
@@ -80,7 +83,7 @@ final class AotProxyWriter extends AotSubRegistrarWriter {
     required void Function(String) log,
     required List<ClassDeclaration> components,
   }) async {
-    final proxyDir = Directory(p.join(projectRoot.path, 'lib', '_proxies'));
+    final proxyDir = Directory(p.join(projectRoot.path, Constant.PROXIES_GENERATED_DIR_NAME));
 
     // Purge stale proxies — regenerate deterministically from sources.
     if (await proxyDir.exists()) {
@@ -102,13 +105,14 @@ final class AotProxyWriter extends AotSubRegistrarWriter {
     }
 
     var written = 0;
+    final scanRoots = resolveComponentScanRoots(components);
     await for (final entity in libDir.list(recursive: true, followLinks: false)) {
       if (entity is! File) continue;
       if (!entity.path.endsWith('.dart')) continue;
       final relPath = p.relative(entity.path, from: libDir.path);
-      if (relPath.startsWith('_proxies${p.separator}')) continue;
-      if (relPath.startsWith('_jetleaf${p.separator}') ||
-          relPath.startsWith('_jetleaf_test${p.separator}')) {
+      if (relPath.startsWith('_jetleaf${p.separator}proxies${p.separator}') ||
+          relPath.startsWith('_jetleaf${p.separator}main${p.separator}') ||
+          relPath.startsWith('_jetleaf${p.separator}test${p.separator}')) {
         continue;
       }
       if (relPath.endsWith('.g.dart') || relPath.endsWith('.freezed.dart')) {
@@ -126,6 +130,13 @@ final class AotProxyWriter extends AotSubRegistrarWriter {
         if (decl is! ast.ClassDeclaration) continue;
 
         if (!_hasProxyStereotype(decl)) continue;
+
+        // Component scan roots: only proxy classes in the declared packages.
+        if (scanRoots != null) {
+          final qualifiedName = 'package:$packageName/$relPath.${decl.namePart.typeName.lexeme}';
+          final component = byQn[qualifiedName];
+          if (component != null && !isComponentScanned(component, scanRoots)) continue;
+        }
 
         final skip = _proxyDecision(
           decl: decl,
@@ -317,7 +328,7 @@ final class AotProxyWriter extends AotSubRegistrarWriter {
     return null;
   }
 
-  /// Mirror of the legacy generator's `_hasInterceptableMixinOrSuper` —
+  /// Equivalent of the legacy generator's `_hasInterceptableMixinOrSuper` —
   /// classes that already mix in or implement [Interceptable] do not need a
   /// `$$JLInterfaced$$` wrapper. Checked on the raw clause sources, so it
   /// works even when the mixin lives in an external package.
@@ -334,7 +345,7 @@ final class AotProxyWriter extends AotSubRegistrarWriter {
 
   /// Rewrites a single import directive's URI, re-anchoring lib-relative
   /// references against the origin file's lib-relative directory so the copied
-  /// import resolves from lib/_proxies/....
+  /// import resolves from lib/_jetleaf/proxies/....
   String _rebuildImport(ast.ImportDirective directive, String packageName, String originDir) {
     final source = directive.toSource();
     final uriString = directive.uri;
@@ -451,7 +462,7 @@ final class AotProxyWriter extends AotSubRegistrarWriter {
   }
 
   /// Name of the static accessor the legacy generator emits for the proxied type.
-  /// Mirrors `Constant.STATIC_REAL_CLASS_METHOD_NAME == 'getRealClass'` without
+  /// Matches `Constant.STATIC_REAL_CLASS_METHOD_NAME == 'getRealClass'` without
   /// forcing a dependency on the constant's compilation semantics in this file.
   String CONST_GetRealClass() => 'getRealClass';
 

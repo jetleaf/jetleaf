@@ -79,7 +79,6 @@ class _System implements SystemProperties {
   bool isRunningFromDill() => _properties.isRunningFromDill();
 
   @override
-  bool isRunningJit() => _properties.isRunningJit();
 
   @override
   bool isWatchModeEnabled() => _properties.isWatchModeEnabled();

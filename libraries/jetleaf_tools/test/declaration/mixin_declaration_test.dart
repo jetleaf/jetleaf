@@ -1,5 +1,6 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../helpers/aot_test_setup.dart';
 // Base classes for mixin constraints
 abstract class BaseModel {
   String get id;
@@ -150,6 +151,7 @@ mixin ComparableMixin<T extends Comparable<T>> {
 
 @JetleafTest()
 void main() async {
+  await ensureTestAotRegistered();
   group('MixinDeclaration Basic Properties', () {
     test('should identify TimestampMixin in runtime', () {
       final mixinClass = Runtime.findClassByName('TimestampMixin');

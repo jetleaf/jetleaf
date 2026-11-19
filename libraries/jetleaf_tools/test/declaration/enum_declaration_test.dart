@@ -2,6 +2,7 @@
 
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../helpers/aot_test_setup.dart';
 // Simple enum
 enum SimpleEnum {
   @Author("Eve")
@@ -209,6 +210,7 @@ List<Priority> filterHighPriorities(List<Priority> priorities) {
 
 @JetleafTest()
 void main() async {
+  await ensureTestAotRegistered();
   group('EnumDeclaration Basic Properties', () {
     test('should identify enum type kind', () {
       final simpleEnum = Runtime.findClass<SimpleEnum>();
@@ -309,7 +311,7 @@ void main() async {
       
       final fields = colorEnum.getFields();
       print(fields.map((f) => f.getName()));
-      expect(fields.length, equals(3)); // hexCode and displayName fields with values field from enum design
+      expect(fields.length, equals(2)); // hexCode and displayName (enum values live on getValues(), not on getFields())
       expect(fields.any((f) => f.getName() == 'hexCode'), isTrue);
       expect(fields.any((f) => f.getName() == 'displayName'), isTrue);
     });
@@ -475,7 +477,7 @@ void main() async {
     });
 
     test('should distinguish between enum values and class fields', () {
-      final colorEnum = Runtime.obtainClassDeclaration(Color);
+      final colorEnum = Runtime.obtainClassDeclaration(Color.red);
       final enumDecl = colorEnum as EnumDeclaration;
       
       expect(enumDecl, isNotNull);
@@ -487,7 +489,7 @@ void main() async {
       
       // FieldDeclaration for class fields
       final classFields = colorEnum.getFields();
-      expect(classFields.length, equals(3));
+      expect(classFields.length, equals(2));
       expect(classFields.any((f) => f.getName() == 'hexCode'), isTrue);
       expect(classFields.any((f) => f.getName() == 'displayName'), isTrue);
       

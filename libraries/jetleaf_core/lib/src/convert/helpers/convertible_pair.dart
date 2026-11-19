@@ -42,14 +42,29 @@ final class ConvertiblePair {
   @override
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
+    // Type equality, not instance equality: `Class<Object>(List-decl)` and
+    // `Class<List>()` denote the same registered type (`Type List`) and must
+    // resolve to the same converters. Parameterised instantiations (e.g.
+    // `List<int>`) resolve to the same raw-declaration pair as the raw form
+    // (`List`) — the reified element/key arguments are not part of converter
+    // selection semantics (the registered converters are driven from the
+    // reified arguments via `componentType()`).
     return other is ConvertiblePair &&
-        runtimeType == other.runtimeType &&
-        sourceType.getType() == other.sourceType.getType() &&
-        targetType.getType() == other.targetType.getType();
+        _typeBaseName(sourceType) == _typeBaseName(other.sourceType) &&
+        _typeBaseName(targetType) == _typeBaseName(other.targetType);
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, sourceType.getType(), targetType.getType());
+  int get hashCode => Object.hash(_typeBaseName(sourceType), _typeBaseName(targetType));
+
+  /// Strips generic instantiations, mapping everything with the same
+  /// non-parameterized root (`List<int>` → `List`, `Map<String, int>` → `Map`)
+  /// to the same comparison key.
+  static String _typeBaseName(Class type) {
+    final name = type.getType().toString();
+    final open = name.indexOf('<');
+    return open == -1 ? name : name.substring(0, open);
+  }
 
   @override
   String toString() => 'Pair[(${sourceType.getName()}:${sourceType.getType()}) -> (${targetType.getName()}:${targetType.getType()})]';
