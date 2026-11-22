@@ -47,7 +47,8 @@ import 'package:jetleaf/jetleaf.dart';
 * **🔄 Comprehensive Lifecycle Processors** — Standardized lifecycle execution phases: `@PostConstruct`, `@PreDestroy`, `@OnApplicationStarting`, and `@OnApplicationReady`.
 * **💻 Universal Application Profiles** — Built-in execution profiles for web servers (`ApplicationType.WEB`) and command-line utilities / batch runners (`ApplicationType.NONE`).
 * **📡 Decoupled Application Events** — Synchronous and asynchronous event dispatching with `@EventListener` and `ApplicationEvent` publishers.
-* **🛠️ Native Tooling (`jetleaf_tools`)** — High-performance resident compiler CLI (`jl build`, `jl dev`) offering file watching, fast reloads, and automatic registry synthesis.
+* **🔥 Hot Reload & Hot Restart** — Sub-second VM-service Hot Reload (`HotReloadDelta`, `RefreshablePod`, `ReloadAwarePodProcessor`, `@RefreshScope`, `HotReloadEvent`) and clean Hot Restart (`HotRestartEvent`) preserving active HTTP sockets and database connection pools during development.
+* **🛠️ Native Tooling (`jetleaf_tools`)** — Direct `dart run` / IDE Run & Debug support via `ensureDevelopmentRuntime`, plus the resident compiler CLI (`jl build`, `jl dev`, `jl run`, `jl test`) offering file watching, fast reloads, and automatic registry synthesis.
 
 ---
 
@@ -325,6 +326,7 @@ Jetleaf provides a modular suite of official extensions:
 |:---|:---:|:---|
 | [`jetleaf_core`](https://pub.dev/packages/jetleaf_core) | `^2.1.0` | Unified runtime engine: IoC, environments, properties, logging, and type conversions. |
 | [`jetleaf_tools`](https://pub.dev/packages/jetleaf_tools) | `^1.1.0` | Developer tooling CLI (`jl`), static AST scanner, resident compiler daemon, and AOT generator. |
+| [`jetleaf_data`](https://pub.dev/packages/jetleaf_data) | `^2.1.0` | Enterprise persistence layer: repositories, query derivation, PostgreSQL/MySQL/SQLite/MongoDB dialects, migrations, and auto-DDL. |
 | [`jetleaf_web`](https://pub.dev/packages/jetleaf_web) | `^2.1.0` | High-throughput HTTP server, REST controllers, route mapping, and middleware pipeline. |
 | [`jetleaf_resource`](https://pub.dev/packages/jetleaf_resource) | `^2.1.0` | Multi-source resource loading (`file:`, `classpath:`, `asset:`), caching, and profile assets. |
 | [`jetleaf_scheduling`](https://pub.dev/packages/jetleaf_scheduling) | `^2.1.0` | Cron, fixed-rate, and delayed background task scheduling with `@Scheduled`. |

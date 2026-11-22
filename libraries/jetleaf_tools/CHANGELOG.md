@@ -2,6 +2,8 @@
 
 ### Added & Improvements
 
+- **Hot Reload & AOT Re-binding**: `AotRegistrarWriter` now emits `force` parameter support on `registerGeneratedArtifacts` / `_initRuntime` plus `reloadGeneratedArtifacts(...)` / `reloadTestGeneratedArtifacts(...)`, and `JetleafVM` invokes `HotReloadCoordinator.notifyReload(...)` after `vmService.reloadSources(...)`.
+
 - **Development runtime bootstrap (`ensureDevelopmentRuntime`)**: Enables direct `dart run` and IDE Run & Debug workflows by automatically scanning and preparing runtime artifacts when needed.
 - **Test AOT partitioning**: `AotRegistrarWriter` and `TestCommand` partition main and test AOT artifacts cleanly across `aot_pod_registry_writer.dart`, `aot_proxy_writer.dart`, `aot_sub_registrar_writer.dart`, `aot_type_registry_writer.dart`, `build_command.dart`, and `entry_commands.dart`.
 - **Pub Workspace support**: `jl dev`, `jl run`, `jl test`, `jl build`, `jl status` and `jl stop` now fan out to pub-workspace members when invoked at a workspace root (`pubspec.yaml` with a top-level `workspace:` list). Running inside a member directory is unchanged. Workspace member detection walks the root's `pubspec.yaml` and each member's `resolution: workspace` flag.

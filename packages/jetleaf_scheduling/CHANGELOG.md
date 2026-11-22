@@ -1,5 +1,9 @@
 ## [2.1.0]
 
+### Added
+
+- **Hot Reload Task Rescheduling**: `SchedulingAnnotationPodProcessor` now implements `ReloadAwarePodProcessor` to cancel old timers and re-scan `@Scheduled` / `@Cron` / `@Periodic` annotations on modified pods during Hot Reload.
+
 ### Fixed
 
 - **Task holder cleanup**: `SchedulingAnnotationPodProcessor` now clears `_unregisteredTaskHolders` after registration to prevent stale task holder retention.

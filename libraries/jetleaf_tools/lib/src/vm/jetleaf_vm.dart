@@ -1547,6 +1547,20 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
               pause: false,
               rootLibUri: rootLibUri,
             );
+            try {
+              final isolate = await service.getIsolate(id);
+              final rootLibId = isolate.rootLib?.id;
+              if (rootLibId != null) {
+                final uriLiterals = uris.map((u) => "'${u.toString().replaceAll("'", "\\'")}'").join(', ');
+                await service.evaluate(
+                  id,
+                  rootLibId,
+                  'HotReloadCoordinator.notifyReload([$uriLiterals])',
+                ).timeout(const Duration(seconds: 10));
+              }
+            } catch (_) {
+              // Best-effort: isolate may not import HotReloadCoordinator directly.
+            }
           }
           reloaded.add(_vmIdentity(entry.key, live));
         } catch (e) {

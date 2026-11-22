@@ -2,6 +2,8 @@
 
 ### Added
 
+- **Hot Reload Route Refresh**: `AbstractAnnotatedHandlerMapping` now implements `RefreshablePod` to re-register modified `@Controller` / `@RestController` / `@ControllerAdvice` routes on Hot Reload with zero socket downtime.
+
 - **Component-scan scope**: `AbstractAnnotatedHandlerMapping` now honours `@ComponentScan` — controllers whose package is not in the declared `basePackages` / `basePackageClasses` are not mapped, mirroring the scan semantics of the annotation processor.
 - **`jetleaf.jetson.naming-strategy`**: New environment property selecting the global Jetson mapper naming strategy. Supported: `snake-case` (default), `kebab-case`, `camel-case` / `none` / `identity` (no transformation). Unknown values throw `IllegalArgumentException` with the supported list.
 - **`test_helpers.dart`**: Shared test bootstrapper calling `ensureTestAotRegistered()` for warm-test-VM registrar loading.

@@ -1,5 +1,6 @@
 import 'package:jetleaf_core/lang.dart';
 
+import '../../core/context/hot_reload.dart';
 import '../helpers/object.dart';
 
 /// {@template PodProcessor}
@@ -43,6 +44,38 @@ import '../helpers/object.dart';
 /// - Test processors with various pod types and scenarios
 /// {@endtemplate}
 abstract interface class PodProcessor {}
+
+/// {@template ReloadAwarePodProcessor}
+/// [PodProcessor] extension for processors that re-bind or refresh pod state
+/// when a pod's class or methods are modified during a **Hot Reload**.
+///
+/// ### Usage Example
+/// ```dart
+/// final class MyReloadProcessor implements ReloadAwarePodProcessor {
+///   @override
+///   Future<void> processOnHotReload(
+///     Object pod,
+///     Class podClass,
+///     String name,
+///     HotReloadDelta delta,
+///   ) async {
+///     if (delta.getModifiedClasses().contains(podClass)) {
+///       // Re-scan annotations or re-register timers
+///     }
+///   }
+/// }
+/// ```
+/// {@endtemplate}
+abstract interface class ReloadAwarePodProcessor implements PodProcessor {
+  /// Re-processes a [pod] whose [podClass] or methods were modified during
+  /// Hot Reload.
+  Future<void> processOnHotReload(
+    Object pod,
+    Class podClass,
+    String name,
+    HotReloadDelta delta,
+  );
+}
 
 /// {@template PodInitializationProcessor}
 /// Processor that provides hooks into the pod initialization lifecycle phases.

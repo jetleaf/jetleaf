@@ -466,6 +466,39 @@ class Scope extends ReflectableAnnotation with EqualsAndHashCode {
 }
 
 // ----------------------------------------------------------------------------------------------------------
+// REFRESH SCOPE
+// ----------------------------------------------------------------------------------------------------------
+
+/// {@template refresh_scope}
+/// Marks a pod or `@Pod` factory method as **refreshable** (`@Scope('refresh')`)
+/// during a Hot Reload.
+///
+/// Pods annotated with `@RefreshScope()` are lazily re-instantiated on the next
+/// access whenever a `HotReloadEvent` modifies their declaring class or any
+/// `@ConfigurationProperties` / `@Value` key they depend on.
+///
+/// ### Usage Example
+/// ```dart
+/// @Service()
+/// @RefreshScope()
+/// class DynamicFeatureService {
+///   // Re-instantiated when configuration or class changes during Hot Reload
+/// }
+/// ```
+/// {@endtemplate}
+@Target({TargetKind.classType, TargetKind.method})
+class RefreshScope extends Scope {
+  /// {@macro refresh_scope}
+  const RefreshScope() : super('refresh');
+
+  @override
+  String toString() => 'RefreshScope()';
+
+  @override
+  Type get annotationType => RefreshScope;
+}
+
+// ----------------------------------------------------------------------------------------------------------
 // PRE DESTROY
 // ----------------------------------------------------------------------------------------------------------
 

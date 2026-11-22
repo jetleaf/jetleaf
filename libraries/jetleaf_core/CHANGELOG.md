@@ -2,6 +2,8 @@
 
 ### Added
 
+- **Hot Reload & Hot Restart Infrastructure**: Added `HotReloadDelta`, `HotReloadEvent`, `HotRestartEvent`, `RefreshablePod`, `ReloadAwarePodProcessor`, `@RefreshScope`, `RefreshPodScope`, `HotReloadCoordinator`, `DefaultListablePodFactory.refreshOnHotReload(...)`, and `AbstractApplicationContext.triggerHotReload(...)` / `triggerHotRestart(...)`.
+
 - **Reified generic type support (`TypeReifier` / `StandardTypeReifier<T>`)**: Runtime reflection (`_MaterialLibrary`) now resolves reified generic `List`, `Set`, and `Map` types even for user-defined or previously unknown types.
 - **`hasClass` probe**: The runtime package now exposes `RuntimeProvider.hasClass(String name, [String? package])` — a strict, non-synthesizing existence check for a class known to the registry (used in place of defensive type-lookup gymnastics that synthesized fallback declarations).
 - **`MaterializedLibrary.hasRegisteredType`**: Strict type-registry lookup without synthesizing fallback entries.

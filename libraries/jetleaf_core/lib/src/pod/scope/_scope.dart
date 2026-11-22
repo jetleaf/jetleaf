@@ -170,3 +170,32 @@ class PrototypeScope extends PodScope {
   @override
   String? getConversationId() => ScopeType.PROTOTYPE.name;
 }
+
+/// {@template refresh_pod_scope}
+/// [PodScope] implementation backing `@RefreshScope()` pods.
+///
+/// Caches pod instances like [SingletonScope], but allows selective or full
+/// invalidation during Hot Reload so annotated pods are lazily re-instantiated
+/// on the next access.
+/// {@endtemplate}
+class RefreshPodScope extends SingletonScope {
+  /// {@macro refresh_pod_scope}
+  RefreshPodScope();
+
+  @override
+  String? getConversationId() => 'refresh';
+
+  /// Invalidates a single cached pod by [name], running any registered
+  /// destruction callbacks.
+  void invalidate(String name) {
+    remove(name);
+  }
+
+  /// Invalidates all cached pods in this scope, running their destruction
+  /// callbacks.
+  void invalidateAll() {
+    for (final name in _instances.keys.toList()) {
+      remove(name);
+    }
+  }
+}

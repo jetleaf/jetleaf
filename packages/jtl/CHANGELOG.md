@@ -8,6 +8,10 @@ This project follows a simple, human-readable changelog format inspired by
 
 ## [2.1.0]
 
+### Added
+
+- **Hot Reload Template Cache Eviction**: Added `InMemoryTemplateCache.evictMatchingAssets(assetPaths)` to invalidate modified `.jtl` / `.html` templates during Hot Reload.
+
 ### Changed
 
 - **Dependency Bumps**: `jetleaf_core: ^2.1.0`.

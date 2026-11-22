@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:jetleaf_core/lang.dart';
 import 'package:meta/meta.dart';
 
+import '../../core/context/hot_reload.dart';
 import '../definition/pod_definition.dart';
 import '../definition/pod_definition_registry.dart';
 import '../definition/simple_pod_definition_registry.dart';
@@ -15,6 +16,8 @@ import '../exceptions.dart';
 import '../helpers/object.dart';
 import '../helpers/utils.dart';
 import '../lifecycle/lifecycle.dart';
+import '../lifecycle/pod_processors.dart';
+import '../scope/_scope.dart';
 import 'abstract_autowire_pod_factory.dart';
 import 'factory_aware_order_source_provider.dart';
 import 'pod_factory.dart';
@@ -1243,6 +1246,66 @@ class DefaultListablePodFactory extends AbstractAutowirePodFactory implements Co
   Future<void> resetDefinition(String podName) async {
     clearMergedPodDefinition(podName);
     await destroySingleton(podName);
+  }
+
+  /// {@template default_listable_pod_factory.refresh_on_hot_reload}
+  /// Selectively refreshes pod definitions, `@RefreshScope` instances, and
+  /// [ReloadAwarePodProcessor] hooks based on the given [delta].
+  ///
+  /// - Removed pods in [HotReloadDelta.getRemovedPodNames] are destroyed and
+  ///   unregistered.
+  /// - Modified pods in [HotReloadDelta.getModifiedPodNames] are reset when
+  ///   [HotReloadDelta.isStructuralChange] is `true`.
+  /// - `@RefreshScope` pods are invalidated when their pod name or class
+  ///   appears in [delta], or when configuration assets (`.yaml`,
+  ///   `.properties`, `.env`) were modified.
+  /// - Registered [ReloadAwarePodProcessor]s are invoked for every active
+  ///   singleton whose class is in [HotReloadDelta.getModifiedClasses].
+  /// {@endtemplate}
+  Future<void> refreshOnHotReload(HotReloadDelta delta) async {
+    for (final removed in delta.getRemovedPodNames()) {
+      await destroySingleton(removed);
+      if (containsDefinition(removed)) {
+        await removeDefinition(removed);
+      }
+    }
+
+    if (delta.isStructuralChange()) {
+      for (final modified in delta.getModifiedPodNames()) {
+        await resetDefinition(modified);
+      }
+    }
+
+    final refreshScope = getRegisteredScope('refresh');
+    if (refreshScope is RefreshPodScope) {
+      final hasConfigAssetChange = delta.getModifiedAssetPaths().any(
+        (p) => p.endsWith('.yaml') || p.endsWith('.yml') || p.endsWith('.properties') || p.endsWith('.env'),
+      );
+      if (hasConfigAssetChange || delta.isStructuralChange()) {
+        refreshScope.invalidateAll();
+      } else {
+        for (final name in delta.getModifiedPodNames()) {
+          refreshScope.invalidate(name);
+        }
+        for (final name in delta.getRemovedPodNames()) {
+          refreshScope.invalidate(name);
+        }
+      }
+    }
+
+    final reloadProcessors = getPodProcessors().whereType<ReloadAwarePodProcessor>().toList(growable: false);
+    if (reloadProcessors.isNotEmpty && delta.getModifiedClasses().isNotEmpty) {
+      for (final name in getSingletonNames()) {
+        final instance = await getSingleton(name, allowEarlyReference: false);
+        if (instance == null) continue;
+        final cls = Class.forObject(instance);
+        if (delta.getModifiedClasses().contains(cls)) {
+          for (final processor in reloadProcessors) {
+            await processor.processOnHotReload(instance, cls, name, delta);
+          }
+        }
+      }
+    }
   }
 
   /// {@template default_listable_pod_factory.verify_instance}

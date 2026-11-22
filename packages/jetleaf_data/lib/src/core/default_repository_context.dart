@@ -41,7 +41,7 @@ import 'repository_context.dart';
 /// **invoking [DataConfigurer] pods**, **synchronizing `@Entity` schemas**, and
 /// **providing the active [RepositoryExecutor]** for repository operations.
 /// {@endtemplate}
-final class DefaultRepositoryContext extends AbstractRepositoryContext implements ApplicationContextAware, InitializingPod, DisposablePod {
+final class DefaultRepositoryContext extends AbstractRepositoryContext implements ApplicationContextAware, InitializingPod, DisposablePod, RefreshablePod {
   /// Reflective class descriptor for [DefaultRepositoryContext].
   static final Class<DefaultRepositoryContext> CLASS = Class<DefaultRepositoryContext>(null, PackageNames.DATA);
 
@@ -102,6 +102,36 @@ final class DefaultRepositoryContext extends AbstractRepositoryContext implement
 
     await _discoverAndBuildDefinition();
     await _synchronizeEntitySchemas();
+  }
+
+  @override
+  Future<void> onHotReload(HotReloadDelta delta, ApplicationContext context) async {
+    final metadataRegistry = await _applicationContext.containsType(EntityMetadataRegistry.CLASS)
+        ? await _applicationContext.get(EntityMetadataRegistry.CLASS)
+        : DefaultEntityMetadataRegistry.getSharedInstance();
+
+    var hasEntityChange = false;
+    var hasRepoChange = false;
+
+    for (final cls in delta.getModifiedClasses()) {
+      if (cls.hasDirectAnnotation<Entity>()) {
+        hasEntityChange = true;
+        if (metadataRegistry is DefaultEntityMetadataRegistry) {
+          metadataRegistry.evict(cls.getType());
+        }
+      }
+      if (cls.hasDirectAnnotation<Repository>()) {
+        hasRepoChange = true;
+      }
+    }
+
+    if (hasRepoChange || delta.isStructuralChange()) {
+      await _discoverAndBuildDefinition();
+    }
+
+    if (hasEntityChange || delta.isStructuralChange()) {
+      await _synchronizeEntitySchemas();
+    }
   }
 
   @override

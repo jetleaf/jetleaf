@@ -207,4 +207,14 @@ final class InMemoryTemplateCache implements TemplateCache {
   void invalidateCache() {
     _cache.clear();
   }
+
+  /// Evicts any cached template whose key matches or ends with any path in
+  /// [assetPaths], used during Hot Reload to invalidate edited `.jtl` / `.html`
+  /// templates without clearing unrelated cache entries.
+  void evictMatchingAssets(Iterable<String> assetPaths) {
+    final paths = assetPaths.toList(growable: false);
+    if (paths.isEmpty) return;
+
+    _cache.removeWhere((key, _) => paths.any((path) => key == path || key.endsWith(path)));
+  }
 }

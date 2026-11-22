@@ -17,6 +17,7 @@ import '../base/application_context.dart';
 import '../event/application_event.dart';
 import '../event/event_listener.dart';
 import '../event/simple_application_event_bus.dart';
+import '../hot_reload.dart';
 import '../lifecycle/application_annotated_lifecycle_processor.dart';
 import '../lifecycle/lifecycle_processor.dart';
 import '../base/pod_factory_customizer.dart';
@@ -872,6 +873,56 @@ abstract class AbstractApplicationContext implements ConfigurableApplicationCont
     return Future.value();
   }
 
+  /// {@template abstract_application_context_trigger_hot_reload}
+  /// Processes a **Hot Reload** delta inside the active application context.
+  ///
+  /// 1. Selectively refreshes pod definitions, `@RefreshScope` instances, and
+  ///    [ReloadAwarePodProcessor] hooks via [DefaultListablePodFactory.refreshOnHotReload].
+  /// 2. Invokes [RefreshablePod.onHotReload] on all initialized [RefreshablePod]
+  ///    singletons.
+  /// 3. Publishes [HotReloadEvent] over the application event bus.
+  /// {@endtemplate}
+  Future<void> triggerHotReload(HotReloadDelta delta) async {
+    final factory = getPodFactory();
+    if (factory is DefaultListablePodFactory) {
+      await factory.refreshOnHotReload(delta);
+    }
+
+    for (final name in factory.getSingletonNames()) {
+      final singleton = await factory.getSingleton(name, allowEarlyReference: false);
+      if (singleton is RefreshablePod) {
+        await singleton.onHotReload(delta, this);
+      }
+    }
+
+    await publishEvent(HotReloadEvent.withClock(this, delta, () => DateTime.now()));
+  }
+
+  /// {@template abstract_application_context_trigger_hot_restart}
+  /// Initiates a **Hot Restart** by publishing [HotRestartEvent] so pods
+  /// holding OS resources can release them cleanly, then closing the context.
+  /// {@endtemplate}
+  Future<void> triggerHotRestart([HotReloadDelta? delta]) async {
+    await publishEvent(HotRestartEvent.withClock(this, () => DateTime.now(), delta));
+    await close();
+  }
+
+  /// Registers this context with [HotReloadCoordinator] when refreshed.
+  void _registerHotReloadCoordinator() {
+    HotReloadCoordinator.register(
+      onReload: triggerHotReload,
+      onRestart: triggerHotRestart,
+    );
+  }
+
+  /// Unregisters this context from [HotReloadCoordinator] on close.
+  void _unregisterHotReloadCoordinator() {
+    HotReloadCoordinator.unregister(
+      onReload: triggerHotReload,
+      onRestart: triggerHotRestart,
+    );
+  }
+
   @override
   Future<void> close() async {
     final existing = _closeFuture;
@@ -882,6 +933,7 @@ abstract class AbstractApplicationContext implements ConfigurableApplicationCont
     _isClosed = true;
 
     final closeFuture = (() async {
+      _unregisterHotReloadCoordinator();
       try {
         // Stop lifecycle processors
         await getLifecycleProcessor().onClose();
@@ -1656,6 +1708,7 @@ abstract class AbstractApplicationContext implements ConfigurableApplicationCont
     }
 
     _isSetupReady = true;
+    _registerHotReloadCoordinator();
     await publishEvent(ContextReadyEvent.withClock(this, () => DateTime.now()));
 
     // Publish ready event

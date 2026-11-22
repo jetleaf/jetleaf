@@ -90,7 +90,7 @@ import 'scheduling_configurer.dart';
 /// }
 /// ```
 /// {@endtemplate}
-final class SchedulingAnnotationPodProcessor extends PodInitializationProcessor implements PodDestructionProcessor, ApplicationContextAware, SmartInitializingSingleton, Ordered, ApplicationEventListener<ApplicationContextEvent>, DisposablePod, ScheduledTaskHolder {
+final class SchedulingAnnotationPodProcessor extends PodInitializationProcessor implements PodDestructionProcessor, ReloadAwarePodProcessor, ApplicationContextAware, SmartInitializingSingleton, Ordered, ApplicationEventListener<ApplicationContextEvent>, DisposablePod, ScheduledTaskHolder {
   /// {@template SchedulingAnnotationPodProcessorConstants}
   /// Constants and configuration properties for the scheduling annotation processor.
   /// 
@@ -1166,6 +1166,12 @@ final class SchedulingAnnotationPodProcessor extends PodInitializationProcessor 
   @override
   Future<void> processAfterDestruction(Object pod, Class podClass, String name) async {}
   
+  @override
+  Future<void> processOnHotReload(Object pod, Class podClass, String name, HotReloadDelta delta) async {
+    await processBeforeDestruction(pod, podClass, name);
+    await processAfterInitialization(pod, podClass, name);
+  }
+
   @override
   Future<void> processBeforeDestruction(Object pod, Class podClass, String name) async {
     return await _cancelScheduledTasks(pod);

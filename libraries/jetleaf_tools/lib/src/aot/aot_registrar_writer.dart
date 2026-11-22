@@ -367,21 +367,26 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
     buffer.writeln(_valueResolver);
     buffer.writeln(_optionalHelper);
     final registrarName = forTests ? 'registerTestGeneratedArtifacts' : 'registerGeneratedArtifacts';
+    final reloadName = forTests ? 'reloadTestGeneratedArtifacts' : 'reloadGeneratedArtifacts';
     buffer.writeln('bool _runtimeInitialized = false;');
     buffer.writeln();
     buffer.writeln('/// Registers generated declarations, members, and pods into [factory].');
     buffer.writeln('/// Pure Dart closures — zero runtime reflection.');
-    buffer.writeln('Future<void> $registrarName([DefaultListablePodFactory? factory]) async {');
-    buffer.writeln('  _initRuntime();');
+    buffer.writeln('Future<void> $registrarName([DefaultListablePodFactory? factory, bool force = false]) async {');
+    buffer.writeln('  _initRuntime(force);');
     buffer.writeln('  if (factory == null) return;');
     for (final fn in podFns) {
       buffer.writeln('  await $fn(factory);');
     }
     buffer.writeln('}');
     buffer.writeln();
+    buffer.writeln('/// Re-binds [MaterializedLibrary] dispatch tables and pod definitions after a Hot Reload.');
+    buffer.writeln('Future<void> $reloadName([DefaultListablePodFactory? factory]) =>');
+    buffer.writeln('    $registrarName(factory, true);');
+    buffer.writeln();
     buffer.writeln('/// Registers runtime hints and constructors.');
-    buffer.writeln('void _initRuntime() {');
-    buffer.writeln('  if (_runtimeInitialized) return;');
+    buffer.writeln('void _initRuntime([bool force = false]) {');
+    buffer.writeln('  if (_runtimeInitialized && !force) return;');
     buffer.writeln('  _runtimeInitialized = true;');
     for (final fn in typeFns) {
       buffer.writeln('  $fn();');

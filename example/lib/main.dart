@@ -22,7 +22,7 @@ void main(List<String> args) async {
     ExampleApplication(),
     args,
     null,
-    registerGeneratedArtifacts,
+    null,
   );
 
   if (context != null) {

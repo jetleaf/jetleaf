@@ -104,6 +104,7 @@ export 'src/core/context/event/application_event.dart';
 export 'src/core/context/event/event_listener.dart';
 export 'src/core/context/event/application_event_method_adapter.dart';
 export 'src/core/context/event/simple_application_event_bus.dart';
+export 'src/core/context/hot_reload.dart';
 
 export 'src/core/context/exit_code/exit_code.dart';
 export 'src/core/context/exit_code/exit_code_generator.dart';

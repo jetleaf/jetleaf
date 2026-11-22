@@ -169,6 +169,7 @@ abstract class AbstractPodFactory extends AbstractPodProviderFactory implements 
     // Register default scopes
     _scopes[ScopeType.SINGLETON.name.toLowerCase()] = SingletonScope();
     _scopes[ScopeType.PROTOTYPE.name.toLowerCase()] = PrototypeScope();
+    _scopes['refresh'] = RefreshPodScope();
     _prototypesCurrentlyInCreation.set(<String>{});
     _applicationStartup = DefaultApplicationStartup();
     _expressionResolver = DefaultPodExpressionResolver();

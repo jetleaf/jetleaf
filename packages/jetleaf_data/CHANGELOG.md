@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.2.0 — 2026-11-18
+## 2.1.0 — 2026-11-18
 
 **Full implementation of `roadmap/jetleaf_data.md`** — the persistence layer is
 now feature-complete (269 unit tests passing).
@@ -13,6 +13,8 @@ now feature-complete (269 unit tests passing).
 - **Removed `annotation_reader.dart` workaround**: Now relies directly on `jetleaf_core`'s reified generic type resolution (`TypeReifier`).
 
 ### New
+
+- **Hot Reload & Entity Metadata Eviction** — `DefaultEntityMetadataRegistry.evict(entityType)` and `DefaultRepositoryContext` (`RefreshablePod`) evict modified `@Entity` metadata, rebuild modified `@Repository` definitions, and re-run `AutoSchemaSynchronizer` on Hot Reload without dropping `DefaultConnectionPool`.
 
 - **Automatic schema synchronization (`ddl-auto`)** — Added `AutoSchemaSynchronizer`, `DdlAutoMode` (`none`, `validate`, `update`, `create`, `createDrop`), and `SchemaSynchronizationResult`, wired into `DefaultRepositoryContext` via `jetleaf.data.ddl-auto` (with `SqlDialect.buildAddColumnQuery` and `buildInspectColumnsQuery` for `ALTER TABLE ... ADD COLUMN` and schema introspection on startup/restart/hot reload).
 

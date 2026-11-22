@@ -77,9 +77,24 @@ import 'handler_mapping.dart';
 /// - [_ControllerDefinition]
 /// {@endtemplate}
 @Author("Evaristus Adimonyemma")
-abstract class AbstractAnnotatedHandlerMapping extends AbstractWebViewAnnotatedHandlerMapping {
+abstract class AbstractAnnotatedHandlerMapping extends AbstractWebViewAnnotatedHandlerMapping implements RefreshablePod {
   /// {@macro abstract_annotated_handler_mapping}
   AbstractAnnotatedHandlerMapping(super.parser);
+
+  @override
+  Future<void> onHotReload(HotReloadDelta delta, ApplicationContext context) async {
+    final hasControllerChange = delta.isStructuralChange() ||
+        delta.getModifiedClasses().any(
+          (cls) =>
+              cls.hasDirectAnnotation<Controller>() ||
+              cls.hasDirectAnnotation<RestController>() ||
+              cls.hasDirectAnnotation<ControllerAdvice>() ||
+              cls.hasDirectAnnotation<RestControllerAdvice>(),
+        );
+    if (hasControllerChange) {
+      await onReady();
+    }
+  }
 
   @override
   @mustCallSuper

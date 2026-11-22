@@ -114,6 +114,14 @@ final class DefaultEntityMetadataRegistry with EqualsAndHashCode implements Conf
     synchronized(_cache, _cache.clear);
   }
 
+  /// Evicts cached [EntityMetadata] for [entityType] so it is rebuilt from
+  /// updated reflection metadata on the next lookup (e.g. during Hot Reload).
+  void evict(Type entityType) {
+    synchronized(_cache, () {
+      _cache.remove(entityType);
+    });
+  }
+
   @override
   List<Object?> equalizedProperties() => [_builder, runtimeType];
 }
