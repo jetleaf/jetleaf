@@ -550,6 +550,29 @@ abstract class SqlDialect extends DatabaseDialect {
     ColumnMetadata column,
   ) => buildColumnDefinition(metadata, column);
 
+  /// {@template jetleaf_sql_dialect_build_add_column_query}
+  /// Renders an `ALTER TABLE ... ADD COLUMN ...` DDL statement for adding
+  /// [column] to an existing [metadata] table.
+  ///
+  /// ### Usage Example
+  /// ```dart
+  /// final sql = dialect.buildAddColumnQuery(userMetadata, displayNameColumn);
+  /// // ALTER TABLE "users" ADD COLUMN "display_name" TEXT
+  /// ```
+  /// {@endtemplate}
+  String buildAddColumnQuery(EntityMetadata<dynamic> metadata, ColumnMetadata column) =>
+      'ALTER TABLE ${getQualifiedTable(metadata)} ADD COLUMN ${buildColumnDefinition(metadata, column)}';
+
+  /// {@template jetleaf_sql_dialect_build_inspect_columns_query}
+  /// Renders a metadata introspection query that returns existing column names
+  /// for the physical table backing [metadata].
+  ///
+  /// Used by `AutoSchemaSynchronizer` in `update` and `validate` modes to
+  /// detect missing tables or newly added `@Entity` fields.
+  /// {@endtemplate}
+  String buildInspectColumnsQuery(EntityMetadata<dynamic> metadata) =>
+      "SELECT column_name FROM information_schema.columns WHERE table_name = '${metadata.getTableName()}'";
+
   String _generatedIdType(ColumnMetadata column) => switch (column.getGenerationStrategy()!.name) {
     'autoIncrement' || 'identity' =>
       getTypeMapper().getAutoIncrementColumnType(),

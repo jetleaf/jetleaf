@@ -42,3 +42,4 @@ export 'src/migration/migration.dart';
 export 'src/migration/migration_runner.dart';
 export 'src/migration/migration_version.dart';
 export 'src/migration/schema_generator.dart';
+export 'src/migration/schema_synchronizer.dart';

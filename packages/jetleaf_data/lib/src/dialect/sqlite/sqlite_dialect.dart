@@ -14,6 +14,7 @@
 
 import 'package:jetleaf_core/lang.dart';
 
+import '../../mapping/entity_metadata.dart';
 import '../sql_dialect.dart';
 import 'sqlite_type_mapper.dart';
 
@@ -44,6 +45,9 @@ final class SqliteDialect extends SqlDialect {
 
   @override
   SqlParameterStyle getParameterStyle() => SqlParameterStyle.questionMark;
+
+  @override
+  String buildInspectColumnsQuery(EntityMetadata<dynamic> metadata) => 'PRAGMA table_info(${escapeIdentifier(metadata.getTableName())})';
 
   @override
   bool supportsReturning() => true;

@@ -18,6 +18,7 @@ import 'package:jetleaf_core/logging.dart';
 import 'package:jetleaf_core/pod.dart';
 
 import 'data_configurer.dart';
+import '../annotation/entity.dart';
 import '../dialect/database_dialect.dart';
 import '../dialect/default_dialect_registry.dart';
 import '../dialect/dialect_registry.dart';
@@ -28,6 +29,7 @@ import '../mapping/default_entity_metadata_registry.dart';
 import '../mapping/default_type_converter_registry.dart';
 import '../mapping/entity_metadata_registry.dart';
 import '../mapping/type_converter_registry.dart';
+import '../migration/schema_synchronizer.dart';
 import '../repository/default_repository_executor.dart';
 import '../repository/repository_executor.dart';
 import '../repository/repository_factory_support.dart';
@@ -36,16 +38,22 @@ import 'repository_context.dart';
 /// {@template jetleaf_default_repository_context}
 /// The default runtime implementation of [RepositoryContext], responsible for
 /// **discovering repository classes**, **building repository method definitions**,
-/// **invoking [DataConfigurer] pods**, and **providing the active
-/// [RepositoryExecutor]** for repository operations.
+/// **invoking [DataConfigurer] pods**, **synchronizing `@Entity` schemas**, and
+/// **providing the active [RepositoryExecutor]** for repository operations.
 /// {@endtemplate}
-final class DefaultRepositoryContext extends AbstractRepositoryContext implements ApplicationContextAware, InitializingPod {
+final class DefaultRepositoryContext extends AbstractRepositoryContext implements ApplicationContextAware, InitializingPod, DisposablePod {
   /// Reflective class descriptor for [DefaultRepositoryContext].
   static final Class<DefaultRepositoryContext> CLASS = Class<DefaultRepositoryContext>(null, PackageNames.DATA);
 
   late ApplicationEventBus _eventBus;
   late ApplicationContext _applicationContext;
   RepositoryExecutor? _executor;
+
+  /// Active [AutoSchemaSynchronizer] retained for `createDrop` cleanup on shutdown.
+  AutoSchemaSynchronizer? _schemaSynchronizer;
+
+  /// Discovered `@Entity` types synchronized during [onReady].
+  List<Type> _synchronizedEntities = const [];
 
   final Log _logger = LogFactory.getLog("repositoryContext");
 
@@ -93,6 +101,70 @@ final class DefaultRepositoryContext extends AbstractRepositoryContext implement
     }
 
     await _discoverAndBuildDefinition();
+    await _synchronizeEntitySchemas();
+  }
+
+  @override
+  Future<void> onDestroy() async {
+    final synchronizer = _schemaSynchronizer;
+    if (synchronizer != null && synchronizer.getMode() == DdlAutoMode.createDrop && _synchronizedEntities.isNotEmpty) {
+      await synchronizer.dropAll(_synchronizedEntities);
+    }
+  }
+
+  /// {@template jetleaf_default_repository_context_synchronize_entity_schemas}
+  /// Discovers all concrete `@Entity` classes in the runtime and applies
+  /// automatic DDL synchronization using `jetleaf.data.ddl-auto` (defaulting
+  /// to [DdlAutoMode.update]) whenever a [ConnectionPool] or [DatabaseClient]
+  /// and a [DatabaseDialect] are registered in [_applicationContext].
+  /// {@endtemplate}
+  Future<void> _synchronizeEntitySchemas() async {
+    final configuredMode = _applicationContext.getEnvironment().getProperty('jetleaf.data.ddl-auto');
+    final mode = configuredMode != null ? DdlAutoMode.parse(configuredMode) : DdlAutoMode.update;
+    if (mode == DdlAutoMode.none) {
+      return;
+    }
+
+    ConnectionPool? pool;
+    DatabaseClient? client;
+    if (await _applicationContext.containsType(ConnectionPool.CLASS)) {
+      pool = await _applicationContext.get(ConnectionPool.CLASS);
+    } else if (await _applicationContext.containsType(DatabaseClient.CLASS)) {
+      client = await _applicationContext.get(DatabaseClient.CLASS);
+    } else {
+      return;
+    }
+
+    if (!await _applicationContext.containsType(DatabaseDialect.CLASS)) {
+      return;
+    }
+    final dialect = await _applicationContext.get(DatabaseDialect.CLASS);
+
+    final metadataRegistry = await _applicationContext.containsType(EntityMetadataRegistry.CLASS)
+        ? await _applicationContext.get(EntityMetadataRegistry.CLASS)
+        : DefaultEntityMetadataRegistry.getSharedInstance();
+
+    final entityTypes = <Type>[];
+    for (final cls in Runtime.getAllClasses()) {
+      if (!cls.getIsAbstract() && cls.getAnnotations().any((a) => a.getType() == Entity)) {
+        entityTypes.add(cls.getType());
+      }
+    }
+
+    if (entityTypes.isEmpty) {
+      return;
+    }
+
+    final synchronizer = AutoSchemaSynchronizer(
+      client: client,
+      connectionFactory: pool,
+      dialect: dialect,
+      metadataRegistry: metadataRegistry,
+      mode: mode,
+    );
+    _schemaSynchronizer = synchronizer;
+    _synchronizedEntities = entityTypes;
+    await synchronizer.synchronize(entityTypes);
   }
 
   Future<void> _applyDataConfigurers() async {

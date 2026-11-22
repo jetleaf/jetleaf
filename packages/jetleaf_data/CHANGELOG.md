@@ -3,15 +3,18 @@
 ## 2.2.0 — 2026-11-18
 
 **Full implementation of `roadmap/jetleaf_data.md`** — the persistence layer is
-now feature-complete (263 unit tests passing).
+now feature-complete (269 unit tests passing).
 
 ### Refactored
 
-- **Enterprise JetLeaf API alignment**: Replaced Dart property getters/setters with explicit method-style APIs (e.g. `getMaxConnections()`, `getActiveCount()`, `getIdleCount()`), separated abstract and configurable classes into dedicated files, and added full `{@template}` / `{@macro}` Dartdoc documentation.
+- **Enterprise JetLeaf API alignment**: Replaced Dart property getters/setters with explicit method-style APIs (e.g. `getMaxConnections()`, `getActiveCount()`, `getIdleCount()`), removed trivial annotation field-wrapper getters, and added comprehensive `{@template}` / `{@macro}` Dartdoc documentation across all libraries, classes, and methods.
+- **Module & annotation consolidation**: Grouped `lib/src/annotation/` into 7 domain files, merged small value/enum/helper types and `Configurable*` interface pairs into their parent domain files, removed all `export` directives from `lib/src/` (keeping exports strictly in top-level `lib/*.dart` barrels), and removed the duplicate `@Repository` annotation from `annotation.dart` in favor of `jetleaf_core`'s `@Repository`.
 - **Annotation naming**: Renamed `@Version` to `@DataVersion` in `auditing.dart` to avoid collision with `Version` in `jetleaf_core`.
 - **Removed `annotation_reader.dart` workaround**: Now relies directly on `jetleaf_core`'s reified generic type resolution (`TypeReifier`).
 
 ### New
+
+- **Automatic schema synchronization (`ddl-auto`)** — Added `AutoSchemaSynchronizer`, `DdlAutoMode` (`none`, `validate`, `update`, `create`, `createDrop`), and `SchemaSynchronizationResult`, wired into `DefaultRepositoryContext` via `jetleaf.data.ddl-auto` (with `SqlDialect.buildAddColumnQuery` and `buildInspectColumnsQuery` for `ALTER TABLE ... ADD COLUMN` and schema introspection on startup/restart/hot reload).
 
 - **Entity mapping** — `@Entity`, `@Table`, `@Id`, `@GeneratedValue`
   (`autoIncrement`/`identity`/`uuid`/`snowflake`), `@Column`

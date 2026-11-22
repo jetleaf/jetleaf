@@ -557,8 +557,7 @@ final class DynamicRepositoryProxy {
 
   static String _symbolName(Symbol symbol) {
     final raw = symbol.toString();
-    final match =
-        RegExp(r'Symbol\("([A-Za-z_][A-Za-z0-9_]*)"\)').firstMatch(raw);
+    final match = RegExp(r'Symbol\("([A-Za-z_][A-Za-z0-9_]*)"\)').firstMatch(raw);
     return match?.group(1) ?? (raw.startsWith('#') ? raw.substring(1) : raw);
   }
 }
