@@ -1,16 +1,13 @@
-## Unreleased
-
-### Documentation
-
-- **Terminology refresh**: "dart:mirrors" / "mirrors" mentions replaced by "runtime reflection"; no functional changes.
-
----
-
 ## [2.1.0]
 
 ### Fixed
 
+- **Retry executor**: Fixed execution handling in `DefaultRetryExecutor`.
 - **Backoff Policy Resolution**: The exponential `BackoffPolicy` registered by the retry auto-configuration is now designated `@Primary` so type-based injection resolves to it when both exponential and fixed policies are registered; the fixed policy no longer claims `matchIfMissing: true`, eliminating the ambiguous `BackoffPolicy` diamond and divergent JIT/AOT injection order.
+
+### Documentation
+
+- **Terminology refresh**: "dart:mirrors" / "mirrors" mentions replaced by "runtime reflection"; no functional changes.
 
 ### Changed
 

@@ -16,6 +16,48 @@ import 'package:jetleaf_core/lang.dart';
 
 import 'naming_strategy.dart';
 
+/// {@template jetleaf_camel_case_naming_strategy}
+/// [NamingStrategy] that preserves `camelCase` field names and lowercases only
+/// the leading character of class names (`UserProfile` → `userProfile`,
+/// `createdAt` → `createdAt`).
+/// {@endtemplate}
+final class CamelCaseNamingStrategy extends NamingStrategy {
+  /// Reflective [Class] handle for [CamelCaseNamingStrategy].
+  static final Class<CamelCaseNamingStrategy> CLASS = Class<CamelCaseNamingStrategy>(null, PackageNames.DATA);
+
+  /// {@macro jetleaf_camel_case_naming_strategy}
+  const CamelCaseNamingStrategy();
+
+  @override
+  String classToTableName(String simpleName) {
+    if (simpleName.isEmpty) {
+      return simpleName;
+    }
+    return simpleName[0].toLowerCase() + simpleName.substring(1);
+  }
+
+  @override
+  String fieldToColumnName(String fieldName) => fieldName;
+}
+
+/// {@template jetleaf_kebab_case_naming_strategy}
+/// [NamingStrategy] converting identifiers into `kebab-case`
+/// (`UserProfile` → `user-profile`, `createdAt` → `created-at`).
+/// {@endtemplate}
+final class KebabCaseNamingStrategy extends NamingStrategy {
+  /// Reflective [Class] handle for [KebabCaseNamingStrategy].
+  static final Class<KebabCaseNamingStrategy> CLASS = Class<KebabCaseNamingStrategy>(null, PackageNames.DATA);
+
+  /// {@macro jetleaf_kebab_case_naming_strategy}
+  const KebabCaseNamingStrategy();
+
+  @override
+  String classToTableName(String simpleName) => SnakeCaseNamingStrategy.toSnakeCase(simpleName).replaceAll('_', '-');
+
+  @override
+  String fieldToColumnName(String fieldName) => SnakeCaseNamingStrategy.toSnakeCase(fieldName).replaceAll('_', '-');
+}
+
 /// {@template jetleaf_snake_case_naming_strategy}
 /// Default [NamingStrategy] converting `PascalCase` and `camelCase` identifiers
 /// into lowercase `snake_case` (`UserProfile` → `user_profile`,
@@ -23,8 +65,7 @@ import 'naming_strategy.dart';
 /// {@endtemplate}
 final class SnakeCaseNamingStrategy extends NamingStrategy {
   /// Reflective [Class] handle for [SnakeCaseNamingStrategy].
-  static final Class<SnakeCaseNamingStrategy> CLASS =
-      Class<SnakeCaseNamingStrategy>(null, PackageNames.DATA);
+  static final Class<SnakeCaseNamingStrategy> CLASS = Class<SnakeCaseNamingStrategy>(null, PackageNames.DATA);
 
   /// {@macro jetleaf_snake_case_naming_strategy}
   const SnakeCaseNamingStrategy();
@@ -61,11 +102,9 @@ final class SnakeCaseNamingStrategy extends NamingStrategy {
     return buffer.toString().replaceAll(RegExp(r'__+'), '_');
   }
 
-  static bool _isUpper(String c) =>
-      c == c.toUpperCase() && c != c.toLowerCase();
+  static bool _isUpper(String c) => c == c.toUpperCase() && c != c.toLowerCase();
 
-  static bool _isLower(String c) =>
-      c == c.toLowerCase() && c != c.toUpperCase();
+  static bool _isLower(String c) => c == c.toLowerCase() && c != c.toUpperCase();
 
   static bool _isDigit(String c) {
     final code = c.codeUnitAt(0);

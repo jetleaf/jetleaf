@@ -127,6 +127,11 @@ final class DefaultMonitoringService extends AbstractMonitoringService implement
   ConfigurablePerformance create(Monitor monitor, Source source, [String? name]) {
     return synchronized(_performanceResource, () {
       final key = createKey(monitor, source, name);
+      final existing = _performanceResource[key];
+      if (existing != null) {
+        return existing;
+      }
+
       final performance = ConfigurablePerformance(name: key, location: getLocation(source));
       _performanceResource.add(key, performance);
 

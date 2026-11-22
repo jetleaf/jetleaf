@@ -25,11 +25,16 @@ import 'mysql_type_mapper.dart';
 /// - Identifier quoting: `` `identifier` ``
 /// - Auto-increment DDL: `BIGINT AUTO_INCREMENT`
 /// - Upsert suffix helper: `ON DUPLICATE KEY UPDATE` ([buildUpsertSuffix])
+///
+/// ### Usage Example
+/// ```dart
+/// const dialect = MySqlDialect();
+/// final ddl = dialect.renderCreateTable(userMetadata);
+/// ```
 /// {@endtemplate}
 final class MySqlDialect extends SqlDialect {
   /// Reflective [Class] handle for [MySqlDialect].
-  static final Class<MySqlDialect> CLASS =
-      Class<MySqlDialect>(null, PackageNames.DATA);
+  static final Class<MySqlDialect> CLASS = Class<MySqlDialect>(null, PackageNames.DATA);
 
   /// {@macro jetleaf_mysql_dialect}
   const MySqlDialect();
@@ -53,21 +58,16 @@ final class MySqlDialect extends SqlDialect {
   MySqlTypeMapper getTypeMapper() => MySqlTypeMapper();
 
   @override
-  String escapeIdentifier(String identifier) =>
-      '`${identifier.replaceAll('`', '``')}`';
+  String escapeIdentifier(String identifier) => '`${identifier.replaceAll('`', '``')}`';
 
   /// Builds the `ON DUPLICATE KEY UPDATE` clause for [updateColumns].
   String buildUpsertSuffix(List<String> updateColumns) {
     final assignments = updateColumns
-        .map(
-          (column) =>
-              '${escapeIdentifier(column)} = VALUES(${escapeIdentifier(column)})',
-        )
-        .join(', ');
+      .map((column) => '${escapeIdentifier(column)} = VALUES(${escapeIdentifier(column)})')
+      .join(', ');
     return ' ON DUPLICATE KEY UPDATE $assignments';
   }
 
   /// Alias for [buildUpsertSuffix].
-  String upsertSuffix(List<String> updateColumns) =>
-      buildUpsertSuffix(updateColumns);
+  String upsertSuffix(List<String> updateColumns) => buildUpsertSuffix(updateColumns);
 }

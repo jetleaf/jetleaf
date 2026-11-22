@@ -103,20 +103,34 @@ class SimpleApplicationEventBus implements ApplicationEventBus {
   @override
   Future<void> addApplicationListener({ApplicationEventListener<ApplicationEvent>? listener, String? podName}) async {
     if (listener != null && podName != null) {
+      final previous = _mappedListeners[podName];
+      if (previous != null) {
+        _listeners.remove(previous);
+      }
+
       _mappedListeners.add(podName, listener);
     } else if (listener != null) {
-      _listeners.add(listener);
+      if (!_listeners.contains(listener)) {
+        _listeners.add(listener);
+      }
     } else if (podName != null && _podFactory != null) {
       try {
         final pod = await _podFactory.getSingleton(podName);
-        if(pod is ApplicationEventListener) {
+        if (pod is ApplicationEventListener) {
+          final previous = _mappedListeners[podName];
+          if (previous != null) {
+            _listeners.remove(previous);
+          }
+          
           _mappedListeners.add(podName, pod);
         }
       } catch (_) { }
     }
 
     for (final entry in _mappedListeners.entries) {
-      _listeners.add(entry.value);
+      if (!_listeners.contains(entry.value)) {
+        _listeners.add(entry.value);
+      }
     }
 
     AnnotationAwareOrderComparator.sort(_listeners);

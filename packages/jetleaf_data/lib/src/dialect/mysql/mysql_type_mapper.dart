@@ -22,8 +22,7 @@ import '../sql_type_mapper.dart';
 /// {@endtemplate}
 final class MySqlTypeMapper extends SqlTypeMapper {
   /// Reflective [Class] handle for [MySqlTypeMapper].
-  static final Class<MySqlTypeMapper> CLASS =
-      Class<MySqlTypeMapper>(null, PackageNames.DATA);
+  static final Class<MySqlTypeMapper> CLASS = Class<MySqlTypeMapper>(null, PackageNames.DATA);
 
   /// {@macro jetleaf_mysql_type_mapper}
   MySqlTypeMapper([super.converters]);

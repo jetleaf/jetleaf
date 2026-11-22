@@ -198,9 +198,11 @@ final class DefaultRetryExecutor implements RetryExecutor {
 
       throw RetryExhaustedException('Retry attempts exhausted after ${context.getAttemptCount()} attempts', cause: lastException, context);
     } catch (e) {
-      // Unexpected error
-      for (final listener in _listeners) {
-        listener.onClose(context, e is Exception ? e : null);
+      // Unexpected error (skip duplicate onClose when RetryExhaustedException was just thrown above)
+      if (e is! RetryExhaustedException) {
+        for (final listener in _listeners) {
+          listener.onClose(context, e is Exception ? e : null);
+        }
       }
 
       rethrow;

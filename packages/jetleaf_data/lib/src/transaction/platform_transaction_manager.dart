@@ -14,11 +14,8 @@
 
 import 'package:jetleaf_core/lang.dart';
 
-import 'data_source_transaction_manager.dart';
 import 'transaction_definition.dart';
 import 'transaction_status.dart';
-
-export 'data_source_transaction_manager.dart';
 
 /// {@template jetleaf_platform_transaction_manager}
 /// Central strategy interface in JetLeaf Data's transaction infrastructure.
@@ -32,8 +29,7 @@ export 'data_source_transaction_manager.dart';
 /// {@endtemplate}
 abstract class PlatformTransactionManager with EqualsAndHashCode {
   /// Reflective [Class] handle for [PlatformTransactionManager].
-  static final Class<PlatformTransactionManager> CLASS =
-      Class<PlatformTransactionManager>(null, PackageNames.DATA);
+  static final Class<PlatformTransactionManager> CLASS = Class<PlatformTransactionManager>(null, PackageNames.DATA);
 
   /// {@macro jetleaf_platform_transaction_manager}
   const PlatformTransactionManager();

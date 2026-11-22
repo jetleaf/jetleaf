@@ -12,13 +12,34 @@
 //
 // 🔧 Powered by Hapnium — the Dart backend engine 🍃
 
+/// 🔄 **JetLeaf Transaction Management Library**
+///
+/// Provides declarative (`@Transactional`) and programmatic transaction
+/// coordination across `Zone`-bound database connections:
+/// - [PlatformTransactionManager] & [DataSourceTransactionManager]
+/// - [TransactionDefinition] & [DefaultTransactionDefinition]
+/// - [TransactionStatus], [DefaultTransactionStatus], [TransactionContext]
+/// - [TransactionalMethodInterceptor] & [ZoneTransactionHolder]
+///
+/// ### Usage Example
+/// ```dart
+/// import 'package:jetleaf_data/transaction.dart';
+///
+/// final manager = DataSourceTransactionManager(connectionPool);
+/// final status = await manager.getTransaction(const DefaultTransactionDefinition());
+/// try {
+///   await manager.commit(status);
+/// } catch (_) {
+///   await manager.rollback(status);
+///   rethrow;
+/// }
+/// ```
 library;
 
 export 'src/transaction/data_source_transaction_manager.dart';
 export 'src/transaction/default_transaction_definition.dart';
 export 'src/transaction/default_transaction_status.dart';
 export 'src/transaction/platform_transaction_manager.dart';
-export 'src/transaction/transaction_context.dart';
 export 'src/transaction/transaction_definition.dart';
 export 'src/transaction/transaction_interceptor.dart';
 export 'src/transaction/transaction_status.dart';

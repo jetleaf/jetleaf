@@ -14,22 +14,26 @@
 
 import 'package:jetleaf_core/lang.dart';
 
+import 'built_in_type_converters.dart';
 import 'type_converter.dart';
+import 'type_converter_registry.dart';
 
 /// {@template jetleaf_default_type_converter_registry}
 /// Default synchronized implementation of [ConfigurableTypeConverterRegistry]
 /// backed by an ordered priority list of [TypeConverter] instances.
+///
+/// ### Usage Example
+/// ```dart
+/// final registry = DefaultTypeConverterRegistry.defaults();
+/// final isoString = registry.toColumn(DateTime.now(), DateTime);
+/// ```
 /// {@endtemplate}
-final class DefaultTypeConverterRegistry
-    with EqualsAndHashCode
-    implements ConfigurableTypeConverterRegistry {
+final class DefaultTypeConverterRegistry with EqualsAndHashCode implements ConfigurableTypeConverterRegistry {
   /// Reflective [Class] handle for [DefaultTypeConverterRegistry].
-  static final Class<DefaultTypeConverterRegistry> CLASS =
-      Class<DefaultTypeConverterRegistry>(null, PackageNames.DATA);
+  static final Class<DefaultTypeConverterRegistry> CLASS = Class<DefaultTypeConverterRegistry>(null, PackageNames.DATA);
 
   /// Process-wide shared default registry instance.
-  static final DefaultTypeConverterRegistry instance =
-      DefaultTypeConverterRegistry.defaults();
+  static final DefaultTypeConverterRegistry instance = DefaultTypeConverterRegistry.defaults();
 
   /// Returns the process-wide shared default registry instance.
   static DefaultTypeConverterRegistry getSharedInstance() => instance;
@@ -43,18 +47,16 @@ final class DefaultTypeConverterRegistry
   /// Creates a registry pre-populated with the built-in converters
   /// ([BoolConverter], [DateTimeConverter], [EnumConverter], [NumberConverter],
   /// and [IdentityConverter]).
-  factory DefaultTypeConverterRegistry.defaults() =>
-      DefaultTypeConverterRegistry([
-        const BoolConverter(),
-        const DateTimeConverter(),
-        const EnumConverter(),
-        const NumberConverter(),
-        const IdentityConverter(),
-      ]);
+  factory DefaultTypeConverterRegistry.defaults() => DefaultTypeConverterRegistry([
+    const BoolConverter(),
+    const DateTimeConverter(),
+    const EnumConverter(),
+    const NumberConverter(),
+    const IdentityConverter(),
+  ]);
 
   @override
-  List<TypeConverter> getConverters() =>
-      synchronized(_converters, () => List.unmodifiable(_converters));
+  List<TypeConverter> getConverters() => synchronized(_converters, () => List.unmodifiable(_converters));
 
   @override
   void register(TypeConverter converter, {bool append = false}) {

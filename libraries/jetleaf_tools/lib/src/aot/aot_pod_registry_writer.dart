@@ -98,7 +98,6 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
   String get _primaryName => const Primary().runtimeType.toString();
   String get _namedName => const Named('').runtimeType.toString();
   String get _postConstructName => const PostConstruct().runtimeType.toString();
-  String get _onApplicationReadyName => const OnApplicationReady().runtimeType.toString();
   String get _preDestroyName => const PreDestroy().runtimeType.toString();
   String get _reflectableName => "ReflectableAnnotation";
   String get _conditionalName => Conditional([]).runtimeType.toString();
@@ -138,7 +137,6 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
   /// Supported lifecycle initialization annotation identifiers.
   Set<String> get _postConstructNames => {
     _postConstructName,
-    _onApplicationReadyName,
   };
 
   /// Supported lifecycle destruction annotation identifiers.
@@ -278,7 +276,7 @@ final class AotPodRegistryWriter extends AotSubRegistrarWriter {
     Map<String, ClassDeclaration> classByName = const {},
     Map<String, String> podMethodByReturnType = const {},
   }) async {
-    final scanRoots = resolveComponentScanRoots(components);
+    final scanRoots = resolveEffectiveComponentScanRoots(components);
     final podComponents = components.where((c) {
       if (!isPodComponent(c, classByName)) return false;
       // Component scan roots: register only classes in the declared packages.
@@ -820,27 +818,45 @@ ${factoryMethodCascades.join('\n')}
     return '(PodFactory factory) async => $prefix$className($argsList)';
   }
 
-  /// Synthesizes a static initialization closure for methods annotated with `@PostConstruct` or `@OnApplicationReady`.
+  /// Synthesizes a static initialization closure for methods annotated with `@PostConstruct`.
   String? _buildInitInvoker(
     ClassDeclaration component,
     String prefix,
     String className,
     Map<String, ClassDeclaration> classByName,
   ) {
+    final matchingMethods = <MethodDeclaration>[];
     for (final method in component.getMethods()) {
+      if (method.getParameters().isNotEmpty) continue;
       for (final annotation in method.getAnnotations()) {
         if (matchesOrExtendsAnnotation(annotation.getName(), _postConstructNames, classByName)) {
-          final buffer = StringBuffer('(instance) {\n');
-          buffer.writeln('  final result = (instance as dynamic).${method.getName()}();');
-          buffer.writeln('  if (result is Future) {');
-          buffer.writeln('    return result;');
-          buffer.writeln('  }');
-          buffer.write('}');
-          return buffer.toString();
+          matchingMethods.add(method);
+          break;
         }
       }
     }
-    return null;
+    if (matchingMethods.isEmpty) return null;
+
+    if (matchingMethods.length == 1) {
+      final method = matchingMethods.single;
+      final buffer = StringBuffer('(instance) {\n');
+      buffer.writeln('  final result = (instance as dynamic).${method.getName()}();');
+      buffer.writeln('  if (result is Future) {');
+      buffer.writeln('    return result;');
+      buffer.writeln('  }');
+      buffer.write('}');
+      return buffer.toString();
+    }
+
+    final buffer = StringBuffer('(instance) async {\n');
+    for (final method in matchingMethods) {
+      buffer.writeln('  final res_${method.getName()} = (instance as dynamic).${method.getName()}();');
+      buffer.writeln('  if (res_${method.getName()} is Future) {');
+      buffer.writeln('    await res_${method.getName()};');
+      buffer.writeln('  }');
+    }
+    buffer.write('}');
+    return buffer.toString();
   }
 
   /// Synthesizes a static disposal closure for methods annotated with `@PreDestroy`.
@@ -850,19 +866,37 @@ ${factoryMethodCascades.join('\n')}
     String className,
     Map<String, ClassDeclaration> classByName,
   ) {
+    final matchingMethods = <MethodDeclaration>[];
     for (final method in component.getMethods()) {
+      if (method.getParameters().isNotEmpty) continue;
       for (final annotation in method.getAnnotations()) {
         if (matchesOrExtendsAnnotation(annotation.getName(), _preDestroyNames, classByName)) {
-          final buffer = StringBuffer('(instance) {\n');
-          buffer.writeln('  final result = (instance as dynamic).${method.getName()}();');
-          buffer.writeln('  if (result is Future) {');
-          buffer.writeln('    return result;');
-          buffer.writeln('  }');
-          buffer.write('}');
-          return buffer.toString();
+          matchingMethods.add(method);
+          break;
         }
       }
     }
-    return null;
+    if (matchingMethods.isEmpty) return null;
+
+    if (matchingMethods.length == 1) {
+      final method = matchingMethods.single;
+      final buffer = StringBuffer('(instance) {\n');
+      buffer.writeln('  final result = (instance as dynamic).${method.getName()}();');
+      buffer.writeln('  if (result is Future) {');
+      buffer.writeln('    return result;');
+      buffer.writeln('  }');
+      buffer.write('}');
+      return buffer.toString();
+    }
+
+    final buffer = StringBuffer('(instance) async {\n');
+    for (final method in matchingMethods) {
+      buffer.writeln('  final res_${method.getName()} = (instance as dynamic).${method.getName()}();');
+      buffer.writeln('  if (res_${method.getName()} is Future) {');
+      buffer.writeln('    await res_${method.getName()};');
+      buffer.writeln('  }');
+    }
+    buffer.write('}');
+    return buffer.toString();
   }
 }

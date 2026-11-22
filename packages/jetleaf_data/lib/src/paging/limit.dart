@@ -14,9 +14,18 @@
 
 import 'package:jetleaf_core/lang.dart';
 
-import 'limiting.dart';
-
-export 'limiting.dart';
+/// {@template limiting}
+/// Marker mixin indicating that a type provides limiting behavior.
+///
+/// This mixin itself defines no behavior. It is used purely as a semantic
+/// indicator so that frameworks and utilities can detect whether a type
+/// participates in limiting operations (for example, pagination limits,
+/// maximum result sizes, or query bounds).
+/// {@endtemplate}
+abstract mixin class Limiting {
+  /// Reflective class descriptor for [Limiting].
+  static final Class<Limiting> CLASS = Class<Limiting>(null, PackageNames.DATA);
+}
 
 /// {@template limit}
 /// A value object representing an upper bound (limit) typically used in

@@ -105,7 +105,7 @@ final class AotProxyWriter extends AotSubRegistrarWriter {
     }
 
     var written = 0;
-    final scanRoots = resolveComponentScanRoots(components);
+    final scanRoots = resolveEffectiveComponentScanRoots(components);
     await for (final entity in libDir.list(recursive: true, followLinks: false)) {
       if (entity is! File) continue;
       if (!entity.path.endsWith('.dart')) continue;
@@ -552,8 +552,29 @@ final class AotProxyWriter extends AotSubRegistrarWriter {
       return;
     }
     if (member.isOperator) {
+      final params = member.parameters?.parameters;
+      final argNames = params == null
+          ? const <String>[]
+          : params
+              .map((p) => p.name?.lexeme ?? '')
+              .where((n) => n.isNotEmpty)
+              .toList();
+      final String delegateCall;
+      if (name == '[]' && argNames.length == 1) {
+        delegateCall = 'delegate[${argNames[0]}]';
+      } else if (name == '[]=' && argNames.length == 2) {
+        delegateCall = 'delegate[${argNames[0]}] = ${argNames[1]}';
+      } else if (name == 'unary-' && argNames.isEmpty) {
+        delegateCall = '-delegate';
+      } else if (name == '~' && argNames.isEmpty) {
+        delegateCall = '~delegate';
+      } else if (argNames.length == 1) {
+        delegateCall = 'delegate $name ${argNames[0]}';
+      } else {
+        delegateCall = 'delegate';
+      }
       buffer.writeln('  $returnType operator $name$typeParamsDecl($paramsSigClean) {');
-      buffer.writeln('    return delegate.$name$paramsSigClean;');
+      buffer.writeln('    return $delegateCall;');
       buffer.writeln('  }');
       buffer.writeln();
       return;

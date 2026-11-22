@@ -32,8 +32,7 @@ import 'package:jetleaf_core/lang.dart';
 /// {@endtemplate}
 final class QueryResult with EqualsAndHashCode {
   /// Reflective [Class] handle for [QueryResult].
-  static final Class<QueryResult> CLASS =
-      Class<QueryResult>(null, PackageNames.DATA);
+  static final Class<QueryResult> CLASS = Class<QueryResult>(null, PackageNames.DATA);
 
   /// Shared empty [QueryResult] constant.
   static const QueryResult empty = QueryResult();
@@ -53,15 +52,15 @@ final class QueryResult with EqualsAndHashCode {
 
   /// Creates a [QueryResult] wrapping [rows].
   factory QueryResult.fromRows(List<Map<String, Object?>> rows) => QueryResult(
-        rows: List.unmodifiable(rows),
-        affectedRows: rows.length,
-      );
+    rows: List.unmodifiable(rows),
+    affectedRows: rows.length,
+  );
 
   /// Creates a [QueryResult] reporting [affectedRows] modified rows.
   factory QueryResult.affected(int affectedRows) => QueryResult(
-        affectedRows: affectedRows,
-        totalRows: affectedRows,
-      );
+    affectedRows: affectedRows,
+    totalRows: affectedRows,
+  );
 
   /// Returns the result rows.
   List<Map<String, Object?>> getRows() => _rows;
@@ -89,9 +88,7 @@ final class QueryResult with EqualsAndHashCode {
   /// Throws [IllegalStateException] if more than one row is present.
   Map<String, Object?>? getSingle() {
     if (_rows.length > 1) {
-      throw IllegalStateException(
-        'Expected a single row, got ${_rows.length}',
-      );
+      throw IllegalStateException('Expected a single row, got ${_rows.length}');
     }
     return _rows.isEmpty ? null : _rows.single;
   }

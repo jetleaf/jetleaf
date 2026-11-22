@@ -59,7 +59,7 @@ final class AotTypeRegistryWriter extends AotSubRegistrarWriter {
     required Set<String> registeredTypes,
   }) async {
     final lines = <String>[];
-    final scanRoots = resolveComponentScanRoots(components);
+    final scanRoots = resolveEffectiveComponentScanRoots(components);
 
     for (final component in components) {
       if (scanRoots != null && !isComponentScanned(component, scanRoots)) continue;

@@ -1,12 +1,12 @@
-## Unreleased
+## [2.1.0]
+
+### Fixed
+
+- **Validation factory**: Fixed validation resolution in `ValidationFactory`.
 
 ### Documentation
 
 - **Terminology refresh**: "dart:mirrors" / "mirrors" mentions replaced by "runtime reflection"; no functional changes.
-
----
-
-## [2.1.0]
 
 ### Changed
 

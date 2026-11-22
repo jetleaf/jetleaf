@@ -14,8 +14,8 @@
 
 import 'package:jetleaf_core/lang.dart';
 
-import 'configurable_dialect_registry.dart';
 import 'database_dialect.dart';
+import 'dialect_registry.dart';
 import 'mongo/mongo_dialect.dart';
 import 'mysql/mysql_dialect.dart';
 import 'postgres/postgres_dialect.dart';
@@ -23,17 +23,23 @@ import 'sqlite/sqlite_dialect.dart';
 
 /// {@template jetleaf_default_dialect_registry}
 /// Default synchronized implementation of [ConfigurableDialectRegistry].
+///
+/// Built-in dialects (`postgresql`, `mysql`, `mariadb`, `sqlite`, `mongodb`)
+/// are pre-registered when constructed via [DefaultDialectRegistry.defaults] or
+/// accessed through [DefaultDialectRegistry.instance].
+///
+/// ### Usage Example
+/// ```dart
+/// final registry = DialectRegistry.defaults();
+/// final dialect = registry.forUrl('jdbc:postgresql://localhost:5432/app');
+/// ```
 /// {@endtemplate}
-final class DefaultDialectRegistry
-    with EqualsAndHashCode
-    implements ConfigurableDialectRegistry {
+final class DefaultDialectRegistry with EqualsAndHashCode implements ConfigurableDialectRegistry {
   /// Reflective [Class] handle for [DefaultDialectRegistry].
-  static final Class<DefaultDialectRegistry> CLASS =
-      Class<DefaultDialectRegistry>(null, PackageNames.DATA);
+  static final Class<DefaultDialectRegistry> CLASS = Class<DefaultDialectRegistry>(null, PackageNames.DATA);
 
   /// Process-wide shared default registry instance.
-  static final DefaultDialectRegistry instance =
-      DefaultDialectRegistry.defaults();
+  static final DefaultDialectRegistry instance = DefaultDialectRegistry.defaults();
 
   /// Returns the process-wide shared default registry instance.
   static DefaultDialectRegistry getSharedInstance() => instance;
@@ -88,12 +94,10 @@ final class DefaultDialectRegistry
   }
 
   @override
-  bool supports(String name) =>
-      synchronized(_factories, () => _factories.containsKey(name.toLowerCase()));
+  bool supports(String name) => synchronized(_factories, () => _factories.containsKey(name.toLowerCase()));
 
   @override
-  List<String> getNames() =>
-      synchronized(_factories, () => _factories.keys.toList()..sort());
+  List<String> getNames() => synchronized(_factories, () => _factories.keys.toList()..sort());
 
   @override
   DatabaseDialect getDialect(String name) {
@@ -102,9 +106,7 @@ final class DefaultDialectRegistry
       () => _factories[name.toLowerCase()],
     );
     if (factory == null) {
-      throw IllegalArgumentException(
-        'Unknown dialect "$name". Available: ${getNames().join(', ')}',
-      );
+      throw IllegalArgumentException('Unknown dialect "$name". Available: ${getNames().join(', ')}');
     }
     return factory();
   }
@@ -122,18 +124,14 @@ final class DefaultDialectRegistry
     if (lower.contains('mysql') || lower.contains('mariadb')) {
       return getDialect('mysql');
     }
-    if (lower.contains('sqlite') ||
-        lower.contains(':memory:') ||
-        lower.startsWith('file:')) {
+    if (lower.contains('sqlite') || lower.contains(':memory:') || lower.startsWith('file:')) {
       return getDialect('sqlite');
     }
     if (lower.contains('mongo')) {
       return getDialect('mongodb');
     }
 
-    throw IllegalArgumentException(
-      'Cannot infer a dialect from url "$url". Register one with DialectRegistry.register()',
-    );
+    throw IllegalArgumentException('Cannot infer a dialect from url "$url". Register one with DialectRegistry.register()');
   }
 
   @override

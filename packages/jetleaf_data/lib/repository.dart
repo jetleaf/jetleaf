@@ -12,6 +12,28 @@
 // 
 // 🔧 Powered by Hapnium — the Dart backend engine 🍃
 
+/// 🗄 **JetLeaf Repository Contracts & Runtime Library**
+///
+/// Provides the repository hierarchy, dynamic proxy/executor runtime, and
+/// default repository implementation:
+/// - [Repository], [CrudRepository], [ListCrudRepository],
+///   [PagingAndSortRepository], [ListPagingAndSortRepository], [JetleafRepository]
+/// - [RepositoryExecutor], [DefaultRepositoryExecutor],
+///   [RepositoryFactorySupport]
+/// - [SimpleJetleafRepository] & [DynamicRepositoryProxy]
+///
+/// ### Usage Example
+/// ```dart
+/// import 'package:jetleaf_data/annotation.dart';
+/// import 'package:jetleaf_data/repository.dart';
+///
+/// @Repository()
+/// abstract class UserRepository extends JetleafRepository<User, String> {
+///   Future<User?> findByEmail(String email);
+/// }
+/// ```
+library;
+
 import 'package:jetleaf_core/lang.dart';
 
 import 'src/repository/crud_repository.dart';
@@ -20,8 +42,6 @@ import 'src/repository/repository_executor.dart';
 export 'src/repository/crud_repository.dart';
 export 'src/repository/default_repository_executor.dart';
 export 'src/repository/jetleaf_repository.dart';
-export 'src/repository/list_crud_repository.dart';
-export 'src/repository/list_paging_and_sort_repository.dart';
 export 'src/repository/paging_and_sort_repository.dart';
 export 'src/repository/repository_executor.dart';
 export 'src/repository/repository_factory_support.dart';
@@ -40,8 +60,7 @@ export 'src/repository/internal/simple_jetleaf_repository.dart';
 @Generic(Repository)
 abstract class Repository<T, ID> {
   /// The reflective [Class] handle representing the base `Repository` interface.
-  static final Class<Repository> CLASS =
-      Class<Repository>(null, PackageNames.DATA);
+  static final Class<Repository> CLASS = Class<Repository>(null, PackageNames.DATA);
 
   /// Optional executor used to perform repository operations.
   RepositoryExecutor? executor;

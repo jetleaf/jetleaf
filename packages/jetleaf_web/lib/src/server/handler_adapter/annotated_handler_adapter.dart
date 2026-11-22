@@ -63,11 +63,11 @@ class AnnotatedHandlerAdapter extends AbstractUrlHandlerAdapter {
   @override
   Future<void> handle(ServerHttpRequest request, ServerHttpResponse response, HandlerMethod handler) async {
     if (handler is AnnotatedHandlerMethod) {
-      if (handler.consumes.isNotEmpty) {
+      if (handler.consumes.isNotEmpty && request.getHeaders().getContentType() == null) {
         request.getHeaders().addAll(HttpHeaders.CONTENT_TYPE, handler.consumes.map((i) => i.toString()).toList());
       }
 
-      if (handler.produces.isNotEmpty) {
+      if (handler.produces.isNotEmpty && request.getHeaders().getAccept().isEmpty) {
         request.getHeaders().addAll(HttpHeaders.ACCEPT, handler.produces.map((i) => i.toString()).toList());
       }
 

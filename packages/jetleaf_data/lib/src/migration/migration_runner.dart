@@ -21,10 +21,37 @@ import '../dialect/sql_dialect.dart';
 import '../driver/database_client.dart';
 import '../exception/data_access_exception.dart';
 import 'migration.dart';
-import 'migration_run_result.dart';
 import 'migration_version.dart';
 
-export 'migration_run_result.dart';
+/// {@template jetleaf_migration_run_result}
+/// Immutable summary of a [MigrationRunner.migrate] execution.
+/// {@endtemplate}
+final class MigrationRunResult with EqualsAndHashCode {
+  /// Reflective [Class] handle for [MigrationRunResult].
+  static final Class<MigrationRunResult> CLASS = Class<MigrationRunResult>(null, PackageNames.DATA);
+
+  final List<MigrationVersion> _applied;
+  final List<MigrationVersion> _skipped;
+
+  /// {@macro jetleaf_migration_run_result}
+  const MigrationRunResult({
+    List<MigrationVersion> applied = const [],
+    List<MigrationVersion> skipped = const [],
+  })  : _applied = applied,
+        _skipped = skipped;
+
+  /// Returns the [MigrationVersion]s applied during this run.
+  List<MigrationVersion> getApplied() => _applied;
+
+  /// Returns the [MigrationVersion]s skipped because they were already applied.
+  List<MigrationVersion> getSkipped() => _skipped;
+
+  /// Returns the total number of migrations evaluated (`getApplied().length + getSkipped().length`).
+  int getTotal() => _applied.length + _skipped.length;
+
+  @override
+  List<Object?> equalizedProperties() => [_applied, _skipped];
+}
 
 /// {@template jetleaf_migration_runner}
 /// Executes ordered, checksum-verified schema [Migration]s against a
@@ -36,11 +63,25 @@ export 'migration_run_result.dart';
 /// - Computes FNV-1a 64-bit checksums to detect post-application drift.
 /// - Executes each SQL migration inside an atomic transaction, rolling back
 ///   on failure.
+///
+/// ### Usage Example
+/// ```dart
+/// final runner = MigrationRunner(
+///   client: databaseClient,
+///   dialect: dialect,
+///   migrations: [
+///     SqlMigration(
+///       MigrationVersion.parse('V1__init'),
+///       ['CREATE TABLE users (id TEXT PRIMARY KEY)'],
+///     ),
+///   ],
+/// );
+/// final result = await runner.migrate();
+/// ```
 /// {@endtemplate}
 final class MigrationRunner with EqualsAndHashCode {
   /// Reflective [Class] handle for [MigrationRunner].
-  static final Class<MigrationRunner> CLASS =
-      Class<MigrationRunner>(null, PackageNames.DATA);
+  static final Class<MigrationRunner> CLASS = Class<MigrationRunner>(null, PackageNames.DATA);
 
   /// Default bookkeeping table/collection name.
   static const String MIGRATIONS_TABLE = 'jetleaf_schema_migrations';
@@ -81,16 +122,12 @@ final class MigrationRunner with EqualsAndHashCode {
         continue;
       }
 
-      _logger.info(
-        'Applying migration ${version.getValue()}${version.getDescription() != null ? ' (${version.getDescription()})' : ''}',
-      );
+      _logger.info('Applying migration ${version.getValue()}${version.getDescription() != null ? ' (${version.getDescription()})' : ''}');
       await _applyOne(migration);
       appliedNow.add(version);
     }
 
-    _logger.info(
-      'Migration complete — ${appliedNow.length} applied, ${skipped.length} already up to date',
-    );
+    _logger.info('Migration complete — ${appliedNow.length} applied, ${skipped.length} already up to date');
     return MigrationRunResult(
       applied: List.unmodifiable(appliedNow),
       skipped: List.unmodifiable(skipped),
@@ -122,9 +159,7 @@ final class MigrationRunner with EqualsAndHashCode {
     for (final migration in migrations) {
       final versionVal = migration.getVersion().getValue();
       if (!seen.add(versionVal)) {
-        throw MigrationException(
-          'Duplicate migration version $versionVal in the supplied set',
-        );
+        throw MigrationException('Duplicate migration version $versionVal in the supplied set');
       }
     }
   }
@@ -156,28 +191,28 @@ CREATE TABLE IF NOT EXISTS $table (
 
       return {
         for (final document in documents)
-          if (document['version'] != null)
+          if (document['version'] != null) ...{
             document['version'].toString(): _AppliedRow(
               version: document['version'].toString(),
               description: document['description']?.toString(),
               checksum: document['checksum']?.toString() ?? '',
-            ),
+            )
+          },
       };
     }
 
     final sql = _dialect as SqlDialect;
     final table = sql.escapeIdentifier(MIGRATIONS_TABLE);
-    final result = await _client.query(
-      'SELECT version, description, checksum FROM $table',
-    );
+    final result = await _client.query('SELECT version, description, checksum FROM $table');
 
     return {
-      for (final row in result.getRows())
+      for (final row in result.getRows()) ...{
         row['version']?.toString() ?? '': _AppliedRow(
           version: row['version']?.toString() ?? '',
           description: row['description']?.toString(),
           checksum: row['checksum']?.toString() ?? '',
-        ),
+        )
+      },
     };
   }
 
@@ -271,8 +306,7 @@ CREATE TABLE IF NOT EXISTS $table (
 
     final sql = _dialect as SqlDialect;
     final table = sql.escapeIdentifier(MIGRATIONS_TABLE);
-    final isDollar =
-        sql.getParameterStyle() == SqlParameterStyle.dollarNumbered;
+    final isDollar = sql.getParameterStyle() == SqlParameterStyle.dollarNumbered;
     final placeholders = isDollar ? r'$1, $2, $3, $4' : '?, ?, ?, ?';
 
     await _client.execute(

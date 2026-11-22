@@ -1,9 +1,13 @@
-## Unreleased
+## [2.1.0]
 
 ### Added
 
 - **`WRITE_NULL_MAP_VALUES`**: `JetsonObjectMapper()` now enables `SerializationFeature.WRITE_NULL_MAP_VALUES` by default — null DTO fields are serialized (`"key": null`) instead of silently omitted. Call `mapper.disableFeature(WRITE_NULL_MAP_VALUES.name)` to restore the previous behaviour.
 - **`SerializationFeature.WRITE_NULL_MAP_VALUES`**, **raw `null` preservation**: JSON adapters (Set/Map/List) now keep `null` elements exactly as written in both directions.
+
+### Fixed
+
+- **JSON serialization adapter**: Fixed edge-case type handling in `DartJsonSerializationAdapter`.
 
 ### Changed
 
@@ -11,10 +15,6 @@
 - **`JsonGenerator` flushContext handling of remaining trailing-comma**: pretty-printed output no longer emits a trailing comma before closing structures.
 - **Null field serialization and deserialization symmetry**: previously asymmetric handling produced `"items": [null, 1]` from `"items": [...]` with `null` values dropped; now `List`/`Map`/`Set` adapters round-trip explicit nulls.
 - **`jetson_test.dart`** rewritten as a proper smoke test (no longer relies on the `@JetleafTest` harness); covers flat payload round-trip and null-field preservation.
-
----
-
-## [2.1.0]
 
 ### Enhancements
 

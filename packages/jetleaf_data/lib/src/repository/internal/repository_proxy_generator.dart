@@ -47,8 +47,7 @@ import 'simple_jetleaf_repository.dart';
 /// {@endtemplate}
 final class DynamicRepositoryProxy {
   /// Reflective class descriptor for [DynamicRepositoryProxy].
-  static final Class<DynamicRepositoryProxy> CLASS =
-      Class<DynamicRepositoryProxy>(null, PackageNames.DATA);
+  static final Class<DynamicRepositoryProxy> CLASS = Class<DynamicRepositoryProxy>(null, PackageNames.DATA);
 
   final Class<dynamic> _repositoryClass;
   final EntityMetadata<dynamic> _metadata;
@@ -68,8 +67,7 @@ final class DynamicRepositoryProxy {
         _metadata = metadata,
         _client = client,
         _dialect = dialect,
-        _simple = simple ??
-            SimpleJetleafRepository<dynamic, Object?>(metadata, client, dialect);
+        _simple = simple ?? SimpleJetleafRepository<dynamic, Object?>(metadata, client, dialect);
 
   /// Returns the reflective [Class] of the proxied repository contract.
   Class<dynamic> getRepositoryClass() => _repositoryClass;
@@ -94,8 +92,8 @@ final class DynamicRepositoryProxy {
 
   @override
   bool operator ==(Object other) =>
-      other is DynamicRepositoryProxy &&
-      other._repositoryClass == _repositoryClass;
+    other is DynamicRepositoryProxy &&
+    other._repositoryClass == _repositoryClass;
 
   @override
   dynamic noSuchMethod(Invocation invocation) {
@@ -110,8 +108,7 @@ final class DynamicRepositoryProxy {
     }
 
     if (memberName == '==') {
-      return invocation.positionalArguments.isNotEmpty &&
-          this == invocation.positionalArguments.first;
+      return invocation.positionalArguments.isNotEmpty && this == invocation.positionalArguments.first;
     }
 
     return _dispatchAsync(
@@ -291,14 +288,14 @@ final class DynamicRepositoryProxy {
         );
         final rows = await _fetchMapped(criteria);
         final total = queryMethod.getReturnKind() == ReturnKind.page
-            ? await _simple.countByCriteria(
-                QueryCriteria.count(
-                  metadata: _metadata,
-                  predicate: tree.getPredicate(),
-                  values: bound.getPositional(),
-                ),
-              )
-            : rows.length;
+          ? await _simple.countByCriteria(
+              QueryCriteria.count(
+                metadata: _metadata,
+                predicate: tree.getPredicate(),
+                values: bound.getPositional(),
+              ),
+            )
+          : rows.length;
         return SimplePage<dynamic>(rows, effectivePageable, total);
       case ReturnKind.count:
         return _simple.executeQueryCount(tree, bound.getPositional());
@@ -378,12 +375,12 @@ final class DynamicRepositoryProxy {
       orderedArguments,
       queryMethod.getMethod(),
       methodName: queryMethod.getName(),
-      query: declared.getValue(),
+      query: declared.value,
     );
 
-    final sql = declared.isNativeQuery()
-        ? declared.getValue()
-        : _translateJql(declared.getValue());
+    final sql = declared.nativeQuery
+        ? declared.value
+        : _translateJql(declared.value);
     final expanded = _expandNamedParameters(sql, bound.getNamed());
 
     if (queryMethod.isModifying()) {

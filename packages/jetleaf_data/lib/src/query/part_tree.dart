@@ -19,12 +19,136 @@ import '../mapping/default_entity_metadata_registry.dart';
 import '../mapping/entity_metadata.dart';
 import '../mapping/entity_metadata_registry.dart';
 import '../paging/sort.dart';
-import 'criterion.dart';
 import 'part.dart';
-import 'part_subject.dart';
 
-export 'criterion.dart';
-export 'part_subject.dart';
+/// {@template jetleaf_part_subject}
+/// Classifies the **query verb prefix** of a derived repository method name.
+/// {@endtemplate}
+enum PartSubject {
+  /// `find…` — projects matching entities.
+  find,
+
+  /// `read…` — alias of [find].
+  read,
+
+  /// `get…` — alias of [find].
+  get,
+
+  /// `query…` — alias of [find].
+  query,
+
+  /// `count…` — returns the count of matching entities.
+  count,
+
+  /// `exists…` — returns `true` when at least one entity matches.
+  exists,
+
+  /// `delete…` — deletes matching entities.
+  delete,
+
+  /// `remove…` — alias of [delete].
+  remove;
+
+  /// Returns `true` if this subject represents a `COUNT` query.
+  bool isCount() => this == count;
+
+  /// Returns `true` if this subject represents an `EXISTS` probe.
+  bool isExists() => this == exists;
+
+  /// Returns `true` if this subject represents a `DELETE` operation.
+  bool isDelete() => this == delete || this == remove;
+
+  /// Returns `true` if this subject represents a `SELECT` projection.
+  bool isSelect() => !isCount() && !isExists() && !isDelete();
+}
+
+/// {@template jetleaf_criterion}
+/// Sealed AST node representing a boolean predicate tree produced by
+/// [PartTree].
+///
+/// The grammar models a disjunction (`Or`) of conjunctions (`And`) of leaf
+/// [PartCriterion] nodes, ensuring `And` binds more tightly than `Or`.
+/// {@endtemplate}
+sealed class Criterion with EqualsAndHashCode {
+  /// {@macro jetleaf_criterion}
+  const Criterion();
+
+  /// Returns a depth-first iterable of all leaf [Part] nodes in parameter
+  /// binding order.
+  Iterable<Part> getParts() sync* {
+    switch (this) {
+      case PartCriterion():
+        yield (this as PartCriterion).getPart();
+      case CompositeCriterion():
+        for (final child in (this as CompositeCriterion).getChildren()) {
+          yield* child.getParts();
+        }
+    }
+  }
+}
+
+/// {@template jetleaf_part_criterion}
+/// Leaf [Criterion] wrapping a single [Part].
+/// {@endtemplate}
+final class PartCriterion extends Criterion {
+  /// Reflective [Class] handle for [PartCriterion].
+  static final Class<PartCriterion> CLASS = Class<PartCriterion>(null, PackageNames.DATA);
+
+  final Part _part;
+
+  /// {@macro jetleaf_part_criterion}
+  const PartCriterion(this._part);
+
+  /// Returns the wrapped [Part].
+  Part getPart() => _part;
+
+  @override
+  List<Object?> equalizedProperties() => [_part];
+
+  @override
+  String toString() => _part.toString();
+}
+
+/// {@template jetleaf_composite_criterion}
+/// Composite [Criterion] combining child criteria with boolean `AND` or `OR`.
+/// {@endtemplate}
+final class CompositeCriterion extends Criterion {
+  /// Reflective [Class] handle for [CompositeCriterion].
+  static final Class<CompositeCriterion> CLASS = Class<CompositeCriterion>(null, PackageNames.DATA);
+
+  final bool _isOr;
+  final List<Criterion> _children;
+
+  /// {@macro jetleaf_composite_criterion}
+  const CompositeCriterion({
+    required bool isOr,
+    required List<Criterion> children,
+  })  : _isOr = isOr,
+        _children = children;
+
+  /// Creates an `AND` conjunction of [children].
+  factory CompositeCriterion.and(List<Criterion> children) =>
+      CompositeCriterion(isOr: false, children: List.unmodifiable(children));
+
+  /// Creates an `OR` disjunction of [children].
+  factory CompositeCriterion.or(List<Criterion> children) =>
+      CompositeCriterion(isOr: true, children: List.unmodifiable(children));
+
+  /// Returns `true` if this node is an `OR` disjunction, or `false` for `AND`.
+  bool isOr() => _isOr;
+
+  /// Returns `true` if this node is an `AND` conjunction.
+  bool isAnd() => !_isOr;
+
+  /// Returns the ordered child [Criterion] nodes.
+  List<Criterion> getChildren() => _children;
+
+  @override
+  List<Object?> equalizedProperties() => [_isOr, _children];
+
+  @override
+  String toString() => '(${_children.map((c) => c.toString()).join(_isOr ? ' OR ' : ' AND ')})';
+}
 
 /// {@template jetleaf_part_tree}
 /// AST parser and representation of a **derived repository query method name**.
@@ -94,12 +218,10 @@ final class PartTree with EqualsAndHashCode {
   Sort getSort() => _sort;
 
   /// Returns the total number of method arguments consumed by [getPredicate].
-  int getParameterCount() =>
-      _predicate?.getParts().fold<int>(
-            0,
-            (sum, part) => sum + part.getParameterCount(),
-          ) ??
-      0;
+  int getParameterCount() => _predicate?.getParts().fold<int>(
+    0,
+    (sum, part) => sum + part.getParameterCount(),
+  ) ?? 0;
 
   /// Returns `true` if this is a `count` query.
   bool isCount() => _subject.isCount();
@@ -118,12 +240,12 @@ final class PartTree with EqualsAndHashCode {
 
   @override
   List<Object?> equalizedProperties() => [
-        _subject,
-        _distinct,
-        _predicate,
-        _sort,
-        _limit,
-      ];
+    _subject,
+    _distinct,
+    _predicate,
+    _sort,
+    _limit,
+  ];
 
   // ---------------------------------------------------------------------------
   // Parser Implementation
@@ -133,8 +255,7 @@ final class PartTree with EqualsAndHashCode {
   ///
   /// Uses [metadataRegistry] (or [DefaultEntityMetadataRegistry.instance]) to
   /// resolve nested relationship paths.
-  static PartTree parse(
-    String methodName, {
+  static PartTree parse(String methodName, {
     required EntityMetadata<dynamic> metadata,
     EntityMetadataRegistry? metadataRegistry,
   }) {
@@ -347,8 +468,7 @@ final class PartTree with EqualsAndHashCode {
     var ignoreCase = false;
     if (remaining.endsWith('IgnoreCase')) {
       ignoreCase = true;
-      remaining =
-          remaining.substring(0, remaining.length - 'IgnoreCase'.length);
+      remaining = remaining.substring(0, remaining.length - 'IgnoreCase'.length);
       if (remaining.isEmpty) {
         throw QueryDerivationException(
           '"IgnoreCase" without a property in "$methodName"',
@@ -387,8 +507,7 @@ final class PartTree with EqualsAndHashCode {
       }
     }
 
-    final resolved =
-        _resolvePropertyPath(remaining, metadata, methodName, registry);
+    final resolved = _resolvePropertyPath(remaining, metadata, methodName, registry);
     return Part(
       property: resolved,
       operator: PartOperator.equals,
@@ -428,8 +547,7 @@ final class PartTree with EqualsAndHashCode {
         );
       }
 
-      candidates
-          .sort((a, b) => b.normalized.length.compareTo(a.normalized.length));
+      candidates.sort((a, b) => b.normalized.length.compareTo(a.normalized.length));
 
       _PropertyCandidate? matched;
       final remainingNormalized = _normalize(remaining);
@@ -441,8 +559,7 @@ final class PartTree with EqualsAndHashCode {
       }
 
       if (matched == null) {
-        final fragment =
-            remaining.length <= 32 ? remaining : remaining.substring(0, 32);
+        final fragment = remaining.length <= 32 ? remaining : remaining.substring(0, 32);
         throw QueryDerivationException(
           'No property "$fragment" on ${current.getSimpleName()} (parsing "$methodName")',
           methodName: methodName,
@@ -475,8 +592,7 @@ final class PartTree with EqualsAndHashCode {
     return path.join('.');
   }
 
-  static String _normalize(String value) =>
-      value.toLowerCase().replaceAll('_', '');
+  static String _normalize(String value) => value.toLowerCase().replaceAll('_', '');
 
   static String _consumeRaw(String raw, int normalizedLength) {
     var consumed = 0;
@@ -507,8 +623,7 @@ final class PartTree with EqualsAndHashCode {
     var remaining = source;
 
     while (remaining.isNotEmpty) {
-      final resolution =
-          _resolveLeadingPath(remaining, metadata, methodName, registry);
+      final resolution = _resolveLeadingPath(remaining, metadata, methodName, registry);
       remaining = remaining.substring(resolution.consumed);
 
       var direction = SortDirection.ASC;
@@ -562,8 +677,7 @@ final class PartTree with EqualsAndHashCode {
         );
       }
 
-      candidates
-          .sort((a, b) => b.normalized.length.compareTo(a.normalized.length));
+      candidates.sort((a, b) => b.normalized.length.compareTo(a.normalized.length));
 
       final remainingNormalized = _normalize(remaining);
       _PropertyCandidate? matched;
@@ -634,8 +748,7 @@ final class PartTree with EqualsAndHashCode {
     return null;
   }
 
-  static bool _isUpper(String c) =>
-      c == c.toUpperCase() && c != c.toLowerCase();
+  static bool _isUpper(String c) => c == c.toUpperCase() && c != c.toLowerCase();
 
   static final List<_SubjectCandidate> _subjectsByDescendingLength =
       List<_SubjectCandidate>.unmodifiable(

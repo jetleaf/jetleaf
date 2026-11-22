@@ -1,11 +1,3 @@
-## Unreleased
-
-### Documentation
-
-- **Terminology refresh**: "dart:mirrors" / "mirrors" mentions replaced by "runtime reflection"; no functional changes.
-
----
-
 # Changelog
 
 All notable changes to this project will be documented in this file.  
@@ -22,7 +14,12 @@ This project follows a simple, human-readable changelog format inspired by
 
 ### Fixed
 
+- **Object property lookup**: Fixed reflective property/getter resolution (`_readObjectProperty`) in `jtl` template rendering (`_template.dart`) with updated coverage in `template_renderer_test.dart`.
 - Minor template-engine internals aligned with 2.1.0 core APIs.
+
+### Documentation
+
+- **Terminology refresh**: "dart:mirrors" / "mirrors" mentions replaced by "runtime reflection"; no functional changes.
 
 ---
 

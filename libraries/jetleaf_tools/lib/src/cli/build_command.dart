@@ -38,7 +38,7 @@ Options:
       return 0;
     }
     final root = _flagValue(args, '--root') ?? Directory.current.path;
-    final directory = Directory(root);
+    final directory = Directory(root).absolute;
     if (!directory.existsSync()) {
       stderr.writeln('Error: root not found: $root');
       return 1;

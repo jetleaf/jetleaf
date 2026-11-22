@@ -16,6 +16,7 @@ import 'package:jetleaf_core/lang.dart';
 
 import 'entity_metadata.dart';
 import 'entity_metadata_builder.dart';
+import 'entity_metadata_registry.dart';
 import 'naming_strategy.dart';
 
 /// {@template jetleaf_default_entity_metadata_registry}
@@ -27,21 +28,24 @@ import 'naming_strategy.dart';
 /// All cache reads and writes are synchronized via JetLeaf's `synchronized`
 /// primitive.
 ///
+/// ### Usage Example
+/// ```dart
+/// final registry = DefaultEntityMetadataRegistry();
+/// final metadata = registry.get<User>();
+/// print('Table: ${metadata.getTableName()}');
+/// ```
+///
 /// ### See Also
 /// - [EntityMetadataRegistry]
 /// - [ConfigurableEntityMetadataRegistry]
 /// - [EntityMetadataBuilder]
 /// {@endtemplate}
-final class DefaultEntityMetadataRegistry
-    with EqualsAndHashCode
-    implements ConfigurableEntityMetadataRegistry {
+final class DefaultEntityMetadataRegistry with EqualsAndHashCode implements ConfigurableEntityMetadataRegistry {
   /// Reflective [Class] handle for [DefaultEntityMetadataRegistry].
-  static final Class<DefaultEntityMetadataRegistry> CLASS =
-      Class<DefaultEntityMetadataRegistry>(null, PackageNames.DATA);
+  static final Class<DefaultEntityMetadataRegistry> CLASS = Class<DefaultEntityMetadataRegistry>(null, PackageNames.DATA);
 
   /// Process-wide shared default registry instance.
-  static final DefaultEntityMetadataRegistry instance =
-      DefaultEntityMetadataRegistry();
+  static final DefaultEntityMetadataRegistry instance = DefaultEntityMetadataRegistry();
 
   /// Returns the process-wide shared default registry instance.
   static DefaultEntityMetadataRegistry getSharedInstance() => instance;

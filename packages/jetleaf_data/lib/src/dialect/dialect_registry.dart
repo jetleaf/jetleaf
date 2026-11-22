@@ -14,12 +14,8 @@
 
 import 'package:jetleaf_core/lang.dart';
 
-import 'configurable_dialect_registry.dart';
 import 'database_dialect.dart';
 import 'default_dialect_registry.dart';
-
-export 'configurable_dialect_registry.dart';
-export 'default_dialect_registry.dart';
 
 /// {@template jetleaf_dialect_registry}
 /// Registry contract for resolving [DatabaseDialect] instances by
@@ -32,16 +28,13 @@ export 'default_dialect_registry.dart';
 /// {@endtemplate}
 abstract interface class DialectRegistry {
   /// Reflective [Class] handle for [DialectRegistry].
-  static final Class<DialectRegistry> CLASS =
-      Class<DialectRegistry>(null, PackageNames.DATA);
+  static final Class<DialectRegistry> CLASS = Class<DialectRegistry>(null, PackageNames.DATA);
 
   /// Shared process-wide default [DefaultDialectRegistry] instance.
-  static final DefaultDialectRegistry instance =
-      DefaultDialectRegistry.instance;
+  static final DefaultDialectRegistry instance = DefaultDialectRegistry.instance;
 
   /// Returns the shared process-wide default [DefaultDialectRegistry] instance.
-  static DefaultDialectRegistry getSharedInstance() =>
-      DefaultDialectRegistry.getSharedInstance();
+  static DefaultDialectRegistry getSharedInstance() => DefaultDialectRegistry.getSharedInstance();
 
   /// Creates an empty [DefaultDialectRegistry].
   factory DialectRegistry() = DefaultDialectRegistry;
@@ -69,4 +62,19 @@ abstract interface class DialectRegistry {
 
   /// Registers [factory] under [name] (case-insensitive).
   void register(String name, DatabaseDialect Function() factory);
+}
+
+/// {@template jetleaf_configurable_dialect_registry}
+/// Configurable extension of [DialectRegistry] supporting dynamic dialect
+/// registration, removal, and clearing.
+/// {@endtemplate}
+abstract interface class ConfigurableDialectRegistry implements DialectRegistry {
+  /// Reflective [Class] handle for [ConfigurableDialectRegistry].
+  static final Class<ConfigurableDialectRegistry> CLASS = Class<ConfigurableDialectRegistry>(null, PackageNames.DATA);
+
+  /// Removes the dialect registration for [name].
+  void unregister(String name);
+
+  /// Removes all dialect registrations.
+  void clear();
 }

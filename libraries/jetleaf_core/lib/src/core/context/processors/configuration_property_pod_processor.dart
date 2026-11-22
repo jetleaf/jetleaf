@@ -176,24 +176,26 @@ class ConfigurationPropertyPodProcessor extends PodSmartInstantiationProcessor i
     final values = <String, Object?>{};
 
     for (final field in targetClass.getFields()) {
+      if (field.isStatic() || field.isConst()) continue;
+
       final fieldName = field.getName();
       final propertyKey = prefix.isEmpty ? fieldName : '$prefix.$fieldName';
       final fieldType = field.getReturnClass();
 
-      // 1. Try direct property match
-      Object? rawValue = _environment.getProperty(propertyKey);
+      // 1. Try direct or relaxed (kebab-case / snake_case) property match
+      Object? rawValue = _lookupRelaxedProperty(prefix, fieldName);
 
       // 2. Nested configuration
-      // If not found and complex type, try to instantiate nested object
-      if (rawValue == null && !_isPrimitiveOrEnum(fieldType)) {
+      // If not found and complex non-collection type, try to instantiate nested object
+      if (rawValue == null && !_isPrimitiveOrEnumOrCollection(fieldType)) {
         rawValue = await _createNestedInstance(fieldType, propertyKey);
       }
 
       // 3. Convert and Store
       if (rawValue != null) {
-        // If it's a primitive/simple from env, convert it.
+        // If it's a primitive/simple/collection from env, convert it.
         // If it's an object from _createNestedInstance, it's already the right type.
-        if (_isPrimitiveOrEnum(fieldType) || rawValue is String) {
+        if (_isPrimitiveOrEnumOrCollection(fieldType) || rawValue is String) {
           final converted = _podFactory.getConversionService().convert(rawValue, fieldType);
           if (converted != null) {
             values[fieldName] = converted;
@@ -282,7 +284,7 @@ class ConfigurationPropertyPodProcessor extends PodSmartInstantiationProcessor i
   /// Populates writable fields on an [instance] using the [resolvedValues].
   void _populateFields(Object instance, Class clazz, Map<String, Object?> resolvedValues) {
     for (final field in clazz.getFields()) {
-      if (!field.isWritable()) continue;
+      if (field.isStatic() || field.isConst() || !field.isWritable()) continue;
 
       final name = field.getName();
       if (resolvedValues.containsKey(name)) {
@@ -320,12 +322,49 @@ class ConfigurationPropertyPodProcessor extends PodSmartInstantiationProcessor i
     return args;
   }
 
-  /// {@template configuration_property_binder.is_primitive_or_enum}
-  /// Determines whether a given class should be treated as a "primitive-like" type
-  /// for configuration binding purposes.
+  /// {@template configuration_property_binder.lookup_relaxed_property}
+  /// Looks up a configuration property in [_environment] using relaxed binding
+  /// conventions under the optional [prefix].
+  ///
+  /// Resolution order for [fieldName]:
+  /// 1. Exact camelCase (`<prefix>.<fieldName>`)
+  /// 2. Kebab-case (`<prefix>.<kebab-case>`)
+  /// 3. Snake_case (`<prefix>.<snake_case>`)
+  ///
+  /// Returns the first non-null property value found, or `null` if none match.
   /// {@endtemplate}
-  bool _isPrimitiveOrEnum(Class clazz) {
-    return clazz.isPrimitive() || clazz.isEnum() || clazz.getName().startsWith('dart.');
+  Object? _lookupRelaxedProperty(String prefix, String fieldName) {
+    final exactKey = prefix.isEmpty ? fieldName : '$prefix.$fieldName';
+    final direct = _environment.getProperty(exactKey);
+    if (direct != null) return direct;
+
+    final snake = fieldName.replaceAllMapped(
+      RegExp(r'([a-z0-9])([A-Z])'),
+      (m) => '${m.group(1)}_${m.group(2)!.toLowerCase()}',
+    ).toLowerCase();
+    final kebab = snake.replaceAll('_', '-');
+
+    final kebabKey = prefix.isEmpty ? kebab : '$prefix.$kebab';
+    final fromKebab = _environment.getProperty(kebabKey);
+    if (fromKebab != null) return fromKebab;
+
+    final snakeKey = prefix.isEmpty ? snake : '$prefix.$snake';
+    return _environment.getProperty(snakeKey);
+  }
+
+  /// {@template configuration_property_binder.is_primitive_or_enum}
+  /// Determines whether a given class should be treated as a "primitive-like" or
+  /// collection type for configuration binding purposes.
+  /// {@endtemplate}
+  bool _isPrimitiveOrEnumOrCollection(Class clazz) {
+    final simple = clazz.getSimpleName();
+    return clazz.isPrimitive() ||
+        clazz.isEnum() ||
+        clazz.getName().startsWith('dart.') ||
+        simple == 'List' ||
+        simple == 'Set' ||
+        simple == 'Iterable' ||
+        simple == 'Map';
   }
 }
 

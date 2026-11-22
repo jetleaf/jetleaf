@@ -17,11 +17,48 @@ import 'package:jetleaf_core/lang.dart';
 import '../annotation/query.dart';
 import '../mapping/entity_metadata.dart';
 import 'part_tree.dart';
-import 'query_execution.dart';
-import 'return_kind.dart';
 
-export 'query_execution.dart';
-export 'return_kind.dart';
+/// {@template jetleaf_query_execution}
+/// Identifies whether a repository query method is resolved via **method-name
+/// derivation** ([PartTree]) or an explicit **`@Query` declaration**.
+/// {@endtemplate}
+enum QueryExecution {
+  /// Query derived from the method name via [PartTree].
+  derived,
+
+  /// Query explicitly declared via `@Query`.
+  declared,
+}
+
+/// {@template jetleaf_return_kind}
+/// Classifies the **return type shape** of a repository query method.
+/// {@endtemplate}
+enum ReturnKind {
+  /// `Future<void>` — mutation with no result payload.
+  void$,
+
+  /// Single entity instance (`Future<T>` or `Future<T?>`).
+  single,
+
+  /// Collection of entities (`Future<List<T>>`, `Future<Iterable<T>>`, or
+  /// `Future<Set<T>>`).
+  collection,
+
+  /// Paginated `Page` result (`Future<Page<T>>`).
+  page,
+
+  /// Paginated `Slice` result (`Future<Slice<T>>`).
+  slice,
+
+  /// Integer count (`Future<int>`).
+  count,
+
+  /// Boolean existence flag (`Future<bool>`).
+  exists,
+
+  /// Numeric scalar (`Future<num>`, `Future<double>`, `Future<BigInt>`).
+  scalar,
+}
 
 /// {@template jetleaf_query_method}
 /// Analyzed representation of a repository query method, pairing its
@@ -36,8 +73,7 @@ export 'return_kind.dart';
 /// {@endtemplate}
 final class QueryMethod with EqualsAndHashCode {
   /// Reflective [Class] handle for [QueryMethod].
-  static final Class<QueryMethod> CLASS =
-      Class<QueryMethod>(null, PackageNames.DATA);
+  static final Class<QueryMethod> CLASS = Class<QueryMethod>(null, PackageNames.DATA);
 
   final Method _method;
   final EntityMetadata<dynamic> _metadata;
@@ -122,7 +158,7 @@ final class QueryMethod with EqualsAndHashCode {
     final query = _declaredQuery;
     return _modifying != null ||
         (_tree?.isDelete() ?? false) ||
-        (query != null && _isMutationSql(query.getValue()));
+        (query != null && _isMutationSql(query.value));
   }
 
   /// Returns `true` if this method is a derived `count` query.
@@ -142,10 +178,7 @@ final class QueryMethod with EqualsAndHashCode {
       final component = method.componentType<dynamic>();
       if (component != null) {
         final name = component.getSimpleName();
-        if (name == 'List' ||
-            name == 'Iterable' ||
-            name == 'Set' ||
-            name == 'Collection') {
+        if (name == 'List' || name == 'Iterable' || name == 'Set' || name == 'Collection') {
           return ReturnKind.collection;
         }
         if (name == 'Page') return ReturnKind.page;
@@ -165,19 +198,14 @@ final class QueryMethod with EqualsAndHashCode {
     final inner = _unwrapFuture(raw).replaceAll(' ', '');
 
     if (inner == 'void' || inner == 'Null') return ReturnKind.void$;
-    if (inner.startsWith('List<') ||
-        inner.startsWith('Iterable<') ||
-        inner.startsWith('Set<') ||
-        inner.startsWith('Collection<')) {
+    if (inner.startsWith('List<') || inner.startsWith('Iterable<') || inner.startsWith('Set<') || inner.startsWith('Collection<')) {
       return ReturnKind.collection;
     }
     if (inner.startsWith('Page<')) return ReturnKind.page;
     if (inner.startsWith('Slice<')) return ReturnKind.slice;
     if (inner == 'int' || inner == 'long') return ReturnKind.count;
     if (inner == 'bool') return ReturnKind.exists;
-    if (inner.startsWith('num') ||
-        inner.startsWith('double') ||
-        inner.startsWith('BigInt')) {
+    if (inner.startsWith('num') || inner.startsWith('double') || inner.startsWith('BigInt')) {
       return ReturnKind.scalar;
     }
 
@@ -192,8 +220,7 @@ final class QueryMethod with EqualsAndHashCode {
         continue;
       }
       if (current.startsWith('FutureOr<') && current.endsWith('>')) {
-        current =
-            current.substring('FutureOr<'.length, current.length - 1).trim();
+        current = current.substring('FutureOr<'.length, current.length - 1).trim();
         continue;
       }
       return current;
@@ -202,13 +229,12 @@ final class QueryMethod with EqualsAndHashCode {
 
   @override
   List<Object?> equalizedProperties() => [
-        _method,
-        _metadata.getEntityType(),
-        _execution,
-        _returnKind,
-      ];
+    _method,
+    _metadata.getEntityType(),
+    _execution,
+    _returnKind,
+  ];
 
   @override
-  String toString() =>
-      'QueryMethod(${_method.getName()}; execution: $_execution; return: $_returnKind)';
+  String toString() => 'QueryMethod(${_method.getName()}; execution: $_execution; return: $_returnKind)';
 }

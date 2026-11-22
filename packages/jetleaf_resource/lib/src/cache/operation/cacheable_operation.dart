@@ -89,7 +89,27 @@ final class CacheableOperation implements CacheOperation {
     final key = await context.generateKey(annotation.keyGenerator);
 
     // ─────────────────────────────────────────────────────────────
-    // STEP 3: Attempt retrieval from each cache
+    // STEP 3: If this is the post-invocation phase after a cache miss,
+    //         store the computed method result into each resolved cache.
+    // ─────────────────────────────────────────────────────────────
+    if (context.isCacheMiss()) {
+      if (!context.hasResult()) {
+        return;
+      }
+
+      final result = context.getResult();
+      for (final cache in caches) {
+        try {
+          await cache.put(key, result);
+        } catch (e, st) {
+          await context.onPut(e, st, cache, key, result);
+        }
+      }
+      return;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // STEP 4: Attempt retrieval from each cache
     // ─────────────────────────────────────────────────────────────
     for (final cache in caches) {
       try {

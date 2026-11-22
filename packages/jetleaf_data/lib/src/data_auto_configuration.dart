@@ -12,23 +12,20 @@
 // 
 // 🔧 Powered by Hapnium — the Dart backend engine 🍃
 
-import 'package:jetleaf_core/core.dart' hide Repository;
+import 'package:jetleaf_core/core.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_core/pod.dart';
 
-import '../annotation.dart';
-import 'config/transaction_manager_binder.dart';
+import 'core/transaction_manager_binder.dart';
 import 'core/default_repository_context.dart';
 import 'core/repository_context.dart';
+import 'dialect/default_dialect_registry.dart';
 import 'dialect/dialect_registry.dart';
 import 'mapping/default_entity_metadata_registry.dart';
 import 'mapping/default_type_converter_registry.dart';
 import 'mapping/entity_metadata_registry.dart';
 import 'mapping/type_converter_registry.dart';
 import 'transaction/transaction_interceptor.dart';
-
-export 'config/data_configurer.dart';
-export 'config/transaction_manager_binder.dart';
 
 /// {@template jetleaf_data_auto_configuration}
 /// Auto-configuration pod for the **JetLeaf Data module**.
@@ -47,8 +44,7 @@ export 'config/transaction_manager_binder.dart';
 @ComponentScan(includeFilters: [ComponentScanFilter(FilterType.ANNOTATION, classes: [ClassType<Repository>()])])
 final class DataAutoConfiguration {
   /// Reflective class descriptor for [DataAutoConfiguration].
-  static final Class<DataAutoConfiguration> CLASS =
-      Class<DataAutoConfiguration>(null, PackageNames.DATA);
+  static final Class<DataAutoConfiguration> CLASS = Class<DataAutoConfiguration>(null, PackageNames.DATA);
 
   /// The name of this data configuration pod.
   static const String NAME = "jetleaf.data.configuration";

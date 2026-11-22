@@ -21,8 +21,7 @@ import '../document_type_mapper.dart';
 /// {@endtemplate}
 final class MongoTypeMapper extends DocumentTypeMapper {
   /// Reflective [Class] handle for [MongoTypeMapper].
-  static final Class<MongoTypeMapper> CLASS =
-      Class<MongoTypeMapper>(null, PackageNames.DATA);
+  static final Class<MongoTypeMapper> CLASS = Class<MongoTypeMapper>(null, PackageNames.DATA);
 
   /// {@macro jetleaf_mongo_type_mapper}
   MongoTypeMapper([super.converters]);

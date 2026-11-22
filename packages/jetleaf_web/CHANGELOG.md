@@ -1,4 +1,4 @@
-## Unreleased
+## [2.1.0]
 
 ### Added
 
@@ -12,17 +12,11 @@
 - **Test AOT registry**: Warm test VMs now import `lib/_jetleaf/test/registry.g.dart` as a package root (`package:jetleaf_web/_jetleaf/test/registry.g.dart`) — previously `package:jetleaf_web/_jetleaf/aot_registry.g.dart`.
 - **Component-scan scope filters**: Registrar-based scan now honours `@ComponentScan(includeFilters: [FilterType.ANNOTATION])` scopes for handler mapping resolution.
 - **`handler_test.dart`**: Jetson-constructed request DTO tests updated to reflect null-field round-trip preservation.
-
----
-
-## [2.1.0]
-
-### Changed
-
 - **Dependency Bumps**: `jetleaf_core: ^2.1.0`, `jetson: ^2.1.0`, `jtl: ^2.1.0`.
 
 ### Fixed
 
+- **Server dispatch & handler resolution**: Fixed request dispatch, parameter/return adaptation, and handler mapping edge cases in `AbstractServerDispatcher`, `AnnotatedHandlerAdapter`, and `AbstractAnnotatedHandlerMapping`.
 - **MediaType in Annotations**: `@RequestMapping`/`produces`/`consumes` now filter raw entries through `whereType<MediaType>()` when routing — parameterized/annotation fragments can no longer leak non-MediaType values into handler lookup.
 - **Accept Header Negotiation**: `StringReturnValueHandler` now ignores wildcard `*/*` Accept entries and falls back to `text/plain`, matching RFC 7231 semantics.
 - **Test `_ControllerDefinition` Test Helper**: Default definition now points at the registered `HttpStatus` type instead of the unregistered `Object` type (AOT/JIT compatible).

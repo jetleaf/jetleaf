@@ -19,6 +19,30 @@ import 'source_code.dart';
 import '_source_code.dart';
 import 'filter_registry.dart';
 
+/// {@template jtl_template.read_object_property}
+/// Reads a [property] value from an arbitrary [target] object via JetLeaf
+/// reflection.
+///
+/// Attempts field lookup first, then falls back to a zero-argument method
+/// matching either [property] or its JavaBean-style `get<Property>` getter.
+/// Returns `null` if the property cannot be resolved or reflection fails.
+/// {@endtemplate}
+Object? _readObjectProperty(Object target, String property) {
+  try {
+    final clazz = Class.forObject(target);
+    final field = clazz.getField(property);
+    if (field != null) {
+      return field.getValue(target);
+    }
+    final getterName = 'get${property[0].toUpperCase()}${property.substring(1)}';
+    final method = clazz.getMethod(property) ?? clazz.getMethod(getterName);
+    if (method != null && method.getParameterCount() == 0) {
+      return method.invoke(target);
+    }
+  } catch (_) {}
+  return null;
+}
+
 /// {@template jtl_template}
 /// A concrete implementation of [Template] that stores a **template source**
 /// and a map of **attributes** to inject during rendering.
@@ -129,12 +153,15 @@ final class DefaultVariableResolver implements TemplateVariableResolver {
     Object? current = _variables;
 
     for (final part in parts) {
-      if (current is Map<String, Object?>) {
-        current = current[part.trim()];
-      } else if (current is Map) {
-        current = current[part.trim()];
-      } else {
+      final key = part.trim();
+      if (current == null) {
         return null;
+      } else if (current is Map<String, Object?>) {
+        current = current[key];
+      } else if (current is Map) {
+        current = current[key];
+      } else {
+        current = _readObjectProperty(current, key);
       }
     }
 
@@ -492,7 +519,16 @@ final class DefaultTemplateRenderer implements TemplateRenderer {
     final includePattern = RegExp(r'\{\{>\s*([^}]+)\s*\}\}');
     return rawContent.replaceAllMapped(includePattern, (match) {
       final templateName = match.group(1)!.trim();
-      return '<!-- Include: $templateName -->'; // Placeholder for actual file loading
+      try {
+        final asset = _assetBuilder.build(templateName);
+        if (asset.exists()) {
+          final includedContent = asset.getContentAsString();
+          if (includedContent.isNotEmpty) {
+            return _renderTemplate(includedContent, template, context);
+          }
+        }
+      } catch (_) {}
+      return '<!-- Include: $templateName -->';
     });
   }
 
@@ -606,12 +642,15 @@ final class DefaultTemplateRenderer implements TemplateRenderer {
     Object? current = attributes;
 
     for (final part in parts) {
-      if (current is Map<String, Object?>) {
-        current = current[part];
-      } else if (current is Map) {
-        current = current[part];
-      } else {
+      final key = part.trim();
+      if (current == null) {
         return null;
+      } else if (current is Map<String, Object?>) {
+        current = current[key];
+      } else if (current is Map) {
+        current = current[key];
+      } else {
+        current = _readObjectProperty(current, key);
       }
     }
 

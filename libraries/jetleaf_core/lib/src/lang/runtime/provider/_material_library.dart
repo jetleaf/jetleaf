@@ -134,9 +134,20 @@ abstract final class _MaterialLibrary with EqualsAndHashCode implements Material
         }
       } catch (_) {}
 
+      bool isTestScript = false;
+      try {
+        final scriptPath = Platform.script.path;
+        isTestScript = scriptPath.contains('/test/')
+          || scriptPath.endsWith('_test.dart')
+          || scriptPath.contains('test.dart');
+      } catch (_) {}
+      final targetOrder = isTestScript
+        ? [Constant.TEST_DIR_NAME, Constant.MAIN_DIR_NAME]
+        : [Constant.MAIN_DIR_NAME, Constant.TEST_DIR_NAME];
+
       for (var dir in startDirs) {
         for (int i = 0; i < 6; i++) {
-          for (final targetName in [Constant.TEST_DIR_NAME, Constant.MAIN_DIR_NAME]) {
+          for (final targetName in targetOrder) {
             final cacheDir = Directory(p.join(dir.path, Constant.WORKSPACE_DIR_NAME, Constant.CACHE_DIR_NAME, targetName));
             if (cacheDir.existsSync()) {
               final fpFile = File(p.join(cacheDir.path, 'fingerprint.txt'));
@@ -157,6 +168,7 @@ abstract final class _MaterialLibrary with EqualsAndHashCode implements Material
                 final bytes = targetBin.readAsBytesSync();
                 final result = CacheSerializer.deserialize(bytes);
                 registerCachedDeclarations(result.components);
+                
                 if (this is _MaterialRuntimeProvider) {
                   final provider = this as _MaterialRuntimeProvider;
                   if (result.packages.isNotEmpty) {
@@ -166,8 +178,9 @@ abstract final class _MaterialLibrary with EqualsAndHashCode implements Material
                     provider.addAssets(result.assets);
                   }
                 }
-                if (this is CachedRuntimeProvider) {
-                  (this as CachedRuntimeProvider).loadPrecomputedIndexesSync(dir, forTests: targetName == 'test');
+
+                if (this case _MaterialLibrary library when library is CachedRuntimeProvider) {
+                  library.loadPrecomputedIndexesSync(dir, forTests: targetName == 'test');
                 }
                 if (isPopulated) return;
               }

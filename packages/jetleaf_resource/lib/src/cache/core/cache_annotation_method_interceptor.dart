@@ -133,33 +133,22 @@ abstract class CacheAnnotationMethodInterceptor implements MethodBeforeIntercept
   ///   for a given key or method invocation.
   late CacheResolver cacheResolver;
 
-  /// Lazily initialized instance of [DefaultCacheOperationContext].
-  ///
-  /// The context is created only when first required for a cache operation,
-  /// ensuring minimal overhead when caching is not used. Once created, the same
-  /// instance is reused for the lifetime of this component.
-  DefaultCacheOperationContext? _cacheOperationContext;
+  /// Per-invocation cache operation contexts keyed by [MethodInvocation].
+  final Expando<DefaultCacheOperationContext> _invocationContexts = Expando<DefaultCacheOperationContext>();
 
-  /// Returns the existing [DefaultCacheOperationContext] or creates one if absent.
-  ///
-  /// The context is constructed using:
-  /// - [applicationContext] — provides environmental configuration and dependency resolution  
-  /// - [keyGenerator] — responsible for generating cache keys  
-  /// - [cacheErrorHandler] — handles errors during cache read/write operations  
-  /// - [cacheResolver] — resolves which caches apply for a given invocation  
-  ///
-  /// ### Behavior
-  /// - Uses lazy initialization to avoid unnecessary object creation.  
-  /// - Stores the constructed context in `_cacheOperationContext` for reuse.  
-  /// - Ensures all cache operations during this component’s lifecycle share the
-  ///   same configured context.
-  ///
-  /// ### Example
-  /// ```dart
-  /// final context = _getOrCreate().withInvocation(invocation);
-  /// final key = await context.generateCacheKey();
-  /// ```
-  DefaultCacheOperationContext _getOrCreate() => _cacheOperationContext ??= DefaultCacheOperationContext(applicationContext, keyGenerator, cacheErrorHandler, cacheResolver);
+  /// Returns the [DefaultCacheOperationContext] scoped to [invocation],
+  /// creating one if absent.
+  DefaultCacheOperationContext _getForInvocation<T>(MethodInvocation<T> invocation) {
+    final existing = _invocationContexts[invocation];
+    if (existing != null) {
+      return existing;
+    }
+
+    final created = DefaultCacheOperationContext(applicationContext, keyGenerator, cacheErrorHandler, cacheResolver)
+      ..withInvocation(invocation);
+    _invocationContexts[invocation] = created;
+    return created;
+  }
 
   @override
   bool canIntercept(Method method) => _cached<CacheEvict>(method)
@@ -196,7 +185,7 @@ abstract class CacheAnnotationMethodInterceptor implements MethodBeforeIntercept
 
     if (cacheEvict != null && cacheEvict.beforeInvocation) {
       final operation = CacheEvictOperation(cacheEvict);
-      final context = _getOrCreate().withInvocation(invocation);
+      final context = _getForInvocation(invocation);
       await operation.execute(context);
     }
   }
@@ -207,7 +196,7 @@ abstract class CacheAnnotationMethodInterceptor implements MethodBeforeIntercept
 
     if (cacheable != null) {
       final operation = CacheableOperation(cacheable);
-      final context = _getOrCreate().withInvocation(invocation);
+      final context = _getForInvocation(invocation);
 
       await operation.execute(context);
       if (context.hasCachedResult()) {
@@ -228,7 +217,7 @@ abstract class CacheAnnotationMethodInterceptor implements MethodBeforeIntercept
 
     if (cachePut != null) {
       final operation = CachePutOperation(cachePut);
-      final context = _getOrCreate().withInvocation(invocation);
+      final context = _getForInvocation(invocation);
       context.setResult(returnValue);
 
       await operation.execute(context);
@@ -239,7 +228,7 @@ abstract class CacheAnnotationMethodInterceptor implements MethodBeforeIntercept
 
     if (cacheable != null) {
       final operation = CacheableOperation(cacheable);
-      final context = _getOrCreate().withInvocation(invocation);
+      final context = _getForInvocation(invocation);
       context.setResult(returnValue);
 
       if (context.isCacheMiss()) {
@@ -255,7 +244,7 @@ abstract class CacheAnnotationMethodInterceptor implements MethodBeforeIntercept
     // 6. After Invocation: handle post-eviction
     if (cacheEvict != null && !cacheEvict.beforeInvocation) {
       final operation = CacheEvictOperation(cacheEvict);
-      final context = _getOrCreate().withInvocation(invocation);
+      final context = _getForInvocation(invocation);
 
       await operation.execute(context);
     }

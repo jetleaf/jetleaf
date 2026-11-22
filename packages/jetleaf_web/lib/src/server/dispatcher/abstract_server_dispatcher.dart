@@ -194,6 +194,9 @@ abstract class AbstractServerDispatcher implements ConfigurableServerDispatcher 
   /// the incoming request. Useful for fallback responses or error pages.
   HandlerMethod? defaultHandler;
 
+  /// Maximum number of concrete request path fingerprints retained in [_requestFingerprintCache].
+  static const int _MAX_FINGERPRINT_CACHE_SIZE = 4096;
+
   /// Additional cache mapping request fingerprints to handler patterns.
   ///
   /// This secondary cache helps identify which route pattern a concrete
@@ -446,6 +449,9 @@ abstract class AbstractServerDispatcher implements ConfigurableServerDispatcher 
       // Value: The pattern key (e.g., GET:/users/{id})
       // This allows repeating requests (same method + path) to skip mapping lookup.
       if (!_requestFingerprintCache.containsKey(requestKey)) {
+        if (_requestFingerprintCache.length >= _MAX_FINGERPRINT_CACHE_SIZE) {
+          _requestFingerprintCache.remove(_requestFingerprintCache.keys.first);
+        }
         _requestFingerprintCache[requestKey] = patternKey;
         if (log.getIsTraceEnabled()) {
           log.trace('💾 Fingerprinted: $requestKey → $patternKey');

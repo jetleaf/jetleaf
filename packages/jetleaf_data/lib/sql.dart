@@ -14,13 +14,21 @@
 
 /// 🗃 **JetLeaf Relational SQL Abstractions**
 ///
-/// Provides the base [SqlDialect], [SqlTypeMapper], and [SqlParameterStyle]
-/// abstractions for relational SQL engines.
+/// Provides the base [DatabaseDialect], [RenderedQuery], [SqlDialect],
+/// [SqlTypeMapper], [SqlParameterStyle], and SQL [Migration] abstractions for
+/// relational SQL engines without pulling document/NoSQL symbols into scope.
+///
+/// ### Usage Example
+/// ```dart
+/// import 'package:jetleaf_data/sql.dart';
+///
+/// final class CockroachDialect extends SqlDialect {
+///   // Customize identifier quoting, parameter style, and DDL generation
+/// }
+/// ```
 library;
 
 export 'src/dialect/database_dialect.dart';
-export 'src/dialect/rendered_query.dart';
 export 'src/dialect/sql_dialect.dart';
-export 'src/dialect/sql_parameter_style.dart';
 export 'src/dialect/sql_type_mapper.dart';
-export 'src/migration/sql_migration.dart';
+export 'src/migration/migration.dart';

@@ -623,9 +623,21 @@ abstract class AbstractPodFactory extends AbstractPodProviderFactory implements 
   }
 
   @override
-  Future<void> destroyPod(String name, Object pod) async => _destroy(name, pod, getLocalMergedPodDefinition(name));
+  Future<void> destroyPod(String name, Object pod) async {
+    if (pod is DisposableLifecycleManager) {
+      await super.destroyPod(name, pod);
+      return;
+    }
+    
+    await _destroy(name, pod, getLocalMergedPodDefinition(name));
+  }
 
-  void _destroy(String name, Object pod, RootPodDefinition root) async {
+  /// {@template abstract_pod_factory.destroy}
+  /// Executes the full destruction lifecycle for [pod] named [name] with its
+  /// merged [root] definition via [DisposableLifecycleManager], invoking any
+  /// registered pod destruction processors and disposable callbacks.
+  /// {@endtemplate}
+  Future<void> _destroy(String name, Object pod, RootPodDefinition root) async {
     await DisposableLifecycleManager(pod, name, root, getPodDestructionProcessors()).onDestroy();
   }
 

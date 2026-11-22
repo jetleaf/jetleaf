@@ -26,11 +26,16 @@ import 'postgres_type_mapper.dart';
 /// - Auto-increment DDL: `BIGSERIAL`
 /// - Supports `INSERT ... RETURNING`
 /// - Supports `CREATE INDEX IF NOT EXISTS`
+///
+/// ### Usage Example
+/// ```dart
+/// const dialect = PostgreSqlDialect();
+/// final ddl = dialect.renderCreateTable(userMetadata);
+/// ```
 /// {@endtemplate}
 final class PostgreSqlDialect extends SqlDialect {
   /// Reflective [Class] handle for [PostgreSqlDialect].
-  static final Class<PostgreSqlDialect> CLASS =
-      Class<PostgreSqlDialect>(null, PackageNames.DATA);
+  static final Class<PostgreSqlDialect> CLASS = Class<PostgreSqlDialect>(null, PackageNames.DATA);
 
   /// {@macro jetleaf_postgres_dialect}
   const PostgreSqlDialect();

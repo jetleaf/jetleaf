@@ -12,12 +12,13 @@
 // 
 // 🔧 Powered by Hapnium — the Dart backend engine 🍃
 
-import 'package:jetleaf_core/core.dart' hide Repository;
+import 'package:jetleaf_core/core.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_core/logging.dart';
 import 'package:jetleaf_core/pod.dart';
 
 import '../driver/connection_factory.dart';
+import '../transaction/data_source_transaction_manager.dart';
 import '../transaction/platform_transaction_manager.dart';
 import '../transaction/transaction_interceptor.dart';
 
@@ -31,12 +32,9 @@ import '../transaction/transaction_interceptor.dart';
 /// 3. Otherwise the interceptor stays unbound — invoking a `@Transactional`
 ///    method then fails with a clear `TransactionSystemException`.
 /// {@endtemplate}
-final class TransactionManagerBinder
-    with EqualsAndHashCode
-    implements ApplicationContextAware, InitializingPod {
+final class TransactionManagerBinder with EqualsAndHashCode implements ApplicationContextAware, InitializingPod {
   /// Reflective class descriptor for [TransactionManagerBinder].
-  static final Class<TransactionManagerBinder> CLASS =
-      Class<TransactionManagerBinder>(null, PackageNames.DATA);
+  static final Class<TransactionManagerBinder> CLASS = Class<TransactionManagerBinder>(null, PackageNames.DATA);
 
   ApplicationContext? _context;
 
@@ -62,21 +60,15 @@ final class TransactionManagerBinder
     PlatformTransactionManager? manager;
     if (await context.containsType(PlatformTransactionManager.CLASS)) {
       manager = await context.get(PlatformTransactionManager.CLASS);
-      _logger.info(
-        "Bound TransactionalMethodInterceptor to the registered PlatformTransactionManager ${manager.runtimeType}",
-      );
+      _logger.info("Bound TransactionalMethodInterceptor to the registered PlatformTransactionManager ${manager.runtimeType}");
     } else if (await context.containsType(ConnectionFactory.CLASS)) {
       final factory = await context.get(ConnectionFactory.CLASS);
       manager = DataSourceTransactionManager(factory);
-      _logger.info(
-        "No PlatformTransactionManager found — created DataSourceTransactionManager from ConnectionFactory ${factory.runtimeType}",
-      );
+      _logger.info("No PlatformTransactionManager found — created DataSourceTransactionManager from ConnectionFactory ${factory.runtimeType}");
     }
 
     if (manager == null) {
-      _logger.info(
-        "No PlatformTransactionManager or ConnectionFactory pod found — @Transactional methods will fail with TransactionSystemException",
-      );
+      _logger.info("No PlatformTransactionManager or ConnectionFactory pod found — @Transactional methods will fail with TransactionSystemException");
       return;
     }
 

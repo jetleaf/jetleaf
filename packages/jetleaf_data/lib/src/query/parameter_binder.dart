@@ -14,16 +14,65 @@
 
 import 'package:jetleaf_core/lang.dart';
 
-import '../annotation/param.dart';
+import '../annotation/query.dart';
 import '../exception/data_access_exception.dart';
 import '../mapping/type_converter_registry.dart';
 import '../paging/pageable.dart';
 import '../paging/sort.dart';
-import 'bound_parameters.dart';
 import 'part.dart';
 import 'part_tree.dart';
 
-export 'bound_parameters.dart';
+/// {@template jetleaf_bound_parameters}
+/// Immutable container holding the bound arguments for a repository query
+/// execution, including positional bind values, named `:param` bindings, and
+/// extracted [Pageable] or [Sort] arguments.
+/// {@endtemplate}
+final class BoundParameters with EqualsAndHashCode {
+  /// Reflective [Class] handle for [BoundParameters].
+  static final Class<BoundParameters> CLASS = Class<BoundParameters>(null, PackageNames.DATA);
+
+  /// Empty parameter bindings constant.
+  static const BoundParameters empty = BoundParameters(
+    positional: [],
+    named: {},
+  );
+
+  final List<Object?> _positional;
+  final Map<String, Object?> _named;
+  final Pageable? _pageable;
+  final Sort? _sort;
+
+  /// {@macro jetleaf_bound_parameters}
+  const BoundParameters({
+    required List<Object?> positional,
+    required Map<String, Object?> named,
+    Pageable? pageable,
+    Sort? sort,
+  })  : _positional = positional,
+        _named = named,
+        _pageable = pageable,
+        _sort = sort;
+
+  /// Returns the ordered positional bind values.
+  List<Object?> getPositional() => _positional;
+
+  /// Returns the named parameter bindings (`:name`).
+  Map<String, Object?> getNamed() => _named;
+
+  /// Returns the extracted [Pageable] argument, if provided.
+  Pageable? getPageable() => _pageable;
+
+  /// Returns the extracted [Sort] argument, if provided.
+  Sort? getSort() => _sort;
+
+  @override
+  List<Object?> equalizedProperties() => [
+    _positional,
+    _named,
+    _pageable,
+    _sort,
+  ];
+}
 
 /// {@template jetleaf_parameter_binder}
 /// Binds repository method arguments to query parameters for both **derived
@@ -36,8 +85,7 @@ export 'bound_parameters.dart';
 /// {@endtemplate}
 final class ParameterBinder with EqualsAndHashCode {
   /// Reflective [Class] handle for [ParameterBinder].
-  static final Class<ParameterBinder> CLASS =
-      Class<ParameterBinder>(null, PackageNames.DATA);
+  static final Class<ParameterBinder> CLASS = Class<ParameterBinder>(null, PackageNames.DATA);
 
   final TypeConverterRegistry _converters;
 
@@ -106,8 +154,9 @@ final class ParameterBinder with EqualsAndHashCode {
     required String methodName,
   }) {
     final namedBySymbol = <Symbol, Object?>{
-      for (final entry in argument.getNamedArguments().entries)
-        Symbol(entry.key): entry.value,
+      for (final entry in argument.getNamedArguments().entries) ...{
+        Symbol(entry.key): entry.value
+      },
     };
     return normalizeArguments(
       argument.getPositionalArguments(),
@@ -212,7 +261,7 @@ final class ParameterBinder with EqualsAndHashCode {
       }
 
       final paramAnnotation = parameter.getDirectAnnotation<Param>();
-      final name = paramAnnotation?.getName() ?? parameter.getName();
+      final name = paramAnnotation?.name ?? parameter.getName();
       named[name] = _toColumn(argument);
     }
 

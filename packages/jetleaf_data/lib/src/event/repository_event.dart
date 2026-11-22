@@ -13,11 +13,10 @@
 // 🔧 Powered by Hapnium — the Dart backend engine 🍃
 
 import 'package:jetleaf_core/context.dart';
+import 'package:jetleaf_core/intercept.dart';
 import 'package:jetleaf_core/lang.dart';
 
 import '../core/repository_definition.dart';
-
-export 'intercepted_repository_method_event.dart';
 
 /// {@template jetleaf_repository_event}
 /// Base event class for **repository-related application events**.
@@ -34,4 +33,31 @@ abstract class RepositoryEvent extends ApplicationEvent {
 
   @override
   String getPackageName() => PackageNames.DATA;
+}
+
+/// {@template jetleaf_intercepted_repository_method_event}
+/// Event triggered when a **repository method is intercepted** by JetLeaf’s
+/// method interception system.
+///
+/// Encapsulates a [MethodInvocation] to provide access to the intercepted call.
+///
+/// ### Usage Example
+/// ```dart
+/// final event = InterceptedRepositoryMethodEvent(myRepoDef, invocation, DateTime.now());
+/// final invocation = event.getInvocation();
+/// ```
+/// {@endtemplate}
+@Generic(InterceptedRepositoryMethodEvent)
+final class InterceptedRepositoryMethodEvent<T> extends RepositoryEvent {
+  /// Reflective class descriptor for [InterceptedRepositoryMethodEvent].
+  static final Class<InterceptedRepositoryMethodEvent> CLASS = Class<InterceptedRepositoryMethodEvent>(null, PackageNames.DATA);
+
+  /// The intercepted method invocation.
+  final MethodInvocation<T> _invocation;
+
+  /// {@macro jetleaf_intercepted_repository_method_event}
+  const InterceptedRepositoryMethodEvent(super.source, this._invocation, super.timestamp);
+
+  /// Returns the [MethodInvocation] associated with this intercepted event.
+  MethodInvocation<T> getInvocation() => _invocation;
 }

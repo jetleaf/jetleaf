@@ -16,10 +16,27 @@ import 'package:jetleaf_core/lang.dart';
 
 import '../mapping/entity_metadata.dart';
 import '../paging/sort.dart';
-import 'criterion.dart';
-import 'query_type.dart';
+import 'part_tree.dart';
 
-export 'query_type.dart';
+/// {@template jetleaf_query_type}
+/// Classifies the **statement kind** of a [QueryCriteria].
+/// {@endtemplate}
+enum QueryType {
+  /// Row projection (`SELECT ...`).
+  select,
+
+  /// Count aggregation (`SELECT COUNT(...)`).
+  count,
+
+  /// Existence probe (`SELECT 1 ... LIMIT 1`).
+  exists,
+
+  /// Conditional deletion (`DELETE FROM ...`).
+  delete,
+
+  /// Conditional mutation (`UPDATE ...`).
+  update,
+}
 
 /// {@template jetleaf_query_criteria}
 /// Dialect-agnostic specification of a query against a persistent `@Entity`.
@@ -36,8 +53,7 @@ export 'query_type.dart';
 /// {@endtemplate}
 final class QueryCriteria with EqualsAndHashCode {
   /// Reflective [Class] handle for [QueryCriteria].
-  static final Class<QueryCriteria> CLASS =
-      Class<QueryCriteria>(null, PackageNames.DATA);
+  static final Class<QueryCriteria> CLASS = Class<QueryCriteria>(null, PackageNames.DATA);
 
   final EntityMetadata<dynamic> _metadata;
   final QueryType _type;
@@ -79,57 +95,53 @@ final class QueryCriteria with EqualsAndHashCode {
     int? limit,
     int? offset,
     bool distinct = false,
-  }) =>
-      QueryCriteria(
-        metadata: metadata,
-        type: QueryType.select,
-        predicate: predicate,
-        values: values,
-        sort: sort ?? Sort.UNSORTED,
-        limit: limit,
-        offset: offset,
-        distinct: distinct,
-      );
+  }) => QueryCriteria(
+    metadata: metadata,
+    type: QueryType.select,
+    predicate: predicate,
+    values: values,
+    sort: sort ?? Sort.UNSORTED,
+    limit: limit,
+    offset: offset,
+    distinct: distinct,
+  );
 
   /// Creates a `COUNT` [QueryCriteria].
   factory QueryCriteria.count({
     required EntityMetadata<dynamic> metadata,
     Criterion? predicate,
     List<Object?> values = const [],
-  }) =>
-      QueryCriteria(
-        metadata: metadata,
-        type: QueryType.count,
-        predicate: predicate,
-        values: values,
-      );
+  }) => QueryCriteria(
+    metadata: metadata,
+    type: QueryType.count,
+    predicate: predicate,
+    values: values,
+  );
 
   /// Creates an `EXISTS` [QueryCriteria].
   factory QueryCriteria.exists({
     required EntityMetadata<dynamic> metadata,
     Criterion? predicate,
     List<Object?> values = const [],
-  }) =>
-      QueryCriteria(
-        metadata: metadata,
-        type: QueryType.exists,
-        predicate: predicate,
-        values: values,
-        limit: 1,
-      );
+  }) => QueryCriteria(
+    metadata: metadata,
+    type: QueryType.exists,
+    predicate: predicate,
+    values: values,
+    limit: 1,
+  );
 
   /// Creates a `DELETE` [QueryCriteria].
   factory QueryCriteria.delete({
     required EntityMetadata<dynamic> metadata,
     Criterion? predicate,
     List<Object?> values = const [],
-  }) =>
-      QueryCriteria(
-        metadata: metadata,
-        type: QueryType.delete,
-        predicate: predicate,
-        values: values,
-      );
+  }) => QueryCriteria(
+    metadata: metadata,
+    type: QueryType.delete,
+    predicate: predicate,
+    values: values,
+  );
 
   /// Creates a named-parameter [QueryCriteria].
   factory QueryCriteria.named({
@@ -139,17 +151,16 @@ final class QueryCriteria with EqualsAndHashCode {
     Sort? sort,
     int? limit,
     bool distinct = false,
-  }) =>
-      QueryCriteria(
-        metadata: metadata,
-        type: type,
-        predicate: null,
-        values: const [],
-        namedValues: namedValues,
-        sort: sort ?? Sort.UNSORTED,
-        limit: limit,
-        distinct: distinct,
-      );
+  }) => QueryCriteria(
+    metadata: metadata,
+    type: type,
+    predicate: null,
+    values: const [],
+    namedValues: namedValues,
+    sort: sort ?? Sort.UNSORTED,
+    limit: limit,
+    distinct: distinct,
+  );
 
   /// Returns the target [EntityMetadata].
   EntityMetadata<dynamic> getMetadata() => _metadata;
@@ -191,29 +202,28 @@ final class QueryCriteria with EqualsAndHashCode {
     int? offset,
     bool? distinct,
     Map<String, Object?>? namedValues,
-  }) =>
-      QueryCriteria(
-        metadata: _metadata,
-        type: type ?? _type,
-        predicate: predicate ?? _predicate,
-        values: values ?? _values,
-        sort: sort ?? _sort,
-        limit: limit ?? _limit,
-        offset: offset ?? _offset,
-        distinct: distinct ?? _distinct,
-        namedValues: namedValues ?? _namedValues,
-      );
+  }) => QueryCriteria(
+    metadata: _metadata,
+    type: type ?? _type,
+    predicate: predicate ?? _predicate,
+    values: values ?? _values,
+    sort: sort ?? _sort,
+    limit: limit ?? _limit,
+    offset: offset ?? _offset,
+    distinct: distinct ?? _distinct,
+    namedValues: namedValues ?? _namedValues,
+  );
 
   @override
   List<Object?> equalizedProperties() => [
-        _metadata.getTableName(),
-        _type,
-        _predicate,
-        _values,
-        _sort,
-        _limit,
-        _offset,
-        _distinct,
-        _namedValues,
-      ];
+    _metadata.getTableName(),
+    _type,
+    _predicate,
+    _values,
+    _sort,
+    _limit,
+    _offset,
+    _distinct,
+    _namedValues,
+  ];
 }

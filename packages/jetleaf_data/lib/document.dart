@@ -14,11 +14,20 @@
 
 /// 📄 **JetLeaf Document Store Abstractions**
 ///
-/// Provides the base [DocumentDialect] and [DocumentTypeMapper] abstractions
-/// for NoSQL document databases.
+/// Provides the base [DatabaseDialect], [RenderedQuery], [DocumentDialect], and
+/// [DocumentTypeMapper] abstractions for NoSQL document databases without
+/// pulling any relational SQL dialect symbols into scope.
+///
+/// ### Usage Example
+/// ```dart
+/// import 'package:jetleaf_data/document.dart';
+///
+/// final class CustomDocumentDialect extends DocumentDialect {
+///   // Implement document query rendering and type mapping
+/// }
+/// ```
 library;
 
 export 'src/dialect/database_dialect.dart';
 export 'src/dialect/document_dialect.dart';
 export 'src/dialect/document_type_mapper.dart';
-export 'src/dialect/rendered_query.dart';

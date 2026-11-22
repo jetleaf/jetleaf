@@ -14,13 +14,7 @@
 
 import 'package:jetleaf_core/lang.dart';
 
-import 'camel_case_naming_strategy.dart';
-import 'kebab_case_naming_strategy.dart';
-import 'snake_case_naming_strategy.dart';
-
-export 'camel_case_naming_strategy.dart';
-export 'kebab_case_naming_strategy.dart';
-export 'snake_case_naming_strategy.dart';
+import 'naming_strategies.dart';
 
 /// {@template jetleaf_naming_strategy}
 /// Strategy contract for translating Dart class and field identifiers into
@@ -39,8 +33,7 @@ export 'snake_case_naming_strategy.dart';
 /// {@endtemplate}
 abstract class NamingStrategy with EqualsAndHashCode {
   /// Reflective [Class] handle for [NamingStrategy].
-  static final Class<NamingStrategy> CLASS =
-      Class<NamingStrategy>(null, PackageNames.DATA);
+  static final Class<NamingStrategy> CLASS = Class<NamingStrategy>(null, PackageNames.DATA);
 
   /// Canonical `snake_case` naming strategy (`UserProfile` → `user_profile`).
   static const NamingStrategy snakeCase = SnakeCaseNamingStrategy();

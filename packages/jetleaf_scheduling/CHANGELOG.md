@@ -1,12 +1,12 @@
-## Unreleased
+## [2.1.0]
+
+### Fixed
+
+- **Task holder cleanup**: `SchedulingAnnotationPodProcessor` now clears `_unregisteredTaskHolders` after registration to prevent stale task holder retention.
 
 ### Documentation
 
 - **Terminology refresh**: "dart:mirrors" / "mirrors" mentions replaced by "runtime reflection"; no functional changes.
-
----
-
-## [2.1.0]
 
 ### Changed
 

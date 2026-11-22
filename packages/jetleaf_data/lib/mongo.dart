@@ -15,8 +15,18 @@
 /// 🍃 **JetLeaf MongoDB Data Support**
 ///
 /// Import `package:jetleaf_data/mongo.dart` when configuring a MongoDB
-/// document store so your application only imports MongoDB and document
-/// dialect classes without SQL dialects in scope.
+/// document store so your application only imports [MongoDialect],
+/// [MongoTypeMapper], and document dialect abstractions without SQL dialects in
+/// scope.
+///
+/// ### Usage Example
+/// ```dart
+/// import 'package:jetleaf_data/mongo.dart';
+///
+/// const dialect = MongoDialect();
+/// final query = dialect.renderQuery(criteria);
+/// print(query.getDocument());
+/// ```
 library;
 
 export 'document.dart';

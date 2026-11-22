@@ -18,18 +18,61 @@ import '../dialect/database_dialect.dart';
 import '../mapping/default_entity_metadata_registry.dart';
 import '../mapping/entity_metadata.dart';
 import '../mapping/entity_metadata_registry.dart';
-import 'schema_generation_result.dart';
 
-export 'schema_generation_result.dart';
+/// {@template jetleaf_schema_generation_result}
+/// Immutable container holding the DDL statements generated for a single
+/// `@Entity` by [SchemaGenerator].
+/// {@endtemplate}
+final class SchemaGenerationResult with EqualsAndHashCode {
+  /// Reflective [Class] handle for [SchemaGenerationResult].
+  static final Class<SchemaGenerationResult> CLASS = Class<SchemaGenerationResult>(null, PackageNames.DATA);
+
+  final Type _entityType;
+  final String _tableName;
+  final List<String> _statements;
+
+  /// {@macro jetleaf_schema_generation_result}
+  SchemaGenerationResult({
+    required Type entityType,
+    required String tableName,
+    required List<String> statements,
+  })  : _entityType = entityType,
+        _tableName = tableName,
+        _statements = List.unmodifiable(statements);
+
+  /// Returns the entity [Type] the DDL was generated for.
+  Type getEntityType() => _entityType;
+
+  /// Returns the physical table or collection name.
+  String getTableName() => _tableName;
+
+  /// Returns the ordered DDL statements (`CREATE TABLE`, `CREATE INDEX`, etc.).
+  List<String> getStatements() => _statements;
+
+  @override
+  List<Object?> equalizedProperties() => [
+    _entityType,
+    _tableName,
+    _statements,
+  ];
+}
 
 /// {@template jetleaf_schema_generator}
 /// Generates DDL statements (`CREATE TABLE`, `CREATE INDEX`) from
 /// [EntityMetadata] descriptors using a target [DatabaseDialect].
+///
+/// ### Usage Example
+/// ```dart
+/// final generator = SchemaGenerator(const PostgreSqlDialect());
+/// final result = generator.generateFor<User>();
+/// for (final ddl in result.getStatements()) {
+///   await client.execute(ddl);
+/// }
+/// ```
 /// {@endtemplate}
 final class SchemaGenerator with EqualsAndHashCode {
   /// Reflective [Class] handle for [SchemaGenerator].
-  static final Class<SchemaGenerator> CLASS =
-      Class<SchemaGenerator>(null, PackageNames.DATA);
+  static final Class<SchemaGenerator> CLASS = Class<SchemaGenerator>(null, PackageNames.DATA);
 
   final DatabaseDialect _dialect;
   final EntityMetadataRegistry _metadataRegistry;
@@ -38,8 +81,7 @@ final class SchemaGenerator with EqualsAndHashCode {
   SchemaGenerator(
     this._dialect, {
     EntityMetadataRegistry? metadataRegistry,
-  }) : _metadataRegistry =
-            metadataRegistry ?? DefaultEntityMetadataRegistry.instance;
+  }) : _metadataRegistry = metadataRegistry ?? DefaultEntityMetadataRegistry.instance;
 
   /// Returns the [DatabaseDialect] used to render DDL statements.
   DatabaseDialect getDialect() => _dialect;
@@ -48,15 +90,15 @@ final class SchemaGenerator with EqualsAndHashCode {
   EntityMetadataRegistry getMetadataRegistry() => _metadataRegistry;
 
   /// Generates DDL statements for [entityType].
-  SchemaGenerationResult generateForType(Type entityType) =>
-      generateFor(_metadataRegistry.getForType(entityType));
+  SchemaGenerationResult generateForType(Type entityType) => generateFor(_metadataRegistry.getForType(entityType));
 
   /// Generates DDL statements for [metadata].
   SchemaGenerationResult generateFor(EntityMetadata<dynamic> metadata) {
     final statements = <String>[
       _dialect.buildCreateTableQuery(metadata),
-      for (final index in metadata.getIndexes())
-        _dialect.buildCreateIndexQuery(metadata, index),
+      for (final index in metadata.getIndexes()) ...[
+        _dialect.buildCreateIndexQuery(metadata, index)
+      ],
     ];
 
     return SchemaGenerationResult(

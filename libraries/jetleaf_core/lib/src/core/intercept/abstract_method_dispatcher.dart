@@ -98,6 +98,10 @@ abstract class AbstractMethodDispatcher implements MethodInterceptorDispatcher {
         return result;
       }
 
+      if (invocation.isInvoked()) {
+        return result;
+      }
+
       return invocation.proceed();
     } else if (method == null) {
       throw IllegalArgumentException('''
@@ -415,6 +419,13 @@ final class _ChainedMethodInterceptor implements MethodInterceptor {
     // If this interceptor returned a non-null T, return it
     if (result != null) {
       return result;
+    }
+
+    // If the interceptor already invoked proceed() or hijack() and the result
+    // is legitimately null (e.g. void/Future<void> or nullable return type),
+    // do not re-invoke next().
+    if (wrapper.isInvoked()) {
+      return result as T;
     }
 
     // Otherwise, continue down the chain

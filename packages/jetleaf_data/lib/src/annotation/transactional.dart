@@ -15,11 +15,63 @@
 import 'package:jetleaf_core/lang.dart';
 import 'package:meta/meta_meta.dart';
 
-import 'isolation.dart';
-import 'propagation.dart';
+/// {@template jetleaf_isolation}
+/// Defines the **SQL transaction isolation level** requested for a
+/// `@Transactional` execution boundary.
+///
+/// | Level | Dirty Reads | Non-Repeatable Reads | Phantom Reads |
+/// |-------|-------------|----------------------|---------------|
+/// | [readUncommitted] | Allowed | Allowed | Allowed |
+/// | [readCommitted] | Prevented | Allowed | Allowed |
+/// | [repeatableRead] | Prevented | Prevented | Allowed |
+/// | [serializable] | Prevented | Prevented | Prevented |
+/// {@endtemplate}
+enum Isolation {
+  /// Allows dirty reads, non-repeatable reads, and phantom reads.
+  readUncommitted,
 
-export 'isolation.dart';
-export 'propagation.dart';
+  /// Prevents dirty reads; default for most relational engines.
+  readCommitted,
+
+  /// Prevents dirty reads and non-repeatable reads.
+  repeatableRead,
+
+  /// Prevents dirty reads, non-repeatable reads, and phantom reads.
+  serializable,
+}
+
+/// {@template jetleaf_propagation}
+/// Defines **transaction propagation semantics** when a `@Transactional`
+/// method is invoked inside or outside an ambient transaction.
+///
+/// | Value | Active Transaction Present | No Active Transaction |
+/// |-------|----------------------------|-----------------------|
+/// | [required] | Joins the active transaction | Starts a new transaction |
+/// | [requiresNew] | Suspends the active transaction and starts a new one | Starts a new transaction |
+/// | [mandatory] | Joins the active transaction | Throws `MandatoryTransactionException` |
+/// | [supports] | Joins the active transaction | Executes non-transactionally |
+/// | [notSupported] | Suspends the active transaction and executes non-transactionally | Executes non-transactionally |
+/// | [never] | Throws `TransactionSystemException` | Executes non-transactionally |
+/// {@endtemplate}
+enum Propagation {
+  /// Support a current transaction, create a new one if none exists.
+  required,
+
+  /// Create a new transaction, and suspend the current transaction if one exists.
+  requiresNew,
+
+  /// Support a current transaction, throw an exception if none exists.
+  mandatory,
+
+  /// Support a current transaction, execute non-transactionally if none exists.
+  supports,
+
+  /// Execute non-transactionally, suspend the current transaction if one exists.
+  notSupported,
+
+  /// Execute non-transactionally, throw an exception if a transaction exists.
+  never,
+}
 
 /// {@template jetleaf_transactional_annotation}
 /// Declares **transactional execution semantics** on a method or all methods
@@ -78,34 +130,16 @@ final class Transactional extends ReflectableAnnotation with EqualsAndHashCode {
     this.noRollbackFor = const [],
   });
 
-  /// Returns the configured [Propagation] rule.
-  Propagation getPropagation() => propagation;
-
-  /// Returns the configured [Isolation] level.
-  Isolation getIsolation() => isolation;
-
-  /// Returns the configured timeout in seconds.
-  int getTimeoutSeconds() => timeoutSeconds;
-
-  /// Returns `true` if the transaction is read-only.
-  bool isReadOnly() => readOnly;
-
-  /// Returns the list of throwable types that trigger a rollback.
-  List<ClassType<dynamic>> getRollbackFor() => rollbackFor;
-
-  /// Returns the list of throwable types exempt from rollback.
-  List<ClassType<dynamic>> getNoRollbackFor() => noRollbackFor;
-
   @override
   Type get annotationType => Transactional;
 
   @override
   List<Object?> equalizedProperties() => [
-        propagation,
-        isolation,
-        timeoutSeconds,
-        readOnly,
-        rollbackFor,
-        noRollbackFor,
-      ];
+    propagation,
+    isolation,
+    timeoutSeconds,
+    readOnly,
+    rollbackFor,
+    noRollbackFor,
+  ];
 }

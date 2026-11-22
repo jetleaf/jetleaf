@@ -14,8 +14,7 @@
 
 import 'package:jetleaf_core/lang.dart';
 
-import '../annotation/isolation.dart';
-import '../annotation/propagation.dart';
+import '../annotation/transactional.dart';
 import 'transaction_definition.dart';
 
 /// {@template jetleaf_default_transaction_definition}
@@ -24,12 +23,9 @@ import 'transaction_definition.dart';
 /// Defaults to `Propagation.required`, `Isolation.readCommitted`, a 30-second
 /// timeout, read-write execution, and rollback on any [Exception] or [Error].
 /// {@endtemplate}
-final class DefaultTransactionDefinition
-    with EqualsAndHashCode
-    implements TransactionDefinition {
+final class DefaultTransactionDefinition with EqualsAndHashCode implements TransactionDefinition {
   /// Reflective [Class] handle for [DefaultTransactionDefinition].
-  static final Class<DefaultTransactionDefinition> CLASS =
-      Class<DefaultTransactionDefinition>(null, PackageNames.DATA);
+  static final Class<DefaultTransactionDefinition> CLASS = Class<DefaultTransactionDefinition>(null, PackageNames.DATA);
 
   final Propagation _propagation;
   final Isolation _isolation;
@@ -82,12 +78,12 @@ final class DefaultTransactionDefinition
 
   @override
   List<Object?> equalizedProperties() => [
-        _propagation,
-        _isolation,
-        _timeoutSeconds,
-        _readOnly,
-        _rollbackFor,
-        _noRollbackFor,
-        _name,
-      ];
+    _propagation,
+    _isolation,
+    _timeoutSeconds,
+    _readOnly,
+    _rollbackFor,
+    _noRollbackFor,
+    _name,
+  ];
 }

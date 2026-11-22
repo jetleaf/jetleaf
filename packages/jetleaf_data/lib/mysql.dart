@@ -15,8 +15,16 @@
 /// 🐬 **JetLeaf MySQL / MariaDB Data Support**
 ///
 /// Import `package:jetleaf_data/mysql.dart` when configuring a MySQL or
-/// MariaDB data source so your application only imports MySQL dialect and
-/// type-mapping classes.
+/// MariaDB data source so your application only imports [MySqlDialect],
+/// [MySqlTypeMapper], and SQL dialect abstractions.
+///
+/// ### Usage Example
+/// ```dart
+/// import 'package:jetleaf_data/mysql.dart';
+///
+/// const dialect = MySqlDialect();
+/// final ddl = dialect.renderCreateTable(userMetadata);
+/// ```
 library;
 
 export 'sql.dart';

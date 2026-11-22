@@ -14,9 +14,34 @@
 
 import 'package:jetleaf_core/lang.dart';
 
-import 'repository_type.dart';
+/// {@template jetleaf_repository_definition_type}
+/// Represents the different **repository implementation categories** used
+/// in JetLeaf's repository architecture.
+///
+/// These types classify how a repository method is expected to behave,
+/// which executor logic to apply, and how the framework should interpret
+/// the method during interception, analysis, or code generation.
+/// {@endtemplate}
+enum RepositoryType {
+  /// A user-defined method that does not map to any built-in
+  /// repository behavior. Typical for derived queries or `@Query` definitions.
+  CUSTOM,
 
-export 'repository_type.dart';
+  /// A simple repository method that does not involve CRUD or pageable semantics.
+  BASE,
+
+  /// Matches CRUD-style repository methods such as `findById`, `save`, or `delete`.
+  CRUD,
+
+  /// CRUD repository behavior with list-based return semantics (e.g., returning `List<T>`).
+  LIST_CRUD,
+
+  /// Repository methods supporting sorting or pagination.
+  PAGEABLE,
+
+  /// Pageable behavior but explicitly returning lists.
+  LIST_PAGEABLE,
+}
 
 /// {@template jetleaf_repository_definition}
 /// Defines the metadata and characteristics of a repository method.
@@ -29,8 +54,7 @@ export 'repository_type.dart';
 /// {@endtemplate}
 abstract class RepositoryDefinition with EqualsAndHashCode {
   /// Reflective class descriptor for [RepositoryDefinition].
-  static final Class<RepositoryDefinition> CLASS =
-      Class<RepositoryDefinition>(null, PackageNames.DATA);
+  static final Class<RepositoryDefinition> CLASS = Class<RepositoryDefinition>(null, PackageNames.DATA);
 
   /// {@macro jetleaf_repository_definition}
   const RepositoryDefinition();
@@ -43,4 +67,38 @@ abstract class RepositoryDefinition with EqualsAndHashCode {
 
   /// Indicates whether this method is an internal framework method.
   bool isInternalMethod() => false;
+}
+
+/// {@template jetleaf_data_repository_definition}
+/// A concrete implementation of [RepositoryDefinition] that stores metadata
+/// about a repository method, including its type, reflection metadata,
+/// and whether it should be treated as an internal framework method.
+/// {@endtemplate}
+final class DataRepositoryDefinition extends RepositoryDefinition {
+  /// Reflective class descriptor for [DataRepositoryDefinition].
+  static final Class<DataRepositoryDefinition> CLASS = Class<DataRepositoryDefinition>(null, PackageNames.DATA);
+
+  /// Indicates whether the method is considered internal.
+  final bool _isInternal;
+
+  /// The reflected repository method this definition describes.
+  final Method _method;
+
+  /// The classification for this repository method.
+  final RepositoryType _type;
+
+  /// {@macro jetleaf_data_repository_definition}
+  const DataRepositoryDefinition(this._isInternal, this._method, this._type);
+
+  @override
+  List<Object?> equalizedProperties() => [_isInternal, _method, _type];
+
+  @override
+  Method getMethod() => _method;
+
+  @override
+  RepositoryType getType() => _type;
+
+  @override
+  bool isInternalMethod() => _isInternal;
 }

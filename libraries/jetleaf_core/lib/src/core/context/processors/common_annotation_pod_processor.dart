@@ -87,11 +87,23 @@ class CommonAnnotationPodProcessor extends PodDestructionProcessor implements Po
   @override
   int getOrder() => Ordered.LOWEST_PRECEDENCE;
 
+  /// {@template common_annotation_pod_processor.invoke_lifecycle_method}
+  /// Invokes a lifecycle callback [method] (`@PostConstruct` or `@PreDestroy`)
+  /// on the given [pod] instance, awaiting completion if the method returns a
+  /// [Future].
+  /// {@endtemplate}
+  Future<void> _invokeLifecycleMethod(Method method, Object pod) async {
+    final result = method.invoke(pod);
+    if (result is Future) {
+      await result;
+    }
+  }
+
   @override
   Future<Object?> processBeforeInitialization(Object pod, Class podClass, String name) async {
     for (final method in podClass.getMethods()) {
       if (method.hasDirectAnnotation<PreConstruct>()) {
-        method.invoke(pod);
+        await _invokeLifecycleMethod(method, pod);
       }
     }
 
@@ -106,7 +118,7 @@ class CommonAnnotationPodProcessor extends PodDestructionProcessor implements Po
 
     for (final method in podClass.getMethods()) {
       if (method.hasDirectAnnotation<PostConstruct>()) {
-        method.invoke(pod);
+        await _invokeLifecycleMethod(method, pod);
       }
     }
 
@@ -117,7 +129,7 @@ class CommonAnnotationPodProcessor extends PodDestructionProcessor implements Po
   Future<void> processAfterDestruction(Object pod, Class podClass, String name) async {
     for (final method in podClass.getMethods()) {
       if (method.hasDirectAnnotation<Cleanup>()) {
-        method.invoke(pod);
+        await _invokeLifecycleMethod(method, pod);
       }
     }
   }
@@ -130,7 +142,7 @@ class CommonAnnotationPodProcessor extends PodDestructionProcessor implements Po
 
     for (final method in podClass.getMethods()) {
       if (method.hasDirectAnnotation<PreDestroy>()) {
-        method.invoke(pod);
+        await _invokeLifecycleMethod(method, pod);
       }
     }
   }

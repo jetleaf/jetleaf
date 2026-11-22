@@ -166,37 +166,29 @@ abstract class RateLimitAnnotationMethodInterceptor implements MethodBeforeInter
   /// `@RateLimit` annotation or global configuration.
   bool throwExceptionOnExceeded = true;
 
-  /// Lazily-initialized operation context used for evaluating
-  /// rate-limit metadata during method invocation.
-  ///
-  /// This context provides access to the application environment,
-  /// key generator, and the active [RateLimitResolver].  
-  /// It is created once on first use and then reused for subsequent
-  /// evaluations within this component.
-  ///
-  /// The value remains `null` until a rate-limited operation requires it.
-  DefaultRateLimitOperationContext? _operationContext;
+  /// {@template rate_limit_annotation_method_interceptor.invocation_contexts}
+  /// Weakly-keyed per-invocation [DefaultRateLimitOperationContext] cache
+  /// indexed by [MethodInvocation] so concurrent or nested invocations remain
+  /// isolated without leaking memory once the invocation completes.
+  /// {@endtemplate}
+  final Expando<DefaultRateLimitOperationContext> _invocationContexts = Expando<DefaultRateLimitOperationContext>();
 
-  /// Returns the existing [DefaultRateLimitOperationContext] instance,
-  /// or creates and caches a new one if none exists.
-  ///
-  /// ### Behavior
-  /// - If `_operationContext` is already initialized, it is returned as-is.
-  /// - Otherwise, a new context is created using:
-  ///   - the active [ApplicationContext]
-  ///   - the configured key generator
-  ///   - the [RateLimitResolver] responsible for resolving effective
-  ///     rate-limit policies
-  /// - The created instance is stored and reused for future calls.
-  ///
-  /// ### Purpose
-  /// This lazy-construction pattern avoids unnecessary allocation and ensures
-  /// that all rate-limit resolution steps operate on a shared, consistent
-  /// execution context.
-  ///
-  /// ### Returns
-  /// A non-null, fully-configured [DefaultRateLimitOperationContext].
-  DefaultRateLimitOperationContext _getOrCreate() => _operationContext ??= DefaultRateLimitOperationContext(applicationContext, keyGenerator, rateLimitResolver);
+  /// {@template rate_limit_annotation_method_interceptor.get_for_invocation}
+  /// Returns the [DefaultRateLimitOperationContext] scoped to [invocation],
+  /// creating and binding a new context if one has not yet been associated
+  /// with it.
+  /// {@endtemplate}
+  DefaultRateLimitOperationContext _getForInvocation<T>(MethodInvocation<T> invocation) {
+    final existing = _invocationContexts[invocation];
+    if (existing != null) {
+      return existing;
+    }
+
+    final created = DefaultRateLimitOperationContext(applicationContext, keyGenerator, rateLimitResolver)
+      ..withInvocation(invocation);
+    _invocationContexts[invocation] = created;
+    return created;
+  }
 
   @override
   bool canIntercept(Method method) => method.hasDirectAnnotation<RateLimit>();
@@ -206,7 +198,7 @@ abstract class RateLimitAnnotationMethodInterceptor implements MethodBeforeInter
     final rateLimit = invocation.getMethod().getDirectAnnotation<RateLimit>();
     if (rateLimit == null) return;
 
-    final context = _getOrCreate().withInvocation(invocation);
+    final context = _getForInvocation(invocation);
 
     // STEP 1: Resolve storage and setup resources
     final storages = await context.resolveStorages(rateLimit, invocation);
@@ -230,7 +222,7 @@ abstract class RateLimitAnnotationMethodInterceptor implements MethodBeforeInter
     final rateLimit = invocation.getMethod().getDirectAnnotation<RateLimit>();
     if (rateLimit == null) return null;
 
-    final context = _getOrCreate().withInvocation(invocation);
+    final context = _getForInvocation(invocation);
 
     // Skip invocation if beforeInvocation decided to skip
     if (context.skipped()) return null;
@@ -279,7 +271,7 @@ abstract class RateLimitAnnotationMethodInterceptor implements MethodBeforeInter
     final rateLimit = invocation.getMethod().getDirectAnnotation<RateLimit>();
     if (rateLimit == null) return;
 
-    final context = _getOrCreate().withInvocation(invocation);
+    final context = _getForInvocation(invocation);
     final key = await context.generateKey(rateLimit.keyGenerator);
 
     for (final s in context.successfulStorages.reversed) {

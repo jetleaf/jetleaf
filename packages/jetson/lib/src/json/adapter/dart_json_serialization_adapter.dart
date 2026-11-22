@@ -253,7 +253,8 @@ final class DartJsonSerializationAdapter extends JsonSerializationAdapter<Object
 
     // 3. Reflect over fields
     for (final field in fields) {
-      // Skip ignored fields
+      // Skip static, const, and ignored fields
+      if (field.isStatic() || field.isConst()) continue;
       if (field.hasDirectAnnotation<JsonIgnore>()) continue;
 
       final jsonField = field.getDirectAnnotation<JsonField>();

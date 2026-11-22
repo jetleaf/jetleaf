@@ -72,6 +72,9 @@ class ApplicationShutdownHandlerHook implements Runnable {
   /// Whether a shutdown hook has been added to the Dart runtime.
   bool _shutdownHookAdded = false;
 
+  /// Active process signal subscriptions registered by this shutdown hook.
+  final List<StreamSubscription<ProcessSignal>> _signalSubscriptions = [];
+
   /// Flag indicating if shutdown hooks are enabled.
   ///
   /// Only after calling [enableShutdownHook] will runtime signals be intercepted.
@@ -206,8 +209,25 @@ class ApplicationShutdownHandlerHook implements Runnable {
   /// ```
   /// {@endtemplate}
   void _registerProcessSignalHook() {
-    ProcessSignal.sigint.watch().listen((signal) async => await _runInternal());
-    ProcessSignal.sigterm.watch().listen((signal) async => await _runInternal());
+    _signalSubscriptions.add(
+      ProcessSignal.sigint.watch().listen((signal) async => await _runInternal()),
+    );
+    _signalSubscriptions.add(
+      ProcessSignal.sigterm.watch().listen((signal) async => await _runInternal()),
+    );
+  }
+
+  /// {@template application_shutdown_handler_hook.cancel_process_signal_hooks}
+  /// Cancels all active OS process signal subscriptions (`SIGINT`, `SIGTERM`),
+  /// clears the internal subscription registry, and resets the hook registration
+  /// flag so shutdown hooks can be re-registered if the context restarts.
+  /// {@endtemplate}
+  void _cancelProcessSignalHooks() {
+    for (final sub in _signalSubscriptions) {
+      sub.cancel();
+    }
+    _signalSubscriptions.clear();
+    _shutdownHookAdded = false;
   }
 
   /// {@template run_internal}
@@ -348,6 +368,7 @@ class ApplicationShutdownHandlerHook implements Runnable {
     if (_logger.getIsInfoEnabled()) {
       _logger.info("Shutdown completed. All contexts and handlers shut down gracefully.");
     }
+    _cancelProcessSignalHooks();
   }
 
   /// {@template reset}
@@ -365,6 +386,7 @@ class ApplicationShutdownHandlerHook implements Runnable {
       _closedContexts.clear();
       _handlers.actions.clear();
       _inProgress = false;
+      _cancelProcessSignalHooks();
     });
   }
 
@@ -495,6 +517,9 @@ class _ApplicationContextClosedListener implements ApplicationEventListener<Cont
       final context = event.getApplicationContext();
       hook._contexts.remove(context);
       hook._closedContexts.add(context as ConfigurableApplicationContext);
+      if (hook._contexts.isEmpty && !hook._inProgress) {
+        hook._cancelProcessSignalHooks();
+      }
     });
   }
 }

@@ -14,7 +14,7 @@
 
 import 'package:jetleaf_core/lang.dart';
 
-import '../core/configurable_repository_context.dart';
+import 'repository_context.dart';
 import '../dialect/dialect_registry.dart';
 import '../mapping/entity_metadata_registry.dart';
 import '../mapping/type_converter_registry.dart';
@@ -48,8 +48,7 @@ import '../mapping/type_converter_registry.dart';
 /// {@endtemplate}
 abstract class DataConfigurer {
   /// Reflective class descriptor for [DataConfigurer].
-  static final Class<DataConfigurer> CLASS =
-      Class<DataConfigurer>(null, PackageNames.DATA);
+  static final Class<DataConfigurer> CLASS = Class<DataConfigurer>(null, PackageNames.DATA);
 
   /// {@macro jetleaf_data_configurer}
   const DataConfigurer();

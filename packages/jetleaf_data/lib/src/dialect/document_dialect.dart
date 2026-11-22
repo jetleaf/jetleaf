@@ -20,8 +20,6 @@ import '../query/query_criteria.dart';
 import 'database_dialect.dart';
 import 'document_type_mapper.dart';
 
-export 'document_type_mapper.dart';
-
 /// {@template jetleaf_document_dialect}
 /// Abstract base class for **document-oriented NoSQL dialects** (MongoDB,
 /// DocumentDB, DynamoDB, etc.).
@@ -36,8 +34,7 @@ export 'document_type_mapper.dart';
 /// {@endtemplate}
 abstract class DocumentDialect extends DatabaseDialect {
   /// Reflective [Class] handle for [DocumentDialect].
-  static final Class<DocumentDialect> CLASS =
-      Class<DocumentDialect>(null, PackageNames.DATA);
+  static final Class<DocumentDialect> CLASS = Class<DocumentDialect>(null, PackageNames.DATA);
 
   /// {@macro jetleaf_document_dialect}
   const DocumentDialect();
@@ -53,23 +50,14 @@ abstract class DocumentDialect extends DatabaseDialect {
 
   /// Builds the sort document (`{ field: 1 | -1 }`) for [sort] against
   /// [metadata].
-  Map<String, Object?> buildSortDocument(
-    Sort sort,
-    EntityMetadata<dynamic> metadata,
-  );
+  Map<String, Object?> buildSortDocument(Sort sort, EntityMetadata<dynamic> metadata);
 
   /// Builds the document payload to insert for [metadata] from column-keyed
   /// [values].
-  Map<String, Object?> buildInsertDocument(
-    EntityMetadata<dynamic> metadata,
-    Map<String, Object?> values,
-  );
+  Map<String, Object?> buildInsertDocument(EntityMetadata<dynamic> metadata, Map<String, Object?> values);
 
   /// Builds the update document (e.g. `{ '$set': values }`) for [metadata].
-  Map<String, Object?> buildUpdateDocument(
-    EntityMetadata<dynamic> metadata,
-    Map<String, Object?> values,
-  );
+  Map<String, Object?> buildUpdateDocument(EntityMetadata<dynamic> metadata, Map<String, Object?> values);
 
   /// Builds the identifier (and optional optimistic-lock version) filter
   /// document for single-document update and delete operations.
@@ -80,16 +68,13 @@ abstract class DocumentDialect extends DatabaseDialect {
   );
 
   @override
-  String buildDropTableQuery(EntityMetadata<dynamic> metadata) =>
-      'db.${metadata.getTableName()}.drop()';
+  String buildDropTableQuery(EntityMetadata<dynamic> metadata) => 'db.${metadata.getTableName()}.drop()';
 
   /// Formats [document] as a human-readable diagnostic string for logging.
-  static String formatDebugDocument(Object? document) =>
-      _renderDocument(document, 0);
+  static String formatDebugDocument(Object? document) => _renderDocument(document, 0);
 
   /// Alias for [formatDebugDocument].
-  static String debugDocument(Object? document) =>
-      formatDebugDocument(document);
+  static String debugDocument(Object? document) => formatDebugDocument(document);
 
   static String _renderDocument(Object? value, int depth) {
     switch (value) {
@@ -97,10 +82,7 @@ abstract class DocumentDialect extends DatabaseDialect {
         return 'null';
       case Map<String, Object?> map:
         final entries = map.entries
-            .map(
-              (entry) =>
-                  '"${entry.key}": ${_renderDocument(entry.value, depth + 1)}',
-            )
+            .map((entry) => '"${entry.key}": ${_renderDocument(entry.value, depth + 1)}')
             .join(', ');
         return '{ $entries }';
       case List<Object?> list:

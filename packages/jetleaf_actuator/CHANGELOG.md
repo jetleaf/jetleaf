@@ -1,12 +1,12 @@
-## Unreleased
+## [1.1.0]
+
+### Fixed
+
+- **Monitoring service stability**: Resolved issues in `AbstractMonitoringService` and `DefaultMonitoringService`.
 
 ### Documentation
 
 - **Terminology refresh**: "dart:mirrors" / "mirrors" mentions replaced by "runtime reflection"; no functional changes.
-
----
-
-## [1.1.0]
 
 ### Changed
 

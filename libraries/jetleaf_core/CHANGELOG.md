@@ -1,7 +1,8 @@
-## Unreleased
+## 2.1.0
 
 ### Added
 
+- **Reified generic type support (`TypeReifier` / `StandardTypeReifier<T>`)**: Runtime reflection (`_MaterialLibrary`) now resolves reified generic `List`, `Set`, and `Map` types even for user-defined or previously unknown types.
 - **`hasClass` probe**: The runtime package now exposes `RuntimeProvider.hasClass(String name, [String? package])` — a strict, non-synthesizing existence check for a class known to the registry (used in place of defensive type-lookup gymnastics that synthesized fallback declarations).
 - **`MaterializedLibrary.hasRegisteredType`**: Strict type-registry lookup without synthesizing fallback entries.
 - **`Class.forType` Type-token support**: `Class.forType(int)`, `Class.forType(List<String>)` and similar type-token calls resolve deterministically through `Runtime.findClassByType` instead of synthesizing placeholder declarations.
@@ -17,30 +18,27 @@
 - **`Class.forType`**: Passing a `Type` token returns `Class<Type>`; value instances still return `Class<C>`.
 - **`_Class` parameterized preference**: When constructing parameterized classes, scanned base declarations are preferred over synthesized ones only when they are real (scanned) declarations — synthetic `List` bases no longer shadow the synthesized `List<int>` declaration carrying reified arguments.
 - **Helper consolidation**: `conversion_adapter_utils.dart` rewritten — generic `x == Class<Y>() || x.getType() is Y` chains replaced by `x.getType() == Y` throughout.
+
+### Fixed
+
+- **Pod destruction double-wrapping guard**: `AbstractPodFactory.destroyPod` now checks for `DisposableLifecycleManager` before delegating to `_destroy`, preventing duplicate lifecycle wrapping.
+- **Event listener deduplication**: `SimpleApplicationEventBus.addApplicationListener` avoids duplicate listener registration.
+- **Processor & interception hardening**: Fixes across `AutowiredAnnotationPodProcessor`, `CommonAnnotationPodProcessor`, `ConfigurationPropertyPodProcessor`, `AbstractMethodDispatcher`, and `Interceptable`.
 - **`DefaultConversionService.remove()`** restores the built-in converter snapshot instead of clearing the bucket (custom converters removed first; builtins survive `remove()`).
 - **`Iterable` to `String` conversion** emits comma-separated values (Spring semantics) instead of leaking through an arbitrary `toString()`.
 - **`ConfigurationPropertyPodProcessor`** no longer crashes with a null-check exception when the annotation is present via `hasDirectAnnotation` but cannot be constructed at this stage (AOT/JIT visibility gap) — the bean is silently skipped instead of failing.
 - **`fromUri`** on `StandardLibraryDeclaration` rejects empty package names (e.g. `''`) and resolves nearest pubspec `name:` for `file://` URIs.
 - **Private VM implementation types** (e.g. `_Map<String, dynamic>`, `_BigIntImpl`, `_RegExp`, `_SimpleUri`) are normalized to their public interface declarations for reflection sites.
+- **Parameterized Collections**: `Class<T>.isArray()` and `Class<T>.isKeyValuePaired()` now recognise parameterized generic targets (`List<T>`, `Set<T>`, `Map<K, V>`, `MapEntry<K, V>`) via both the reified `Type` and the declaration name, in addition to `TypeKind` and type-argument inspection.
+- **Class Resolution**: `findClassByType` / `_MaterialLibrary.findClassByType` no longer fall back to matching bare base names for parameterized types — prevents `Class<User>()` resolving to an unrelated `User` declaration from another package or scope.
+- **Factory Method Dedup**: `AnnotatedPodMethodBuilder` only qualifies an auto-named pod (`configClass.methodName`) when the pre-existing bare-name definition comes from a different factory method; same-method re-definition keeps the bare method name.
+- **Reflective Utils**: Removed the broken reified-generic reflection helpers that mislabelled collected list/map/set/iterable element types; element types are now resolved purely through `Runtime.obtainClassDeclaration`.
+- **AOT Execution**: Minor cleanups to the `AotRuntimeExecutor` runtime executor.
 
 ### Removed
 
 - **Legacy executor stubs**: Removed `default_runtime_executor.dart`, `jit_runtime_executor.dart`, and `runtime_executor_resolving.dart` — dead code from the pre-unified executor design. Runtime execution unifies behind `AotRuntimeExecutor`.
 - **`_mirrorImportRegex` / `hasMirrorImport`** (in `jetleaf_tools`): mirror-related helpers removed.
-
----
-
-## 2.1.0
-
-### Fixes & Improvements
-
-- **Parameterized Collections**: `Class<T>.isArray()` and `Class<T>.isKeyValuePaired()` now recognise parameterized generic targets (`List<T>`, `Set<T>`, `Map<K, V>`, `MapEntry<K, V>`) via both the reified `Type` and the declaration name, in addition to `TypeKind` and type-argument inspection.
-- **Class Resolution**: `findClassByType` / `_MaterialLibrary.findClassByType` no longer fall back to matching bare base names for parameterized types — prevents `Class<User>()` resolving to an unrelated `User` declaration from another package or scope.
-- **@ConfigurationProperty Visibility**: `ConfigurationPropertyPodProcessor` no longer crashes with a null-check exception when the `@ConfigurationProperty` annotation is visible via `hasDirectAnnotation` but the annotation instance cannot be constructed at this stage (AOT/JIT visibility gaps) — the bean is silently skipped instead of failing pod creation.
-- **Factory Method Dedup**: `AnnotatedPodMethodBuilder` only qualifies an auto-named pod (`configClass.methodName`) when the pre-existing bare-name definition comes from a different factory method; same-method re-definition keeps the bare method name.
-- **Conversion Semantics**: `Iterable` values converted to `String` now join with commas (Spring semantics) instead of leaking through an arbitrary toString.
-- **Reflective Utils**: Removed the broken reified-generic reflection helpers that mislabelled collected list/map/set/iterable element types; element types are now resolved purely through `Runtime.obtainClassDeclaration`.
-- **AOT Execution**: Minor cleanups to the `AotRuntimeExecutor` runtime executor.
 
 ---
 

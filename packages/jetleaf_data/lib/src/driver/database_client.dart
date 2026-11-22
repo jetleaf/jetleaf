@@ -28,6 +28,17 @@ import 'query_result.dart';
 ///   [rollbackTransaction], [setReadOnly].
 /// - **Lifecycle & Health**: [isValid], [close].
 ///
+/// ### Usage Example
+/// ```dart
+/// final result = await client.query(
+///   'SELECT id, email FROM users WHERE active = ?',
+///   parameters: [true],
+/// );
+/// for (final row in result.getRows()) {
+///   print(row['email']);
+/// }
+/// ```
+///
 /// ### See Also
 /// - [QueryResult]
 /// - `ConnectionFactory`
@@ -35,8 +46,7 @@ import 'query_result.dart';
 /// {@endtemplate}
 abstract class DatabaseClient {
   /// Reflective [Class] handle for [DatabaseClient].
-  static final Class<DatabaseClient> CLASS =
-      Class<DatabaseClient>(null, PackageNames.DATA);
+  static final Class<DatabaseClient> CLASS = Class<DatabaseClient>(null, PackageNames.DATA);
 
   /// {@macro jetleaf_database_client}
   const DatabaseClient();
@@ -99,9 +109,7 @@ abstract class DatabaseClient {
     String collection,
     Map<String, Object?> document,
   ) {
-    throw UnsupportedOperationException(
-      '$runtimeType does not support document operations',
-    );
+    throw UnsupportedOperationException('$runtimeType does not support document operations');
   }
 
   /// Updates documents in [collection] matching [filter] with [update] and
@@ -111,9 +119,7 @@ abstract class DatabaseClient {
     Map<String, Object?> filter,
     Map<String, Object?> update,
   ) {
-    throw UnsupportedOperationException(
-      '$runtimeType does not support document operations',
-    );
+    throw UnsupportedOperationException('$runtimeType does not support document operations');
   }
 
   /// Deletes documents in [collection] matching [filter] and returns the
@@ -122,9 +128,7 @@ abstract class DatabaseClient {
     String collection,
     Map<String, Object?> filter,
   ) {
-    throw UnsupportedOperationException(
-      '$runtimeType does not support document operations',
-    );
+    throw UnsupportedOperationException('$runtimeType does not support document operations');
   }
 
   /// Finds documents in [collection] matching [filter] with optional [sort],
@@ -136,9 +140,7 @@ abstract class DatabaseClient {
     int? limit,
     int? skip,
   }) {
-    throw UnsupportedOperationException(
-      '$runtimeType does not support document operations',
-    );
+    throw UnsupportedOperationException('$runtimeType does not support document operations');
   }
 
   /// Counts documents in [collection] matching [filter].
@@ -146,9 +148,7 @@ abstract class DatabaseClient {
     String collection,
     Map<String, Object?> filter,
   ) {
-    throw UnsupportedOperationException(
-      '$runtimeType does not support document operations',
-    );
+    throw UnsupportedOperationException('$runtimeType does not support document operations');
   }
 
   /// Closes this client and releases underlying physical resources.

@@ -27,14 +27,19 @@ import '../../repository.dart';
 /// operations, returning `null`, empty collections, or default values. It
 /// is intended to be **extended** by concrete executor implementations
 /// (such as `DefaultRepositoryExecutor`) that interact with actual data stores.
+///
+/// ### Usage Example
+/// ```dart
+/// final executor = DefaultRepositoryExecutor(repositoryFactorySupport);
+/// final user = await executor.findById<User, String>('user-1', userRepository);
+/// ```
 /// {@endtemplate}
 abstract class RepositoryExecutor {
   /// {@macro jetleaf_repository_executor}
   const RepositoryExecutor();
 
   /// Holds the [Class] metadata for the [RepositoryExecutor] type.
-  static final Class<RepositoryExecutor> CLASS =
-      Class<RepositoryExecutor>(null, PackageNames.DATA);
+  static final Class<RepositoryExecutor> CLASS = Class<RepositoryExecutor>(null, PackageNames.DATA);
 
   /// Executes a generic repository operation and returns a single result of type [T].
   Future<T?> execute<T>([Repository<dynamic, dynamic>? repository]) async => null;
@@ -51,8 +56,7 @@ abstract class RepositoryExecutor {
     bool ignoreCase,
     Repository<T, ID> repository, [
     Object? value,
-  ]) async =>
-      null;
+  ]) async => null;
 
   /// Checks whether an entity with the given [id] exists in the repository.
   Future<bool> existsById<T, ID>(ID id, Repository<T, ID> repository) async => false;
@@ -64,8 +68,7 @@ abstract class RepositoryExecutor {
   Future<Iterable<T>> findAllById<T, ID>(
     Iterable<ID> ids,
     Repository<T, ID> repository,
-  ) async =>
-      const [];
+  ) async => const [];
 
   /// Returns the total number of entities in the repository.
   Future<int> getCount<T, ID>(Repository<T, ID> repository) async => 0;
@@ -77,8 +80,7 @@ abstract class RepositoryExecutor {
   Future<Iterable<S>> saveAll<T, ID, S extends T>(
     Iterable<S> entities,
     Repository<T, ID> repository,
-  ) async =>
-      const [];
+  ) async => const [];
 
   /// Flushes pending changes for [repository].
   Future<void> flush<T, ID>(Repository<T, ID> repository) async {}
@@ -134,13 +136,11 @@ abstract class RepositoryExecutor {
   Future<Iterable<T>> findAllSorted<T, ID>(
     Sort sort,
     Repository<T, ID> repository,
-  ) async =>
-      const [];
+  ) async => const [];
 
   /// Returns a page of entities according to [pageable] constraints.
   Future<Page<T>> findPage<T, ID>(
     Pageable pageable,
     Repository<T, ID> repository,
-  ) async =>
-      Page.empty();
+  ) async => Page.empty();
 }

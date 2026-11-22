@@ -1,14 +1,16 @@
-## Unreleased
+## 1.1.0
 
-### Added
+### Added & Improvements
 
+- **Development runtime bootstrap (`ensureDevelopmentRuntime`)**: Enables direct `dart run` and IDE Run & Debug workflows by automatically scanning and preparing runtime artifacts when needed.
+- **Test AOT partitioning**: `AotRegistrarWriter` and `TestCommand` partition main and test AOT artifacts cleanly across `aot_pod_registry_writer.dart`, `aot_proxy_writer.dart`, `aot_sub_registrar_writer.dart`, `aot_type_registry_writer.dart`, `build_command.dart`, and `entry_commands.dart`.
 - **Pub Workspace support**: `jl dev`, `jl run`, `jl test`, `jl build`, `jl status` and `jl stop` now fan out to pub-workspace members when invoked at a workspace root (`pubspec.yaml` with a top-level `workspace:` list). Running inside a member directory is unchanged. Workspace member detection walks the root's `pubspec.yaml` and each member's `resolution: workspace` flag.
 - **`jl proxy`**: New subcommand emits interceptable AOT proxies for stereotype-annotated components to `lib/_jetleaf/proxies/` without rebuilding caches or the AOT registry (useful for inspecting generated proxies between builds).
-- **Test AOT registry**: Test entries import `lib/_jetleaf/test/registry.g.dart` (`registerTestGeneratedArtifacts`) via the generated test facade; the warm test VM registers the test AST before any `@JetleafTest` runs — `MethodNotFoundException` for framework dispatches in warm test VMs is eliminated.
-- **`isJetLeafBuildProject`**: Projects with a `.jetleaf/` state directory are now recognized as Jetleaf apps (in-repo framework packages used this path before).
-- **Annotation Registration**: Annotation-registry writer resolves `Clazz.namedCtor(...)` / `const Clazz.namedCtor(...)` constructor references, normalizes list-like annotation arguments to `List<dynamic>`, and drops spurious empty-constructor `constructByName` lookups.
-- **`@Pod` Factory Method AOT Emission**: `jl build` emits configuration `@Pod` factory methods into generated registries with named-resolution (`@Named` > `@Pod('value')` > method name), unwraps `Future<X>` to its completeness type, honours `@Primary` on factory methods, and registers config-qualified names alongside bare names when both are free.
-- **Test scan parity**: `jl build`/`jl dev` scan `test/**` with `skipTests: false`; production scans use `skipTests: true`.
+- **Test Runner AOT Registration**: `jl test` stubs now import and invoke `lib/_jetleaf/test.dart` (as `aot.registerTestGeneratedArtifacts()`) before any `@JetleafTest` entry runs — framework method dispatches through the generated dispatch tables now resolve correctly in warm test VMs instead of failing with `MethodNotFoundException`.
+- **Test-scan Parity**: `jl build` / `jl dev` test scans request `skipTests: false`; production scans request `skipTests: true`.
+- **Pod Definition `@Pod` Factory-method AOT Emission**: `jl build` emits configuration `@Pod` factory methods statically into generated registries (matching `AnnotatedPodMethodBuilder` naming exactly — `@Named` > `@Pod('value')` > bare method name), unwraps `Future<X>` return types to their completeness type `X`, honours `@Primary` on factory methods, and registers `<configClass>`-qualified pod names alongside the bare name when both are free to avoid duplicate names.
+- **`.jetleaf` Project Detection**: `isJetLeafBuildProject` now recognises projects with a `.jetleaf/` state directory (how in-repo framework packages are detected).
+- **Annotation Constructor Calls**: The generated annotation-registry writer resolves `Clazz.namedCtor(...)` / `const Clazz.namedCtor(...)` constructor references, normalises list-like annotation arguments to `List<dynamic>`, and drops spurious empty-constructor `constructByName` lookups that previously produced invalid annotation instances.
 
 ### Changed
 
@@ -16,18 +18,6 @@
 - **Workspace CLI**: `jl` family reworked for workspace fan-out; each command understands both a single-project root and a workspace root.
 - **Mirror removal**: `dart:mirrors` mentions eliminated throughout documentation and doc comments (`hasMirrorImport`/`_mirrorImportRegex` helpers removed); `runtime reflection` vocabulary throughout.
 - **Package discovery**: `packageUris` propagation now preserves workspace package orderings across dependency buttons consistently.
-
----
-
-## 1.1.0
-
-### Added & Improvements
-
-- **Test Runner AOT Registration**: `jl test` stubs now import and invoke `lib/_jetleaf/test.dart` (as `aot.registerTestGeneratedArtifacts()`) before any `@JetleafTest` entry runs — framework method dispatches through the generated dispatch tables now resolve correctly in warm test VMs instead of failing with `MethodNotFoundException`.
-- **Test-scan Parity**: `jl dev` test scans request `skipTests: false`; production scans request `skipTests: true`.
-- **Pod Definition `@Pod` Factory-method AOT Emission**: `jl build` emits configuration `@Pod` factory methods statically into generated registries (matching `AnnotatedPodMethodBuilder` naming exactly — `@Named` > `@Pod('value')` > bare method name), unwraps `Future<X>` return types to their completeness type `X`, honours `@Primary` on factory methods, and registers `<configClass>`-qualified pod names alongside the bare name when both are free to avoid duplicate names.
-- **`.jetleaf` Project Detection**: `isJetLeafBuildProject` now recognises projects with a `.jetleaf/` state directory (how in-repo framework packages are detected).
-- **Annotation Constructor Calls**: The generated annotation-registry writer resolves `Clazz.namedCtor(...)` / `const Clazz.namedCtor(...)` constructor references, normalises list-like annotation arguments to `List<dynamic>`, and drops spurious empty-constructor `constructByName` lookups that previously produced invalid annotation instances.
 
 ---
 

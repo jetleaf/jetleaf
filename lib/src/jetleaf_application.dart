@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:jetleaf_tools/jetleaf_tools.dart' show runScan, RuntimeScannerConfiguration;
+import 'package:jetleaf_tools/jetleaf_tools.dart' show runScan, ensureDevelopmentRuntime, RuntimeScannerConfiguration;
 import 'package:jetleaf_core/convert.dart';
 import 'package:jetleaf_core/core.dart';
 import 'package:jetleaf_core/pod.dart';
@@ -589,10 +589,17 @@ final class JetleafApplication {
       /// It is to track the time taken to reach any point of the application startup process.
       _startup = StartupTracker.create();
 
+      await ensureDevelopmentRuntime(
+        hasAotRegistrar: _aotRegistrar != null,
+        isRunningFromDill: system.isRunningFromDill(),
+      );
+
       if (_aotRegistrar case JetleafAotRegistrar registrar) {
         await registrar(null);
         Runtime.getAllClasses();
-      } else {
+      }
+
+      if (!Runtime.isPopulated || _aotRegistrar == null) {
         await runScan(
           args: args,
           config: scanConfiguration,

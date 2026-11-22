@@ -14,8 +14,7 @@
 
 import 'package:jetleaf_core/lang.dart';
 
-import '../annotation/isolation.dart';
-import '../annotation/propagation.dart';
+import '../annotation/transactional.dart';
 
 /// {@template jetleaf_transaction_definition}
 /// Contract describing the **propagation, isolation, timeout, read-only, and
@@ -28,8 +27,7 @@ import '../annotation/propagation.dart';
 /// {@endtemplate}
 abstract interface class TransactionDefinition {
   /// Reflective [Class] handle for [TransactionDefinition].
-  static final Class<TransactionDefinition> CLASS =
-      Class<TransactionDefinition>(null, PackageNames.DATA);
+  static final Class<TransactionDefinition> CLASS = Class<TransactionDefinition>(null, PackageNames.DATA);
 
   /// Returns the [Propagation] behavior.
   Propagation getPropagation();

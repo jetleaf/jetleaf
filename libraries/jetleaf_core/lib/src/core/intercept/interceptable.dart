@@ -121,8 +121,8 @@ mixin class Interceptable implements MethodInterceptorDispatcher {
 
   @override
   Future<T> when<T>(AsyncMethodInvocator<T> function, Object target, String methodName, [ExecutableArgument? arguments, Class? targetClass]) async {
-    if (support != null) {
-      return support!.when(function, this, methodName, arguments, targetClass);
+    if (support case MethodInterceptorDispatcher? dispatcher when dispatcher != null) {
+      return dispatcher.when(function, target, methodName, arguments, targetClass);
     }
 
     return function();

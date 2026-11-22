@@ -22,8 +22,7 @@ import '../sql_type_mapper.dart';
 /// {@endtemplate}
 final class SqliteTypeMapper extends SqlTypeMapper {
   /// Reflective [Class] handle for [SqliteTypeMapper].
-  static final Class<SqliteTypeMapper> CLASS =
-      Class<SqliteTypeMapper>(null, PackageNames.DATA);
+  static final Class<SqliteTypeMapper> CLASS = Class<SqliteTypeMapper>(null, PackageNames.DATA);
 
   /// {@macro jetleaf_sqlite_type_mapper}
   SqliteTypeMapper([super.converters]);

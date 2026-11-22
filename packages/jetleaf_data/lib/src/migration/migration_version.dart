@@ -23,12 +23,9 @@ import '../exception/data_access_exception.dart';
 /// Flyway-style versioned identifiers (`'V3__add_unique_index'`,
 /// `'v2_1__add_column'`).
 /// {@endtemplate}
-final class MigrationVersion
-    with EqualsAndHashCode
-    implements Comparable<MigrationVersion> {
+final class MigrationVersion with EqualsAndHashCode implements Comparable<MigrationVersion> {
   /// Reflective [Class] handle for [MigrationVersion].
-  static final Class<MigrationVersion> CLASS =
-      Class<MigrationVersion>(null, PackageNames.DATA);
+  static final Class<MigrationVersion> CLASS = Class<MigrationVersion>(null, PackageNames.DATA);
 
   final List<int> _segments;
   final String? _description;
@@ -42,8 +39,7 @@ final class MigrationVersion
     var value = source.trim();
     String? description;
 
-    final flywayMatch =
-        RegExp(r'^[Vv]([0-9]+(?:[._][0-9]+)*)__(.+)$').firstMatch(value);
+    final flywayMatch = RegExp(r'^[Vv]([0-9]+(?:[._][0-9]+)*)__(.+)$').firstMatch(value);
     if (flywayMatch != null) {
       value = flywayMatch.group(1)!;
       description = flywayMatch.group(2)!.replaceAll('_', ' ');
@@ -57,15 +53,11 @@ final class MigrationVersion
     final segments = <int>[];
     for (final piece in pieces) {
       if (piece.isEmpty) {
-        throw MigrationException(
-          'Malformed migration version "$source" — empty segment',
-        );
+        throw MigrationException('Malformed migration version "$source" — empty segment');
       }
       final parsed = int.tryParse(piece);
       if (parsed == null) {
-        throw MigrationException(
-          'Malformed migration version "$source" — segment "$piece" is not numeric',
-        );
+        throw MigrationException('Malformed migration version "$source" — segment "$piece" is not numeric');
       }
       segments.add(parsed);
     }
@@ -106,6 +98,5 @@ final class MigrationVersion
   List<Object?> equalizedProperties() => [_segments, _description];
 
   @override
-  String toString() =>
-      _description != null ? '${getValue()} ($_description)' : getValue();
+  String toString() => _description != null ? '${getValue()} ($_description)' : getValue();
 }

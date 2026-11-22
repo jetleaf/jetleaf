@@ -12,13 +12,33 @@
 //
 // 🔧 Powered by Hapnium — the Dart backend engine 🍃
 
+/// 🚀 **JetLeaf Schema Migration & DDL Generation Library**
+///
+/// Provides versioned, checksum-verified database migrations and automatic
+/// schema DDL generation from `@Entity` metadata:
+/// - [Migration], [SqlMigration], [MigrationOperations], [MigrationVersion]
+/// - [MigrationRunner] & [MigrationRunResult]
+/// - [SchemaGenerator] & [SchemaGenerationResult]
+///
+/// ### Usage Example
+/// ```dart
+/// import 'package:jetleaf_data/migration.dart';
+///
+/// final runner = MigrationRunner(
+///   client: databaseClient,
+///   dialect: dialect,
+///   migrations: [
+///     SqlMigration(
+///       MigrationVersion.parse('V1__create_users'),
+///       ['CREATE TABLE users (id TEXT PRIMARY KEY, email TEXT NOT NULL)'],
+///     ),
+///   ],
+/// );
+/// final result = await runner.migrate();
+/// ```
 library;
 
 export 'src/migration/migration.dart';
-export 'src/migration/migration_operations.dart';
-export 'src/migration/migration_run_result.dart';
 export 'src/migration/migration_runner.dart';
 export 'src/migration/migration_version.dart';
-export 'src/migration/schema_generation_result.dart';
 export 'src/migration/schema_generator.dart';
-export 'src/migration/sql_migration.dart';

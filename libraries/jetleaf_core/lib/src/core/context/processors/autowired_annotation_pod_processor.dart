@@ -88,45 +88,40 @@ class AutowiredAnnotationPodProcessor extends PodSmartInstantiationProcessor imp
 
   @override
   Future<List<ArgumentValue>?> determineCandidateArguments(String podName, Executable executable, Iterable<Parameter> parameters) async {
+    if (!parameters.any((param) => param.hasDirectAnnotation<Qualifier>())) {
+      return null;
+    }
+
     List<ArgumentValue> args = [];
 
     for (final param in parameters) {
       final paramClass = param.getReturnClass();
       final classContent = _getClassContent(paramClass);
+      final qualifier = param.getDirectAnnotation<Qualifier>();
 
-      if (param.hasDirectAnnotation<Qualifier>()) {
-        final qualifier = param.getDirectAnnotation<Qualifier>();
+      final dep = await _podFactory.resolveDependency(
+        DependencyDescriptor(
+          source: paramClass,
+          podName: podName,
+          propertyName: param.getName(),
+          type: paramClass,
+          args: null,
+          component: classContent.component ?? paramClass.componentType(),
+          key: classContent.key ?? paramClass.keyType(),
+          isEager: true,
+          isRequired: param.isRequired(),
+          lookup: qualifier?.value,
+        ),
+      );
 
-        final dep = await _podFactory.resolveDependency(
-          DependencyDescriptor(
-            source: paramClass,
-            podName: podName,
-            propertyName: param.getName(),
-            type: paramClass,
-            args: null,
-            component: classContent.component ?? paramClass.componentType(),
-            key: classContent.key ?? paramClass.keyType(),
-            isEager: true,
-            isRequired: param.isRequired(),
-            lookup: qualifier?.value,
-          ),
-        );
-        
-        args.add(
-          ArgumentValue(
-            dep,
-            qualifiedName: paramClass.getQualifiedName(),
-            packageName: paramClass.getPackage().getName(),
-            name: param.getName(),
-          ),
-        );
-      }
-
-      if (executable is Constructor) {
-        //
-      } else if (executable is Method) {
-        //
-      }
+      args.add(
+        ArgumentValue(
+          dep,
+          qualifiedName: paramClass.getQualifiedName(),
+          packageName: paramClass.getPackage().getName(),
+          name: param.getName(),
+        ),
+      );
     }
 
     return args.isEmpty ? null : args;
@@ -147,15 +142,18 @@ class AutowiredAnnotationPodProcessor extends PodSmartInstantiationProcessor imp
           continue;
         }
 
-        // Skip already initialized fields (set by constructor or factory)
-        try {
-          final currentValue = field.getValue(pod);
-          if (currentValue != null) {
-            if (_logger.getIsTraceEnabled()) {}
+        // Skip already initialized @Autowired fields (set by constructor or factory),
+        // unless @Value or @Env is explicitly overriding a default field initializer.
+        if (hasAutowired && !hasValue && !hasEnv) {
+          try {
+            final currentValue = field.getValue(pod);
+            if (currentValue != null) {
+              if (_logger.getIsTraceEnabled()) {}
 
-            continue;
-          }
-        } catch (_) {}
+              continue;
+            }
+          } catch (_) {}
+        }
 
         // Handle @Autowired annotation
         if (hasAutowired) {

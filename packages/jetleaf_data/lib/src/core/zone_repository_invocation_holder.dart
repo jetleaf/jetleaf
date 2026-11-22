@@ -30,8 +30,7 @@ import 'package:jetleaf_core/lang.dart';
 /// {@endtemplate}
 final class ZoneRepositoryInvocationHolder {
   /// Reflective class descriptor for [ZoneRepositoryInvocationHolder].
-  static final Class<ZoneRepositoryInvocationHolder> CLASS =
-      Class<ZoneRepositoryInvocationHolder>(null, PackageNames.DATA);
+  static final Class<ZoneRepositoryInvocationHolder> CLASS = Class<ZoneRepositoryInvocationHolder>(null, PackageNames.DATA);
 
   static final Object _zoneKey = Object();
 
@@ -39,8 +38,7 @@ final class ZoneRepositoryInvocationHolder {
 
   /// Returns the [MethodInvocation] bound in the current [Zone], or `null` if
   /// execution is outside an intercepted repository method.
-  static MethodInvocation<dynamic>? getCurrent() =>
-      Zone.current[_zoneKey] as MethodInvocation<dynamic>?;
+  static MethodInvocation<dynamic>? getCurrent() => Zone.current[_zoneKey] as MethodInvocation<dynamic>?;
 
   /// Returns `true` when a repository [MethodInvocation] is active in the
   /// current [Zone].
@@ -48,10 +46,7 @@ final class ZoneRepositoryInvocationHolder {
 
   /// Executes [action] inside a child [Zone] with [invocation] bound as the
   /// active repository method invocation.
-  static R runWithInvocation<R>(
-    MethodInvocation<dynamic> invocation,
-    R Function() action,
-  ) {
+  static R runWithInvocation<R>(MethodInvocation<dynamic> invocation, R Function() action) {
     return runZoned(action, zoneValues: {_zoneKey: invocation});
   }
 }

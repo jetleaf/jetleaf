@@ -19,7 +19,7 @@ import '../../mapping/column_metadata.dart';
 import '../../mapping/default_entity_metadata_registry.dart';
 import '../../mapping/entity_metadata.dart';
 import '../../mapping/relationship_metadata.dart';
-import '../../mapping/snake_case_naming_strategy.dart';
+import '../../mapping/naming_strategies.dart';
 import '../../paging/sort.dart';
 import '../../query/part.dart';
 import '../../query/part_tree.dart';
@@ -31,11 +31,17 @@ import 'mongo_type_mapper.dart';
 /// {@template jetleaf_mongo_dialect}
 /// MongoDB implementation of [DocumentDialect] translating `QueryCriteria`
 /// into BSON filter, sort, and update documents.
+///
+/// ### Usage Example
+/// ```dart
+/// const dialect = MongoDialect();
+/// final rendered = dialect.renderQuery(criteria);
+/// final filter = rendered.getDocument();
+/// ```
 /// {@endtemplate}
 final class MongoDialect extends DocumentDialect {
   /// Reflective [Class] handle for [MongoDialect].
-  static final Class<MongoDialect> CLASS =
-      Class<MongoDialect>(null, PackageNames.DATA);
+  static final Class<MongoDialect> CLASS = Class<MongoDialect>(null, PackageNames.DATA);
 
   /// {@macro jetleaf_mongo_dialect}
   const MongoDialect();
@@ -47,22 +53,16 @@ final class MongoDialect extends DocumentDialect {
   MongoTypeMapper getTypeMapper() => MongoTypeMapper();
 
   @override
-  String escapeIdentifier(String identifier) =>
-      identifier.replaceAll('"', '\\"');
+  String escapeIdentifier(String identifier) => identifier.replaceAll('"', '\\"');
 
   @override
-  Map<String, Object?> buildFilterDocument(QueryCriteria criteria) =>
-      _renderCriterionInner(
-        criteria.getPredicate(),
-        _FilterContext(criteria.getValues()),
-        criteria.getMetadata(),
-      );
+  Map<String, Object?> buildFilterDocument(QueryCriteria criteria) => _renderCriterionInner(
+    criteria.getPredicate(),
+    _FilterContext(criteria.getValues()),
+    criteria.getMetadata(),
+  );
 
-  Map<String, Object?> _renderCriterionInner(
-    Criterion? criterion,
-    _FilterContext ctx,
-    EntityMetadata<dynamic> metadata,
-  ) {
+  Map<String, Object?> _renderCriterionInner(Criterion? criterion, _FilterContext ctx, EntityMetadata<dynamic> metadata) {
     switch (criterion) {
       case null:
         return {};
@@ -70,10 +70,10 @@ final class MongoDialect extends DocumentDialect {
         return _renderPart(criterion.getPart(), ctx, metadata);
       case CompositeCriterion():
         final rendered = criterion
-            .getChildren()
-            .map((child) => _renderCriterionInner(child, ctx, metadata))
-            .where((filter) => filter.isNotEmpty)
-            .toList();
+          .getChildren()
+          .map((child) => _renderCriterionInner(child, ctx, metadata))
+          .where((filter) => filter.isNotEmpty)
+          .toList();
         if (rendered.isEmpty) return {};
         if (rendered.length == 1) return rendered.first;
         if (!criterion.isOr()) {
@@ -103,8 +103,8 @@ final class MongoDialect extends DocumentDialect {
       final out = Map<String, Object?>.from(left);
       for (final entry in right.entries) {
         out[entry.key] = out.containsKey(entry.key)
-            ? _mergeValues(out[entry.key], entry.value)
-            : _copyValue(entry.value);
+          ? _mergeValues(out[entry.key], entry.value)
+          : _copyValue(entry.value);
       }
       return out;
     }
@@ -121,11 +121,7 @@ final class MongoDialect extends DocumentDialect {
     return value;
   }
 
-  Map<String, Object?> _renderPart(
-    Part part,
-    _FilterContext ctx,
-    EntityMetadata<dynamic> metadata,
-  ) {
+  Map<String, Object?> _renderPart(Part part, _FilterContext ctx, EntityMetadata<dynamic> metadata) {
     final field = _columnKey(part.getProperty(), metadata);
     final operator = part.getOperator();
     final ignoreCase = part.isIgnoreCase();
@@ -136,7 +132,10 @@ final class MongoDialect extends DocumentDialect {
         if (value == null) return {field: null};
         if (ignoreCase && value is String) {
           return {
-            field: {'\$regex': '^${RegExp.escape(value)}\$', '\$options': 'i'},
+            field: {
+              '\$regex': '^${RegExp.escape(value)}\$',
+              '\$options': 'i'
+            },
           };
         }
         return {field: value};
@@ -163,8 +162,7 @@ final class MongoDialect extends DocumentDialect {
       case PartOperator.like:
         return {
           field: {
-            '\$regex':
-                _pattern(ctx.take(), anchorPrefix: true, anchorSuffix: true),
+            '\$regex': _pattern(ctx.take(), anchorPrefix: true, anchorSuffix: true),
             if (ignoreCase) '\$options': 'i',
           },
         };
@@ -172,8 +170,7 @@ final class MongoDialect extends DocumentDialect {
         return {
           field: {
             '\$not': {
-              '\$regex':
-                  _pattern(ctx.take(), anchorPrefix: true, anchorSuffix: true),
+              '\$regex': _pattern(ctx.take(), anchorPrefix: true, anchorSuffix: true),
               if (ignoreCase) '\$options': 'i',
             },
           },
@@ -181,16 +178,14 @@ final class MongoDialect extends DocumentDialect {
       case PartOperator.startingWith:
         return {
           field: {
-            '\$regex':
-                _pattern(ctx.take(), anchorPrefix: true, anchorSuffix: false),
+            '\$regex': _pattern(ctx.take(), anchorPrefix: true, anchorSuffix: false),
             if (ignoreCase) '\$options': 'i',
           },
         };
       case PartOperator.endingWith:
         return {
           field: {
-            '\$regex':
-                _pattern(ctx.take(), anchorPrefix: false, anchorSuffix: true),
+            '\$regex': _pattern(ctx.take(), anchorPrefix: false, anchorSuffix: true),
             if (ignoreCase) '\$options': 'i',
           },
         };
@@ -259,8 +254,7 @@ final class MongoDialect extends DocumentDialect {
         };
       case PartOperator.notIn:
         final value = ctx.take();
-        final items =
-            value is Iterable ? value.toList(growable: false) : [value];
+        final items = value is Iterable ? value.toList(growable: false) : [value];
         return {
           field: {'\$nin': items},
         };
@@ -322,28 +316,22 @@ final class MongoDialect extends DocumentDialect {
       if (!isLast) {
         final relationship = current.getRelationshipByProperty(segment);
         if (relationship == null) {
-          throw QueryDerivationException(
-            'Segment "$segment" of path "$propertyPath" is not a relationship — cannot navigate deeper',
-          );
+          throw QueryDerivationException('Segment "$segment" of path "$propertyPath" is not a relationship — cannot navigate deeper');
         }
 
         keys.add(
           _columnKey(
-            relationship.getJoinColumn() ??
-                _defaultJoinColumn(relationship, segment),
+            relationship.getJoinColumn() ?? _defaultJoinColumn(relationship, segment),
             current,
           ),
         );
-        current = DefaultEntityMetadataRegistry.instance
-            .getForType(relationship.getTargetEntity());
+        current = DefaultEntityMetadataRegistry.instance.getForType(relationship.getTargetEntity());
         continue;
       }
 
       final column = current.getColumnByProperty(segment);
       if (column == null) {
-        throw QueryDerivationException(
-          'No column "$segment" on ${current.getSimpleName()} for path "$propertyPath"',
-        );
+        throw QueryDerivationException('No column "$segment" on ${current.getSimpleName()} for path "$propertyPath"');
       }
 
       keys.add(column.getName());
@@ -352,24 +340,16 @@ final class MongoDialect extends DocumentDialect {
     return keys.join('.');
   }
 
-  String _defaultJoinColumn(
-    RelationshipMetadata relationship,
-    String property,
-  ) {
-    final targetMeta = DefaultEntityMetadataRegistry.instance
-        .getForType(relationship.getTargetEntity());
+  String _defaultJoinColumn(RelationshipMetadata relationship, String property) {
+    final targetMeta = DefaultEntityMetadataRegistry.instance.getForType(relationship.getTargetEntity());
     return '${SnakeCaseNamingStrategy.toSnakeCase(property)}_${targetMeta.getIdColumn()?.getName() ?? 'id'}';
   }
 
   @override
-  Map<String, Object?> buildSortDocument(
-    Sort sort,
-    EntityMetadata<dynamic> metadata,
-  ) {
+  Map<String, Object?> buildSortDocument(Sort sort, EntityMetadata<dynamic> metadata) {
     final spec = <String, Object?>{};
     for (final order in sort.toList()) {
-      spec[_columnKey(order.property, metadata)] =
-          order.direction.isDescending() ? -1 : 1;
+      spec[_columnKey(order.property, metadata)] = order.direction.isDescending() ? -1 : 1;
     }
     return spec;
   }
@@ -378,15 +358,13 @@ final class MongoDialect extends DocumentDialect {
   Map<String, Object?> buildInsertDocument(
     EntityMetadata<dynamic> metadata,
     Map<String, Object?> values,
-  ) =>
-      Map<String, Object?>.from(values);
+  ) => Map<String, Object?>.from(values);
 
   @override
   Map<String, Object?> buildUpdateDocument(
     EntityMetadata<dynamic> metadata,
     Map<String, Object?> values,
-  ) =>
-      {'\$set': Map<String, Object?>.from(values)};
+  ) => {'\$set': Map<String, Object?>.from(values)};
 
   @override
   Map<String, Object?> buildIdFilter(
@@ -412,13 +390,9 @@ final class MongoDialect extends DocumentDialect {
     switch (criteria.getType()) {
       case QueryType.select:
       case QueryType.exists:
-        final buffer = StringBuffer(
-          'db.$collection.find(${DocumentDialect.formatDebugDocument(filter)}',
-        );
+        final buffer = StringBuffer('db.$collection.find(${DocumentDialect.formatDebugDocument(filter)}');
         if (sort.isNotEmpty) {
-          buffer.write(
-            ').sort(${DocumentDialect.formatDebugDocument(sort)}',
-          );
+          buffer.write(').sort(${DocumentDialect.formatDebugDocument(sort)}');
         }
         if (criteria.getLimit() != null) {
           buffer.write(').limit(${criteria.getLimit()}');
@@ -427,45 +401,37 @@ final class MongoDialect extends DocumentDialect {
         return RenderedQuery(sql: buffer.toString(), document: filter);
       case QueryType.count:
         return RenderedQuery(
-          sql:
-              'db.$collection.countDocuments(${DocumentDialect.formatDebugDocument(filter)})',
+          sql: 'db.$collection.countDocuments(${DocumentDialect.formatDebugDocument(filter)})',
           document: filter,
         );
       case QueryType.delete:
         return RenderedQuery(
-          sql:
-              'db.$collection.deleteMany(${DocumentDialect.formatDebugDocument(filter)})',
+          sql: 'db.$collection.deleteMany(${DocumentDialect.formatDebugDocument(filter)})',
           document: filter,
         );
       case QueryType.update:
         return RenderedQuery(
-          sql:
-              'db.$collection.updateMany(${DocumentDialect.formatDebugDocument(filter)}, { \$set: {...} })',
+          sql: 'db.$collection.updateMany(${DocumentDialect.formatDebugDocument(filter)}, { \$set: {...} })',
           document: filter,
         );
     }
   }
 
   @override
-  String buildCreateTableQuery(EntityMetadata<dynamic> metadata) =>
-      'db.createCollection("${metadata.getTableName()}")';
+  String buildCreateTableQuery(EntityMetadata<dynamic> metadata) => 'db.createCollection("${metadata.getTableName()}")';
 
   @override
-  String buildCreateIndexQuery(
-    EntityMetadata<dynamic> metadata,
-    EntityIndex index,
-  ) {
+  String buildCreateIndexQuery(EntityMetadata<dynamic> metadata, EntityIndex index) {
     final keys = index
-        .getColumnList()
-        .split(',')
-        .map((entry) {
-          final trimmed = entry.trim();
-          final parts = trimmed.split(RegExp(r'\s+'));
-          final direction =
-              parts.length > 1 && parts[1].toLowerCase() == 'desc' ? -1 : 1;
-          return '"${parts.first}": $direction';
-        })
-        .join(', ');
+      .getColumnList()
+      .split(',')
+      .map((entry) {
+        final trimmed = entry.trim();
+        final parts = trimmed.split(RegExp(r'\s+'));
+        final direction = parts.length > 1 && parts[1].toLowerCase() == 'desc' ? -1 : 1;
+        return '"${parts.first}": $direction';
+      })
+      .join(', ');
 
     return 'db.${metadata.getTableName()}.createIndex({ $keys }, { name: "${index.getName()}", unique: ${index.isUnique()} })';
   }
@@ -473,9 +439,9 @@ final class MongoDialect extends DocumentDialect {
   @override
   String buildInsertQuery(EntityMetadata<dynamic> metadata) {
     final columns = metadata
-        .getInsertColumns()
-        .map((ColumnMetadata column) => '"${column.getName()}": :${column.getProperty()}')
-        .join(', ');
+      .getInsertColumns()
+      .map((ColumnMetadata column) => '"${column.getName()}": :${column.getProperty()}')
+      .join(', ');
     return 'db.${metadata.getTableName()}.insertOne({ $columns })';
   }
 

@@ -17,12 +17,13 @@ import 'src/services/task_scheduler_service.dart';
 import '_jetleaf/main.dart';
 
 Future<void> main(List<String> args) async {
-  await JetleafApplication.run(
+  final context = await JetleafApplication.run(
     UltimateApplication,
     args,
     null,
     registerGeneratedArtifacts,
   );
+  await context?.close();
 }
 
 @JetleafApplicationStarter()

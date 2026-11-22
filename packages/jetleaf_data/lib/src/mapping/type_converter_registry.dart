@@ -14,6 +14,7 @@
 
 import 'package:jetleaf_core/lang.dart';
 
+import 'default_type_converter_registry.dart';
 import 'type_converter.dart';
 
 /// {@template jetleaf_type_converter_registry}
@@ -27,25 +28,20 @@ import 'type_converter.dart';
 /// {@endtemplate}
 abstract interface class TypeConverterRegistry {
   /// Reflective [Class] handle for [TypeConverterRegistry].
-  static final Class<TypeConverterRegistry> CLASS =
-      Class<TypeConverterRegistry>(null, PackageNames.DATA);
+  static final Class<TypeConverterRegistry> CLASS = Class<TypeConverterRegistry>(null, PackageNames.DATA);
 
   /// Shared default [DefaultTypeConverterRegistry] instance.
-  static final DefaultTypeConverterRegistry instance =
-      DefaultTypeConverterRegistry.instance;
+  static final DefaultTypeConverterRegistry instance = DefaultTypeConverterRegistry.instance;
 
   /// Returns the shared default [DefaultTypeConverterRegistry] instance.
-  static DefaultTypeConverterRegistry getSharedInstance() =>
-      DefaultTypeConverterRegistry.getSharedInstance();
+  static DefaultTypeConverterRegistry getSharedInstance() => DefaultTypeConverterRegistry.getSharedInstance();
 
   /// Creates a new [DefaultTypeConverterRegistry] with [converters].
-  factory TypeConverterRegistry([List<TypeConverter> converters]) =
-      DefaultTypeConverterRegistry;
+  factory TypeConverterRegistry([List<TypeConverter> converters]) = DefaultTypeConverterRegistry;
 
   /// Creates a new [DefaultTypeConverterRegistry] pre-populated with the
   /// built-in converter chain.
-  factory TypeConverterRegistry.defaults() =
-      DefaultTypeConverterRegistry.defaults;
+  factory TypeConverterRegistry.defaults() = DefaultTypeConverterRegistry.defaults;
 
   /// Returns an unmodifiable view of all registered [TypeConverter] instances
   /// in priority order.
@@ -66,11 +62,9 @@ abstract interface class TypeConverterRegistry {
 /// Configurable extension of [TypeConverterRegistry] allowing dynamic
 /// registration and removal of [TypeConverter] instances.
 /// {@endtemplate}
-abstract interface class ConfigurableTypeConverterRegistry
-    implements TypeConverterRegistry {
+abstract interface class ConfigurableTypeConverterRegistry implements TypeConverterRegistry {
   /// Reflective [Class] handle for [ConfigurableTypeConverterRegistry].
-  static final Class<ConfigurableTypeConverterRegistry> CLASS =
-      Class<ConfigurableTypeConverterRegistry>(null, PackageNames.DATA);
+  static final Class<ConfigurableTypeConverterRegistry> CLASS = Class<ConfigurableTypeConverterRegistry>(null, PackageNames.DATA);
 
   /// Removes all registered converters.
   void clear();

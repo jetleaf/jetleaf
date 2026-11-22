@@ -14,11 +14,33 @@
 
 import 'package:jetleaf_core/lang.dart';
 
-import '../annotation/cascade_type.dart';
-import '../annotation/fetch_type.dart';
-import 'relationship_type.dart';
+import '../annotation/relationships.dart';
 
-export 'relationship_type.dart';
+/// {@template jetleaf_relationship_type}
+/// Classifies the **cardinality** of an association between two persistent
+/// entities.
+/// {@endtemplate}
+enum RelationshipType {
+  /// `@OneToOne` association.
+  oneToOne,
+
+  /// `@OneToMany` association.
+  oneToMany,
+
+  /// `@ManyToOne` association.
+  manyToOne,
+
+  /// `@ManyToMany` association.
+  manyToMany;
+
+  /// Returns `true` if this relationship targets a single entity
+  /// (`oneToOne` or `manyToOne`).
+  bool isToOne() => this == oneToOne || this == manyToOne;
+
+  /// Returns `true` if this relationship targets a collection of entities
+  /// (`oneToMany` or `manyToMany`).
+  bool isToMany() => !isToOne();
+}
 
 /// {@template jetleaf_relationship_metadata}
 /// Immutable reflective descriptor for a single **entity association**
@@ -33,9 +55,7 @@ export 'relationship_type.dart';
 /// - `EntityMetadata`
 /// {@endtemplate}
 final class RelationshipMetadata with EqualsAndHashCode {
-  /// Reflective [Class] handle for [RelationshipMetadata].
-  static final Class<RelationshipMetadata> CLASS =
-      Class<RelationshipMetadata>(null, PackageNames.DATA);
+  /// Reflective [Class] handle for [RelationshipMetadata]. Class<RelationshipMetadata>(null, PackageNames.DATA);
 
   final String _property;
   final Type _fieldType;
@@ -119,16 +139,16 @@ final class RelationshipMetadata with EqualsAndHashCode {
 
   @override
   List<Object?> equalizedProperties() => [
-        _property,
-        _fieldType,
-        _type,
-        _targetEntity,
-        _mappedBy,
-        _joinColumn,
-        _joinTable,
-        _inverseJoinColumn,
-        _cascade,
-        _fetch,
-        _optional,
-      ];
+    _property,
+    _fieldType,
+    _type,
+    _targetEntity,
+    _mappedBy,
+    _joinColumn,
+    _joinTable,
+    _inverseJoinColumn,
+    _cascade,
+    _fetch,
+    _optional,
+  ];
 }

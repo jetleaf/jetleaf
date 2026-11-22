@@ -28,8 +28,7 @@ import 'pooled_connection.dart';
 /// {@endtemplate}
 abstract interface class ConnectionFactory {
   /// Reflective [Class] handle for [ConnectionFactory].
-  static final Class<ConnectionFactory> CLASS =
-      Class<ConnectionFactory>(null, PackageNames.DATA);
+  static final Class<ConnectionFactory> CLASS = Class<ConnectionFactory>(null, PackageNames.DATA);
 
   /// Acquires a [PooledConnection], waiting up to the configured timeout when
   /// the underlying pool is at capacity.

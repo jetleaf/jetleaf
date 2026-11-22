@@ -15,8 +15,16 @@
 /// 🪶 **JetLeaf SQLite Data Support**
 ///
 /// Import `package:jetleaf_data/sqlite.dart` when configuring an embedded or
-/// in-memory SQLite data source so your application only imports SQLite
-/// dialect and type-mapping classes.
+/// in-memory SQLite data source so your application only imports
+/// [SqliteDialect], [SqliteTypeMapper], and SQL dialect abstractions.
+///
+/// ### Usage Example
+/// ```dart
+/// import 'package:jetleaf_data/sqlite.dart';
+///
+/// const dialect = SqliteDialect();
+/// final ddl = dialect.renderCreateTable(userMetadata);
+/// ```
 library;
 
 export 'sql.dart';

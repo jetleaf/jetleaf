@@ -28,8 +28,7 @@ import '../mapping/type_converter_registry.dart';
 /// {@endtemplate}
 abstract class DocumentTypeMapper with EqualsAndHashCode {
   /// Reflective [Class] handle for [DocumentTypeMapper].
-  static final Class<DocumentTypeMapper> CLASS =
-      Class<DocumentTypeMapper>(null, PackageNames.DATA);
+  static final Class<DocumentTypeMapper> CLASS = Class<DocumentTypeMapper>(null, PackageNames.DATA);
 
   final TypeConverterRegistry _converters;
 

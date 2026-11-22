@@ -15,6 +15,7 @@
 import 'package:jetleaf_core/lang.dart';
 
 import '../dialect/database_dialect.dart';
+import '../dialect/default_dialect_registry.dart';
 import '../dialect/dialect_registry.dart';
 import '../driver/connection_pool.dart';
 import '../driver/database_client.dart';
@@ -29,6 +30,13 @@ import '../mapping/entity_metadata_registry.dart';
 import '../mapping/type_converter_registry.dart';
 import 'internal/repository_proxy_generator.dart';
 import 'internal/simple_jetleaf_repository.dart';
+
+typedef RepositoryCreator = SimpleJetleafRepository<dynamic, Object?> Function(
+  EntityMetadata<dynamic> metadata,
+  DatabaseClient client,
+  DatabaseDialect dialect,
+  TypeConverterRegistry converters,
+);
 
 /// {@template jetleaf_repository_factory_support}
 /// Factory wiring repositories to their persistence infrastructure.
@@ -54,18 +62,12 @@ import 'internal/simple_jetleaf_repository.dart';
 /// {@endtemplate}
 final class RepositoryFactorySupport with EqualsAndHashCode {
   /// Reflective class descriptor for [RepositoryFactorySupport].
-  static final Class<RepositoryFactorySupport> CLASS =
-      Class<RepositoryFactorySupport>(null, PackageNames.DATA);
+  static final Class<RepositoryFactorySupport> CLASS = Class<RepositoryFactorySupport>(null, PackageNames.DATA);
 
   final DatabaseClient? _client;
   final ConnectionPool? _pool;
   final DatabaseDialect _dialect;
-  final SimpleJetleafRepository<dynamic, Object?> Function(
-    EntityMetadata<dynamic> metadata,
-    DatabaseClient client,
-    DatabaseDialect dialect,
-    TypeConverterRegistry converters,
-  )? _baseImplementation;
+  final RepositoryCreator? _baseImplementation;
   final EntityMetadataRegistry _metadataRegistry;
   final DialectRegistry _dialectRegistry;
   final TypeConverterRegistry _converterRegistry;
@@ -75,20 +77,14 @@ final class RepositoryFactorySupport with EqualsAndHashCode {
 
   /// Returns the default dialect when none is configured — SQLite, the embedded
   /// zero-configuration option.
-  static DatabaseDialect getDefaultDialect() =>
-      DefaultDialectRegistry.getSharedInstance().getDialect('sqlite');
+  static DatabaseDialect getDefaultDialect() => DefaultDialectRegistry.getSharedInstance().getDialect('sqlite');
 
   /// {@macro jetleaf_repository_factory_support}
   RepositoryFactorySupport({
     DatabaseClient? client,
     ConnectionPool? pool,
     DatabaseDialect? dialect,
-    SimpleJetleafRepository<dynamic, Object?> Function(
-      EntityMetadata<dynamic> metadata,
-      DatabaseClient client,
-      DatabaseDialect dialect,
-      TypeConverterRegistry converters,
-    )? baseImplementation,
+    RepositoryCreator? baseImplementation,
     EntityMetadataRegistry? metadataRegistry,
     DialectRegistry? dialectRegistry,
     TypeConverterRegistry? converterRegistry,
@@ -97,17 +93,13 @@ final class RepositoryFactorySupport with EqualsAndHashCode {
         _pool = pool,
         _dialect = dialect ?? getDefaultDialect(),
         _baseImplementation = baseImplementation,
-        _metadataRegistry =
-            metadataRegistry ?? DefaultEntityMetadataRegistry.getSharedInstance(),
-        _dialectRegistry =
-            dialectRegistry ?? DefaultDialectRegistry.getSharedInstance(),
-        _converterRegistry =
-            converterRegistry ?? DefaultTypeConverterRegistry.getSharedInstance(),
-        _auditorAware = auditorAware {
+        _metadataRegistry = metadataRegistry ?? DefaultEntityMetadataRegistry.getSharedInstance(),
+        _dialectRegistry = dialectRegistry ?? DefaultDialectRegistry.getSharedInstance(),
+        _converterRegistry = converterRegistry ?? DefaultTypeConverterRegistry.getSharedInstance(),
+        _auditorAware = auditorAware
+  {
     if ((_client == null) == (_pool == null)) {
-      throw IllegalArgumentException(
-        'Exactly one of RepositoryFactorySupport.client and .pool must be provided',
-      );
+      throw IllegalArgumentException('Exactly one of RepositoryFactorySupport.client and .pool must be provided');
     }
   }
 
@@ -121,12 +113,7 @@ final class RepositoryFactorySupport with EqualsAndHashCode {
   DatabaseDialect getDialect() => _dialect;
 
   /// Returns the optional custom base repository constructor.
-  SimpleJetleafRepository<dynamic, Object?> Function(
-    EntityMetadata<dynamic> metadata,
-    DatabaseClient client,
-    DatabaseDialect dialect,
-    TypeConverterRegistry converters,
-  )? getBaseImplementation() => _baseImplementation;
+  RepositoryCreator? getBaseImplementation() => _baseImplementation;
 
   /// Returns the [EntityMetadataRegistry] consulted for entity mapping.
   EntityMetadataRegistry getMetadataRegistry() => _metadataRegistry;
@@ -295,18 +282,15 @@ final class _PoolLeasingClient extends DatabaseClient {
   bool supportsSql() => true;
 
   @override
-  Future<QueryResult> query(
-    String sql, {
+  Future<QueryResult> query(String sql, {
     List<Object?> parameters = const [],
-  }) =>
-      _withLease((lease) => lease.query(sql, parameters: parameters));
+  }) => _withLease((lease) => lease.query(sql, parameters: parameters));
 
   @override
   Future<int> execute(
     String sql, {
     List<Object?> parameters = const [],
-  }) =>
-      _withLease((lease) => lease.execute(sql, parameters: parameters));
+  }) => _withLease((lease) => lease.execute(sql, parameters: parameters));
 
   @override
   Future<void> beginTransaction() async {}
@@ -324,23 +308,20 @@ final class _PoolLeasingClient extends DatabaseClient {
   Future<Map<String, Object?>> insertDocument(
     String collection,
     Map<String, Object?> document,
-  ) =>
-      _withLease((lease) => lease.insertDocument(collection, document));
+  ) => _withLease((lease) => lease.insertDocument(collection, document));
 
   @override
   Future<int> updateDocuments(
     String collection,
     Map<String, Object?> filter,
     Map<String, Object?> update,
-  ) =>
-      _withLease((lease) => lease.updateDocuments(collection, filter, update));
+  ) => _withLease((lease) => lease.updateDocuments(collection, filter, update));
 
   @override
   Future<int> deleteDocuments(
     String collection,
     Map<String, Object?> filter,
-  ) =>
-      _withLease((lease) => lease.deleteDocuments(collection, filter));
+  ) => _withLease((lease) => lease.deleteDocuments(collection, filter));
 
   @override
   Future<List<Map<String, Object?>>> findDocuments(
@@ -349,23 +330,19 @@ final class _PoolLeasingClient extends DatabaseClient {
     Map<String, Object?>? sort,
     int? limit,
     int? skip,
-  }) =>
-      _withLease(
-        (lease) => lease.findDocuments(
-          collection,
-          filter,
-          sort: sort,
-          limit: limit,
-          skip: skip,
-        ),
-      );
+  }) => _withLease((lease) => lease.findDocuments(
+    collection,
+    filter,
+    sort: sort,
+    limit: limit,
+    skip: skip,
+  ));
 
   @override
   Future<int> countDocuments(
     String collection,
     Map<String, Object?> filter,
-  ) =>
-      _withLease((lease) => lease.countDocuments(collection, filter));
+  ) => _withLease((lease) => lease.countDocuments(collection, filter));
 
   @override
   Future<int?> lastInsertId() => _withLease((lease) => lease.lastInsertId());

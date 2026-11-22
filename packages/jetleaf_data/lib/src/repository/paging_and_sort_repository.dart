@@ -19,24 +19,41 @@ import '../paging/pageable.dart';
 import '../paging/sort.dart';
 import '../../repository.dart';
 
-export 'list_paging_and_sort_repository.dart';
-
 /// {@template jetleaf_paging_and_sorting_repository}
 /// A generic **repository with paging and sorting capabilities**, extending
 /// [Repository] and providing methods to retrieve sorted collections or
 /// paginated results.
+///
+/// ### Usage Example
+/// ```dart
+/// final page = await userRepository.findPage(
+///   PageRequest.of(0, 20, Sort.by([SortOrder.asc('email')])),
+/// );
+/// ```
 /// {@endtemplate}
 @Generic(PagingAndSortRepository)
 abstract class PagingAndSortRepository<T, ID> extends Repository<T, ID> {
   /// The reflective [Class] handle representing the `PagingAndSortRepository` interface.
-  static final Class<PagingAndSortRepository> CLASS =
-      Class<PagingAndSortRepository>(null, PackageNames.DATA);
+  static final Class<PagingAndSortRepository> CLASS = Class<PagingAndSortRepository>(null, PackageNames.DATA);
 
   /// Retrieves all entities sorted according to the given [sort].
-  Future<Iterable<T>> findAllSorted(Sort sort) async =>
-      await getExecutor()?.findAllSorted(sort, this) ?? const [];
+  Future<Iterable<T>> findAllSorted(Sort sort) async => await getExecutor()?.findAllSorted(sort, this) ?? const [];
 
   /// Retrieves a page of entities according to [pageable] constraints.
-  Future<Page<T>> findPage(Pageable pageable) async =>
-      await getExecutor()?.findPage(pageable, this) ?? Page.empty();
+  Future<Page<T>> findPage(Pageable pageable) async => await getExecutor()?.findPage(pageable, this) ?? Page.empty();
+}
+
+/// {@template jetleaf_list_paging_and_sort_repository}
+/// A generic **list-based paging and sorting repository**, extending
+/// [PagingAndSortRepository] and ensuring that sorted results are
+/// returned as [List] instead of a generic [Iterable].
+/// {@endtemplate}
+@Generic(ListPagingAndSortRepository)
+abstract class ListPagingAndSortRepository<T, ID> extends PagingAndSortRepository<T, ID> {
+  /// The reflective [Class] handle representing the `ListPagingAndSortRepository` interface.
+  static final Class<ListPagingAndSortRepository> CLASS = Class<ListPagingAndSortRepository>(null, PackageNames.DATA);
+
+  /// Retrieves all entities sorted according to the given [sort] as a [List].
+  @override
+  Future<List<T>> findAllSorted(Sort sort) async => List.from(await super.findAllSorted(sort));
 }

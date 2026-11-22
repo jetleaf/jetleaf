@@ -33,18 +33,15 @@ import 'zone_repository_invocation_holder.dart';
 ///   so `Repository.query()` / `DefaultRepositoryExecutor` can inspect the
 ///   reflected method and arguments for derived and `@Query`-annotated methods.
 /// {@endtemplate}
-abstract class RepositoryMethodInterceptor
-    implements MethodInterceptor, MethodBeforeInterceptor, AroundMethodInterceptor {
+abstract class RepositoryMethodInterceptor implements MethodInterceptor, MethodBeforeInterceptor, AroundMethodInterceptor {
   /// Reflective class descriptor for [RepositoryMethodInterceptor].
-  static final Class<RepositoryMethodInterceptor> CLASS =
-      Class<RepositoryMethodInterceptor>(null, PackageNames.DATA);
+  static final Class<RepositoryMethodInterceptor> CLASS = Class<RepositoryMethodInterceptor>(null, PackageNames.DATA);
 
   /// Determines if the given [method] can be intercepted.
   ///
   /// Returns `true` if the declaring class of the method is annotated with [Repository].
   @override
-  bool canIntercept(Method method) =>
-      method.getDeclaringClass().hasDirectAnnotation<Repository>();
+  bool canIntercept(Method method) => method.getDeclaringClass().hasDirectAnnotation<Repository>();
 
   @override
   FutureOr<void> beforeInvocation<T>(MethodInvocation<T> invocation) async {
@@ -54,9 +51,7 @@ abstract class RepositoryMethodInterceptor
     }
 
     final eventBus = getEventBus();
-    await eventBus.onEvent(
-      InterceptedRepositoryMethodEvent(definition, invocation, DateTime.now()),
-    );
+    await eventBus.onEvent(InterceptedRepositoryMethodEvent(definition, invocation, DateTime.now()));
   }
 
   @override

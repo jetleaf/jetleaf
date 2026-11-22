@@ -18,17 +18,26 @@ import '../exception/data_access_exception.dart';
 import '../mapping/column_metadata.dart';
 import '../mapping/default_entity_metadata_registry.dart';
 import '../mapping/entity_metadata.dart';
-import '../mapping/snake_case_naming_strategy.dart';
+import '../mapping/naming_strategies.dart';
 import '../paging/sort.dart';
 import '../query/part.dart';
 import '../query/part_tree.dart';
 import '../query/query_criteria.dart';
 import 'database_dialect.dart';
-import 'sql_parameter_style.dart';
 import 'sql_type_mapper.dart';
 
-export 'sql_parameter_style.dart';
-export 'sql_type_mapper.dart';
+/// {@template jetleaf_sql_parameter_style}
+/// Defines the **parameter placeholder syntax** emitted by a [SqlDialect].
+/// {@endtemplate}
+enum SqlParameterStyle {
+  /// Positional question-mark placeholders (`?`), used by MySQL, MariaDB, and
+  /// SQLite.
+  questionMark,
+
+  /// 1-based dollar-numbered placeholders (`$1, $2, ...`), used by PostgreSQL
+  /// and CockroachDB.
+  dollarNumbered,
+}
 
 /// {@template jetleaf_sql_dialect}
 /// Abstract base class for **relational SQL dialects** (PostgreSQL, MySQL,
@@ -49,8 +58,7 @@ export 'sql_type_mapper.dart';
 /// {@endtemplate}
 abstract class SqlDialect extends DatabaseDialect {
   /// Reflective [Class] handle for [SqlDialect].
-  static final Class<SqlDialect> CLASS =
-      Class<SqlDialect>(null, PackageNames.DATA);
+  static final Class<SqlDialect> CLASS = Class<SqlDialect>(null, PackageNames.DATA);
 
   /// {@macro jetleaf_sql_dialect}
   const SqlDialect();
@@ -81,8 +89,7 @@ abstract class SqlDialect extends DatabaseDialect {
   SqlTypeMapper getTypeMapper();
 
   @override
-  String escapeIdentifier(String identifier) =>
-      '"${identifier.replaceAll('"', '""')}"';
+  String escapeIdentifier(String identifier) => '"${identifier.replaceAll('"', '""')}"';
 
   /// Formats the fully qualified and escaped table reference for [metadata].
   String getQualifiedTable(EntityMetadata<dynamic> metadata) {
@@ -100,8 +107,7 @@ abstract class SqlDialect extends DatabaseDialect {
   }
 
   /// Alias for [getQualifiedTable].
-  String qualifiedTable(EntityMetadata<dynamic> metadata) =>
-      getQualifiedTable(metadata);
+  String qualifiedTable(EntityMetadata<dynamic> metadata) => getQualifiedTable(metadata);
 
   // ---------------------------------------------------------------------------
   // SELECT / COUNT / EXISTS / DELETE Rendering
@@ -183,11 +189,7 @@ abstract class SqlDialect extends DatabaseDialect {
     return criteria.getLimit();
   }
 
-  String _renderProjection(
-    QueryCriteria criteria,
-    EntityMetadata<dynamic> metadata,
-    String? alias,
-  ) {
+  String _renderProjection(QueryCriteria criteria, EntityMetadata<dynamic> metadata, String? alias) {
     switch (criteria.getType()) {
       case QueryType.count:
         return 'COUNT(*)';
@@ -202,15 +204,13 @@ abstract class SqlDialect extends DatabaseDialect {
     }
   }
 
-  String _fullProjection(EntityMetadata<dynamic> metadata, String? alias) =>
-      metadata
-          .getSelectColumns()
-          .map(
-            (column) => alias == null
-                ? escapeIdentifier(column.getName())
-                : '${escapeIdentifier(alias)}.${escapeIdentifier(column.getName())}',
-          )
-          .join(', ');
+  String _fullProjection(EntityMetadata<dynamic> metadata, String? alias) => metadata
+    .getSelectColumns()
+    .map((column) => alias == null
+      ? escapeIdentifier(column.getName())
+      : '${escapeIdentifier(alias)}.${escapeIdentifier(column.getName())}',
+    )
+    .join(', ');
 
   String? _renderWhere(
     Criterion? predicate,
@@ -231,10 +231,8 @@ abstract class SqlDialect extends DatabaseDialect {
     String? alias,
   ) {
     return switch (criterion) {
-      PartCriterion() =>
-        _renderPart(criterion.getPart(), metadata, ctx, joinPlan, alias),
-      CompositeCriterion() =>
-        '(${criterion.getChildren().map((child) => _renderCriterion(child, metadata, ctx, joinPlan, alias)).join(criterion.isOr() ? ' OR ' : ' AND ')})',
+      PartCriterion() => _renderPart(criterion.getPart(), metadata, ctx, joinPlan, alias),
+      CompositeCriterion() => '(${criterion.getChildren().map((child) => _renderCriterion(child, metadata, ctx, joinPlan, alias)).join(criterion.isOr() ? ' OR ' : ' AND ')})',
     };
   }
 
@@ -245,8 +243,7 @@ abstract class SqlDialect extends DatabaseDialect {
     _JoinPlan joinPlan,
     String? alias,
   ) {
-    final reference =
-        _columnReference(part.getProperty(), metadata, joinPlan, alias);
+    final reference = _columnReference(part.getProperty(), metadata, joinPlan, alias);
     final operator = part.getOperator();
     final ignoreCase = part.isIgnoreCase();
 
@@ -267,8 +264,7 @@ abstract class SqlDialect extends DatabaseDialect {
       case PartOperator.endingWith:
       case PartOperator.containing:
       case PartOperator.notContaining:
-        final negate = operator == PartOperator.notLike ||
-            operator == PartOperator.notContaining;
+        final negate = operator == PartOperator.notLike || operator == PartOperator.notContaining;
         ctx.take();
         return '${ci(reference)} ${negate ? 'NOT ' : ''}LIKE ${ignoreCase ? 'LOWER(${ctx.placeholder()})' : ctx.placeholder()}';
       case PartOperator.greaterThan:
@@ -345,9 +341,7 @@ abstract class SqlDialect extends DatabaseDialect {
       if (!isLast) {
         final relationship = current.getRelationshipByProperty(segment);
         if (relationship == null) {
-          throw QueryDerivationException(
-            'Segment "$segment" of path "$path" is not a relationship — cannot navigate deeper',
-          );
+          throw QueryDerivationException('Segment "$segment" of path "$path" is not a relationship — cannot navigate deeper');
         }
 
         final prefix = segments.take(i + 1).join('.');
@@ -358,15 +352,13 @@ abstract class SqlDialect extends DatabaseDialect {
 
       final column = current.getColumnByProperty(segment);
       if (column == null) {
-        throw QueryDerivationException(
-          'No column "$segment" on ${current.getSimpleName()} for path "$path"',
-        );
+        throw QueryDerivationException('No column "$segment" on ${current.getSimpleName()} for path "$path"');
       }
 
       final reference = escapeIdentifier(column.getName());
       return currentAlias == null
-          ? reference
-          : '${escapeIdentifier(currentAlias)}.$reference';
+        ? reference
+        : '${escapeIdentifier(currentAlias)}.$reference';
     }
 
     throw QueryDerivationException('Unable to resolve property path "$path"');
@@ -382,8 +374,7 @@ abstract class SqlDialect extends DatabaseDialect {
 
     final orders = <String>[];
     for (final order in sort.toList()) {
-      final reference =
-          _columnReference(order.property, metadata, joinPlan, alias);
+      final reference = _columnReference(order.property, metadata, joinPlan, alias);
       final direction = order.direction.isDescending() ? 'DESC' : 'ASC';
       if (order.ignoreCase) {
         orders.add('LOWER($reference) $direction');
@@ -415,9 +406,7 @@ abstract class SqlDialect extends DatabaseDialect {
 
   static int _checkInt(int value) {
     if (value < 0) {
-      throw IllegalArgumentException(
-        'LIMIT/OFFSET must not be negative (got $value)',
-      );
+      throw IllegalArgumentException('LIMIT/OFFSET must not be negative (got $value)');
     }
     return value;
   }
@@ -434,14 +423,10 @@ abstract class SqlDialect extends DatabaseDialect {
       return 'INSERT INTO ${getQualifiedTable(metadata)} DEFAULT VALUES';
     }
 
-    final columnList =
-        columns.map((column) => escapeIdentifier(column.getName())).join(', ');
-    final placeholders =
-        List<String>.generate(columns.length, _placeholderAt).join(', ');
+    final columnList = columns.map((column) => escapeIdentifier(column.getName())).join(', ');
+    final placeholders = List<String>.generate(columns.length, _placeholderAt).join(', ');
 
-    final buffer = StringBuffer(
-      'INSERT INTO ${getQualifiedTable(metadata)} ($columnList) VALUES ($placeholders)',
-    );
+    final buffer = StringBuffer('INSERT INTO ${getQualifiedTable(metadata)} ($columnList) VALUES ($placeholders)');
     if (supportsReturning()) {
       final id = metadata.getIdColumn();
       if (id != null) {
@@ -453,9 +438,9 @@ abstract class SqlDialect extends DatabaseDialect {
   }
 
   String _placeholderAt(int index) => switch (getParameterStyle()) {
-        SqlParameterStyle.questionMark => '?',
-        SqlParameterStyle.dollarNumbered => '\$${index + 1}',
-      };
+    SqlParameterStyle.questionMark => '?',
+    SqlParameterStyle.dollarNumbered => '\$${index + 1}',
+  };
 
   @override
   String buildUpdateQuery(EntityMetadata<dynamic> metadata) {
@@ -471,13 +456,11 @@ abstract class SqlDialect extends DatabaseDialect {
     String next() => _placeholderAt(position++);
 
     final sets = metadata
-        .getUpdateColumns()
-        .map((column) => '${escapeIdentifier(column.getName())} = ${next()}')
-        .join(', ');
+      .getUpdateColumns()
+      .map((column) => '${escapeIdentifier(column.getName())} = ${next()}')
+      .join(', ');
 
-    final buffer = StringBuffer(
-      'UPDATE ${getQualifiedTable(metadata)} SET $sets WHERE ${escapeIdentifier(id.getName())} = ${next()}',
-    );
+    final buffer = StringBuffer('UPDATE ${getQualifiedTable(metadata)} SET $sets WHERE ${escapeIdentifier(id.getName())} = ${next()}');
 
     final version = metadata.getVersionColumn();
     if (version != null) {
@@ -500,9 +483,7 @@ abstract class SqlDialect extends DatabaseDialect {
     var position = 0;
     String next() => _placeholderAt(position++);
 
-    final buffer = StringBuffer(
-      'DELETE FROM ${getQualifiedTable(metadata)} WHERE ${escapeIdentifier(id.getName())} = ${next()}',
-    );
+    final buffer = StringBuffer('DELETE FROM ${getQualifiedTable(metadata)} WHERE ${escapeIdentifier(id.getName())} = ${next()}');
 
     final version = metadata.getVersionColumn();
     if (version != null) {
@@ -519,18 +500,15 @@ abstract class SqlDialect extends DatabaseDialect {
   @override
   String buildCreateTableQuery(EntityMetadata<dynamic> metadata) {
     final buffer = StringBuffer();
-    buffer.writeln(
-      'CREATE TABLE IF NOT EXISTS ${getQualifiedTable(metadata)} (',
-    );
+    buffer.writeln('CREATE TABLE IF NOT EXISTS ${getQualifiedTable(metadata)} (');
 
     final columnLines = metadata
-        .getColumns()
-        .map((column) => '  ${buildColumnDefinition(metadata, column)}')
-        .toList();
+      .getColumns()
+      .map((column) => '  ${buildColumnDefinition(metadata, column)}')
+      .toList();
 
     final id = metadata.getIdColumn();
-    if (id != null &&
-        !(hasInlineAutoIncrementPrimaryKey() && id.isDatabaseGenerated())) {
+    if (id != null && !(hasInlineAutoIncrementPrimaryKey() && id.isDatabaseGenerated())) {
       columnLines.add('  PRIMARY KEY (${escapeIdentifier(id.getName())})');
     }
 
@@ -540,10 +518,7 @@ abstract class SqlDialect extends DatabaseDialect {
   }
 
   /// Renders the SQL DDL column definition for [column] on [metadata].
-  String buildColumnDefinition(
-    EntityMetadata<dynamic> metadata,
-    ColumnMetadata column,
-  ) {
+  String buildColumnDefinition(EntityMetadata<dynamic> metadata, ColumnMetadata column) {
     final constraints = <String>[];
 
     String type;
@@ -573,46 +548,38 @@ abstract class SqlDialect extends DatabaseDialect {
   String columnDefinition(
     EntityMetadata<dynamic> metadata,
     ColumnMetadata column,
-  ) =>
-      buildColumnDefinition(metadata, column);
+  ) => buildColumnDefinition(metadata, column);
 
-  String _generatedIdType(ColumnMetadata column) =>
-      switch (column.getGenerationStrategy()!.name) {
-        'autoIncrement' || 'identity' =>
-          getTypeMapper().getAutoIncrementColumnType(),
-        'uuid' => 'VARCHAR(36)',
-        'snowflake' => 'BIGINT',
-        _ => getTypeMapper().getColumnType(column),
-      };
+  String _generatedIdType(ColumnMetadata column) => switch (column.getGenerationStrategy()!.name) {
+    'autoIncrement' || 'identity' =>
+      getTypeMapper().getAutoIncrementColumnType(),
+    'uuid' => 'VARCHAR(36)',
+    'snowflake' => 'BIGINT',
+    _ => getTypeMapper().getColumnType(column),
+  };
 
   @override
-  String buildCreateIndexQuery(
-    EntityMetadata<dynamic> metadata,
-    EntityIndex index,
-  ) {
+  String buildCreateIndexQuery(EntityMetadata<dynamic> metadata, EntityIndex index) {
     final unique = index.isUnique() ? 'UNIQUE ' : '';
-    final ifNotExists =
-        supportsCreateIndexIfNotExists() ? 'IF NOT EXISTS ' : '';
+    final ifNotExists = supportsCreateIndexIfNotExists() ? 'IF NOT EXISTS ' : '';
 
     final columns = index
-        .getColumnList()
-        .split(',')
-        .map((column) {
-          final trimmed = column.trim();
-          final parts = trimmed.split(RegExp(r'\s+'));
-          final name = parts.first;
-          final direction =
-              parts.length > 1 ? ' ${parts[1].toUpperCase()}' : '';
-          return '${escapeIdentifier(name)}$direction';
-        })
-        .join(', ');
+      .getColumnList()
+      .split(',')
+      .map((column) {
+        final trimmed = column.trim();
+        final parts = trimmed.split(RegExp(r'\s+'));
+        final name = parts.first;
+        final direction = parts.length > 1 ? ' ${parts[1].toUpperCase()}' : '';
+        return '${escapeIdentifier(name)}$direction';
+      })
+      .join(', ');
 
     return 'CREATE ${unique}INDEX $ifNotExists${escapeIdentifier(index.getName())} ON ${getQualifiedTable(metadata)} ($columns)';
   }
 
   @override
-  String buildDropTableQuery(EntityMetadata<dynamic> metadata) =>
-      'DROP TABLE IF EXISTS ${getQualifiedTable(metadata)}';
+  String buildDropTableQuery(EntityMetadata<dynamic> metadata) => 'DROP TABLE IF EXISTS ${getQualifiedTable(metadata)}';
 }
 
 final class _SqlRenderContext {
@@ -631,9 +598,7 @@ final class _SqlRenderContext {
 
   Object? takeRaw() {
     if (_sourceIndex >= source.length) {
-      throw IllegalStateException(
-        'Predicate consumes more values than supplied',
-      );
+      throw IllegalStateException('Predicate consumes more values than supplied');
     }
     return source[_sourceIndex++];
   }
@@ -657,15 +622,13 @@ final class _JoinPlan {
 
   bool get hasJoins => _joins.isNotEmpty;
 
-  static _JoinPlan build(
-    EntityMetadata<dynamic> metadata,
-    QueryCriteria criteria,
-  ) {
+  static _JoinPlan build(EntityMetadata<dynamic> metadata, QueryCriteria criteria) {
     final plan = _JoinPlan._();
 
     final paths = <String>[
-      if (criteria.getPredicate() != null)
-        ...criteria.getPredicate()!.getParts().map((part) => part.getProperty()),
+      if (criteria.getPredicate() != null) ...[
+        ...criteria.getPredicate()!.getParts().map((part) => part.getProperty())
+      ],
       ...criteria.getSort().toList().map((order) => order.property),
     ].where((path) => path.contains('.'));
 
@@ -688,9 +651,7 @@ final class _JoinPlan {
       }
 
       if (!relationship.isToOne()) {
-        throw QueryDerivationException(
-          'Cannot join path "${segments.take(i + 1).join('.')}" — only to-one associations support implicit joins',
-        );
+        throw QueryDerivationException('Cannot join path "${segments.take(i + 1).join('.')}" — only to-one associations support implicit joins');
       }
 
       prefix = prefix.isEmpty ? property : '$prefix.$property';
@@ -699,14 +660,12 @@ final class _JoinPlan {
         continue;
       }
 
-      final targetMeta = DefaultEntityMetadataRegistry.instance
-          .getForType(relationship.getTargetEntity());
+      final targetMeta = DefaultEntityMetadataRegistry.instance.getForType(relationship.getTargetEntity());
       _joins[prefix] = _Join(
         property: property,
         alias: 'j${_joins.length + 1}',
         target: targetMeta,
-        joinColumn: relationship.getJoinColumn() ??
-            '${SnakeCaseNamingStrategy.toSnakeCase(property)}_${targetMeta.getIdColumn()?.getName() ?? 'id'}',
+        joinColumn: relationship.getJoinColumn() ?? '${SnakeCaseNamingStrategy.toSnakeCase(property)}_${targetMeta.getIdColumn()?.getName() ?? 'id'}',
       );
 
       currentMeta = targetMeta;
@@ -715,8 +674,7 @@ final class _JoinPlan {
 
   String aliasFor({required String pathPrefix}) => _joins[pathPrefix]!.alias;
 
-  EntityMetadata<dynamic> metadataFor({required String pathPrefix}) =>
-      _joins[pathPrefix]!.target;
+  EntityMetadata<dynamic> metadataFor({required String pathPrefix}) => _joins[pathPrefix]!.target;
 
   String render(SqlDialect dialect) {
     if (_joins.isEmpty) return '';

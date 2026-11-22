@@ -117,16 +117,17 @@ abstract class AotSubRegistrarWriter {
     }
 
     if (roots.isEmpty) return null;
+    return roots;
+  }
 
-    // A scan filter whose declared roots match no known component can only
-    // suppress the pods of the project being compiled — the closed-world AOT
-    // registrar is the sole authority for what ships in the binary, and a
-    // dangling @ComponentScan (e.g. pointing at a package that does not
-    // exist) must not silently drop every pod. Only keep the restriction
-    // when at least one declared component falls inside the declared roots.
-    final matched = components.where(
-      (c) => isComponentScanned(c, roots),
-    );
+  /// Resolves the effective component scan roots for [components], returning
+  /// `null` when no `@ComponentScan` is declared or when none of [components]
+  /// match the declared roots (preventing a dangling `@ComponentScan` from
+  /// dropping all pods in a closed-world build).
+  Set<String>? resolveEffectiveComponentScanRoots(List<ClassDeclaration> components) {
+    final roots = resolveComponentScanRoots(components);
+    if (roots == null) return null;
+    final matched = components.where((c) => isComponentScanned(c, roots));
     return matched.isEmpty ? null : roots;
   }
 

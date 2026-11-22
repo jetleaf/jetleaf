@@ -34,8 +34,7 @@ import 'query_result.dart';
 /// {@endtemplate}
 final class PooledConnection extends DatabaseClient {
   /// Reflective [Class] handle for [PooledConnection].
-  static final Class<PooledConnection> CLASS =
-      Class<PooledConnection>(null, PackageNames.DATA);
+  static final Class<PooledConnection> CLASS = Class<PooledConnection>(null, PackageNames.DATA);
 
   final DatabaseClient _delegate;
   final FutureOr<void> Function(PooledConnection connection, bool wasInTransaction)?
@@ -47,8 +46,7 @@ final class PooledConnection extends DatabaseClient {
   /// {@macro jetleaf_pooled_connection}
   PooledConnection(
     this._delegate, {
-    FutureOr<void> Function(PooledConnection connection, bool wasInTransaction)?
-        onClose,
+    FutureOr<void> Function(PooledConnection connection, bool wasInTransaction)? onClose,
   }) : _onClose = onClose;
 
   /// Returns the underlying physical [DatabaseClient] delegate.

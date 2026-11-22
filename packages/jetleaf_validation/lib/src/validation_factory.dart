@@ -142,6 +142,7 @@ final class ValidationFactory extends AbstractExecutableValidator implements Val
     final context = createContext();
 
     for (final field in classInfo.getFields()) {
+      if (field.isStatic() || field.isConst()) continue;
       final value = field.getValue(target);
       final activeGroups = resolveActiveGroups(field, field.getReturnClass(), groups);
 
@@ -204,7 +205,7 @@ final class ValidationFactory extends AbstractExecutableValidator implements Val
       final constraintValidator = v.value;
 
       // 🟡 Skip if not part of active group(s)
-      if (!shouldValidate(annotation, getActiveGroups(groups))) continue;
+      if (!shouldValidate(annotation, getActiveGroups(activeGroups))) continue;
 
       if (!constraintValidator.isValid(value, annotation, context)) {
         violations.add(buildViolation(field, annotation, v, value, activeGroups));

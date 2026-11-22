@@ -20,12 +20,9 @@ import 'transaction_status.dart';
 /// {@template jetleaf_default_transaction_status}
 /// Default implementation of [TransactionStatus].
 /// {@endtemplate}
-final class DefaultTransactionStatus
-    with EqualsAndHashCode
-    implements TransactionStatus {
+final class DefaultTransactionStatus with EqualsAndHashCode implements TransactionStatus {
   /// Reflective [Class] handle for [DefaultTransactionStatus].
-  static final Class<DefaultTransactionStatus> CLASS =
-      Class<DefaultTransactionStatus>(null, PackageNames.DATA);
+  static final Class<DefaultTransactionStatus> CLASS =  Class<DefaultTransactionStatus>(null, PackageNames.DATA);
 
   final TransactionDefinition _definition;
   final TransactionContext? _context;
@@ -45,8 +42,8 @@ final class DefaultTransactionStatus
   /// execution boundaries (`Propagation.supports`, `Propagation.notSupported`,
   /// `Propagation.never`).
   DefaultTransactionStatus.unbound(this._definition)
-      : _context = null,
-        _newTransaction = false;
+    : _context = null,
+      _newTransaction = false;
 
   @override
   TransactionDefinition getDefinition() => _definition;
@@ -71,9 +68,9 @@ final class DefaultTransactionStatus
 
   @override
   List<Object?> equalizedProperties() => [
-        _definition,
-        _context,
-        _newTransaction,
-        _completed,
-      ];
+    _definition,
+    _context,
+    _newTransaction,
+    _completed,
+  ];
 }

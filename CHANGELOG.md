@@ -1,31 +1,23 @@
-## Unreleased
-
-### Added
-
-- **Loud, actionable diagnostics for web apps**: Booting a web application without `lib/_jetleaf/main.dart` (or stale `.jetleaf/` cache) now fails fast with a specific remediation hint — `cli flag`, `jl run`, `jl dev`, or `-Djetleaf.application.type=none`.
-- **CLI application type override**: `--jetleaf.application.type=none` boots as a non-web application; previously CLI arguments were ignored and the framework always auto-detected `WEB` (because `jetleaf_web` is always on the classpath), so web apps always attempted web boot and then crashed when the AOT registry was absent.
-- **Fail-fast instead of silent downgrade**: `DefaultApplicationContextFactory` no longer silently instantiates an `AnnotationConfigApplicationContext` for web applications when the registry is missing or the context can't be constructed — it throws `IllegalStateException` with the remediation the user needs.
-
-### Changed
-
-- **Compile-time terminology refresh**: "dart:mirrors" / "mirror(-free)" → "runtime reflection" throughout the framework.
-- **README/Documents**: Updated to the unified `_jetleaf/main/registry.g.dart` and `_jetleaf/test/registry.g.dart` layout; legacy `_jetleaf/aot_registry.g.dart` / `_jetleaf/proxies/` paths removed; wording refreshed.
-
----
-
 ## [2.1.0]
 
 ### Added
 
+- **Direct `dart run` / IDE Run & Debug support**: `JetApplication` now invokes `ensureDevelopmentRuntime` during startup so applications can be launched directly via `dart run` or IDE Run & Debug without requiring `jl run` first.
+- **Loud, actionable diagnostics for web apps**: Booting a web application without `lib/_jetleaf/main.dart` (or stale `.jetleaf/` cache) now fails fast with a specific remediation hint — `cli flag`, `jl run`, `jl dev`, or `-Djetleaf.application.type=none`.
+- **CLI application type override**: `--jetleaf.application.type=none` boots as a non-web application; previously CLI arguments were ignored and the framework always auto-detected `WEB` (because `jetleaf_web` is always on the classpath), so web apps always attempted web boot and then crashed when the AOT registry was absent.
+- **Fail-fast instead of silent downgrade**: `DefaultApplicationContextFactory` no longer silently instantiates an `AnnotationConfigApplicationContext` for web applications when the registry is missing or the context can't be constructed — it throws `IllegalStateException` with the remediation the user needs.
 - **Test VM AOT Rehydration**: The Jetleaf VM test runner (`jl test`) now imports and registers `lib/_jetleaf/test.dart` (when present) inside the test-driver isolate before declaring tests, so the generated dispatch tables are populated for framework method invocations in warm test VMs.
 - **Test-runtime Scan Parity**: `jl build`/`jl dev` now pass `skipTests: false` for test scans and `skipTests: true` for production scans, keeping test entries visible to the warm test runtime.
 
 ### Fixed
 
+- **Shutdown signal hook cleanup**: `ApplicationShutdownHandlerHook` now tracks `SIGINT` and `SIGTERM` stream subscriptions and cancels them cleanly via `_cancelProcessSignalHooks()`, preventing leaked signal listeners across context restarts.
 - **Logging Steps Parsing**: `logging.*.steps` values wrapped in brackets (e.g. `steps: [thread,location]`) are now normalised — bracket characters are stripped and empty entries dropped before converting to `LogStep`.
 
 ### Changed
 
+- **Compile-time terminology refresh**: "dart:mirrors" / "mirror(-free)" → "runtime reflection" throughout the framework.
+- **README/Documents**: Updated to the unified `_jetleaf/main/registry.g.dart` and `_jetleaf/test/registry.g.dart` layout; legacy `_jetleaf/aot_registry.g.dart` / `_jetleaf/proxies/` paths removed; wording refreshed.
 - **Dependency Bumps**: `jetleaf_core: ^2.1.0`, `jetson: ^2.1.0`, `jtl: ^2.1.0`, `jetson` collection adapters, and `jetleaf_tools: ^1.1.0`.
 
 ---

@@ -45,8 +45,7 @@ import '../paging/sort.dart';
 /// {@endtemplate}
 class DefaultRepositoryExecutor extends RepositoryExecutor with EqualsAndHashCode {
   /// Reflective class descriptor for [DefaultRepositoryExecutor].
-  static final Class<DefaultRepositoryExecutor> CLASS =
-      Class<DefaultRepositoryExecutor>(null, PackageNames.DATA);
+  static final Class<DefaultRepositoryExecutor> CLASS = Class<DefaultRepositoryExecutor>(null, PackageNames.DATA);
 
   final RepositoryFactorySupport _factory;
 
@@ -79,9 +78,7 @@ class DefaultRepositoryExecutor extends RepositoryExecutor with EqualsAndHashCod
   }
 
   @override
-  Future<Iterable<T>> executeIterable<T>([
-    Repository<dynamic, dynamic>? repository,
-  ]) async {
+  Future<Iterable<T>> executeIterable<T>([Repository<dynamic, dynamic>? repository]) async {
     final invocation = ZoneRepositoryInvocationHolder.getCurrent();
     if (invocation == null) {
       return const [];
@@ -129,8 +126,7 @@ class DefaultRepositoryExecutor extends RepositoryExecutor with EqualsAndHashCod
   }
 
   @override
-  Future<T?> findById<T, ID>(ID id, Repository<T, ID> repository) =>
-      _repoFor(repository).findById(id);
+  Future<T?> findById<T, ID>(ID id, Repository<T, ID> repository) => _repoFor(repository).findById(id);
 
   @override
   Future<T?> findByProperty<T, ID>(
@@ -138,106 +134,88 @@ class DefaultRepositoryExecutor extends RepositoryExecutor with EqualsAndHashCod
     bool ignoreCase,
     Repository<T, ID> repository, [
     Object? value,
-  ]) =>
-      _repoFor(repository).findByProperty(property, ignoreCase, value);
+  ]) => _repoFor(repository).findByProperty(property, ignoreCase, value);
 
   @override
-  Future<bool> existsById<T, ID>(ID id, Repository<T, ID> repository) =>
-      _repoFor(repository).existsById(id);
+  Future<bool> existsById<T, ID>(ID id, Repository<T, ID> repository) => _repoFor(repository).existsById(id);
 
   @override
-  Future<Iterable<T>> findAll<T, ID>(Repository<T, ID> repository) =>
-      _repoFor(repository).findAll();
+  Future<Iterable<T>> findAll<T, ID>(Repository<T, ID> repository) => _repoFor(repository).findAll();
 
   @override
   Future<Iterable<T>> findAllById<T, ID>(
     Iterable<ID> ids,
     Repository<T, ID> repository,
-  ) =>
-      _repoFor(repository).findAllById(ids);
+  ) => _repoFor(repository).findAllById(ids);
 
   @override
-  Future<int> getCount<T, ID>(Repository<T, ID> repository) =>
-      _repoFor(repository).count();
+  Future<int> getCount<T, ID>(Repository<T, ID> repository) => _repoFor(repository).count();
 
   @override
   Future<S> save<T, ID, S extends T>(
     S entity,
     Repository<T, ID> repository,
-  ) =>
-      _repoFor(repository).save<S>(entity);
+  ) => _repoFor(repository).save<S>(entity);
 
   @override
   Future<Iterable<S>> saveAll<T, ID, S extends T>(
     Iterable<S> entities,
     Repository<T, ID> repository,
-  ) =>
-      _repoFor(repository).saveAll<S>(entities);
+  ) => _repoFor(repository).saveAll<S>(entities);
 
   @override
-  Future<void> flush<T, ID>(Repository<T, ID> repository) =>
-      _repoFor(repository).flush();
+  Future<void> flush<T, ID>(Repository<T, ID> repository) => _repoFor(repository).flush();
 
   @override
   Future<S> saveAndFlush<T, ID, S extends T>(
     S entity,
     Repository<T, ID> repository,
-  ) =>
-      _repoFor(repository).saveAndFlush<S>(entity);
+  ) => _repoFor(repository).saveAndFlush<S>(entity);
 
   @override
   Future<List<S>> saveAllAndFlush<T, ID, S extends T>(
     Iterable<S> entities,
     Repository<T, ID> repository,
-  ) =>
-      _repoFor(repository).saveAllAndFlush<S>(entities);
+  ) => _repoFor(repository).saveAllAndFlush<S>(entities);
 
   @override
-  Future<void> deleteById<T, ID>(ID id, Repository<T, ID> repository) =>
-      _repoFor(repository).deleteById(id);
+  Future<void> deleteById<T, ID>(ID id, Repository<T, ID> repository) => _repoFor(repository).deleteById(id);
 
   @override
-  Future<void> deleteEntity<T, ID>(T entity, Repository<T, ID> repository) =>
-      _repoFor(repository).delete(entity);
+  Future<void> deleteEntity<T, ID>(T entity, Repository<T, ID> repository) => _repoFor(repository).delete(entity);
 
   @override
   Future<void> deleteAllById<T, ID>(
     Iterable<ID> ids,
     Repository<T, ID> repository,
-  ) =>
-      _repoFor(repository).deleteAllById(ids);
+  ) => _repoFor(repository).deleteAllById(ids);
 
   @override
   Future<void> deleteAllEntities<T, ID>(
     Iterable<T> entities,
     Repository<T, ID> repository,
-  ) =>
-      _repoFor(repository).deleteAllByEntities(entities);
+  ) => _repoFor(repository).deleteAllByEntities(entities);
 
   @override
   Future<void> deleteAllInBatch<T, ID>(
     Iterable<T> entities,
     Repository<T, ID> repository,
-  ) =>
-      _repoFor(repository).deleteAllInBatch(entities);
+  ) => _repoFor(repository).deleteAllInBatch(entities);
 
   @override
-  Future<void> deleteAll<T, ID>(Repository<T, ID> repository) =>
-      _repoFor(repository).deleteAllRecords();
+  Future<void> deleteAll<T, ID>(Repository<T, ID> repository) => _repoFor(repository).deleteAllRecords();
 
   @override
   Future<Iterable<T>> findAllSorted<T, ID>(
     Sort sort,
     Repository<T, ID> repository,
-  ) =>
-      _repoFor(repository).findAllSorted(sort);
+  ) => _repoFor(repository).findAllSorted(sort);
 
   @override
   Future<Page<T>> findPage<T, ID>(
     Pageable pageable,
     Repository<T, ID> repository,
-  ) =>
-      _repoFor(repository).findPage(pageable);
+  ) => _repoFor(repository).findPage(pageable);
 
   @override
   List<Object?> equalizedProperties() => [_factory, runtimeType];

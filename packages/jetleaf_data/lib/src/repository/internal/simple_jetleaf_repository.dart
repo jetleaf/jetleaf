@@ -16,7 +16,7 @@ import 'dart:math';
 
 import 'package:jetleaf_core/lang.dart';
 
-import '../../annotation/generation_strategy.dart';
+import '../../annotation/id.dart';
 import '../../dialect/database_dialect.dart';
 import '../../dialect/document_dialect.dart';
 import '../../dialect/sql_dialect.dart';
@@ -30,6 +30,7 @@ import '../../mapping/entity_metadata.dart';
 import '../../mapping/type_converter_registry.dart';
 import '../../paging/page.dart';
 import '../../paging/pageable.dart';
+import '../../paging/simple_page.dart';
 import '../../paging/sort.dart';
 import '../../query/part.dart';
 import '../../query/part_tree.dart';
@@ -62,8 +63,7 @@ import '../jetleaf_repository.dart';
 @Generic(SimpleJetleafRepository)
 class SimpleJetleafRepository<T, ID> extends JetleafRepository<T, ID> {
   /// Reflective class descriptor for [SimpleJetleafRepository].
-  static final Class<SimpleJetleafRepository> CLASS =
-      Class<SimpleJetleafRepository>(null, PackageNames.DATA);
+  static final Class<SimpleJetleafRepository> CLASS = Class<SimpleJetleafRepository>(null, PackageNames.DATA);
 
   final EntityMetadata<T> _metadata;
   final DatabaseClient _client;
@@ -111,8 +111,7 @@ class SimpleJetleafRepository<T, ID> extends JetleafRepository<T, ID> {
 
   /// Returns the active [DatabaseClient] — ambient transaction connection if bound,
   /// otherwise the configured fallback client.
-  DatabaseClient getActiveClient() =>
-      ZoneTransactionHolder.getCurrent()?.getConnection() ?? _client;
+  DatabaseClient getActiveClient() => ZoneTransactionHolder.getCurrent()?.getConnection() ?? _client;
 
   // =========================================================================
   // CRUD

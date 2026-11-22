@@ -83,7 +83,7 @@ import 'cache_operation_context.dart';
 @Generic(DefaultCacheOperationContext)
 final class DefaultCacheOperationContext<T> implements CacheOperationContext<T> {
   /// The reflective method invocation associated with this cache context.
-  late MethodInvocation<T> _invocation;
+  MethodInvocation<T>? _invocation;
 
   /// {@template cache_support.pod_factory}
   /// The [ApplicationContext] responsible for managing and
@@ -173,18 +173,38 @@ final class DefaultCacheOperationContext<T> implements CacheOperationContext<T> 
   /// Returns:
   /// - The modified [DefaultCacheOperationContext] containing the invocation.
   DefaultCacheOperationContext withInvocation(MethodInvocation<T> invocation) {
-    _invocation = invocation;
+    if (!identical(_invocation, invocation)) {
+      _invocation = invocation;
+      _result = null;
+      _cacheMiss = false;
+      _cachedResult = null;
+      _resources = [];
+    }
     return this;
+  }
+
+  /// {@template default_cache_operation_context.active_invocation}
+  /// Returns the [MethodInvocation] currently bound to this context.
+  ///
+  /// Throws an [IllegalStateException] if [withInvocation] has not been called
+  /// before accessing invocation-scoped metadata.
+  /// {@endtemplate}
+  MethodInvocation<T> get _activeInvocation {
+    final inv = _invocation;
+    if (inv == null) {
+      throw IllegalStateException('No MethodInvocation bound to DefaultCacheOperationContext');
+    }
+    return inv;
   }
 
   @override
   FutureOr<Object> generateKey([String? preferredKeyGeneratorName]) async {
     if (preferredKeyGeneratorName != null) {
       final keyGenerator = await _applicationContext.getPod<KeyGenerator>(preferredKeyGeneratorName);
-      return keyGenerator.generate(_invocation.getTarget(), _invocation.getMethod(), _invocation.getArgument());
+      return keyGenerator.generate(_activeInvocation.getTarget(), _activeInvocation.getMethod(), _activeInvocation.getArgument());
     }
 
-    return _keyGenerator.generate(_invocation.getTarget(), _invocation.getMethod(), _invocation.getArgument());
+    return _keyGenerator.generate(_activeInvocation.getTarget(), _activeInvocation.getMethod(), _activeInvocation.getArgument());
   }
 
   @override
@@ -197,16 +217,16 @@ final class DefaultCacheOperationContext<T> implements CacheOperationContext<T> 
   ConfigurableListablePodFactory getPodFactory() => _applicationContext;
 
   @override
-  MethodInvocation<T> getMethodInvocation() => _invocation;
+  MethodInvocation<T> getMethodInvocation() => _activeInvocation;
 
   @override
-  Method getMethod() => _invocation.getMethod();
+  Method getMethod() => _activeInvocation.getMethod();
 
   @override
-  Object getTarget() => _invocation.getTarget();
+  Object getTarget() => _activeInvocation.getTarget();
 
   @override
-  ExecutableArgument? getArgument() => _invocation.getArgument();
+  ExecutableArgument? getArgument() => _activeInvocation.getArgument();
 
   @override
   void setResources(List<Resource<Object, Cache>> resources) {

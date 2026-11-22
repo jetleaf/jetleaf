@@ -65,7 +65,7 @@ import 'rate_limit_operation_context.dart';
 @Generic(DefaultRateLimitOperationContext)
 final class DefaultRateLimitOperationContext<T> implements RateLimitOperationContext<T> {
   /// The reflective method invocation associated with this rateLimit context.
-  late MethodInvocation<T> _invocation;
+  MethodInvocation<T>? _invocation;
 
   /// {@template rateLimit_support.pod_factory}
   /// The [ApplicationContext] responsible for managing and
@@ -162,18 +162,37 @@ final class DefaultRateLimitOperationContext<T> implements RateLimitOperationCon
   ///
   /// Returns the modified context for further use.
   DefaultRateLimitOperationContext withInvocation(MethodInvocation<T> invocation) {
-    _invocation = invocation;
+    if (!identical(_invocation, invocation)) {
+      _invocation = invocation;
+      _skipped = true;
+      successfulStorages = [];
+      _resources = [];
+    }
     return this;
+  }
+
+  /// {@template default_rate_limit_operation_context.active_invocation}
+  /// Returns the [MethodInvocation] currently bound to this context.
+  ///
+  /// Throws an [IllegalStateException] if [withInvocation] has not been called
+  /// before accessing invocation-scoped metadata.
+  /// {@endtemplate}
+  MethodInvocation<T> get _activeInvocation {
+    final inv = _invocation;
+    if (inv == null) {
+      throw IllegalStateException('No MethodInvocation bound to DefaultRateLimitOperationContext');
+    }
+    return inv;
   }
   
   @override
   FutureOr<Object> generateKey([String? preferredKeyGeneratorName]) async {
     if (preferredKeyGeneratorName != null) {
       final keyGenerator = await _applicationContext.getPod<KeyGenerator>(preferredKeyGeneratorName);
-      return keyGenerator.generate(_invocation.getTarget(), _invocation.getMethod(), _invocation.getArgument());
+      return keyGenerator.generate(_activeInvocation.getTarget(), _activeInvocation.getMethod(), _activeInvocation.getArgument());
     }
 
-    return _keyGenerator.generate(_invocation.getTarget(), _invocation.getMethod(), _invocation.getArgument());
+    return _keyGenerator.generate(_activeInvocation.getTarget(), _activeInvocation.getMethod(), _activeInvocation.getArgument());
   }
 
   void setSkipped(bool skipped) => _skipped = skipped;
@@ -183,16 +202,16 @@ final class DefaultRateLimitOperationContext<T> implements RateLimitOperationCon
   Environment getEnvironment() => _applicationContext.getEnvironment();
 
   @override
-  MethodInvocation<T> getMethodInvocation() => _invocation;
+  MethodInvocation<T> getMethodInvocation() => _activeInvocation;
 
   @override
-  Method getMethod() => _invocation.getMethod();
+  Method getMethod() => _activeInvocation.getMethod();
 
   @override
-  Object getTarget() => _invocation.getTarget();
+  Object getTarget() => _activeInvocation.getTarget();
 
   @override
-  ExecutableArgument? getArgument() => _invocation.getArgument();
+  ExecutableArgument? getArgument() => _activeInvocation.getArgument();
 
   @override
   void setResources(List<Resource<Object, RateLimitEntry>> resources) {

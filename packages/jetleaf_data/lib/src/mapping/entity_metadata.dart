@@ -15,10 +15,57 @@
 import 'package:jetleaf_core/lang.dart';
 
 import 'column_metadata.dart';
-import 'entity_index.dart';
 import 'relationship_metadata.dart';
 
-export 'entity_index.dart';
+/// {@template jetleaf_entity_index}
+/// Immutable metadata descriptor representing a **physical database index**
+/// declared on an `@Entity` via `@Index` or `@Indexes`.
+///
+/// ### Usage Example
+/// ```dart
+/// const index = EntityIndex(
+///   name: 'idx_users_email',
+///   columnList: 'email',
+///   unique: true,
+/// );
+/// print(index.getName()); // "idx_users_email"
+/// print(index.isUnique()); // true
+/// ```
+///
+/// ### See Also
+/// - `Index`
+/// - `Indexes`
+/// - [EntityMetadata]
+/// {@endtemplate}
+final class EntityIndex with EqualsAndHashCode {
+  /// Reflective [Class] handle for [EntityIndex].
+  static final Class<EntityIndex> CLASS = Class<EntityIndex>(null, PackageNames.DATA);
+
+  final String _name;
+  final String _columnList;
+  final bool _unique;
+
+  /// {@macro jetleaf_entity_index}
+  const EntityIndex({
+    required String name,
+    required String columnList,
+    bool unique = false,
+  })  : _name = name,
+        _columnList = columnList,
+        _unique = unique;
+
+  /// Returns the resolved physical index name.
+  String getName() => _name;
+
+  /// Returns the comma-separated column specification.
+  String getColumnList() => _columnList;
+
+  /// Returns `true` if the index enforces a `UNIQUE` constraint.
+  bool isUnique() => _unique;
+
+  @override
+  List<Object?> equalizedProperties() => [_name, _columnList, _unique];
+}
 
 /// {@template jetleaf_entity_metadata}
 /// Complete, immutable reflective descriptor for a persistent `@Entity` class
@@ -49,8 +96,7 @@ export 'entity_index.dart';
 @Generic(EntityMetadata)
 final class EntityMetadata<T> with EqualsAndHashCode {
   /// Reflective [Class] handle for [EntityMetadata].
-  static final Class<EntityMetadata> CLASS =
-      Class<EntityMetadata>(null, PackageNames.DATA);
+  static final Class<EntityMetadata> CLASS = Class<EntityMetadata>(null, PackageNames.DATA);
 
   final Class<T> _entityClass;
   final Type _entityType;
@@ -267,26 +313,23 @@ final class EntityMetadata<T> with EqualsAndHashCode {
   T newInstance() => _entityClass.newInstance();
 
   /// Reads the attribute value for [property] from [instance].
-  Object? readAttribute(T instance, String property) =>
-      _fields[property]?.getValue(instance);
+  Object? readAttribute(T instance, String property) => _fields[property]?.getValue(instance);
 
   /// Writes [value] to the attribute [property] on [instance].
   void writeAttribute(T instance, String property, Object? value) {
     final field = _fields[property];
     if (field == null) {
-      throw IllegalArgumentException(
-        'Property "$property" is not mapped on $_simpleName',
-      );
+      throw IllegalArgumentException('Property "$property" is not mapped on $_simpleName');
     }
     field.setValue(instance, value);
   }
 
   @override
   List<Object?> equalizedProperties() => [
-        _entityType,
-        _tableName,
-        _columns,
-        _relationships,
-        _indexes,
-      ];
+    _entityType,
+    _tableName,
+    _columns,
+    _relationships,
+    _indexes,
+  ];
 }

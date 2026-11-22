@@ -18,8 +18,6 @@ import 'pageable.dart';
 import 'simple_page.dart';
 import 'sliced_chunk.dart';
 
-export 'simple_page.dart';
-
 /// {@template page}
 /// Represents a **full page of data** in a paginated dataset.
 ///

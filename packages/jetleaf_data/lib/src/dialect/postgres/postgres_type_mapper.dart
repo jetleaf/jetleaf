@@ -34,8 +34,7 @@ import '../sql_type_mapper.dart';
 /// {@endtemplate}
 final class PostgresTypeMapper extends SqlTypeMapper {
   /// Reflective [Class] handle for [PostgresTypeMapper].
-  static final Class<PostgresTypeMapper> CLASS =
-      Class<PostgresTypeMapper>(null, PackageNames.DATA);
+  static final Class<PostgresTypeMapper> CLASS = Class<PostgresTypeMapper>(null, PackageNames.DATA);
 
   /// {@macro jetleaf_postgres_type_mapper}
   PostgresTypeMapper([super.converters]);

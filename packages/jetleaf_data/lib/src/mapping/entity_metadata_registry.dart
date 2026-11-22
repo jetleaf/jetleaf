@@ -29,16 +29,13 @@ import 'naming_strategy.dart';
 /// {@endtemplate}
 abstract interface class EntityMetadataRegistry {
   /// Reflective [Class] handle for [EntityMetadataRegistry].
-  static final Class<EntityMetadataRegistry> CLASS =
-      Class<EntityMetadataRegistry>(null, PackageNames.DATA);
+  static final Class<EntityMetadataRegistry> CLASS = Class<EntityMetadataRegistry>(null, PackageNames.DATA);
 
   /// Shared default [DefaultEntityMetadataRegistry] instance.
-  static final DefaultEntityMetadataRegistry instance =
-      DefaultEntityMetadataRegistry.instance;
+  static final DefaultEntityMetadataRegistry instance = DefaultEntityMetadataRegistry.instance;
 
   /// Returns the shared default [DefaultEntityMetadataRegistry] instance.
-  static DefaultEntityMetadataRegistry getSharedInstance() =>
-      DefaultEntityMetadataRegistry.getSharedInstance();
+  static DefaultEntityMetadataRegistry getSharedInstance() => DefaultEntityMetadataRegistry.getSharedInstance();
 
   /// Returns the cached or newly built [EntityMetadata] for entity type [T].
   EntityMetadata<T> get<T>();
@@ -59,11 +56,9 @@ abstract interface class EntityMetadataRegistry {
 /// registration of custom [EntityMetadata] descriptors and [NamingStrategy]
 /// customization.
 /// {@endtemplate}
-abstract interface class ConfigurableEntityMetadataRegistry
-    implements EntityMetadataRegistry {
+abstract interface class ConfigurableEntityMetadataRegistry implements EntityMetadataRegistry {
   /// Reflective [Class] handle for [ConfigurableEntityMetadataRegistry].
-  static final Class<ConfigurableEntityMetadataRegistry> CLASS =
-      Class<ConfigurableEntityMetadataRegistry>(null, PackageNames.DATA);
+  static final Class<ConfigurableEntityMetadataRegistry> CLASS = Class<ConfigurableEntityMetadataRegistry>(null, PackageNames.DATA);
 
   /// Registers pre-built [metadata] in the registry.
   void register(EntityMetadata<dynamic> metadata);

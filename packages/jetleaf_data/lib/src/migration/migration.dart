@@ -16,12 +16,19 @@ import 'dart:async';
 
 import 'package:jetleaf_core/lang.dart';
 
-import 'migration_operations.dart';
 import 'migration_version.dart';
-import 'sql_migration.dart';
 
-export 'migration_operations.dart';
-export 'sql_migration.dart';
+/// {@template jetleaf_migration_operations}
+/// Execution context passed to [Migration.up] for running schema DDL and
+/// data evolution statements.
+/// {@endtemplate}
+abstract interface class MigrationOperations {
+  /// Reflective [Class] handle for [MigrationOperations].
+  static final Class<MigrationOperations> CLASS = Class<MigrationOperations>(null, PackageNames.DATA);
+
+  /// Executes a raw SQL or DDL statement against the target database.
+  Future<void> execute(String sql);
+}
 
 /// {@template jetleaf_migration}
 /// Abstract base class for a versioned, checksum-verified schema migration.
@@ -52,8 +59,7 @@ export 'sql_migration.dart';
 /// {@endtemplate}
 abstract class Migration with EqualsAndHashCode {
   /// Reflective [Class] handle for [Migration].
-  static final Class<Migration> CLASS =
-      Class<Migration>(null, PackageNames.DATA);
+  static final Class<Migration> CLASS = Class<Migration>(null, PackageNames.DATA);
 
   /// {@macro jetleaf_migration}
   const Migration();
@@ -66,4 +72,35 @@ abstract class Migration with EqualsAndHashCode {
 
   @override
   List<Object?> equalizedProperties() => [getVersion(), runtimeType];
+}
+
+/// {@template jetleaf_sql_migration}
+/// Concrete [Migration] implementation backed by an ordered list of SQL
+/// statements.
+/// {@endtemplate}
+final class SqlMigration extends Migration {
+  /// Reflective [Class] handle for [SqlMigration].
+  static final Class<SqlMigration> CLASS = Class<SqlMigration>(null, PackageNames.DATA);
+
+  final MigrationVersion _version;
+  final List<String> _statements;
+
+  /// {@macro jetleaf_sql_migration}
+  const SqlMigration(this._version, this._statements);
+
+  @override
+  MigrationVersion getVersion() => _version;
+
+  /// Returns the ordered list of SQL statements executed by this migration.
+  List<String> getStatements() => _statements;
+
+  @override
+  Future<void> up(MigrationOperations operations) async {
+    for (final statement in _statements) {
+      await operations.execute(statement);
+    }
+  }
+
+  @override
+  List<Object?> equalizedProperties() => [_version, _statements];
 }

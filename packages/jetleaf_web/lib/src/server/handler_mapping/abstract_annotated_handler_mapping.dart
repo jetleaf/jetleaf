@@ -103,7 +103,7 @@ abstract class AbstractAnnotatedHandlerMapping extends AbstractWebViewAnnotatedH
         final controller = type.getDirectAnnotation<RestController>() ?? type.getDirectAnnotation<Controller>();
         
         // Exclude @ControllerAdvice and @RestControllerAdvice pods.
-        if (controller != null && (controller is! ControllerAdvice || controller is! RestControllerAdvice)) {
+        if (controller != null && controller is! ControllerAdvice && controller is! RestControllerAdvice) {
           final target = await applicationContext.getPod(name);
           definitions.add(_ControllerDefinition(controller, type, target, name));
         }

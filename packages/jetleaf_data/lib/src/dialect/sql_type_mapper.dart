@@ -28,8 +28,7 @@ import '../mapping/type_converter_registry.dart';
 /// {@endtemplate}
 abstract class SqlTypeMapper with EqualsAndHashCode {
   /// Reflective [Class] handle for [SqlTypeMapper].
-  static final Class<SqlTypeMapper> CLASS =
-      Class<SqlTypeMapper>(null, PackageNames.DATA);
+  static final Class<SqlTypeMapper> CLASS = Class<SqlTypeMapper>(null, PackageNames.DATA);
 
   final TypeConverterRegistry _converters;
 
@@ -64,8 +63,7 @@ abstract class SqlTypeMapper with EqualsAndHashCode {
 
   /// Returns the SQL DDL type for variable-length strings of [length], falling
   /// back to [getLargeTextType] when [length] is `null`.
-  String getStringType(int? length) =>
-      length != null ? 'VARCHAR($length)' : getLargeTextType();
+  String getStringType(int? length) => length != null ? 'VARCHAR($length)' : getLargeTextType();
 
   /// Converts an entity attribute [value] to its SQL column value.
   Object? toColumnValue(Object? value, ColumnMetadata column) {

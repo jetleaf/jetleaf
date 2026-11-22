@@ -20,11 +20,21 @@ import 'sqlite_type_mapper.dart';
 /// {@template jetleaf_sqlite_dialect}
 /// SQLite implementation of [SqlDialect] for embedded, in-memory, and Flutter
 /// client persistence.
+///
+/// ### Characteristics
+/// - Parameter placeholders: `?` ([SqlParameterStyle.questionMark])
+/// - Identifier quoting: `"identifier"`
+/// - Auto-increment DDL: `INTEGER PRIMARY KEY AUTOINCREMENT`
+///
+/// ### Usage Example
+/// ```dart
+/// const dialect = SqliteDialect();
+/// final ddl = dialect.renderCreateTable(userMetadata);
+/// ```
 /// {@endtemplate}
 final class SqliteDialect extends SqlDialect {
   /// Reflective [Class] handle for [SqliteDialect].
-  static final Class<SqliteDialect> CLASS =
-      Class<SqliteDialect>(null, PackageNames.DATA);
+  static final Class<SqliteDialect> CLASS = Class<SqliteDialect>(null, PackageNames.DATA);
 
   /// {@macro jetleaf_sqlite_dialect}
   const SqliteDialect();

@@ -29,8 +29,7 @@ import 'row_mapper.dart';
 @Generic(EntityRowMapper)
 final class EntityRowMapper<T> with EqualsAndHashCode implements RowMapper<T> {
   /// Reflective [Class] handle for [EntityRowMapper].
-  static final Class<EntityRowMapper> CLASS =
-      Class<EntityRowMapper>(null, PackageNames.DATA);
+  static final Class<EntityRowMapper> CLASS = Class<EntityRowMapper>(null, PackageNames.DATA);
 
   final EntityMetadata<T> _metadata;
   final TypeConverterRegistry _converters;
@@ -47,8 +46,7 @@ final class EntityRowMapper<T> with EqualsAndHashCode implements RowMapper<T> {
   /// Returns the [TypeConverterRegistry] used for column value conversion.
   TypeConverterRegistry getConverters() => _converters;
 
-  static String _normalize(String value) =>
-      value.toLowerCase().replaceAll('_', '');
+  static String _normalize(String value) => value.toLowerCase().replaceAll('_', '');
 
   @override
   T mapRow(Map<String, Object?> row) {

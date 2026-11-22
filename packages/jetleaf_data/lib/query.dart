@@ -12,17 +12,26 @@
 //
 // 🔧 Powered by Hapnium — the Dart backend engine 🍃
 
+/// 🔍 **JetLeaf Query Derivation & Binding Library**
+///
+/// Exposes the method-name query derivation parser, criteria AST, and
+/// parameter binding infrastructure:
+/// - [PartTree], [PartSubject], [Criterion], [PartCriterion], [CompositeCriterion]
+/// - [Part] & [PartOperator]
+/// - [QueryCriteria] & [QueryType]
+/// - [QueryMethod], [QueryExecution], [ReturnKind]
+/// - [ParameterBinder] & [BoundParameters]
+///
+/// ### Usage Example
+/// ```dart
+/// import 'package:jetleaf_data/query.dart';
+///
+/// final tree = PartTree.parse('findTop5ByActiveTrueOrderByCreatedAtDesc', metadata: userMetadata);
+/// ```
 library;
 
-export 'src/query/bound_parameters.dart';
-export 'src/query/criterion.dart';
 export 'src/query/parameter_binder.dart';
 export 'src/query/part.dart';
-export 'src/query/part_operator.dart';
-export 'src/query/part_subject.dart';
 export 'src/query/part_tree.dart';
 export 'src/query/query_criteria.dart';
-export 'src/query/query_execution.dart';
 export 'src/query/query_method.dart';
-export 'src/query/query_type.dart';
-export 'src/query/return_kind.dart';

@@ -14,6 +14,7 @@ Future<void> main(List<String> args) async {
   if (context != null) {
     final greeter = await context.getPod<ScannerGreeterService>('scannerGreeterService');
     print(greeter.greet('Developer'));
+    await context.close();
   }
 }
 

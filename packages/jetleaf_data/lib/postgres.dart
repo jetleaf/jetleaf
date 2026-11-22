@@ -15,8 +15,16 @@
 /// 🐘 **JetLeaf PostgreSQL Data Support**
 ///
 /// Import `package:jetleaf_data/postgres.dart` when configuring a PostgreSQL
-/// or CockroachDB data source so your application only imports PostgreSQL
-/// dialect and type-mapping classes.
+/// or CockroachDB data source so your application only imports
+/// [PostgreSqlDialect], [PostgresTypeMapper], and SQL dialect abstractions.
+///
+/// ### Usage Example
+/// ```dart
+/// import 'package:jetleaf_data/postgres.dart';
+///
+/// const dialect = PostgreSqlDialect();
+/// final ddl = dialect.renderCreateTable(userMetadata);
+/// ```
 library;
 
 export 'sql.dart';

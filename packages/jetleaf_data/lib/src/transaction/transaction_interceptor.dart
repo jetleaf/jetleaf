@@ -36,12 +36,9 @@ import 'zone_transaction_holder.dart';
 /// 4. Commits on normal return, or rolls back when a thrown exception/error
 ///    matches `rollbackFor` and is not excluded by `noRollbackFor`.
 /// {@endtemplate}
-final class TransactionalMethodInterceptor
-    with EqualsAndHashCode
-    implements AroundMethodInterceptor {
+final class TransactionalMethodInterceptor with EqualsAndHashCode implements AroundMethodInterceptor {
   /// Reflective [Class] handle for [TransactionalMethodInterceptor].
-  static final Class<TransactionalMethodInterceptor> CLASS =
-      Class<TransactionalMethodInterceptor>(null, PackageNames.DATA);
+  static final Class<TransactionalMethodInterceptor> CLASS = Class<TransactionalMethodInterceptor>(null, PackageNames.DATA);
 
   /// Standard infrastructure pod name.
   static const String NAME = 'jetleaf.data.transactionalMethodInterceptor';
@@ -51,7 +48,7 @@ final class TransactionalMethodInterceptor
 
   /// {@macro jetleaf_transactional_method_interceptor}
   TransactionalMethodInterceptor([PlatformTransactionManager? manager])
-      : _transactionManager = manager;
+    : _transactionManager = manager;
 
   /// Returns the bound [PlatformTransactionManager], or `null` if unbound.
   PlatformTransactionManager? getTransactionManager() => _transactionManager;
@@ -67,8 +64,7 @@ final class TransactionalMethodInterceptor
 
   @override
   bool canIntercept(Method method) {
-    return method.getDirectAnnotation<Transactional>() != null ||
-        method.getDeclaringClass().hasDirectAnnotation<Transactional>();
+    return method.getDirectAnnotation<Transactional>() != null ||  method.getDeclaringClass().hasDirectAnnotation<Transactional>();
   }
 
   @override
@@ -90,14 +86,13 @@ final class TransactionalMethodInterceptor
     }
 
     final definition = DefaultTransactionDefinition(
-      propagation: annotation.getPropagation(),
-      isolation: annotation.getIsolation(),
-      timeoutSeconds: annotation.getTimeoutSeconds(),
-      readOnly: annotation.isReadOnly(),
-      rollbackFor: annotation.getRollbackFor(),
-      noRollbackFor: annotation.getNoRollbackFor(),
-      name:
-          '${invocation.getTargetClass().getName()}#${invocation.getMethod().getName()}',
+      propagation: annotation.propagation,
+      isolation: annotation.isolation,
+      timeoutSeconds: annotation.timeoutSeconds,
+      readOnly: annotation.readOnly,
+      rollbackFor: annotation.rollbackFor,
+      noRollbackFor: annotation.noRollbackFor,
+      name: '${invocation.getTargetClass().getName()}#${invocation.getMethod().getName()}',
     );
 
     final status = await manager.getTransaction(definition);
@@ -113,9 +108,7 @@ final class TransactionalMethodInterceptor
     } catch (error, stackTrace) {
       if (_shouldRollback(annotation, error)) {
         if (_logger.getIsDebugEnabled()) {
-          _logger.debug(
-            'Rolling back transaction for ${definition.getName()} due to $error',
-          );
+          _logger.debug('Rolling back transaction for ${definition.getName()} due to $error');
         }
         await manager.rollback(status);
       } else {
@@ -136,12 +129,12 @@ final class TransactionalMethodInterceptor
 
   bool _shouldRollback(Transactional annotation, Object error) {
     final exempted = annotation
-        .getNoRollbackFor()
-        .any((type) => _matchesType(type, error));
+      .noRollbackFor
+      .any((type) => _matchesType(type, error));
     if (exempted) return false;
 
     return annotation
-        .getRollbackFor()
+        .rollbackFor
         .any((type) => _matchesType(type, error));
   }
 

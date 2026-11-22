@@ -1,3 +1,4 @@
+import 'package:jtl/jtl.dart';
 import 'package:test/test.dart';
 
 import 'test_helper.dart';
@@ -218,12 +219,26 @@ void main() {
     });
 
     group('Include rendering', () {
-      test('renders include as placeholder comment', () {
+      test('renders include as placeholder comment when partial is missing', () {
         final result = renderTemplate(
           '{{>header}}',
           attributes: {},
         );
         expect(result.getRenderedContent(), '<!-- Include: header -->');
+      });
+
+      test('renders included partial template when asset exists', () {
+        final filters = TemplateFilterRegistry();
+        final builder = assetBuilder({
+          'test/template.html': '<div>{{>header}}</div>',
+          'header': '<h1>Welcome {{user}}</h1>',
+        });
+        final renderer = DefaultTemplateRenderer(filters, builder);
+        final resolver = DefaultVariableResolver()..setVariables({'user': 'Ada'});
+        final context = DefaultTemplateContext(resolver);
+        final tmpl = JtlTemplate('test/template.html', {'user': 'Ada'});
+        final result = renderer.render(tmpl, context);
+        expect(result.getRenderedContent(), '<div><h1>Welcome Ada</h1></div>');
       });
     });
 

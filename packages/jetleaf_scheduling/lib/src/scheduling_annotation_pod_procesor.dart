@@ -317,7 +317,7 @@ final class SchedulingAnnotationPodProcessor extends PodInitializationProcessor 
   /// }
   /// ```
   /// {@endtemplate}
-  final Map<Object, ScheduledTask> _scheduledTasks = {};
+  final Map<Object, List<ScheduledTask>> _scheduledTasks = {};
 
   /// {@template UnregisteredTaskHolders}
   /// Holds tasks that couldn't be registered immediately due to scheduler unavailability.
@@ -602,7 +602,9 @@ final class SchedulingAnnotationPodProcessor extends PodInitializationProcessor 
     await _processSchedulingConfigurers();
 
     if (_unregisteredTaskHolders.isNotEmpty) {
-      for (final task in _unregisteredTaskHolders) {
+      final pending = List<_LocalTask>.from(_unregisteredTaskHolders);
+      _unregisteredTaskHolders.clear();
+      for (final task in pending) {
         await _scheduleUnregisteredTasks(task);
       }
     }
@@ -840,7 +842,7 @@ final class SchedulingAnnotationPodProcessor extends PodInitializationProcessor 
       final scheduledTask = await _schedulingTaskRegistrar.scheduleTask(task.task);
 
       if (scheduledTask != null) {
-        _scheduledTasks.add(task.pod, scheduledTask);
+        _scheduledTasks.putIfAbsent(task.pod, () => <ScheduledTask>[]).add(scheduledTask);
 
         if (_logger.getIsTraceEnabled()) {
           _logger.trace("Successfully added unregistered ${task.type} schedule method ${method.getName()} as task: $name");
@@ -1101,7 +1103,7 @@ final class SchedulingAnnotationPodProcessor extends PodInitializationProcessor 
       final scheduledTask = await _schedulingTaskRegistrar.scheduleTask(task);
 
       if (scheduledTask != null) {
-        _scheduledTasks.add(pod, scheduledTask);
+        _scheduledTasks.putIfAbsent(pod, () => <ScheduledTask>[]).add(scheduledTask);
 
         if (_logger.getIsTraceEnabled()) {
           _logger.trace("Successfully added $type schedule method ${method.getName()} as task: $name");
@@ -1204,14 +1206,16 @@ final class SchedulingAnnotationPodProcessor extends PodInitializationProcessor 
   /// - Processor continues with other destruction tasks even if cancellation fails
   /// {@endtemplate}
   Future<void> _cancelScheduledTasks(Object pod) async {
-    final task = _scheduledTasks.remove(pod);
+    final tasks = _scheduledTasks.remove(pod);
 
-    if (task != null) {
-      if (_logger.getIsTraceEnabled()) {
-        _logger.trace("Cancelling scheduled task of $pod - ${task.getName()}");
+    if (tasks != null) {
+      for (final task in tasks) {
+        if (_logger.getIsTraceEnabled()) {
+          _logger.trace("Cancelling scheduled task of $pod - ${task.getName()}");
+        }
+
+        await task.cancel(true);
       }
-
-      await task.cancel(true);
     }
   }
 
@@ -1234,7 +1238,9 @@ final class SchedulingAnnotationPodProcessor extends PodInitializationProcessor 
   List<ScheduledTask> getScheduledTasks() {
     final tasks = <ScheduledTask>{};
     tasks.addAll(_schedulingTaskRegistrar.getScheduledTasks());
-    tasks.addAll(_scheduledTasks.values);
+    for (final list in _scheduledTasks.values) {
+      tasks.addAll(list);
+    }
 
     return List<ScheduledTask>.unmodifiable(tasks);
   }

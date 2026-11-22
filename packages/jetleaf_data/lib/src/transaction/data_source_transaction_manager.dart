@@ -16,15 +16,18 @@ import 'dart:async';
 
 import 'package:jetleaf_core/lang.dart';
 
-import '../annotation/propagation.dart';
+import '../annotation/transactional.dart';
 import '../driver/connection_factory.dart';
 import '../driver/pooled_connection.dart';
 import '../exception/data_access_exception.dart';
 import 'default_transaction_definition.dart';
+import 'default_transaction_status.dart';
 import 'platform_transaction_manager.dart';
 import 'transaction_definition.dart';
 import 'transaction_status.dart';
 import 'zone_transaction_holder.dart';
+
+typedef AsyncPoolConnector = Future<void> Function(PooledConnection connection);
 
 /// {@template jetleaf_data_source_transaction_manager}
 /// [PlatformTransactionManager] implementation that manages transactions on
@@ -33,38 +36,45 @@ import 'zone_transaction_holder.dart';
 /// Supports all six Spring propagation behaviors (`required`, `requiresNew`,
 /// `mandatory`, `supports`, `notSupported`, `never`) and rollback-only
 /// propagation across nested participants.
+///
+/// ### Usage Example
+/// ```dart
+/// final txManager = DataSourceTransactionManager(connectionPool);
+/// final status = await txManager.getTransaction(
+///   const DefaultTransactionDefinition(propagation: Propagation.required),
+/// );
+/// try {
+///   await work();
+///   await txManager.commit(status);
+/// } catch (_) {
+///   await txManager.rollback(status);
+///   rethrow;
+/// }
+/// ```
 /// {@endtemplate}
 final class DataSourceTransactionManager extends PlatformTransactionManager {
   /// Reflective [Class] handle for [DataSourceTransactionManager].
-  static final Class<DataSourceTransactionManager> CLASS =
-      Class<DataSourceTransactionManager>(null, PackageNames.DATA);
+  static final Class<DataSourceTransactionManager> CLASS = Class<DataSourceTransactionManager>(null, PackageNames.DATA);
 
   final ConnectionFactory _factory;
-  final Future<void> Function(PooledConnection connection)?
-      _onConnectionAcquired;
+  final AsyncPoolConnector? _onConnectionAcquired;
 
   /// {@macro jetleaf_data_source_transaction_manager}
-  const DataSourceTransactionManager(
-    this._factory, {
-    Future<void> Function(PooledConnection connection)? onConnectionAcquired,
-  }) : _onConnectionAcquired = onConnectionAcquired;
+  const DataSourceTransactionManager(this._factory, {AsyncPoolConnector? onConnectionAcquired})
+    : _onConnectionAcquired = onConnectionAcquired;
 
   /// Returns the [ConnectionFactory] backing this transaction manager.
   ConnectionFactory getConnectionFactory() => _factory;
 
   @override
-  Future<TransactionStatus> getTransaction(
-    TransactionDefinition? definition,
-  ) async {
+  Future<TransactionStatus> getTransaction(TransactionDefinition? definition) async {
     final def = definition ?? const DefaultTransactionDefinition();
     final existing = ZoneTransactionHolder.getCurrent();
 
     switch (def.getPropagation()) {
       case Propagation.mandatory:
         if (existing == null) {
-          throw MandatoryTransactionException(
-            'No transaction is active — Propagation.mandatory requires one',
-          );
+          throw MandatoryTransactionException('No transaction is active — Propagation.mandatory requires one');
         }
         return DefaultTransactionStatus(
           definition: def,
@@ -100,9 +110,7 @@ final class DataSourceTransactionManager extends PlatformTransactionManager {
 
       case Propagation.never:
         if (existing != null) {
-          throw TransactionSystemException(
-            'A transaction is active — Propagation.never forbids one',
-          );
+          throw TransactionSystemException('A transaction is active — Propagation.never forbids one');
         }
         return DefaultTransactionStatus.unbound(def);
     }

@@ -1,16 +1,16 @@
-## Unreleased
-
-### Documentation
-
-- **Terminology refresh**: "dart:mirrors" / "mirrors" mentions replaced by "runtime reflection"; no functional changes.
-
----
-
 ## [2.1.0]
 
 ### Added
 
 - **@Primary Default**: Per-profile cache configuration pods registered by the resource auto-configuration now honour `@Primary`, avoiding ambiguous type-based injection when multiple cache configurations are on the classpath.
+
+### Fixed
+
+- **Cache and rate-limit interception**: Fixed context scoping and invocation handling across `CacheAnnotationMethodInterceptor`, `DefaultCacheOperationContext`, `CacheableOperation`, `DefaultRateLimitOperationContext`, and `RateLimitAnnotationMethodInterceptor` (including `Expando`-keyed per-invocation contexts and `_activeInvocation` state checks).
+
+### Documentation
+
+- **Terminology refresh**: "dart:mirrors" / "mirrors" mentions replaced by "runtime reflection"; no functional changes.
 
 ### Changed
 

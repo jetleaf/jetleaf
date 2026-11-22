@@ -16,7 +16,7 @@ import 'dart:async';
 
 import 'package:jetleaf_core/lang.dart';
 
-import 'transaction_context.dart';
+import 'transaction_status.dart';
 
 /// {@template jetleaf_zone_transaction_holder}
 /// Zone-scoped holder for the **ambient [TransactionContext]**.
@@ -28,8 +28,7 @@ import 'transaction_context.dart';
 /// {@endtemplate}
 final class ZoneTransactionHolder {
   /// Reflective [Class] handle for [ZoneTransactionHolder].
-  static final Class<ZoneTransactionHolder> CLASS =
-      Class<ZoneTransactionHolder>(null, PackageNames.DATA);
+  static final Class<ZoneTransactionHolder> CLASS = Class<ZoneTransactionHolder>(null, PackageNames.DATA);
 
   static const Symbol _transactionKey = #jetleaf_zone_transaction;
 
@@ -37,18 +36,14 @@ final class ZoneTransactionHolder {
 
   /// Returns the [TransactionContext] bound to the current [Zone], or `null`
   /// when no transaction is active.
-  static TransactionContext? getCurrent() =>
-      Zone.current[_transactionKey] as TransactionContext?;
+  static TransactionContext? getCurrent() => Zone.current[_transactionKey] as TransactionContext?;
 
   /// Returns `true` if a [TransactionContext] is bound to the current [Zone].
   static bool hasActiveTransaction() => getCurrent() != null;
 
   /// Executes [body] inside a forked [Zone] bound to [context] (or shadowing
   /// any outer transaction when [context] is `null`).
-  static Future<T> run<T>(
-    TransactionContext? context,
-    Future<T> Function() body,
-  ) {
+  static Future<T> run<T>(TransactionContext? context, Future<T> Function() body) {
     return Zone.current.fork(zoneValues: {_transactionKey: context}).run(body);
   }
 

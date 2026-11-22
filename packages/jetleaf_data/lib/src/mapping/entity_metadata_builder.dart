@@ -15,23 +15,16 @@
 import 'package:jetleaf_core/lang.dart';
 
 import '../annotation/auditing.dart';
-import '../annotation/column.dart';
 import '../annotation/entity.dart';
-import '../annotation/generated_value.dart';
 import '../annotation/id.dart';
 import '../annotation/index.dart';
 import '../annotation/relationships.dart';
-import '../annotation/table.dart';
-import '../annotation/transient.dart';
 import '../exception/data_access_exception.dart';
 import 'column_metadata.dart';
 import 'entity_metadata.dart';
 import 'entity_metadata_registry.dart';
 import 'naming_strategy.dart';
 import 'relationship_metadata.dart';
-
-export 'default_entity_metadata_registry.dart';
-export 'entity_metadata_registry.dart';
 
 /// {@template jetleaf_entity_metadata_builder}
 /// Reflective builder that constructs [EntityMetadata] descriptors from
@@ -53,8 +46,7 @@ export 'entity_metadata_registry.dart';
 /// {@endtemplate}
 final class EntityMetadataBuilder with EqualsAndHashCode {
   /// Reflective [Class] handle for [EntityMetadataBuilder].
-  static final Class<EntityMetadataBuilder> CLASS =
-      Class<EntityMetadataBuilder>(null, PackageNames.DATA);
+  static final Class<EntityMetadataBuilder> CLASS = Class<EntityMetadataBuilder>(null, PackageNames.DATA);
 
   final NamingStrategy _namingStrategy;
 
@@ -79,8 +71,8 @@ final class EntityMetadataBuilder with EqualsAndHashCode {
     }
 
     final table = entityClass.getDirectAnnotation<Table>();
-    final tableName = table?.getName() ??
-        entity.getTableName() ??
+    final tableName = table?.name ??
+        entity.tableName ??
         _namingStrategy.classToTableName(simpleName);
 
     final columns = <ColumnMetadata>[];
@@ -114,20 +106,20 @@ final class EntityMetadataBuilder with EqualsAndHashCode {
       indexes.add(
         EntityIndex(
           name: index.getEffectiveName(tableName),
-          columnList: index.getColumnList(),
-          unique: index.isUnique(),
+          columnList: index.columnList,
+          unique: index.unique,
         ),
       );
     }
 
     final grouped = entityClass.getDirectAnnotation<Indexes>();
     if (grouped != null) {
-      for (final entry in grouped.getIndexes()) {
+      for (final entry in grouped.indexes) {
         indexes.add(
           EntityIndex(
             name: entry.getEffectiveName(tableName),
-            columnList: entry.getColumnList(),
-            unique: entry.isUnique(),
+            columnList: entry.columnList,
+            unique: entry.unique,
           ),
         );
       }
@@ -145,8 +137,8 @@ final class EntityMetadataBuilder with EqualsAndHashCode {
       entityType: T,
       simpleName: simpleName,
       tableName: tableName,
-      catalog: table?.getCatalog(),
-      schema: table?.getSchema(),
+      catalog: table?.catalog,
+      schema: table?.schema,
       columns: columns,
       relationships: relationships,
       indexes: indexes,
@@ -189,20 +181,20 @@ final class EntityMetadataBuilder with EqualsAndHashCode {
     final lastModifiedBy = field.getDirectAnnotation<LastModifiedBy>();
 
     return ColumnMetadata(
-      name: column?.getName() ?? namingStrategy.fieldToColumnName(fieldName),
+      name: column?.name ?? namingStrategy.fieldToColumnName(fieldName),
       property: fieldName,
       fieldType: field.getType(),
-      nullable: column?.isNullable() ?? true,
-      unique: column?.isUnique() ?? false,
-      length: column?.getLength(),
-      precision: column?.getPrecision(),
-      scale: column?.getScale(),
-      columnDefinition: column?.getColumnDefinition(),
-      insertable: column?.isInsertable() ?? true,
-      updatable: column?.isUpdatable() ?? true,
+      nullable: column?.nullable ?? true,
+      unique: column?.unique ?? false,
+      length: column?.length,
+      precision: column?.precision,
+      scale: column?.scale,
+      columnDefinition: column?.columnDefinition,
+      insertable: column?.insertable ?? true,
+      updatable: column?.updatable ?? true,
       isId: id != null,
       isGenerated: generatedValue != null,
-      generationStrategy: generatedValue?.getStrategy(),
+      generationStrategy: generatedValue?.strategy,
       isVersion: version != null,
       isCreatedDate: createdDate != null,
       isLastModifiedDate: lastModifiedDate != null,
@@ -222,16 +214,15 @@ final class EntityMetadataBuilder with EqualsAndHashCode {
         fieldType: fieldType,
         type: RelationshipType.oneToOne,
         targetEntity: _resolveTarget(
-              oneToOne.getTargetEntity(),
-              field,
-              relationshipName: 'oneToOne',
-            ) ??
-            fieldType,
-        mappedBy: oneToOne.getMappedBy(),
-        joinColumn: oneToOne.getJoinColumn(),
-        cascade: oneToOne.getCascade(),
-        fetch: oneToOne.getFetch(),
-        optional: oneToOne.isOptional(),
+          oneToOne.targetEntity,
+          field,
+          relationshipName: 'oneToOne',
+        ) ?? fieldType,
+        mappedBy: oneToOne.mappedBy,
+        joinColumn: oneToOne.joinColumn,
+        cascade: oneToOne.cascade,
+        fetch: oneToOne.fetch,
+        optional: oneToOne.optional,
       );
     }
 
@@ -242,15 +233,15 @@ final class EntityMetadataBuilder with EqualsAndHashCode {
         fieldType: fieldType,
         type: RelationshipType.oneToMany,
         targetEntity: _resolveTarget(
-          oneToMany.getTargetEntity(),
+          oneToMany.targetEntity,
           field,
           relationshipName: 'oneToMany',
           required: true,
         )!,
-        mappedBy: oneToMany.getMappedBy(),
-        joinColumn: oneToMany.getJoinColumn(),
-        cascade: oneToMany.getCascade(),
-        fetch: oneToMany.getFetch(),
+        mappedBy: oneToMany.mappedBy,
+        joinColumn: oneToMany.joinColumn,
+        cascade: oneToMany.cascade,
+        fetch: oneToMany.fetch,
       );
     }
 
@@ -261,16 +252,15 @@ final class EntityMetadataBuilder with EqualsAndHashCode {
         fieldType: fieldType,
         type: RelationshipType.manyToOne,
         targetEntity: _resolveTarget(
-              manyToOne.getTargetEntity(),
-              field,
-              relationshipName: 'manyToOne',
-            ) ??
-            fieldType,
-        mappedBy: manyToOne.getMappedBy(),
-        joinColumn: manyToOne.getJoinColumn(),
-        cascade: manyToOne.getCascade(),
-        fetch: manyToOne.getFetch(),
-        optional: manyToOne.isOptional(),
+          manyToOne.targetEntity,
+          field,
+          relationshipName: 'manyToOne',
+        ) ?? fieldType,
+        mappedBy: manyToOne.mappedBy,
+        joinColumn: manyToOne.joinColumn,
+        cascade: manyToOne.cascade,
+        fetch: manyToOne.fetch,
+        optional: manyToOne.optional,
       );
     }
 
@@ -281,17 +271,17 @@ final class EntityMetadataBuilder with EqualsAndHashCode {
         fieldType: fieldType,
         type: RelationshipType.manyToMany,
         targetEntity: _resolveTarget(
-          manyToMany.getTargetEntity(),
+          manyToMany.targetEntity,
           field,
           relationshipName: 'manyToMany',
           required: true,
         )!,
-        mappedBy: manyToMany.getMappedBy(),
-        joinColumn: manyToMany.getJoinColumn(),
-        joinTable: manyToMany.getJoinTable(),
-        inverseJoinColumn: manyToMany.getInverseJoinColumn(),
-        cascade: manyToMany.getCascade(),
-        fetch: manyToMany.getFetch(),
+        mappedBy: manyToMany.mappedBy,
+        joinColumn: manyToMany.joinColumn,
+        joinTable: manyToMany.joinTable,
+        inverseJoinColumn: manyToMany.inverseJoinColumn,
+        cascade: manyToMany.cascade,
+        fetch: manyToMany.fetch,
       );
     }
 
@@ -320,9 +310,7 @@ final class EntityMetadataBuilder with EqualsAndHashCode {
       }
 
       if (required) {
-        throw EntityMappingException(
-          'Cannot infer the target entity of ${field.getName()} — declare the collection with a generic type or pass ClassType<...>()',
-        );
+        throw EntityMappingException('Cannot infer the target entity of ${field.getName()} — declare the collection with a generic type or pass ClassType<...>()');
       }
 
       return null;
@@ -333,8 +321,7 @@ final class EntityMetadataBuilder with EqualsAndHashCode {
 
   Type? _genericTarget(Field field) {
     try {
-      final link =
-          (field.getDeclaration() as FieldDeclaration).getLinkDeclaration();
+      final link = (field.getDeclaration() as FieldDeclaration).getLinkDeclaration();
       final args = link.getTypeArguments();
       if (args.isEmpty) {
         return null;

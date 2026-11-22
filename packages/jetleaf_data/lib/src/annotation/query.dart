@@ -15,12 +15,6 @@
 import 'package:jetleaf_core/lang.dart';
 import 'package:meta/meta_meta.dart';
 
-import 'modifying.dart';
-import 'param.dart';
-
-export 'modifying.dart';
-export 'param.dart';
-
 /// {@template jetleaf_query_annotation}
 /// Attaches an explicit **native SQL or JetLeaf Query Language (JQL) statement**
 /// to a repository method.
@@ -55,15 +49,78 @@ final class Query extends ReflectableAnnotation with EqualsAndHashCode {
   /// {@macro jetleaf_query_annotation}
   const Query(this.value, {this.nativeQuery = false});
 
-  /// Returns the declared query statement.
-  String getValue() => value;
-
-  /// Returns `true` if [value] is a native query.
-  bool isNativeQuery() => nativeQuery;
-
   @override
   Type get annotationType => Query;
 
   @override
   List<Object?> equalizedProperties() => [value, nativeQuery];
+}
+
+/// {@template jetleaf_modifying_annotation}
+/// Marks a `@Query` repository method as a **data-modifying statement**
+/// (`UPDATE`, `DELETE`, or `INSERT`).
+///
+/// Modifying queries execute via `DatabaseClient.execute` and return either
+/// the affected row count (`Future<int>`) or `Future<void>`.
+///
+/// ### Usage Example
+/// ```dart
+/// @Modifying()
+/// @Query('UPDATE User u SET u.active = false WHERE u.age < :minAge')
+/// Future<int> deactivateUnderage(@Param('minAge') int minAge);
+/// ```
+///
+/// ### See Also
+/// - [Query]
+/// - [Param]
+/// {@endtemplate}
+@Target({TargetKind.method})
+final class Modifying extends ReflectableAnnotation with EqualsAndHashCode {
+  /// Reflective [Class] handle for [Modifying].
+  static final Class<Modifying> CLASS = Class<Modifying>(null, PackageNames.DATA);
+
+  /// Whether the persistence context should be cleared automatically after
+  /// executing the modifying statement.
+  final bool clearAutomatically;
+
+  /// {@macro jetleaf_modifying_annotation}
+  const Modifying({this.clearAutomatically = false});
+
+  @override
+  Type get annotationType => Modifying;
+
+  @override
+  List<Object?> equalizedProperties() => [clearAutomatically];
+}
+
+/// {@template jetleaf_param_annotation}
+/// Binds a repository method parameter to a **named query parameter** (`:name`)
+/// inside a `@Query` statement.
+///
+/// ### Usage Example
+/// ```dart
+/// @Query('SELECT u FROM User u WHERE u.role = :role')
+/// Future<List<User>> findByRole(@Param('role') String role);
+/// ```
+///
+/// ### See Also
+/// - [Query]
+/// - [Modifying]
+/// {@endtemplate}
+@Target({TargetKind.parameter})
+final class Param extends ReflectableAnnotation with EqualsAndHashCode {
+  /// Reflective [Class] handle for [Param].
+  static final Class<Param> CLASS = Class<Param>(null, PackageNames.DATA);
+
+  /// The placeholder parameter name referenced in the query (`:name`).
+  final String name;
+
+  /// {@macro jetleaf_param_annotation}
+  const Param(this.name);
+
+  @override
+  Type get annotationType => Param;
+
+  @override
+  List<Object?> equalizedProperties() => [name];
 }

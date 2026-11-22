@@ -206,6 +206,7 @@ abstract class AbstractMonitoringService extends InstancePerformanceTracker impl
       return;
     }
 
+    _isRunning = true;
     _memoryTimer = Timer.periodic(getInterval(), (timer) {
       final now = DateTime.now();
       final memoryUsageMB = _getCurrentMemoryUsage();

@@ -149,12 +149,19 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
     final libraryAliases = <String, String>{};
     final classToPrefix = <String, String>{};
     final componentsByPackage = <String, List<ClassDeclaration>>{};
+    final testFileUsesRegistryCache = <String, bool>{};
 
     // 1. Discover all libraries, class mappings, and group components by package
     for (final component in components) {
       final rawName = component.getName();
       if (rawName.startsWith('_') || !component.getIsPublic()) continue;
       final libraryUri = component.getLibrary().getUri();
+      if (forTests &&
+          libraryUri.startsWith('file:') &&
+          libraryUri.endsWith('_test.dart') &&
+          !_testFileUsesAotRegistry(libraryUri, testFileUsesRegistryCache)) {
+        continue;
+      }
       if (libraryUri.isNotEmpty && !libraryUri.startsWith('dart:') && !libraryUri.startsWith('package:synthetic') && !libraryUri.endsWith('.g.dart') && !libraryUri.contains('/${Constant.JETLEAF_GENERATED_DIR_NAME}/')) {
         if (!libraryAliases.containsKey(libraryUri)) {
           libraryAliases[libraryUri] = 'p${libraryAliases.length}';
@@ -202,6 +209,15 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
       generatedRootDir.deleteSync(recursive: true);
     }
     generatedRootDir.createSync(recursive: true);
+
+    if (forTests) {
+      final dartToolTestDir = Directory('${projectRoot.path}/.dart_tool/test');
+      if (dartToolTestDir.existsSync()) {
+        try {
+          dartToolTestDir.deleteSync(recursive: true);
+        } catch (_) {}
+      }
+    }
 
     final partPaths = <String>[];
     final podFns = <String>[];
@@ -503,5 +519,50 @@ Future<Object?> _resolveConfigValue<T>(PodFactory factory, String expression, Cl
       }
     }
     return fallbackPackageName;
+  }
+
+  /// Checks whether a `file://.../*_test.dart` suite imports the generated test
+  /// AOT registry directly or transitively through local test helper files.
+  ///
+  /// `dart test`'s incremental `FrontendServer` compiles each `*_test.dart`
+  /// file as a standalone root. If `lib/_jetleaf/test/registry.g.dart` imports
+  /// a `*_test.dart` file that does not itself import `registry.g.dart`, then
+  /// compiling that `*_test.dart` file prunes `registry.g.dart` from the
+  /// incremental compiler's active graph and leaves dangling kernel references
+  /// for subsequent suites.
+  bool _testFileUsesAotRegistry(
+    String fileUri,
+    Map<String, bool> cache, [
+    Set<String>? visiting,
+  ]) {
+    if (cache.containsKey(fileUri)) return cache[fileUri]!;
+    final visited = visiting ?? <String>{};
+    if (!visited.add(fileUri)) return false;
+    try {
+      final file = File.fromUri(Uri.parse(fileUri));
+      if (!file.existsSync()) return cache[fileUri] = false;
+      final content = file.readAsStringSync();
+      if (content.contains('_jetleaf/test') ||
+          content.contains('registerTestGeneratedArtifacts')) {
+        return cache[fileUri] = true;
+      }
+      final importPattern = RegExp(
+        r"""^\s*(?:import|export)\s+['"]([^'"]+)['"]""",
+        multiLine: true,
+      );
+      for (final match in importPattern.allMatches(content)) {
+        final rawImport = match.group(1);
+        if (rawImport == null ||
+            rawImport.startsWith('dart:') ||
+            rawImport.startsWith('package:')) {
+          continue;
+        }
+        final resolvedUri = Uri.parse(fileUri).resolve(rawImport).toString();
+        if (_testFileUsesAotRegistry(resolvedUri, cache, visited)) {
+          return cache[fileUri] = true;
+        }
+      }
+    } catch (_) {}
+    return cache[fileUri] = false;
   }
 }

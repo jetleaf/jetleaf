@@ -12,14 +12,14 @@
 // 
 // 🔧 Powered by Hapnium — the Dart backend engine 🍃
 
-import 'package:jetleaf_core/core.dart' hide Repository;
+import 'package:jetleaf_core/core.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_core/logging.dart';
 import 'package:jetleaf_core/pod.dart';
 
-import '../../annotation.dart';
-import '../config/data_configurer.dart';
+import 'data_configurer.dart';
 import '../dialect/database_dialect.dart';
+import '../dialect/default_dialect_registry.dart';
 import '../dialect/dialect_registry.dart';
 import '../driver/connection_pool.dart';
 import '../driver/database_client.dart';
@@ -31,7 +31,7 @@ import '../mapping/type_converter_registry.dart';
 import '../repository/default_repository_executor.dart';
 import '../repository/repository_executor.dart';
 import '../repository/repository_factory_support.dart';
-import 'abstract_repository_context.dart';
+import 'repository_context.dart';
 
 /// {@template jetleaf_default_repository_context}
 /// The default runtime implementation of [RepositoryContext], responsible for
@@ -39,11 +39,9 @@ import 'abstract_repository_context.dart';
 /// **invoking [DataConfigurer] pods**, and **providing the active
 /// [RepositoryExecutor]** for repository operations.
 /// {@endtemplate}
-final class DefaultRepositoryContext extends AbstractRepositoryContext
-    implements ApplicationContextAware, InitializingPod {
+final class DefaultRepositoryContext extends AbstractRepositoryContext implements ApplicationContextAware, InitializingPod {
   /// Reflective class descriptor for [DefaultRepositoryContext].
-  static final Class<DefaultRepositoryContext> CLASS =
-      Class<DefaultRepositoryContext>(null, PackageNames.DATA);
+  static final Class<DefaultRepositoryContext> CLASS = Class<DefaultRepositoryContext>(null, PackageNames.DATA);
 
   late ApplicationEventBus _eventBus;
   late ApplicationContext _applicationContext;
@@ -161,9 +159,7 @@ final class DefaultRepositoryContext extends AbstractRepositoryContext
 
       if (cls.hasDirectAnnotation<Repository>()) {
         if (_logger.getIsTraceEnabled()) {
-          _logger.trace(
-            "Found a repository annotated class ${cls.getQualifiedName()}",
-          );
+          _logger.trace("Found a repository annotated class ${cls.getQualifiedName()}");
         }
 
         final target = await _applicationContext.getPod(name);
@@ -173,22 +169,18 @@ final class DefaultRepositoryContext extends AbstractRepositoryContext
             continue;
           }
 
-          if (target is EqualsAndHashCode &&
-              ["equalizedProperties"].contains(method.getName())) {
+          if (target is EqualsAndHashCode && ["equalizedProperties"].contains(method.getName())) {
             continue;
           }
 
-          if (target is ToString &&
-              ["toStringOptions"].contains(method.getName())) {
+          if (target is ToString && ["toStringOptions"].contains(method.getName())) {
             continue;
           }
 
           addDefinition(buildDefinition(method, target));
 
           if (_logger.getIsTraceEnabled()) {
-            _logger.trace(
-              "Added RepositoryDefinition for ${method.getName()} in ${cls.getQualifiedName()}",
-            );
+            _logger.trace("Added RepositoryDefinition for ${method.getName()} in ${cls.getQualifiedName()}");
           }
         }
       }

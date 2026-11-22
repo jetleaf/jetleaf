@@ -14,7 +14,7 @@
 
 import 'package:jetleaf_core/lang.dart';
 
-import '../annotation/generation_strategy.dart';
+import '../annotation/id.dart';
 
 /// {@template jetleaf_column_metadata}
 /// Immutable reflective descriptor for a single mapped **relational column**
@@ -167,24 +167,24 @@ final class ColumnMetadata with EqualsAndHashCode {
 
   @override
   List<Object?> equalizedProperties() => [
-        _name,
-        _property,
-        _fieldType,
-        _nullable,
-        _unique,
-        _length,
-        _precision,
-        _scale,
-        _columnDefinition,
-        _insertable,
-        _updatable,
-        _isId,
-        _isGenerated,
-        _generationStrategy,
-        _isVersion,
-        _isCreatedDate,
-        _isLastModifiedDate,
-        _isCreatedBy,
-        _isLastModifiedBy,
-      ];
+    _name,
+    _property,
+    _fieldType,
+    _nullable,
+    _unique,
+    _length,
+    _precision,
+    _scale,
+    _columnDefinition,
+    _insertable,
+    _updatable,
+    _isId,
+    _isGenerated,
+    _generationStrategy,
+    _isVersion,
+    _isCreatedDate,
+    _isLastModifiedDate,
+    _isCreatedBy,
+    _isLastModifiedBy,
+  ];
 }
