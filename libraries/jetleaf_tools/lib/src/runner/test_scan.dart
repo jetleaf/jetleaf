@@ -1,11 +1,14 @@
 import 'dart:io';
 
+import 'package:jetleaf_core/lang.dart';
+
 import '../builder/runtime_builder.dart';
 import '../cache/cache_aware_scanner.dart';
 import '../scanner/runtime_scanner.dart';
 import '../scanner/runtime_scanner_configuration.dart';
 import '../scanner/mock_runtime_scanner.dart';
 import '../scanner/runtime_scanner_summary.dart';
+import 'registrar.dart';
 
 /// Executes a **mock runtime scan** and registers the resulting runtime
 /// context for testing and validation purposes.
@@ -170,6 +173,20 @@ Future<RuntimeScannerSummary> runTestScan({
   final effectiveConfig = config ?? defaultConfig;
   final useCaching = effectiveConfig.enableCaching;
 
+  final effectiveSource = resolveProjectRoot(source);
+  if (isDevelopmentRuntime() && !Runtime.isPopulated) {
+    await ensureDevelopmentRuntime(
+      projectRoot: effectiveSource,
+      hasAotRegistrar: false,
+      isRunningFromDill: System.isRunningFromDill(),
+      forTests: true,
+    );
+    final registrar = getBoundAotRegistrar(forTests: true);
+    if (registrar != null) {
+      await registrar(null);
+    }
+  }
+
   final innerScanner = configuredScanner ?? MockRuntimeScanner(
     onInfo: onInfo ?? (msg, overwrite) => print('[MOCK INFO] ${overwrite ? '\r$msg' : msg}'),
     onWarning: onWarning ?? (msg, overwrite) => print('[MOCK WARNING] ${overwrite ? '\r$msg' : msg}'),
@@ -177,8 +194,8 @@ Future<RuntimeScannerSummary> runTestScan({
   );
 
   final scanner = useCaching
-      ? CacheAwareScanner(inner: innerScanner, source: source, onInfo: onInfo, onWarning: onWarning, onError: onError)
+      ? CacheAwareScanner(inner: innerScanner, source: effectiveSource, onInfo: onInfo, onWarning: onWarning, onError: onError)
       : innerScanner;
 
-  return await scanner.scan(effectiveConfig, args, source: source);
+  return await scanner.scan(effectiveConfig, args, source: effectiveSource);
 }

@@ -366,8 +366,12 @@ final class AotRegistrarWriter extends AotSubRegistrarWriter {
     buffer.writeln();
     buffer.writeln(_valueResolver);
     buffer.writeln(_optionalHelper);
-    final registrarName = forTests ? 'registerTestGeneratedArtifacts' : 'registerGeneratedArtifacts';
-    final reloadName = forTests ? 'reloadTestGeneratedArtifacts' : 'reloadGeneratedArtifacts';
+    final registrarName = forTests
+      ? Constant.REGISTER_TEST_GENERATED_ARTIFACTS_FN_NAME
+      : Constant.REGISTER_GENERATED_ARTIFACTS_FN_NAME;
+    final reloadName = forTests
+      ? Constant.RELOAD_TEST_GENERATED_ARTIFACTS_FN_NAME
+      : Constant.RELOAD_GENERATED_ARTIFACTS_FN_NAME;
     buffer.writeln('bool _runtimeInitialized = false;');
     buffer.writeln();
     buffer.writeln('/// Registers generated declarations, members, and pods into [factory].');

@@ -84,7 +84,7 @@ Examples:
 
     // Workspace fan-out: `jl dev` at a workspace root boots one manager per
     // member (inherited stdio, aggregated exit code).
-    if (isWorkspaceRoot(dir)) {
+    if (Workspace.isRoot(dir)) {
       return _serveWorkspace(dir, args, machine);
     }
 
@@ -168,7 +168,7 @@ Examples:
   /// - [args]: raw command arguments (forwarded with per-member `--root`).
   /// - [machine]: emit machine-readable JSON lines on failure.
   Future<int> _serveWorkspace(Directory root, List<String> args, bool machine) async {
-    final members = workspaceMembers(root);
+    final members = Workspace.members(root);
     if (members.isEmpty) {
       _error(machine, 'workspace declares members in ${root.path}/pubspec.yaml but none exist on disk');
       return 1;

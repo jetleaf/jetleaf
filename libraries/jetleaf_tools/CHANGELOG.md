@@ -4,7 +4,7 @@
 
 - **Hot Reload & AOT Re-binding**: `AotRegistrarWriter` now emits `force` parameter support on `registerGeneratedArtifacts` / `_initRuntime` plus `reloadGeneratedArtifacts(...)` / `reloadTestGeneratedArtifacts(...)`, and `JetleafVM` invokes `HotReloadCoordinator.notifyReload(...)` after `vmService.reloadSources(...)`.
 
-- **Development runtime bootstrap (`ensureDevelopmentRuntime`)**: Enables direct `dart run` and IDE Run & Debug workflows by automatically scanning and preparing runtime artifacts when needed.
+- **Development runtime registrar (`src/runner/registrar.dart`)**: Extracted and exported `isDevelopmentRuntime`, `AotRegistrar`, `bindAotRegistrar`, `getBoundAotRegistrar`, `resolveProjectRoot`, and `ensureDevelopmentRuntime` for both `runScan` and `runTestScan` (`forTests: true`). Automatic building and binding only run in development mode (disabled in production/AOT builds), with a bootstrapped child-process fallback (`SIGINT`/`SIGTERM` forwarding) when `_jetleaf/main.dart` is not imported directly.
 - **Test AOT partitioning**: `AotRegistrarWriter` and `TestCommand` partition main and test AOT artifacts cleanly across `aot_pod_registry_writer.dart`, `aot_proxy_writer.dart`, `aot_sub_registrar_writer.dart`, `aot_type_registry_writer.dart`, `build_command.dart`, and `entry_commands.dart`.
 - **Pub Workspace support**: `jl dev`, `jl run`, `jl test`, `jl build`, `jl status` and `jl stop` now fan out to pub-workspace members when invoked at a workspace root (`pubspec.yaml` with a top-level `workspace:` list). Running inside a member directory is unchanged. Workspace member detection walks the root's `pubspec.yaml` and each member's `resolution: workspace` flag.
 - **`jl proxy`**: New subcommand emits interceptable AOT proxies for stereotype-annotated components to `lib/_jetleaf/proxies/` without rebuilding caches or the AOT registry (useful for inspecting generated proxies between builds).
@@ -16,6 +16,7 @@
 
 ### Changed
 
+- **Workspace & constant consolidation**: Refactored `workspace.dart` into `final class Workspace` with static methods (`Workspace.membersFromPubspec`, `Workspace.isRoot`, `Workspace.members`, `Workspace.memberOwning`), removed the duplicate `lib/src/utils/constant.dart` in favor of `Constant` from `jetleaf_core`, and updated `AotRegistrarWriter` and `registrar.dart` to use `Constant` function name fields.
 - **AOT registry layout**: `lib/_jetleaf/main/registry.g.dart`, `lib/_jetleaf/test/registry.g.dart` and `lib/_jetleaf/proxies/` consolidate the previously scattered `lib/_jetleaf_test/`, `lib/_proxies/` and root-level `lib/_jetleaf/` directories. Master file renamed `aot_registry.g.dart` → `main/registry.g.dart`; registrar renamed `registerGeneratedAotPods` → `registerGeneratedArtifacts` (main) and `registerGeneratedTestAotPods` → `registerTestGeneratedArtifacts` (test).
 - **Workspace CLI**: `jl` family reworked for workspace fan-out; each command understands both a single-project root and a workspace root.
 - **Mirror removal**: `dart:mirrors` mentions eliminated throughout documentation and doc comments (`hasMirrorImport`/`_mirrorImportRegex` helpers removed); `runtime reflection` vocabulary throughout.

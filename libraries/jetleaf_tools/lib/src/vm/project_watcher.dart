@@ -61,7 +61,7 @@ final class JetleafWatcher {
       }
     }
     
-    for (final file in ['pubspec.yaml', '.dart_tool/package_config.json']) {
+    for (final file in [Constant.PUBSPEC_YAML_FILE_NAME, '.dart_tool/package_config.json']) {
       final f = File(p.join(projectRoot.path, file));
       if (await f.exists()) {
         _subscriptions.add(f.parent.watch().listen(_handleEvent));
@@ -106,7 +106,7 @@ final class JetleafWatcher {
     ]) {
       if (normalized.contains(ignored)) return true;
     }
-    if (normalized.endsWith('pubspec.yaml')) return false;
+    if (normalized.endsWith(Constant.PUBSPEC_YAML_FILE_NAME)) return false;
     if (normalized.endsWith('package_config.json')) return false;
     return !normalized.endsWith('.dart');
   }

@@ -240,7 +240,7 @@ abstract class AbstractFileLocatorUtility extends AbstractFileUtility {
     var parent = File(filePath).parent;
     final rootPath = p.normalize(rootDir.absolute.path);
     while (p.normalize(parent.absolute.path) != rootPath) {
-      if (File(p.join(parent.path, 'pubspec.yaml')).existsSync()) {
+      if (File(p.join(parent.path, Constant.PUBSPEC_YAML_FILE_NAME)).existsSync()) {
         return true;
       }
       final nextParent = parent.parent;
@@ -251,7 +251,7 @@ abstract class AbstractFileLocatorUtility extends AbstractFileUtility {
   }
 
   Future<String?> _readPackageNameFor(Directory dir) async {
-    final pubspecFile = File(p.join(dir.path, 'pubspec.yaml'));
+    final pubspecFile = File(p.join(dir.path, Constant.PUBSPEC_YAML_FILE_NAME));
     if (!await pubspecFile.exists()) return null;
     final content = await pubspecFile.readAsString();
     final nameMatch = RegExp(r'name:\s*(\S+)').firstMatch(content);
@@ -262,7 +262,7 @@ abstract class AbstractFileLocatorUtility extends AbstractFileUtility {
   /// `.dart_tool/package_graph.json` or recursively following `pubspec.yaml`
   /// declarations across the resolved package roots.
   Future<Set<String>> resolveTransitivePackageDependencies(Directory projectDir) async {
-    final rootPubspec = File(p.join(projectDir.path, 'pubspec.yaml'));
+    final rootPubspec = File(p.join(projectDir.path, Constant.PUBSPEC_YAML_FILE_NAME));
     if (!await rootPubspec.exists()) return {};
 
     final currentPackage = await _readPackageNameFor(projectDir);

@@ -65,8 +65,8 @@ Examples:
     // against that member's manager. The entry path is rewritten to be
     // relative to the member root (the manager keys entries relative to it).
     var positionalEntry = positional.isEmpty ? null : positional.first;
-    if (positionalEntry != null && isWorkspaceRoot(dir)) {
-      final member = memberOwning(dir, positionalEntry);
+    if (positionalEntry != null && Workspace.isRoot(dir)) {
+      final member = Workspace.memberOwning(dir, positionalEntry);
       if (member != null) {
         print('==> Workspace member: ${member.path}');
         positionalEntry = p.relative(
@@ -188,9 +188,9 @@ Examples:
 
     // Workspace fan-out: `jl test --all` at a workspace root runs every
     // member's tests in sequence.
-    if (args.contains('--all') && isWorkspaceRoot(dir)) {
+    if (args.contains('--all') && Workspace.isRoot(dir)) {
       var code = 0;
-      for (final member in workspaceMembers(dir)) {
+      for (final member in Workspace.members(dir)) {
         print('==> Testing workspace member: ${member.path}');
         final outcome = await _runChildJl(['test', '--all', '--root', member.path, ..._stripRootFlag(args).where((a) => a != '--all')]);
         if (outcome != 0) code = outcome;
@@ -201,8 +201,8 @@ Examples:
     // Workspace fan-out: resolve the member owning the test file. The file
     // path is rewritten to be relative to the member root so the member's
     // manager can find the entry.
-    if (positional.isNotEmpty && isWorkspaceRoot(dir)) {
-      final member = memberOwning(dir, positional.first);
+    if (positional.isNotEmpty && Workspace.isRoot(dir)) {
+      final member = Workspace.memberOwning(dir, positional.first);
       if (member != null) {
         print('==> Workspace member: ${member.path}');
         // Rewrite the workspace-relative test-file positional to a
@@ -515,10 +515,10 @@ Options:
     }
     final root = _flagValue(args, '--root') ?? Directory.current.path;
     final dir = Directory(root).absolute;
-    if (isWorkspaceRoot(dir)) {
+    if (Workspace.isRoot(dir)) {
       // Fan out to every member's manager.
       var code = 0;
-      for (final member in workspaceMembers(dir)) {
+      for (final member in Workspace.members(dir)) {
         print('==> ${member.path.split('/').last}:');
         final result = await JetleafControlClient.sendControlRequest(member, {'type': 'status'});
         if (result != 0) code = result;
@@ -592,10 +592,10 @@ Options:
     final positional = args
       .where((a) => !a.startsWith('-') && a != _flagValue(args, '--root'))
       .toList();
-    if (isWorkspaceRoot(dir) && positional.isEmpty) {
+    if (Workspace.isRoot(dir) && positional.isEmpty) {
       // Fan out a blanket stop to every member's manager.
       var code = 0;
-      for (final member in workspaceMembers(dir)) {
+      for (final member in Workspace.members(dir)) {
         print('==> Stopping ${member.path.split('/').last}...');
         final result = await JetleafControlClient.sendControlRequest(member, {'type': 'stop'});
         if (result != 0) code = result;

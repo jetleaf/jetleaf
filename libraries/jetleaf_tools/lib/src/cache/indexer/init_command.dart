@@ -64,7 +64,7 @@ List<Directory> _findProjects(Directory root) {
   final projects = <Directory>[];
 
   for (final entity in root.listSync(recursive: true)) {
-    if (entity is File && entity.path.endsWith('pubspec.yaml')) {
+    if (entity is File && entity.path.endsWith(Constant.PUBSPEC_YAML_FILE_NAME)) {
       final rel = entity.path.substring(root.path.length + 1);
       if (rel.startsWith('.dart_tool') ||
           rel.startsWith('build') ||

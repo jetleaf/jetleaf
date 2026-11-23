@@ -94,6 +94,7 @@ export 'src/file_utility/abstract_file_utility.dart';
 export 'src/file_utility/file_utility.dart';
 export 'src/file_utility/located_files.dart';
 
+export 'src/runner/registrar.dart';
 export 'src/runner/run_scan.dart';
 export 'src/runner/test_scan.dart';
 

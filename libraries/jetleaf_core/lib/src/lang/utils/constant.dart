@@ -89,6 +89,9 @@ class Constant {
   /// low-level Jetleaf packages that still consume `build/generated`.
   static const String GENERATED_OUTPUT_PATH = 'build/generated';
 
+  // Dart's file for packages
+  static const String PUBSPEC_YAML_FILE_NAME = 'pubspec.yaml';
+
       // ignore: unused_field
     final String _asciiArt = r'''
 // 
@@ -247,6 +250,18 @@ __/\__     | | ___| |_| | ___  __ _ / _| |  ___| __ __ _ _ __ ___   _____      _
 
   /// File name of the annotations registry part file.
   static const String REGISTRY_ANNOTATIONS_FILE_NAME = 'registry_annotations.g.dart';
+
+  /// Generated top-level registrar function name for main (production) builds.
+  static const String REGISTER_GENERATED_ARTIFACTS_FN_NAME = 'registerGeneratedArtifacts';
+
+  /// Generated top-level registrar function name for test builds.
+  static const String REGISTER_TEST_GENERATED_ARTIFACTS_FN_NAME = 'registerTestGeneratedArtifacts';
+
+  /// Generated top-level hot-reload registrar function name for main builds.
+  static const String RELOAD_GENERATED_ARTIFACTS_FN_NAME = 'reloadGeneratedArtifacts';
+
+  /// Generated top-level hot-reload registrar function name for test builds.
+  static const String RELOAD_TEST_GENERATED_ARTIFACTS_FN_NAME = 'reloadTestGeneratedArtifacts';
 
   /// Base library directory for Dart source files.
   ///

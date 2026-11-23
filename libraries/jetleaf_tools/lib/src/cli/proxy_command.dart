@@ -71,9 +71,9 @@ Options:
     final verbose = args.contains('--verbose');
 
     // Workspace fan-out: `jl proxy` at a workspace root emits for each member.
-    if (isWorkspaceRoot(directory)) {
+    if (Workspace.isRoot(directory)) {
       var failures = 0;
-      for (final member in workspaceMembers(directory)) {
+      for (final member in Workspace.members(directory)) {
         print('==> Proxies for workspace member: ${member.path}');
         final result = await _emit(member, verbose);
         if (result == null) failures++;

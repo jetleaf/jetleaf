@@ -8,8 +8,7 @@ Future<void> main(List<String> args) async {
   final context = await JetleafApplication.run(
     BuilderApplication(),
     args,
-    null,
-    registerGeneratedArtifacts,
+    aotRegistrar: registerGeneratedArtifacts,
   );
   if (context != null) {
     print("Application is up and running");

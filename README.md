@@ -291,7 +291,9 @@ This generates:
 - `lib/_jetleaf/main/registry.g.dart` — Master registry linking typed constructor and member functions.
 - `lib/_jetleaf/<pkg>/registry_pods.g.dart` — Typed instance suppliers and lifecycle hooks.
 
-### 2. Pass Generated Registrar to Bootstrap
+### 2. Pass Generated Registrar to Bootstrap (Production / AOT)
+
+In **development mode** (`dart run` or IDE Run/Debug), Jetleaf automatically builds and binds the generated registrar via `ensureDevelopmentRuntime`, making the `jl` CLI optional. For **production or AOT-compiled builds** (`jl build` / `dart compile exe`), import `_jetleaf/main.dart` and pass `aotRegistrar: registerGeneratedArtifacts`:
 
 ```dart
 import 'package:jetleaf/jetleaf.dart';
@@ -301,8 +303,7 @@ void main(List<String> args) async {
   await JetleafApplication.run(
     MyApplication(),
     args,
-    null,
-    registerGeneratedArtifacts, // Pure Dart function pointers
+    aotRegistrar: registerGeneratedArtifacts, // Pure Dart function pointers
   );
 }
 ```

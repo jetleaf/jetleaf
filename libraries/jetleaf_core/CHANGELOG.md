@@ -13,6 +13,8 @@
 - **`_MaterialLibrary.hasClass`**: Strict provider probe reused everywhere that needs truthful class-existence before synthesis.
 - **Parameterized `findClassByName(…)` fallback**: Unknown simple names synthesize a best-effort declaration rooted at `package:synthetic/SimpleName.dart` instead of throwing (kept for call sites that probe existence first).
 
+- **`Constant` registrar function names**: Added `REGISTER_GENERATED_ARTIFACTS_FN_NAME`, `REGISTER_TEST_GENERATED_ARTIFACTS_FN_NAME`, `RELOAD_GENERATED_ARTIFACTS_FN_NAME`, and `RELOAD_TEST_GENERATED_ARTIFACTS_FN_NAME` to `Constant` as the single source of truth shared with `jetleaf_tools`.
+
 ### Changed
 
 - **Terminology**: "mirrors" / "dart:mirrors" has been replaced with "runtime reflection" throughout documentation, examples and source comments. `Class` is described as a reflective bridge (reflection-agnostic).
@@ -23,6 +25,7 @@
 
 ### Fixed
 
+- **Empty component-scan guard**: `ConfigurationClassPostProcessor` now skips calling `ComponentScanAnnotationParser.parse(...)` when `basePackages` and `basePackageClasses` are both empty, eliminating repeated `No base packages found in ComponentScanConfiguration(...)` warnings across configuration queue iterations.
 - **Pod destruction double-wrapping guard**: `AbstractPodFactory.destroyPod` now checks for `DisposableLifecycleManager` before delegating to `_destroy`, preventing duplicate lifecycle wrapping.
 - **Event listener deduplication**: `SimpleApplicationEventBus.addApplicationListener` avoids duplicate listener registration.
 - **Processor & interception hardening**: Fixes across `AutowiredAnnotationPodProcessor`, `CommonAnnotationPodProcessor`, `ConfigurationPropertyPodProcessor`, `AbstractMethodDispatcher`, and `Interceptable`.

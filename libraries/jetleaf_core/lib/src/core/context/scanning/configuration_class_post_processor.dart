@@ -1055,15 +1055,18 @@ abstract class ConfigurationClassCandidateScanner extends AbstractTypeFilterSupp
       }
     }
 
-    final parsed = await parser.parse(ComponentScanConfiguration(
-      basePackages: unscannedPackages.filter((b) => _scannedPackages.add(b)).toList(),
-      includeFilters: includeFilters, // Use accumulated filters
-      excludeFilters: excludeFilters, // Use accumulated filters
-    ));
+    final initialBasePackages = unscannedPackages.filter((b) => _scannedPackages.add(b)).toList();
+    if (initialBasePackages.isNotEmpty) {
+      final parsed = await parser.parse(ComponentScanConfiguration(
+        basePackages: initialBasePackages,
+        includeFilters: includeFilters, // Use accumulated filters
+        excludeFilters: excludeFilters, // Use accumulated filters
+      ));
 
-    for (final parse in parsed) {
-      await addDefinition(parse, parse.type);
-      await _processPodMethods(ConfigurationClass(parse.name, parse.type, parse));
+      for (final parse in parsed) {
+        await addDefinition(parse, parse.type);
+        await _processPodMethods(ConfigurationClass(parse.name, parse.type, parse));
+      }
     }
 
     importedConfigurations.clear();
@@ -1095,12 +1098,15 @@ abstract class ConfigurationClassCandidateScanner extends AbstractTypeFilterSupp
         logger.trace('📦 Processed ${localDefinitions.length} local pod definition(s).');
       }
 
-      final parsed = await parser.parse(ComponentScanConfiguration(
-        basePackages: unscannedPackages.filter((b) => _scannedPackages.add(b)).toList(),
-        includeFilters: includeFilters, // Use accumulated filters
-        excludeFilters: excludeFilters, // Use accumulated filters
-      ));
-      localDefinitions.addAll(parsed);
+      final iterationBasePackages = unscannedPackages.filter((b) => _scannedPackages.add(b)).toList();
+      if (iterationBasePackages.isNotEmpty) {
+        final parsed = await parser.parse(ComponentScanConfiguration(
+          basePackages: iterationBasePackages,
+          includeFilters: includeFilters, // Use accumulated filters
+          excludeFilters: excludeFilters, // Use accumulated filters
+        ));
+        localDefinitions.addAll(parsed);
+      }
 
       // Step 3: Check for new configuration candidates
       final newCandidates = <ConfigurationClass>[];
@@ -1224,9 +1230,15 @@ abstract class ConfigurationClassCandidateScanner extends AbstractTypeFilterSupp
       // _includeFilters.addAll(_createTypeFilters(componentScan.includeFilters));
       // _excludeFilters.addAll(_createTypeFilters(componentScan.excludeFilters));
       
+      final filteredBasePackages = basePackages.filter((b) => _scannedPackages.add(b)).toList();
+      final filteredBaseClasses = basePackageClasses.filter((b) => _scannedClasses.add(b)).toList();
+      if (filteredBasePackages.isEmpty && filteredBaseClasses.isEmpty) {
+        continue;
+      }
+
       final scanConfig = ComponentScanConfiguration(
-        basePackages: basePackages.filter((b) => _scannedPackages.add(b)).toList(),
-        basePackageClasses: basePackageClasses.filter((b) => _scannedClasses.add(b)).toList(),
+        basePackages: filteredBasePackages,
+        basePackageClasses: filteredBaseClasses,
         includeFilters: includeFilters, // Use accumulated filters
         excludeFilters: excludeFilters, // Use accumulated filters
         useDefaultFilters: componentScan.useDefaultFilters,

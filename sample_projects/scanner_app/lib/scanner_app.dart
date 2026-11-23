@@ -1,14 +1,12 @@
 import 'package:jetleaf/jetleaf.dart';
 
 Future<void> main(List<String> args) async {
-  // Notice: Fourth argument (aotRegistrar) is intentionally null!
+  // Notice: aotRegistrar is intentionally omitted (null)!
   // This exercises the scanner fallback branch:
-  // if (_aotRegistrar case JetleafAotRegistrar registrar) { ... } else { await runScan(...); }
+  // if (_aotRegistrar case AotRegistrar registrar) { ... } else { await runScan(...); }
   final context = await JetleafApplication.run(
     const ScannerApp(),
     args,
-    null,
-    null,
   );
 
   if (context != null) {

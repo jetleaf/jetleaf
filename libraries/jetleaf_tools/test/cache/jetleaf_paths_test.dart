@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:jetleaf_tools/src/cache/jetleaf_paths.dart';
-import 'package:jetleaf_tools/src/utils/constant.dart';
+import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
 
 /// Verifies the workspace contract used by every Jetleaf layer.

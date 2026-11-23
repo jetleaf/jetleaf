@@ -20,8 +20,7 @@ Future<void> main(List<String> args) async {
   final context = await JetleafApplication.run(
     UltimateApplication,
     args,
-    null,
-    registerGeneratedArtifacts,
+    aotRegistrar: registerGeneratedArtifacts,
   );
   await context?.close();
 }

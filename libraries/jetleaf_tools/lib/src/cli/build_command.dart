@@ -46,9 +46,9 @@ Options:
     try {
       // Workspace fan-out: `jl build` at a workspace root builds each member
       // in turn and fails if any member fails.
-      if (isWorkspaceRoot(directory)) {
+      if (Workspace.isRoot(directory)) {
         var failures = 0;
-        for (final member in workspaceMembers(directory)) {
+        for (final member in Workspace.members(directory)) {
           print('==> Building workspace member: ${member.path}');
           final exitCode = await builder.runBuild(args, root: member);
           if (exitCode != 0) {

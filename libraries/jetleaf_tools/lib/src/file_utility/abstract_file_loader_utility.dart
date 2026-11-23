@@ -1,6 +1,7 @@
 // ignore_for_file: unused_element
 import 'dart:io';
 
+import 'package:jetleaf_core/lang.dart' show Constant;
 import 'package:path/path.dart' as p;
 
 import 'abstract_file_locator_utility.dart';
@@ -176,7 +177,7 @@ abstract class AbstractFileLoaderUtility extends AbstractFileLocatorUtility {
   Future<String> readPackageName() async {
     if (currentPackageName != null) return currentPackageName!;
 
-    final pubspecFile = File(p.join(Directory.current.path, 'pubspec.yaml'));
+    final pubspecFile = File(p.join(Directory.current.path, Constant.PUBSPEC_YAML_FILE_NAME));
     if (!await pubspecFile.exists()) {
       throw Exception('pubspec.yaml not found in current directory.');
     }

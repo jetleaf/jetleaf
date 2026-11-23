@@ -49,3 +49,45 @@ class JetleafException extends RuntimeException {
   /// ```
   ConfigurableApplicationContext? getApplicationContext() => _applicationContext;
 }
+
+/// {@template missing_aot_registrar_exception}
+/// A [RuntimeException] thrown when a Jetleaf application is launched in
+/// production or AOT mode without an [AotRegistrar].
+///
+/// In development mode, Jetleaf automatically generates and binds the AOT
+/// registrar via `ensureDevelopmentRuntime`. In production or AOT builds,
+/// dynamic source scanning is disabled, so the application must be built using
+/// `jl build` and pass `registerGeneratedArtifacts` (from
+/// `lib/_jetleaf/main.dart`) to `JetleafApplication.run(...)` or
+/// `JetleafApplication.setAotRegistrar(...)`.
+/// {@endtemplate}
+class MissingAotRegistrarException extends RuntimeException {
+  /// {@macro missing_aot_registrar_exception}
+  MissingAotRegistrarException([String? message])
+      : super(
+          message ??
+              'No AOT registrar was provided for this production or AOT build.\n\n'
+              'In development mode, Jetleaf automatically generates and binds the AOT registrar. '
+              'In production or AOT-compiled builds (e.g. `dart compile exe`, `dart.vm.product=true`), '
+              'dynamic source scanning is disabled, so you must:\n'
+              '  1. Build the application artifacts:\n'
+              '       jl build\n'
+              '  2. Import the generated registry and pass `registerGeneratedArtifacts` at startup:\n\n'
+              '     Using `JetleafApplication.run`:\n'
+              '       import \'package:my_app/_jetleaf/main.dart\';\n\n'
+              '       Future<void> main(List<String> args) async {\n'
+              '         await JetleafApplication.run(\n'
+              '           MyApplication,\n'
+              '           args,\n'
+              '           aotRegistrar: registerGeneratedArtifacts,\n'
+              '         );\n'
+              '       }\n\n'
+              '     Or using `JetleafApplication` directly:\n'
+              '       import \'package:my_app/_jetleaf/main.dart\';\n\n'
+              '       Future<void> main(List<String> args) async {\n'
+              '         final app = JetleafApplication(MyApplication);\n'
+              '         app.setAotRegistrar(registerGeneratedArtifacts);\n'
+              '         await app.create(args);\n'
+              '       }',
+        );
+}
