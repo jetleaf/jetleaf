@@ -1,0 +1,21 @@
+name: jetleaf_security
+description: Comprehensive security framework for Jetleaf providing authentication, authorization, JWT, OAuth2/OIDC, CSRF, CORS, rate limiting, and password hashing.
+version: 1.0.0
+homepage: https://jetleaf.hapnium.com
+
+environment:
+  sdk: ^3.9.0
+
+resolution: workspace
+
+dependencies:
+  meta: ^1.16.0
+  crypto: ^3.0.6
+  pointycastle: ^3.9.0
+  http: ^1.2.0
+  jetleaf_core: ^2.1.0
+  jetleaf_web: ^2.1.0
+
+dev_dependencies:
+  test: ^1.29.0
+  lints: ^6.0.0

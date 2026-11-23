@@ -36,6 +36,7 @@ workspace:
   - packages/jetleaf_validation
   - packages/jetleaf_actuator
   - packages/jetleaf_web
+  - packages/jetleaf_security
   - example
   - builder/server
   - sample_projects/ultimate

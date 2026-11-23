@@ -1,0 +1,18 @@
+name: jetleaf_data_example
+description: Demonstrates entity metadata, query derivation, multi-dialect rendering, pagination, and type conversion with Jetleaf Data.
+publish_to: none
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  jetleaf_core: ^2.1.0
+  jetleaf_data: ^2.1.0
+
+dependency_overrides:
+  jetleaf_core:
+    path: ../../../libraries/jetleaf_core
+  jetleaf_tools:
+    path: ../../../libraries/jetleaf_tools
+  jetleaf_data:
+    path: ../

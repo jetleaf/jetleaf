@@ -97,7 +97,9 @@ final class AotFieldRegistryWriter extends AotSubRegistrarWriter {
     '${escapeDartStringLiteral(memberKey)}',
     (inst) => $prefix$cleanClassName.$fieldName,
   );''');
-          if (!field.getIsFinal() && !field.getIsConst()) {
+          // Late final fields are assignable once at runtime, which is how
+          // @Autowired late final fields are populated.
+          if ((!field.getIsFinal() && !field.getIsConst()) || field.getIsLate()) {
             lines.add('''
   MaterializedLibrary.registerFieldSetter(
     '${escapeDartStringLiteral(memberKey)}',
@@ -112,7 +114,9 @@ final class AotFieldRegistryWriter extends AotSubRegistrarWriter {
     '${escapeDartStringLiteral(memberKey)}',
     (inst) => (inst as $prefix$cleanClassName).$fieldName,
   );''');
-        if (!field.getIsFinal() && !field.getIsConst()) {
+        // Late final fields are assignable once at runtime, which is how
+        // @Autowired late final fields are populated.
+        if ((!field.getIsFinal() && !field.getIsConst()) || field.getIsLate()) {
           lines.add('''
   MaterializedLibrary.registerFieldSetter(
     '${escapeDartStringLiteral(memberKey)}',

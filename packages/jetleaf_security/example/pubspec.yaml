@@ -1,0 +1,32 @@
+name: jetleaf_security_example
+description: Demonstrates password hashing, JWT authentication, HttpSecurity filter chains, and method-level authorization with Jetleaf Security.
+publish_to: none
+
+environment:
+  sdk: ^3.9.0
+
+dependencies:
+  jetleaf: ^2.1.0
+  jetleaf_core: ^2.1.0
+  jetleaf_web: ^2.1.0
+  jetleaf_security: ^1.0.0
+
+dev_dependencies:
+  jetleaf_tools: ^2.1.0
+  test: ^1.29.0
+
+dependency_overrides:
+  jetleaf:
+    path: ../../../
+  jetleaf_core:
+    path: ../../../libraries/jetleaf_core
+  jetleaf_tools:
+    path: ../../../libraries/jetleaf_tools
+  jtl:
+    path: ../../jtl
+  jetson:
+    path: ../../jetson
+  jetleaf_web:
+    path: ../../jetleaf_web
+  jetleaf_security:
+    path: ../
