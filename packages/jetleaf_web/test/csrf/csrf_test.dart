@@ -17,6 +17,7 @@ import 'package:jetleaf_web/src/server/handler_method.dart';
 import 'package:jetleaf_web/src/server/server_http_request.dart';
 import 'package:jetleaf_web/src/server/server_http_response.dart';
 import 'package:jetleaf_web/src/server/filter/filter.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 // ---------------------------------------------------------------------------
 // Mock / Fake Implementations
@@ -223,6 +224,7 @@ class _InMemoryCsrfTokenRepository implements CsrfTokenRepository {
 // ---------------------------------------------------------------------------
 
 void main() {
+  ensureTestAotRegisteredSync();
   // =========================================================================
   // CsrfToken
   // =========================================================================

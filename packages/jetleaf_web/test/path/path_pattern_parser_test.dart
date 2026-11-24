@@ -15,8 +15,10 @@
 import 'package:jetleaf_web/src/exception/path_exception.dart';
 import 'package:jetleaf_web/src/path/path_pattern_parser.dart';
 import 'package:test/test.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('PathPatternParser - Basic Matching', () {
     late PathPatternParser parser;
 

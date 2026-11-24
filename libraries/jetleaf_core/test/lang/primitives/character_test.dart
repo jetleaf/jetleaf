@@ -2,8 +2,10 @@ import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
 
 import '../dependencies/exceptions.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Character constructor', () {
     test('throws exception on empty string', () {
       expect(() => Character(''), throwsInvalidArgumentException);

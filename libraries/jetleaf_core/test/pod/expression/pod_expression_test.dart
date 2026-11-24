@@ -4,7 +4,7 @@ import 'package:jetleaf_core/src/pod/expression/pod_expression.dart';
 import 'package:jetleaf_core/src/pod/helpers/object.dart';
 import 'package:jetleaf_core/src/pod/scope/scope.dart';
 import 'package:test/test.dart';
-import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 
 // Test implementation of PodExpression
@@ -67,8 +67,8 @@ class MockPodScope implements PodScope {
 }
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('PodExpression Tests', () {
     late TestPodExpression expression;
     late PodExpressionContext context;

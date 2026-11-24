@@ -1,7 +1,9 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Boolean', () {
     test('should create Boolean from bool values', () {
       final trueValue = Boolean(true);

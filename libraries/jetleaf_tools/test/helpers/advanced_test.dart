@@ -1,5 +1,6 @@
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import './aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 class Point with EqualsAndHashCode {
   final int x, y;
@@ -19,6 +20,7 @@ class Point3D extends Point {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('EqualsAndHashCode (Advanced)', () {
     test('hashCode stability across calls', () {
       final p = Point(2, 3);

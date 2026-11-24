@@ -4,8 +4,10 @@ import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
 
 import '../dependencies/exceptions.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Byte', () {
     group('Construction', () {
       test('should create single byte from valid values', () {

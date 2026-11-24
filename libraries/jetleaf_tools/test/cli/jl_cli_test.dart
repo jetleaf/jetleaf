@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:jetleaf_tools/src/cli/jl_cli.dart';
 import 'package:jetleaf_tools/src/utils/utils.dart';
 import 'package:test/test.dart';
+import '../helpers/aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('RuntimeUtils.isJetLeafBuildProject', () {
     test('accepts pubspec with jetleaf_build dep', () async {
       final dir = await Directory.systemTemp.createTemp('jl_test');

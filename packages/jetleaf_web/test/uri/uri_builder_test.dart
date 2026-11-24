@@ -1,7 +1,9 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_web/src/uri_builder.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('SimpleUriBuilder', () {
     late SimpleUriBuilder builder;
 

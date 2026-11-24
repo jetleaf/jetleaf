@@ -1,7 +1,9 @@
 import 'package:jetleaf_core/env.dart';
 import 'package:test/test.dart';
+import '../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Profiles', () {
     test('simple profile matches active profiles', () {
       final profiles = Profiles.of(['dev']);

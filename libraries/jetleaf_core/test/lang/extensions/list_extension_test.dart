@@ -1,7 +1,9 @@
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('ListExtensions', () {
     test('isOneAKind returns true when all values are the same', () {
       expect([1, 1, 1].isOneAKind, isTrue);

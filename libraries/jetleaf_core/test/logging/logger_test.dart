@@ -8,8 +8,11 @@ import 'hybrid_printer_test.dart' as hybrid_printer_test;
 import 'simple_printer_test.dart' as simple_printer_test;
 import 'prefix_printer_test.dart' as prefix_printer_test;
 import 'pretty_printer_test.dart' as pretty_printer_test;
+import '../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
-void main() => group('Logger Tests', () {
+void main() {
+  ensureTestAotRegisteredSync();
+  return group('Logger Tests', () {
   test('should create logger with default settings', () {
     final logger = Logger();
     expect(logger.listener.runtimeType, equals(DefaultLoggingListener));
@@ -70,3 +73,4 @@ void main() => group('Logger Tests', () {
     pretty_printer_test.main();
   });
 });
+}

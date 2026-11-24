@@ -1,7 +1,9 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_web/src/http/http_range.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('HttpRange - Creation', () {
     test('creates range with valid start and end', () {
       final range = HttpRange(start: 0, end: 100);

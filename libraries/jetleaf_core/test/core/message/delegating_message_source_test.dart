@@ -3,6 +3,7 @@ import 'package:jetleaf_core/src/core/message/delegating_message_source.dart';
 import 'package:jetleaf_core/src/core/message/message_source.dart';
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 class MockMessageSource implements MessageSource {
   final Map<String, String> messages;
@@ -26,6 +27,7 @@ class MockMessageSource implements MessageSource {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('DelegatingMessageSource', () {
     late DelegatingMessageSource delegatingSource;
     late MockMessageSource source1;

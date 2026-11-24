@@ -249,8 +249,8 @@ class OperatorTest {
 }
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('MethodDeclaration Basic Properties', () {
     test('should identify method types correctly', () {
       final testClass = Runtime.obtainClassDeclaration(MethodTestClass);

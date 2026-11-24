@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 /// A custom exception for user-defined errors, used for testing propagation.
 class MyUserException implements Exception {
@@ -12,6 +13,7 @@ class MyUserException implements Exception {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('${Constant.ICON} Jetleaf SynchronizedLock', () {
     test('only one async block runs at a time (mutual exclusion)', () async {
       final monitor = Object();

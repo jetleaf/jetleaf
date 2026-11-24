@@ -4,6 +4,7 @@ import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
 
 import '../dependencies/exceptions.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 class MockOutputStream extends OutputStream {
   final List<int> _written = [];
@@ -24,6 +25,7 @@ class MockOutputStream extends OutputStream {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('OutputStream', () {
     late MockOutputStream output;
 

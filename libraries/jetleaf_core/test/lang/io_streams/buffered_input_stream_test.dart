@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 class _MockInputStream extends InputStream {
   final Uint8List _data;
@@ -38,6 +39,7 @@ class _MockInputStream extends InputStream {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('BufferedInputStream', () {
     test('reads bytes one by one', () async {
       final stream = BufferedInputStream(_MockInputStream('abc'), bufferSize: 2);

@@ -14,8 +14,10 @@
 
 import 'package:test/test.dart';
 import 'package:jetleaf_web/src/utils/web_utils.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('WebUtils.normalizePath', () {
     test('normalizes root path', () {
       expect(WebUtils.normalizePath('/'), equals('/'));

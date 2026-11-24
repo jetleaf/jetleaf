@@ -1,7 +1,9 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_web/src/http/content_disposition.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('ContentDisposition - Builder', () {
     test('attachment() builds attachment type', () {
       final cd = ContentDisposition.attachment().build();

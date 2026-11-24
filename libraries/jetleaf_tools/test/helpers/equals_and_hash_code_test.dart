@@ -1,6 +1,7 @@
 // test/equals_and_hash_code_test.dart
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import './aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 // Test classes
 class SimpleClass with EqualsAndHashCode {
@@ -39,6 +40,7 @@ class NullableClass with EqualsAndHashCode {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('EqualsAndHashCode', () {
     test('should implement equality correctly', () {
       final obj1 = SimpleClass('test', 42);

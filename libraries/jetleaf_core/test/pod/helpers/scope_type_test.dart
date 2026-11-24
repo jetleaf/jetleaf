@@ -2,8 +2,10 @@
 import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_core/src/pod/helpers/enums.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('ScopeType', () {
     test('should have correct values', () {
       expect(ScopeType.SINGLETON.value, equals(0));

@@ -1,7 +1,9 @@
 import 'package:jetleaf_core/utils.dart';
 import 'package:test/test.dart';
+import '../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('PlaceholderResolutionException', () {
     test('stores reason and placeholder', () {
       final ex = PlaceholderResolutionException('Unresolvable', 'my.key');

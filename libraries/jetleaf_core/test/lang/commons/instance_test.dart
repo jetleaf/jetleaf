@@ -1,7 +1,9 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Instance', () {
     group('of<T>', () {
       test('should return true when value is of type T', () {

@@ -2,6 +2,7 @@
 import 'package:jetleaf_core/src/pod/startup/application_startup.dart';
 import 'package:jetleaf_core/src/pod/startup/startup.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 // Test implementation
 class TestApplicationStartupAware implements ApplicationStartupAware {
@@ -22,6 +23,7 @@ class TestApplicationStartupAware implements ApplicationStartupAware {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('ApplicationStartupAware', () {
     test('should set and get ApplicationStartup', () {
       final aware = TestApplicationStartupAware();

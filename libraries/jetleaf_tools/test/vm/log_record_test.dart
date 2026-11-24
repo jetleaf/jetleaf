@@ -1,7 +1,9 @@
 import 'package:jetleaf_tools/src/vm/jetleaf_vm.dart';
 import 'package:test/test.dart';
+import '../helpers/aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   test('log records preserve raw fields and format human output', () {
     final record = JetleafLogRecord(
       timestamp: DateTime(2026, 1, 2, 3, 4, 5),

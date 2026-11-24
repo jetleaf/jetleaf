@@ -4,7 +4,7 @@ import 'package:jetleaf_core/src/pod/exceptions.dart';
 import 'package:jetleaf_core/src/pod/helpers/utils.dart';
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
-import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 
 class _FakeListablePodFactory implements ListablePodFactory {
@@ -68,8 +68,8 @@ class _FakeHierarchicalPodFactory extends _FakeListablePodFactory implements Hie
 }
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('PodUtils', () {
     test('constants should have correct values', () {
       expect(PodUtils.SCOPE_DEFAULT.name, equals('SINGLETON'));

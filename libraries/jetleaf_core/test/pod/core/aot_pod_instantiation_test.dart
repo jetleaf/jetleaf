@@ -2,6 +2,7 @@ import 'package:test/test.dart';
 import 'package:jetleaf_core/src/pod/core/default_listable_pod_factory.dart';
 import 'package:jetleaf_core/src/pod/definition/pod_definition.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 class MockUserRepository {
   final Map<String, String> _data = {'1': 'Alice', '2': 'Bob'};
@@ -25,6 +26,7 @@ class MockUserService {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('AOT Pod Instantiation & Lifecycle (Zero Reflection)', () {
     late DefaultListablePodFactory factory;
 

@@ -15,6 +15,7 @@ import 'package:jetleaf_web/src/rest/request.dart';
 import 'package:jetleaf_web/src/rest/request_spec.dart';
 import 'package:jetleaf_web/src/rest/response.dart';
 import 'package:jetleaf_web/src/uri_builder.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 // ---------------------------------------------------------------------------
 // Mock / Stub implementations for abstract REST interfaces
@@ -321,6 +322,7 @@ class _StubRestClient implements RestClient {
 // ---------------------------------------------------------------------------
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('RestClient', () {
     late _StubRestClient client;
 

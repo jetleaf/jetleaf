@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
 
 import '../_test_models.dart';
-import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 
 class StreamConverter extends CommonConverter<List<int>, Stream<int>> {
@@ -26,8 +26,8 @@ class StreamIntToListIntConverter extends CommonConverter<Stream<int>, List<int>
 }
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   final service = DefaultConversionService();
   service.addConverter(StreamConverter(), sourceType: Class<List<int>>(), targetType: Class<Stream<int>>());
   service.addConverter(StreamIntToListIntConverter(), sourceType: Class<Stream<int>>(), targetType: Class<List<int>>());

@@ -4,8 +4,10 @@ import 'package:jetleaf_tools/cache.dart';
 import 'package:jetleaf_tools/src/cache/indexer/declaration_builder.dart';
 import 'package:jetleaf_tools/src/cache/indexer/file_discovery.dart';
 import 'package:test/test.dart';
+import '../helpers/aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Integration: builder cache -> ScanCacheManager', () {
     late Directory tempDir;
 

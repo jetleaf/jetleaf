@@ -9,7 +9,7 @@ import 'package:jetleaf_core/src/pod/exceptions.dart';
 import 'package:jetleaf_core/src/pod/helpers/object.dart';
 import 'package:jetleaf_core/src/pod/singleton/default_singleton_pod_registry.dart';
 import 'package:test/test.dart';
-import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 
 // Mock classes for testing
@@ -67,8 +67,8 @@ class TestObjectFactory implements ObjectFactory<Object> {
 }
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('DefaultSingletonPodRegistry', () {
     late DefaultSingletonPodRegistry registry;
     

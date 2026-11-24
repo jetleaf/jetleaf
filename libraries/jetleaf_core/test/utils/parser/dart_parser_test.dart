@@ -4,8 +4,10 @@ import 'package:jetleaf_core/src/utils/parsers/dart_parser.dart';
 import 'package:test/test.dart';
 
 import '../_helpers.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('DartParser', () {
     late DartParser parser;
 

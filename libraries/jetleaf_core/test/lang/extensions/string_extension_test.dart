@@ -1,7 +1,9 @@
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('StringExtensions Tests', () {
     test('equalsIgnoreCase and notEqualsIgnoreCase', () {
       expect('Hello'.equalsIgnoreCase('hello'), isTrue);

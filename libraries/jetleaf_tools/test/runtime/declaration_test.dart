@@ -4,6 +4,7 @@
 
 // Base interfaces and abstract classes
 import 'package:jetleaf_core/lang.dart';
+import '../helpers/aot_test_setup.dart' show ensureTestAotRegisteredSync;
 abstract class BaseInterface {
   void doSomething();
   String get name;
@@ -449,7 +450,8 @@ class JustMessageSource extends AbstractMessageSource {
 // ============================================================================
 
 @JetleafTest()
-void main() async {
+void main() {
+  ensureTestAotRegisteredSync();
   print('Setting up comprehensive reflection test environment...');
   
   printRuntimeSummary();

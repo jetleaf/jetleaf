@@ -1,7 +1,9 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('IntStream', () {
     test('of() creates stream and toList() works', () {
       final stream = IntStream.of([1, 2, 3]);

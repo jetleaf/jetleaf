@@ -34,6 +34,7 @@ import 'package:jetleaf_web/src/server/multipart/multipart_resolver.dart';
 import 'package:jetleaf_web/src/server/multipart/multipart_server_http_request.dart';
 import 'package:jetleaf_web/src/server/server_http_request.dart';
 import 'package:jetleaf_web/src/server/server_http_response.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 // ==================== Fake / Mock helpers ====================
 
@@ -291,6 +292,7 @@ class FakeEventBus implements ApplicationEventBus {
 // ==================== Tests ====================
 
 void main() {
+  ensureTestAotRegisteredSync();
   // ---- ServerDispatcher interface ----
   group('ServerDispatcher interface', () {
     test('THROW_IF_HANDLER_NOT_FOUND_PROPERTY_NAME has correct value', () {

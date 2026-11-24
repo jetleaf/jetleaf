@@ -2,8 +2,10 @@ import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
 
 import '../dependencies/exceptions.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('LinkedStack', () {
     test('should create empty LinkedStack', () {
       final stack = LinkedStack<int>();

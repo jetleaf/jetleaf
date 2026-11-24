@@ -1,7 +1,9 @@
 import 'package:jetleaf_core/core.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('ExceptionDiagnosis', () {
     test('stores cause, description, and action', () {
       final exception = FormatException('bad format');

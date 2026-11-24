@@ -1,4 +1,4 @@
-@Timeout(Duration(seconds: 400))
+@Timeout(Duration(seconds: 600))
 library;
 
 import 'dart:async';
@@ -8,8 +8,10 @@ import 'dart:io';
 import 'package:jetleaf_tools/src/cli/jl_cli.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
+import '../helpers/aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Builder Server Daemon', () {
     late Directory tempDir;
     late String jlScriptPath;
@@ -112,13 +114,19 @@ class UserController {
         } catch (_) {}
       });
 
-      process.stderr
-          .transform(utf8.decoder)
-          .transform(const LineSplitter())
-          .listen((line) {});
+      // Keep stderr so a slow or failed startup can be diagnosed rather than
+      // surfacing as a bare timeout.
+      final stderr = StringBuffer();
+      process.stderr.transform(utf8.decoder).listen(stderr.write);
 
-      // 1. Wait for ready message
-      final readyJson = await readyCompleter.future.timeout(const Duration(seconds: 60));
+      // 1. Wait for ready message. Under load the JIT compilation of `jl.dart`
+      // can take well over a minute, so allow enough headroom.
+      final readyJson = await readyCompleter.future
+          .timeout(const Duration(seconds: 180), onTimeout: () {
+        throw TimeoutException(
+          'daemon did not become ready in 180s; stderr: ${stderr.toString()}',
+        );
+      });
       expect(readyJson['type'], equals('ready'));
       expect(readyJson['projectRoot'], isNotNull);
 

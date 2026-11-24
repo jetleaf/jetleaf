@@ -1,7 +1,9 @@
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Version', () {
     test('should parse version strings correctly', () {
       expect(Version.parse('3.1.4'), equals(Version(3, 1, 4)));

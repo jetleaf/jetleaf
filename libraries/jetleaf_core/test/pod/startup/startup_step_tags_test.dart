@@ -1,8 +1,10 @@
 // test/startup_step_tags_test.dart
 import 'package:jetleaf_core/src/pod/startup/startup.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('StartupStepTags', () {
     test('DefaultStartupStepTags should be empty', () {
       final tags = DefaultStartupStepTags();

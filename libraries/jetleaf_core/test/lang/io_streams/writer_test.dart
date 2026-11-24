@@ -2,6 +2,7 @@ import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
 
 import '../dependencies/exceptions.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 class MockWriter extends Writer {
   final StringBuffer buffer = StringBuffer();
@@ -28,6 +29,7 @@ class MockWriter extends Writer {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Writer', () {
     test('writeChar writes character', () async {
       final writer = MockWriter();

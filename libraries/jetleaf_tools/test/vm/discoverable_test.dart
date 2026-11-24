@@ -8,8 +8,10 @@ import 'dart:io';
 
 import 'package:jetleaf_tools/src/vm/jetleaf_vm.dart';
 import 'package:test/test.dart';
+import '../helpers/aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('discoverEntries', () {
     test('finds @JetleafEntry and @JetleafTest on void main() only',
         () async {

@@ -9,7 +9,7 @@ import 'package:jetleaf_core/src/pod/helpers/enums.dart';
 import 'package:jetleaf_core/src/pod/core/pod_factory.dart';
 import 'package:jetleaf_core/src/pod/helpers/nullable_pod.dart';
 import 'package:jetleaf_core/lang.dart';
-import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 
 class _ServiceA {}
@@ -118,8 +118,8 @@ class TestComparator extends Comparator<Object> {
 }
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('DefaultListablePodFactory - public API', () {
     late TestableFactory factory;
 

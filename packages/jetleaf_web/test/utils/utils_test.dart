@@ -22,8 +22,10 @@ import 'package:jetleaf_web/src/utils/matrix_variable_utils.dart';
 import 'package:jetleaf_web/src/utils/web_utils.dart';
 import 'package:jetleaf_web/src/http/http_status.dart';
 import 'package:jetleaf_web/src/web/view.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   // =========================================================================
   // EncodingDecoder
   // =========================================================================

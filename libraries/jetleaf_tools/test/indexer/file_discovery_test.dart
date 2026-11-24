@@ -3,8 +3,10 @@ import 'dart:io';
 
 import 'package:jetleaf_tools/src/cache/indexer/file_discovery.dart';
 import 'package:test/test.dart';
+import '../helpers/aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('FileDiscovery', () {
     late Directory tempDir;
     late FileDiscovery discovery;

@@ -1,5 +1,6 @@
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import './aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 class TestClass with EqualsAndHashCode {
   final String name;
@@ -13,6 +14,7 @@ class TestClass with EqualsAndHashCode {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Equalizer Tests', () {
     test('should return true for identical objects', () {
       final obj = TestClass('test', 42);

@@ -150,8 +150,8 @@ mixin ComparableMixin<T extends Comparable<T>> {
 }
 
 @JetleafTest()
-void main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('MixinDeclaration Basic Properties', () {
     test('should identify TimestampMixin in runtime', () {
       final mixinClass = Runtime.findClassByName('TimestampMixin');

@@ -17,6 +17,7 @@ import 'package:jetleaf_web/src/server/filter/once_per_request_filter.dart';
 import 'package:jetleaf_web/src/server/handler_method.dart';
 import 'package:jetleaf_web/src/server/server_http_request.dart';
 import 'package:jetleaf_web/src/server/server_http_response.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 // ---------------------------------------------------------------------------
 // Mocks
@@ -299,6 +300,7 @@ class MockFailingExceptionResolver implements ExceptionResolver {
 // ---------------------------------------------------------------------------
 
 void main() {
+  ensureTestAotRegisteredSync();
   // -------------------------------------------------------------------------
   // Filter interface
   // -------------------------------------------------------------------------

@@ -2,8 +2,10 @@ import 'package:test/test.dart';
 import 'package:jetleaf_web/src/server/routing/route.dart';
 import 'package:jetleaf_web/src/server/routing/route_entry.dart';
 import 'package:jetleaf_web/src/server/routing/router.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('RouterBuilder', () {
     test('builds empty spec when no routes', () {
       final router = RouterBuilder();

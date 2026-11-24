@@ -1,7 +1,9 @@
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Version', () {
     test('should create version with correct values', () {
       const version = Version(1, 2, 3);

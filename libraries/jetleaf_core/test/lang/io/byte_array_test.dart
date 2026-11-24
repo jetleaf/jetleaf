@@ -4,8 +4,10 @@ import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
 
 import '../dependencies/exceptions.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('ByteArray', () {
     test('creates from string and converts back', () {
       final b = ByteArray.fromString('Hello');

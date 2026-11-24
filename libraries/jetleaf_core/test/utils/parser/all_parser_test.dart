@@ -5,8 +5,10 @@ import 'properties_parser_test.dart' as properties_tests;
 import 'yaml_parser_test.dart' as yaml_tests;
 import 'dart_parser_test.dart' as dart_tests;
 import 'env_parser_test.dart' as env_tests;
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('All Parser Tests', () {
     json_tests.main();
     xml_tests.main();

@@ -6,8 +6,10 @@ import 'package:jetleaf_web/src/annotation/resolvers.dart';
 import 'package:jetleaf_web/src/http/http_method.dart';
 import 'package:jetleaf_web/src/http/http_status.dart';
 import 'package:jetleaf_web/src/http/media_type.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   // ---------------------------------------------------------------------------
   // RequestMapping
   // ---------------------------------------------------------------------------

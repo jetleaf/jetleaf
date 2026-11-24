@@ -21,8 +21,8 @@ class AnnotatedFields {
 }
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('Field API', () {
     test('getField() finds field by name', () {
       final dataClass = Class<DataClass>();

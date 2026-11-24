@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:jetleaf_tools/cache.dart';
 import 'package:test/test.dart';
+import '../helpers/aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('CacheWriter', () {
     late Directory tempDir;
     late CacheableWriter writer;

@@ -5,7 +5,7 @@ import 'package:jetleaf_core/src/pod/helpers/enums.dart';
 // import 'package:jetleaf_core/src/pod/helpers/object.dart';
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
-import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 
 // Mock implementation for testing
@@ -22,8 +22,8 @@ class TestAbstractPodDefinition extends AbstractPodDefinition {
 }
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('AbstractPodDefinition', () {
     test('should create with required parameters', () {
       final pod = TestAbstractPodDefinition(type: Class<String>())..name = 'testPod';

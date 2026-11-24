@@ -2,8 +2,10 @@ import 'dart:typed_data';
 
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Uuid', () {
     group('Construction', () {
       test('should create UUID from bits', () {

@@ -3,8 +3,8 @@ import 'package:test/test.dart';
 import 'test_data.dart';
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('ClassUtils Tests', () {
     group('getClassHierarchy', () {
       test('should return hierarchy for basic class', () {

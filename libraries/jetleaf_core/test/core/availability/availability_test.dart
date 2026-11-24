@@ -1,8 +1,10 @@
 import 'package:jetleaf_core/core.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('ReadinessState', () {
     test('has ACCEPTING_TRAFFIC and REFUSING_TRAFFIC values', () {
       expect(ReadinessState.values, hasLength(2));

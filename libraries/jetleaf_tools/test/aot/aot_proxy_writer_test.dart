@@ -21,6 +21,7 @@ import 'package:jetleaf_core/declaration.dart';
 import 'package:jetleaf_tools/src/aot/aot_proxy_writer.dart';
 import 'package:jetleaf_tools/src/cache/indexer/declaration_builder.dart';
 import 'package:jetleaf_tools/src/cache/indexer/file_discovery.dart';
+import '../helpers/aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 /// Runs the full discovery + declaration pipeline over a throwaway fixture
 /// project and returns the declared components.
@@ -36,6 +37,7 @@ Future<List<ClassDeclaration>> _componentsOf(Directory root, String packageName)
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('AotProxyWriter', () {
     late Directory fixture;
     late Directory libDir;

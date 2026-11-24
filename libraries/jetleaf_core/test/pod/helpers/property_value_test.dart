@@ -2,8 +2,10 @@
 import 'package:jetleaf_core/src/pod/helpers/object.dart';
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('PropertyValue', () {
     test('should create PropertyValue with name and value', () {
       final pv = PropertyValue('test_name', 'test_value', qualifiedName: 'test.Qualified', packageName: 'test_package');

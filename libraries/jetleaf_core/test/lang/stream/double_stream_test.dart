@@ -1,7 +1,9 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('DoubleStream', () {
     test('filter + toList', () {
       final result = DoubleStream.of([1.1, 2.2, 3.3, 4.4])

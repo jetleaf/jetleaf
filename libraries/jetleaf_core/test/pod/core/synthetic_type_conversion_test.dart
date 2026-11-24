@@ -3,6 +3,7 @@
 import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_core/src/pod/core/default_listable_pod_factory.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 /// Builds a synthetic [Class] the way the AOT generator does for an external
 /// interface whose declaration is not in the runtime type registry.
@@ -37,6 +38,7 @@ Class<Object> syntheticClass(String name) {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   test('synthetic target type returns the pod unchanged', () {
     final factory = DefaultListablePodFactory();
 

@@ -1,5 +1,6 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 class IntComparator extends Comparator<int> {
   @override
@@ -7,6 +8,7 @@ class IntComparator extends Comparator<int> {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Comparator', () {
     test('naturalOrder sorts ascending', () {
       final comp = Comparator.naturalOrder<num>();

@@ -1,8 +1,10 @@
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('EventObject', () {
     test('getSource returns the source', () {
       final source = Object();

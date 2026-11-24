@@ -2,8 +2,10 @@ import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
 
 import '../dependencies/exceptions.dart'; // Update path as needed
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('BigInteger', () {
     test('constructors and toString', () {
       expect(BigInteger('12345678901234567890').toString(), '12345678901234567890');

@@ -2,9 +2,10 @@ import 'package:jetleaf_core/intercept.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
 
-import '../../lang/meta/test_data.dart' show TestComparable;
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync, TestComparable;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('SimpleMethodInvocation', () {
     test('proceed executes the request and caches result', () async {
       final targetClass = Class<TestComparable>();

@@ -20,3 +20,13 @@ import 'package:jetleaf_tools/_jetleaf/test.dart';
 /// Cached declarations carry only metadata — live types and annotation
 /// instances come from the generated registry. Idempotent.
 Future<void> ensureTestAotRegistered() => registerTestGeneratedArtifacts();
+
+/// Initialises the generated test registry synchronously.
+///
+/// `registerTestGeneratedArtifacts()` runs `_initRuntime()` before its first
+/// suspension point, so calling it without `await` initialises the registry
+/// immediately. Test files call this from a synchronous `main()` so all
+/// registry libraries are loaded before any test file declares its groups.
+void ensureTestAotRegisteredSync() {
+  registerTestGeneratedArtifacts();
+}

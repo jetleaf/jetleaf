@@ -8,8 +8,10 @@ import 'dart:io';
 
 import 'package:jetleaf_tools/src/vm/jetleaf_vm.dart';
 import 'package:test/test.dart';
+import '../helpers/aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('EntryWriter', () {
     test('parked stub never completes and exposes ensure', () async {
       final dir = await Directory.systemTemp.createTemp('jl_stub');

@@ -14,7 +14,7 @@ import 'package:jetleaf_web/src/exception/exceptions.dart';
 import 'package:jetleaf_web/src/http/http_headers.dart';
 import 'package:jetleaf_web/src/http/http_message.dart';
 import 'package:jetleaf_web/src/http/media_type.dart';
-import '../test_helpers.dart' show ensureTestAotRegistered;
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 // ---------------------------------------------------------------------------
 // Test helpers: minimal HttpInputMessage / HttpOutputMessage implementations
@@ -106,8 +106,8 @@ class _StubConverter extends AbstractHttpMessageConverter<String> {
 // ===================================================================
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   // ------------------------------------------------------------------
   // HttpMessageConverter interface contract
   // ------------------------------------------------------------------

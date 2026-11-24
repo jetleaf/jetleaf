@@ -1,8 +1,10 @@
 // test/standard_startup_tracker_test.dart
 import 'package:jetleaf_core/src/pod/startup/startup.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('StandardStartupTracker', () {
     test('should create with current time', () {
       final before = DateTime.now().millisecondsSinceEpoch;

@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import './aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 /// NOTE:
 /// These test classes use the project's EqualsAndHashCode & ToString mixins.
@@ -144,6 +145,7 @@ class ComplexTypeBased extends ComplexModel {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('toStringWith implementation (exact behavior tests)', () {
     test('STANDARD uses propertyN names and single-line with class name', () {
       final p = PersonStandard('Alice', 25, 'alice@example.com');

@@ -4,8 +4,10 @@ import 'package:jetleaf_core/src/utils/exceptions.dart';
 import 'package:jetleaf_core/src/utils/placeholder/placeholder_parser.dart';
 import 'package:jetleaf_core/src/utils/placeholder/property_placeholder_helper.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('PlaceholderParser', () {
     late PlaceholderParser parser;
     late Map<String, String> properties;

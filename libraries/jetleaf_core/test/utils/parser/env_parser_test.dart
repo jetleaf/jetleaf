@@ -4,8 +4,10 @@ import 'package:jetleaf_core/utils.dart';
 import 'package:test/test.dart';
 
 import '../_helpers.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('EnvParser', () {
     late EnvParser parser;
 

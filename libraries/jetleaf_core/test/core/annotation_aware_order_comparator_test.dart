@@ -1,7 +1,7 @@
 import 'package:jetleaf_core/core.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
-import '../lang/meta/test_data.dart' show ensureTestAotRegistered;
+import '../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 
 @Order(1)
@@ -23,8 +23,8 @@ class PriorityOrderedImpl implements PriorityOrdered {
 class NoOrder {}
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('AnnotationAwareOrderComparator', () {
     test('should sort based on @Order annotation', () {
       final list = [Class<Order2>(), Class<Order1>()];

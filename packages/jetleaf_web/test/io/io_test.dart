@@ -13,6 +13,7 @@ import 'package:jetleaf_web/src/http/http_status.dart';
 import 'package:jetleaf_web/src/http/media_type.dart';
 import 'package:jetleaf_web/src/server/multipart/part.dart';
 import 'package:jetleaf_web/src/utils/encoding.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 // ---------------------------------------------------------------------------
 // Helpers — Multipart body builders
@@ -152,6 +153,7 @@ Future<(HttpServer server, HttpRequest captured)> _setupMultipartServer({
 // ===========================================================================
 
 void main() {
+  ensureTestAotRegisteredSync();
   late BasicEncodingDecoder encodingDecoder;
 
   setUp(() {

@@ -3,7 +3,7 @@ import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_core/pod.dart';
 import 'package:test/test.dart';
-import '../../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+import '../../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 
 class MockPodFactoryPostProcessor implements PodFactoryPostProcessor {
@@ -39,8 +39,8 @@ class MockPodProcessor implements PodProcessor {
 }
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   late DefaultListablePodFactory factory;
 
   setUpAll(() async {

@@ -1,7 +1,9 @@
 import 'package:jetleaf_core/utils.dart';
 import 'package:test/test.dart';
+import '../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('TraceFrame', () {
     group('constructor', () {
       test('creates frame with all fields', () {

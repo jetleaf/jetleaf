@@ -177,8 +177,8 @@ class ComprehensiveAnnotationTest {
 }
 
 @JetleafTest()
-void main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('AnnotationDeclaration Basic Properties', () {
     test('should retrieve annotations from class', () {
       final annotatedClass = Runtime.findClass<AnnotatedClass>();

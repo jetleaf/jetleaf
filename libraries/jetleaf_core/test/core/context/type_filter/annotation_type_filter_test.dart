@@ -2,7 +2,7 @@ import 'package:jetleaf_core/annotation.dart';
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
-import '../../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+import '../../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 
 // Test annotations
@@ -31,8 +31,8 @@ final class NonAnnotatedClass {}
 final class MultiAnnotatedClass {}
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('AnnotationTypeFilter', () {
     test('should match class with target annotation', () {
       final filter = AnnotationTypeFilter(Class<TestAnnotation>());

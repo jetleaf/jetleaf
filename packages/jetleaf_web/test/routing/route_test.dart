@@ -1,8 +1,10 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_web/src/http/http_method.dart';
 import 'package:jetleaf_web/src/server/routing/route.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Route', () {
     test('creates base route with path and method', () {
       final route = Route('/api/data', HttpMethod.GET);

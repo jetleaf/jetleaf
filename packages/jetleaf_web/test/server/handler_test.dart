@@ -44,7 +44,7 @@ import 'package:jetleaf_web/src/server/method_argument_resolver/method_argument_
 import 'package:jetleaf_web/src/server/return_value_handler/return_value_handler.dart';
 import 'package:jetleaf_web/src/server/routing/router_interface.dart';
 import 'package:jetleaf_web/src/server/routing/router_spec.dart';
-import '../test_helpers.dart' show ensureTestAotRegistered;
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 // ---------------------------------------------------------------------------
 // Test Doubles / Fakes
@@ -320,8 +320,8 @@ class FakeReturnValueHandlerManager implements ReturnValueHandlerManager {
 // ---------------------------------------------------------------------------
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   // ==========================================================================
   // HandlerAdapter Interface
   // ==========================================================================

@@ -1,6 +1,7 @@
 // test/startup_step_tag_test.dart
 import 'package:jetleaf_core/src/pod/startup/startup.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 // Test implementation
 class TestStartupStepTag extends StartupStepTag {
@@ -13,6 +14,7 @@ class TestStartupStepTag extends StartupStepTag {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('StartupStepTag', () {
     test('should create with key and value', () {
       final tag = TestStartupStepTag('testKey', 'testValue');

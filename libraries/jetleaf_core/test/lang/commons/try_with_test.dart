@@ -1,5 +1,6 @@
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 class _TestResource implements Closeable {
   bool closed = false;
@@ -28,6 +29,7 @@ class _SyncCloseResource implements Closeable {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('${Constant.ICON} tryWith', () {
     test('should call close after successful async operation', () async {
       final log = <String>[];

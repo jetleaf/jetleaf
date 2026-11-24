@@ -22,6 +22,7 @@ import 'package:jetleaf_web/src/context/default_server_context.dart';
 import 'package:jetleaf_web/src/context/server_context.dart';
 import 'package:jetleaf_web/src/web/web.dart';
 import 'package:test/test.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 // ---------------------------------------------------------------------------
 // 🧪 Mocks
@@ -155,6 +156,7 @@ class PlainPod {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   // ========================================================================
   // Aware Interfaces
   // ========================================================================

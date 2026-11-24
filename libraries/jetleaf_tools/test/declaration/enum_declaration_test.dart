@@ -209,8 +209,8 @@ List<Priority> filterHighPriorities(List<Priority> priorities) {
 }
 
 @JetleafTest()
-void main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('EnumDeclaration Basic Properties', () {
     test('should identify enum type kind', () {
       final simpleEnum = Runtime.findClass<SimpleEnum>();

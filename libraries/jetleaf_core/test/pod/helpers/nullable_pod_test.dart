@@ -1,8 +1,10 @@
 // test/nullable_pod_test.dart
 import 'package:jetleaf_core/src/pod/helpers/nullable_pod.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('NullablePod', () {
     test('should create instances correctly', () {
       final pod1 = NullablePod();

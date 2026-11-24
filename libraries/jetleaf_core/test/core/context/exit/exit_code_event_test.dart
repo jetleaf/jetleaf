@@ -2,8 +2,10 @@
 import 'package:jetleaf_core/src/core/context/event/application_event.dart';
 import 'package:jetleaf_core/src/core/context/exit_code/exit_code.dart';
 import 'package:test/test.dart';
+import '../../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('ExitCodeEvent', () {
     test('should create with source and exit code', () {
       final source = Object();

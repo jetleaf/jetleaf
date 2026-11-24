@@ -3,6 +3,7 @@ import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_core/pod.dart';
 import 'package:test/test.dart';
+import '../../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 final class _FakeRefreshablePod implements RefreshablePod {
   HotReloadDelta? lastDelta;
@@ -46,6 +47,7 @@ final class _TestEventListener implements ApplicationEventListener<ApplicationEv
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('HotReload & HotRestart', () {
     test('HotReloadDelta exposes modified classes, pods, assets, and structural flag', () {
       final delta = HotReloadDelta(

@@ -3,8 +3,10 @@ import 'package:jetleaf_core/printers.dart';
 import 'package:test/test.dart';
 
 import '_dependencies.dart';
+import '../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('PrettyStructuredPrinter', () {
     test('prints boxed sections and stack trace', () {
       final printer = PrettyStructuredPrinter(

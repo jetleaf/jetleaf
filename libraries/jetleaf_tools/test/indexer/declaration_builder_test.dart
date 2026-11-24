@@ -6,8 +6,10 @@ import 'package:jetleaf_tools/src/cache/indexer/declaration_builder.dart';
 import 'package:jetleaf_tools/src/cache/indexer/file_discovery.dart';
 import 'package:jetleaf_core/declaration.dart';
 import 'package:test/test.dart';
+import '../helpers/aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('DeclarationBuilder', () {
     late Directory tempDir;
     late Directory libDir;

@@ -1,7 +1,9 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_web/src/http/etag.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('ETag - Creation', () {
     test('creates strong ETag', () {
       final etag = ETag('abc123', false);

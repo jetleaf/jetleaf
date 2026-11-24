@@ -3,8 +3,10 @@ import 'dart:convert';
 import 'package:jetleaf_tools/src/utils/jetleaf_json.dart';
 import 'package:jetleaf_tools/src/vm/jetleaf_vm.dart';
 import 'package:test/test.dart';
+import '../helpers/aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Jetleaf.VM file format', () {
     test('entry array serializes with 4-space indent', () {
       final statuses = [

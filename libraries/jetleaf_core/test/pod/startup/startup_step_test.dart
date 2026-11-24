@@ -1,8 +1,10 @@
 // test/startup_step_test.dart
 import 'package:jetleaf_core/src/pod/startup/startup.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('StartupStep', () {
     test('DefaultStartupStep should have default values', () {
       final step = DefaultStartupStep();

@@ -124,8 +124,8 @@ class ConcreteConstructorClass extends AbstractConstructorClass {
 }
 
 @JetleafTest()
-void main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('ConstructorDeclaration Basic Properties', () {
     test('should retrieve all constructors', () {
       final testClass = Runtime.findClass<SimpleConstructorClass>();

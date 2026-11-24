@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:jetleaf_tools/src/vm/jetleaf_vm.dart';
 import 'package:test/test.dart';
+import '../helpers/aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('JetleafVmPaths.resolvePackagesJson', () {
     test('finds local package config first', () async {
       final dir = await Directory.systemTemp.createTemp('jl_pkg');

@@ -5,7 +5,7 @@ import 'package:jetleaf_core/src/pod/core/default_listable_pod_factory.dart';
 import 'package:jetleaf_core/src/pod/scope/scope.dart';
 import 'package:jetleaf_core/src/pod/helpers/object.dart';
 import 'package:jetleaf_core/lang.dart';
-import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 
 class _PassthroughScope implements PodScope {
@@ -29,8 +29,8 @@ class _PassthroughScope implements PodScope {
 }
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('AbstractPodFactory basic (via DefaultListablePodFactory)', () {
     test('parent factory propagation', () {
       final parent = DefaultListablePodFactory();

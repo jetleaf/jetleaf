@@ -174,8 +174,8 @@ class SuperConstructorParamClass extends SimpleParamClass {
 }
 
 @JetleafTest()
-void main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('ParameterDeclaration Basic Properties', () {
     test('should correctly identify nullable vs non-nullable parameters', () {
       final nullableClass = Runtime.findClass<NullableParamClass>();

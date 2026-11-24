@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:jetleaf_tools/src/scanner/runtime_scanner_configuration.dart';
 import 'package:jetleaf_tools/src/utils/utils.dart';
 import 'package:test/test.dart';
+import '../helpers/aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('getPackageNameFromUri', () {
     test('should extract package name from pub packages', () {
       expect(RuntimeUtils.getPackageNameFromUri('package:html'), 'html');

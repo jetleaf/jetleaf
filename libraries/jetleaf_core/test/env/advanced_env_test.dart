@@ -3,12 +3,12 @@ import 'package:jetleaf_core/property.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_core/utils.dart';
 import 'package:test/test.dart';
-import '../lang/meta/test_data.dart' show ensureTestAotRegistered;
+import '../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('StandardEnvironment - Property Source Chaining', () {
     late GlobalEnvironment env;
 

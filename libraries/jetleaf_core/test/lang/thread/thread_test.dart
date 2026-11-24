@@ -5,8 +5,10 @@ import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
 
 import '../dependencies/exceptions.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Thread', () {
     test('start and join basic isolate execution', () async {
       void isolateMain(ThreadMessage msg) {

@@ -2,6 +2,7 @@ import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
 
 import 'dart:async';
+import './meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 // Convenience helper to collect events until `count` is reached or timeout.
 Future<List<ObsEvent>> collectEvents(
@@ -27,6 +28,7 @@ Future<List<ObsEvent>> collectEvents(
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Obs - Value', () {
     test('emits ValueChanged when value set', () async {
       final obs = Obs<int>(0);

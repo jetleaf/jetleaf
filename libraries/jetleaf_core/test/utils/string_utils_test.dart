@@ -1,8 +1,10 @@
 import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_core/utils.dart';
 import 'package:test/test.dart';
+import '../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('StringUtils', () {
     group('hasLength', () {
       test('returns false for null', () {

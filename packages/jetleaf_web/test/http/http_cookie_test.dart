@@ -1,7 +1,9 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_web/src/http/http_cookie.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('HttpCookie', () {
     test('creates cookie with name and value', () {
       final cookie = HttpCookie('sessionId', 'abc123');

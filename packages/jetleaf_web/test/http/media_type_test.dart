@@ -1,7 +1,9 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_web/src/http/media_type.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('MediaType - Constants', () {
     test('APPLICATION_JSON has correct type and subtype', () {
       expect(MediaType.APPLICATION_JSON.getType(), 'application');

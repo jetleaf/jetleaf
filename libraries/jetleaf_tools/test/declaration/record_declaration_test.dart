@@ -73,8 +73,8 @@ extension PrivateRecordExtension on (String, int) {
 }
 
 @JetleafTest()
-void main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('RecordDeclaration Basic Properties', () {
     test('should find RecordUser class in runtime', () {
       final recordUserClass = Runtime.findClass<RecordUser>();

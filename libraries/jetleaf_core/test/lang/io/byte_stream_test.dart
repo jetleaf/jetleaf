@@ -3,8 +3,10 @@ import 'package:jetleaf_core/lang.dart';
 import 'dart:typed_data';
 
 import '../dependencies/exceptions.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('ByteStream Tests', () {
     test('fromList constructor', () async {
       ByteStream stream = ByteStream.fromList([72, 101, 108, 108, 111]);

@@ -6,7 +6,7 @@ import 'package:jetleaf_core/property.dart' as env;
 import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_core/pod.dart';
 import 'package:test/test.dart';
-import '../../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+import '../../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 
 @ConfigurationProperty(prefix: "server")
@@ -87,8 +87,8 @@ final class MockApplicationContext extends AnnotationConfigApplicationContext {
 }
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   late MockApplicationContext context;
   final registrar = TestPodRegistrar();
 

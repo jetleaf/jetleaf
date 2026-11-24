@@ -7,8 +7,8 @@ import 'test_data.dart';
 final class FinalTestClass {}
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('Class API', () {
     test('Class<T>() constructor', () {
       final stringClass = Class<String>();

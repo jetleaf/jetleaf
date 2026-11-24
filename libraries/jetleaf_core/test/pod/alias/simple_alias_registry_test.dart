@@ -4,8 +4,10 @@
 import 'package:jetleaf_core/src/pod/alias/simple_alias_registry.dart';
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('SimpleAliasRegistry', () {
     late SimpleAliasRegistry registry;
 

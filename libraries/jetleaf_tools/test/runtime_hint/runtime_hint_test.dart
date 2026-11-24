@@ -6,8 +6,8 @@ import 'runtime_hint_implementations.dart';
 import '../helpers/aot_test_setup.dart';
 
 @JetleafTest()
-void main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('RuntimeHint Discovery and Registration', () {
     test('should find annotations that are RuntimeHints', () {
       final annotatedClass = Runtime.findClass<AnnotatedStringUser>();

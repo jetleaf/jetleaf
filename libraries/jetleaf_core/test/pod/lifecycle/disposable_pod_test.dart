@@ -1,6 +1,7 @@
 // test/disposable_pod_test.dart
 import 'package:jetleaf_core/src/pod/lifecycle/lifecycle.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 class TestDisposablePod implements DisposablePod {
   bool destroyed = false;
@@ -15,6 +16,7 @@ class TestDisposablePod implements DisposablePod {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('DisposablePod', () {
     test('should be an abstract interface', () {
       final pod = TestDisposablePod();

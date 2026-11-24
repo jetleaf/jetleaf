@@ -1,6 +1,7 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_tools/cache.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../helpers/aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 /// Helper to build a StandardClassDeclaration for testing.
 StandardClassDeclaration _makeClass({
@@ -79,6 +80,7 @@ StandardClassDeclaration _makeClass({
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('CacheSerializer', () {
     test('round-trip serialization preserves basic class data', () {
       final components = [

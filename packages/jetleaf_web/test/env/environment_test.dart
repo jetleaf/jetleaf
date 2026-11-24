@@ -19,11 +19,11 @@ import 'package:jetleaf_core/property.dart';
 import 'package:test/test.dart';
 import 'package:jetleaf_web/src/env/environment.dart';
 import 'package:jetleaf_web/src/env/standard_web_environment.dart';
-import '../test_helpers.dart' show ensureTestAotRegistered;
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   // ========================================================================
   // WebEnvironment Interface
   // ========================================================================

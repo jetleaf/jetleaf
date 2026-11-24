@@ -1,7 +1,9 @@
 import 'package:jetleaf_core/src/env/core/command_line_args.dart';
 import 'package:test/test.dart';
+import '../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('CommandLineArgs', () {
     late CommandLineArgs args;
 

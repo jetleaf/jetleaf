@@ -7,6 +7,16 @@ import 'package:jetleaf_core/_jetleaf/test/registry.g.dart' show registerTestGen
 /// `await ensureTestAotRegistered()` before exercising reflective paths.
 Future<void> ensureTestAotRegistered() => registerTestGeneratedArtifacts();
 
+/// Initialises the generated test registry synchronously.
+///
+/// `registerTestGeneratedArtifacts()` runs `_initRuntime()` before its first
+/// suspension point, so calling it without `await` initialises the registry
+/// immediately. Test files use this from a synchronous `main()` so that all
+/// groups are declared before any test starts running.
+void ensureTestAotRegisteredSync() {
+  registerTestGeneratedArtifacts();
+}
+
 
 // For basic class tests
 class TestUser {

@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 class MockInputStream extends InputStream {
   final List<int> _data;
@@ -18,6 +19,7 @@ class MockInputStream extends InputStream {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('InputStream', () {
     test('readByte returns correct values and -1 at end', () async {
       final input = MockInputStream([1, 2]);

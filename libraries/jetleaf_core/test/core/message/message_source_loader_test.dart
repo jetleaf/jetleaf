@@ -1,6 +1,7 @@
 import 'package:jetleaf_core/message.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 class TestMessageLoader extends MessageSourceLoader {
   @override
@@ -10,6 +11,7 @@ class TestMessageLoader extends MessageSourceLoader {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('MessageSourceLoader', () {
     late TestMessageLoader loader;
 

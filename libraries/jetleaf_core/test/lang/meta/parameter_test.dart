@@ -68,8 +68,8 @@ class GenericTestClass<T> {
 }
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('Parameter API', () {
     test('Parameter properties for required positional', () {      
       final classApi = Class<SimpleTestClass>();

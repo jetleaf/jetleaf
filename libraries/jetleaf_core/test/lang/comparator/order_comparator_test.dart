@@ -1,6 +1,7 @@
 import 'package:jetleaf_core/src/lang/comparator/order_comparator.dart';
 import 'package:jetleaf_core/src/lang/comparator/ordered.dart';
 import 'package:test/test.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 class TestOrdered implements Ordered {
   final int order;
@@ -30,6 +31,7 @@ class TestOrderSourceProvider extends OrderSourceProvider {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('OrderComparator', () {
     test('should sort PriorityOrdered before Ordered', () {
       final priority = TestPriorityOrdered(100);

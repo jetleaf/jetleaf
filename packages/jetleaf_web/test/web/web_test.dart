@@ -20,6 +20,7 @@ import 'package:jetleaf_web/src/web/view.dart';
 import 'package:jetleaf_web/src/web/view_context.dart';
 import 'package:jetleaf_web/src/web/web.dart';
 import 'package:jetleaf_web/src/web/web_request.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 // ---------------------------------------------------------------------------
 // Mock / Stub implementations
@@ -220,6 +221,7 @@ class MockHttpResponse implements ServerHttpResponse {
 // ---------------------------------------------------------------------------
 
 void main() {
+  ensureTestAotRegisteredSync();
   // =========================================================================
   // ErrorPage
   // =========================================================================

@@ -25,6 +25,7 @@ import 'package:jetleaf_web/src/server/server_http_response.dart';
 import 'package:jetleaf_web/src/http/http_body.dart';
 import 'package:jetleaf_web/src/web/view.dart';
 import 'package:jtl/jtl.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 // ---------------------------------------------------------------------------
 // Stub / Mock helpers
@@ -242,6 +243,7 @@ class _StubContentNegotiationResolver implements ContentNegotiationResolver {
 // ---------------------------------------------------------------------------
 
 void main() {
+  ensureTestAotRegisteredSync();
   // =========================================================================
   // ReturnValueHandler interface
   // =========================================================================

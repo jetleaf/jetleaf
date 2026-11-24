@@ -103,8 +103,8 @@ class ComplexTypeFieldClass {
 }
 
 @JetleafTest()
-void main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('FieldDeclaration Basic Properties', () {
     test('should correctly identify field modifiers', () {
       final testClass = Runtime.findClassByType(FieldTestClass);

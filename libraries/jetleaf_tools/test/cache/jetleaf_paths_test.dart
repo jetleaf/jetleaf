@@ -3,9 +3,11 @@ import 'dart:io';
 import 'package:jetleaf_tools/src/cache/jetleaf_paths.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import '../helpers/aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 /// Verifies the workspace contract used by every Jetleaf layer.
 void main() {
+  ensureTestAotRegisteredSync();
   test('constructs every canonical workspace location from one policy', () {
     final root = Directory('/workspace/example');
 

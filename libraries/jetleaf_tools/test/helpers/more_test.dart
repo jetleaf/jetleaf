@@ -1,5 +1,6 @@
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import './aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 class MoreUser with EqualsAndHashCode {
   final String id;
@@ -12,6 +13,7 @@ class MoreUser with EqualsAndHashCode {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('EqualsAndHashCode (MoreUser basics)', () {
     test('two identical objects are equal', () {
       final a = MoreUser('1', 'Alice');

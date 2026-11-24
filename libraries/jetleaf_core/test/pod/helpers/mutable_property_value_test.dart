@@ -2,8 +2,10 @@
 import 'package:jetleaf_core/src/pod/helpers/object.dart';
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('MutablePropertyValues', () {
     test('should create empty MutablePropertyValues', () {
       final mpv = MutablePropertyValues();

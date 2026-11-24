@@ -1,6 +1,7 @@
 // test/mergeable_test.dart
 import 'package:jetleaf_core/src/pod/helpers/object.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 class TestMergeable implements Mergeable {
   final Map<String, dynamic> data;
@@ -41,6 +42,7 @@ class TestListMergeable implements Mergeable {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Mergeable', () {
     test('should merge maps with child overriding parent', () {
       final parent = TestMergeable({'common': 'parent', 'parentOnly': true});

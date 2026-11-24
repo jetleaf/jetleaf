@@ -1,7 +1,9 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Collectors', () {
     test('toList collects elements to list', () {
       final collector = Collectors.toList<int>();

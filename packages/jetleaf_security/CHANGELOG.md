@@ -2,36 +2,18 @@
 
 ## 1.0.0
 
-**Breaking rewrite.** This release replaces the earlier untracked implementation.
-The public class names keep their familiar shape, but the internals,
-API surface and runtime behaviour changed substantially.
+Initial stable release of **Jetleaf Security**—bringing Spring-inspired authentication, authorization, session management, and cryptographic security primitives to the Jetleaf framework.
 
-### Added
-- Zero third-party JWT dependency: in-house base64url, JWK, HMAC/RSA/ECDSA JWS
-  engine and validator chain on `pointycastle` and `crypto`.
-- Typed `AuthorizationManager<T>` model for request and method security.
-- Real `AuthorizationManagerBeforeMethodInterceptor` /
-  `AuthorizationManagerAfterMethodInterceptor` registered as Jetleaf pods.
-- `SecurityAutoConfiguration` and `MethodSecurityAutoConfiguration` with
-  `@ConditionalOnMissingPod` defaults.
-- `FilterChainProxy` with ordered multi-chain selection.
-- `SecurityContextRepository` family, `AuthenticationTrustResolver`,
-  `SessionAuthenticationStrategy` family, `SessionRegistry`.
-- `DelegatingPasswordEncoder` with `{id}` prefixes and async hashing APIs.
-- Ten `lib/` barrels for selective imports.
-- Published cryptographic vectors and adversarial tests.
+### Features
+- **In-House JWT & JWS Engine:** Zero third-party JWT dependencies, powered by a built-in base64url, JWK, and HMAC/RSA/ECDSA JWS engine and validator chain built on `pointycastle` and `crypto`.
+- **Typed Authorization Model:** `AuthorizationManager<T>` for fine-grained request and method-level access control.
+- **Method Security Interceptors:** `AuthorizationManagerBeforeMethodInterceptor` and `AuthorizationManagerAfterMethodInterceptor` registered automatically as Jetleaf pods (requires `jl build` generated proxies on non-final secured classes).
+- **Auto-Configuration:** `SecurityAutoConfiguration` and `MethodSecurityAutoConfiguration` with `@ConditionalOnMissingPod` defaults for out-of-the-box setup and seamless overrides.
+- **Multi-Chain Request Filtering:** `FilterChainProxy` supporting ordered multi-chain security selection.
+- **Session & Context Management:** Complete `SecurityContextRepository` family, `SessionCreationPolicy` enforcement, `SessionAuthenticationStrategy` implementations, `SessionRegistry`, and `AuthenticationTrustResolver`.
+- **Password Encoding:** `DelegatingPasswordEncoder` supporting `{id}` prefix routing and asynchronous hashing APIs.
+- **OAuth2 & OIDC Hardening:** Built-in OIDC `nonce` validation (including Google `azp` verification) and strict verified-email checks for GitHub authentication.
+- **CSRF & Immutable Auth Primitives:** JSON `403` responses on CSRF denials, immutable `Authentication.authorities` sets, and revoke-only trust semantics.
+- **Modular Exports & Test Suite:** Ten focused `lib/` barrel files for selective imports, backed by published cryptographic test vectors and adversarial security tests.
 
-### Changed
-- `Authentication.authorities` is an immutable `Set`; the trust setter is
-  revoke-only.
-- Authorization expressions are no longer used for request matchers.
-- `SessionCreationPolicy` now selects real repository and session behaviour.
-- CSRF denials render a JSON 403 directly.
-- OIDC providers validate `nonce` (and Google `azp`); GitHub no longer asserts
-  unverified emails.
-- `dart_jsonwebtoken` removed from dependencies.
-
-### Migration
-See the API conventions in `README.md` and the rewrite
-specification at `roadmap/jetleaf_security_rewrite.md`. Secured classes require
-`jl build` generated proxies and must not be final.
+See `README.md` for configuration examples and API conventions.

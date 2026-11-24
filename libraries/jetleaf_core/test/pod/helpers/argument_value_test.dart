@@ -2,8 +2,10 @@
 import 'package:jetleaf_core/src/pod/helpers/object.dart';
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('ArgumentValue', () {
     test('should create ArgumentValue with value', () {
       final av = ArgumentValue('test_value', qualifiedName: 'test.Qualified', packageName: 'test_package');

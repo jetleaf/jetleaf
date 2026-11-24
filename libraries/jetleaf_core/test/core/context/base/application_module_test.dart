@@ -1,7 +1,7 @@
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
-import '../../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+import '../../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 
 class TestModule implements ApplicationModule {
@@ -17,8 +17,8 @@ class TestModule implements ApplicationModule {
 }
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('ApplicationModule', () {
     test('should configure context', () async {
       final customizer = TestModule();

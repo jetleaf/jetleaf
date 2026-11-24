@@ -2,8 +2,10 @@
 import 'package:jetleaf_core/src/pod/helpers/object.dart';
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('ConvertibleValue', () {
     test('should create ConvertibleValue with value', () {
       final cv = _TestConvertibleValue('test_value', qualifiedName: 'test.Qualified');

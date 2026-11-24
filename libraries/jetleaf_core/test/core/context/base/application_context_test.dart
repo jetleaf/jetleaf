@@ -1,7 +1,7 @@
 import 'package:jetleaf_core/context.dart';
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
-import '../../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+import '../../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 
 class MockApplicationContext extends ApplicationContext {
@@ -28,8 +28,8 @@ class MockApplicationContext extends ApplicationContext {
 }
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('ApplicationContext', () {
     test('should provide context information', () {
       final context = MockApplicationContext();

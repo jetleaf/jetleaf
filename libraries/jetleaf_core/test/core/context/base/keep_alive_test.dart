@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:jetleaf_core/context.dart';
 import 'package:test/test.dart';
+import '../../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('KeepAlive', () {
     
     test('should block and release thread', () async {

@@ -92,7 +92,7 @@ import 'package:jetleaf_web/src/server/return_value_handler/yaml_return_value_ha
 import 'package:jetleaf_web/src/utils/encoding.dart';
 import 'package:jetleaf_web/src/web/error_pages.dart';
 import 'package:jetleaf_web/src/web/web.dart';
-import '../test_helpers.dart' show ensureTestAotRegistered;
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 // ---------------------------------------------------------------------------
 // Test Environment
@@ -165,8 +165,8 @@ class _TestEnvironment implements Environment {
 // ---------------------------------------------------------------------------
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   // =========================================================================
   // WebAutoConfiguration
   // =========================================================================

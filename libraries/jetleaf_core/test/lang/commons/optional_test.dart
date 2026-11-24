@@ -3,8 +3,10 @@ import 'package:test/test.dart';
 
 import '../dependencies/exceptions.dart';
 import '../dependencies/person.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Optional Constructor Tests', () {
     test('empty() creates empty Optional', () {
       final empty = Optional.empty<String>();

@@ -2,8 +2,10 @@
 import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_core/src/pod/helpers/object.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('ConstructorArgumentValues', () {
     test('should create empty ConstructorArgumentValues', () {
       final cav = ConstructorArgumentValues();

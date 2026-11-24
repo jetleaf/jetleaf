@@ -179,8 +179,8 @@ class DerivedClass extends MiddleClass {
 }
 
 @JetleafTest()
-void main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('ClassDeclaration Basic Properties', () {
     test('should identify class type kind', () {
       final concreteClass = Runtime.findClass<ConcreteClass>();

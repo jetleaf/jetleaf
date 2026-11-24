@@ -6,6 +6,7 @@ import 'package:jetleaf_core/src/pod/helpers/object.dart';
 import 'package:jetleaf_core/src/pod/scope/_scope.dart';
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 // Mock ObjectFactory for testing
 class MockObjectFactory implements ObjectFactory<Object> {
@@ -40,6 +41,7 @@ class MockObjectFactory implements ObjectFactory<Object> {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('PrototypeScope', () {
     late PrototypeScope scope;
 

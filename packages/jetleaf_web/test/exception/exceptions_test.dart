@@ -3,8 +3,10 @@ import 'package:jetleaf_web/src/exception/exceptions.dart';
 import 'package:jetleaf_web/src/exception/path_exception.dart';
 import 'package:jetleaf_web/src/exception/server_exceptions.dart';
 import 'package:test/test.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('HttpException', () {
     test('constructs with required statusCode', () {
       final e = HttpException('msg', statusCode: 500);

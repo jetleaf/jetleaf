@@ -1,7 +1,9 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_web/src/http/http_method.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('HttpMethod - Standard Methods', () {
     test('GET has correct string value', () {
       expect(HttpMethod.GET.toString(), 'GET');

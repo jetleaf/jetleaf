@@ -1,8 +1,10 @@
 // test/object_factory_test.dart
 import 'package:jetleaf_core/src/pod/helpers/object.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('ObjectFactory', () {
     test('SimpleObjectFactory should create objects using creator function', () async {
       final factory = SimpleObjectFactory<String>(([args]) => ObjectHolder('test', packageName: 'test', qualifiedName: 'test'));

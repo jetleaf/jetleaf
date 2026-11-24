@@ -5,6 +5,7 @@ import 'package:jetleaf_core/src/core/context/lifecycle/lifecycle.dart';
 import 'package:jetleaf_core/src/core/context/lifecycle/lifecycle_processor.dart';
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 class TestLifecycle implements Lifecycle {
   bool _running = false;
@@ -74,6 +75,7 @@ class TestPhased implements Phased {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Lifecycle', () {
     test('should start and stop', () async {
       final lifecycle = TestLifecycle();

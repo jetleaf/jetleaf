@@ -3,8 +3,10 @@ import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_core/src/pod/definition/commons.dart';
 import 'package:jetleaf_core/src/pod/helpers/enums.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('ScopeDescriptor', () {
     test('should create with required parameters', () {
       final descriptor = ScopeDesign(

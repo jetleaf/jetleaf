@@ -1,5 +1,6 @@
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import '../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 /// A dummy class used for testing reflection.
 class ReflectUser {
@@ -19,6 +20,7 @@ void testFunction(int x, String y) {}
 int anotherFunction(double d) => d.toInt();
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('ReflectionUtils', () {
     test('findQualifiedName returns a fully qualified name for an instance', () {
       final user = ReflectUser('Alice');

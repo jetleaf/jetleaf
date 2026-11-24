@@ -1,7 +1,9 @@
 import 'package:jetleaf_tools/src/utils/generic_type_parser.dart';
 import 'package:test/test.dart';
+import './helpers/aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('GenericParser', () {
     group('extractGenericPart', () {
       test('should extract simple generic part', () {

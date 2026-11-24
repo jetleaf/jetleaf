@@ -1,6 +1,7 @@
 import 'package:jetleaf_core/src/core/message/abstract_message_source.dart';
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 class TestMessageSource extends AbstractMessageSource {
   final Map<Locale, Map<String, String>> messages;
@@ -14,6 +15,7 @@ class TestMessageSource extends AbstractMessageSource {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('AbstractMessageSource', () {
     late TestMessageSource messageSource;
     final defaultLocale = Locale('en', 'US');

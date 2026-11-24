@@ -1,7 +1,9 @@
 import 'package:jetleaf_core/property.dart';
 import 'package:test/test.dart';
+import '../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('JetleafProperty', () {
     test('stores key, value, and description', () {
       final prop = JetleafProperty.custom('server.port', 8080, 'The TCP port');

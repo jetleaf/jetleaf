@@ -58,8 +58,8 @@ class Parent {}
 class Child extends Parent {}
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('Annotation API', () {
     test('getAnnotation() finds annotation', () {
       final serviceClass = Class<AnnotatedService>();

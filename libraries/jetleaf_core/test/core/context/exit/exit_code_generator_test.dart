@@ -3,7 +3,7 @@ import 'package:jetleaf_core/src/core/context/exit_code/exit_code.dart';
 import 'package:jetleaf_core/src/core/context/exit_code/exit_code_generator.dart';
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
-import '../../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+import '../../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 
 class TestException extends RuntimeException {
@@ -51,8 +51,8 @@ class OrderedExitCodeGenerator implements ExitCodeGenerator, Ordered {
 }
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('ExitCodeGenerators', () {
     late ExitCodeGenerators generators;
 

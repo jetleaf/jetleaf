@@ -26,8 +26,10 @@ import 'package:jetleaf_web/src/io_rest/config.dart';
 import 'package:jetleaf_web/src/io_rest/executor.dart';
 import 'package:jetleaf_web/src/io_rest/response.dart';
 import 'package:jetleaf_web/src/utils/encoding.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('REST Client Streaming Tests', () {
     late io.HttpServer server;
     late int port;

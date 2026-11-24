@@ -1,7 +1,9 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_web/src/http/cache_control.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('CacheControl - Factory Constructors', () {
     test('empty has no directives', () {
       expect(CacheControl.empty().getHeaderValue(), isNull);

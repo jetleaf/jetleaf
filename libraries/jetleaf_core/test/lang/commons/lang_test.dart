@@ -64,8 +64,11 @@ import 'string_builder_test.dart' as string_builder_test;
 import 'optional_test.dart' as optional_test;
 import 'instance_test.dart' as instance_test;
 import 'regex_utils_test.dart' as regex_utils_test;
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
-void main() => group('Lang Tests', () {
+void main() {
+  ensureTestAotRegisteredSync();
+  return group('Lang Tests', () {
   bool_extension_test.main();
   int_extension_test.main();
   double_extension_test.main();
@@ -127,3 +130,4 @@ void main() => group('Lang Tests', () {
   stream_test.main();
   stream_builder_test.main();
 });
+}

@@ -1,7 +1,9 @@
 import 'package:jetleaf_core/env.dart';
 import 'package:test/test.dart';
+import '../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('DefaultApplicationArguments', () {
     test('getSourceArgs returns raw args', () {
       final args = DefaultApplicationArguments(['--name=test', 'value']);

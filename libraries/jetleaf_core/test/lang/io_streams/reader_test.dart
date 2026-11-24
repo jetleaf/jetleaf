@@ -3,6 +3,7 @@ import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
 
 import '../dependencies/exceptions.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 class MockReader extends Reader {
   final List<int> _chars;
@@ -18,6 +19,7 @@ class MockReader extends Reader {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Reader', () {
     test('readChar returns characters and -1 at end', () async {
       final reader = MockReader('abc');

@@ -2,6 +2,7 @@
 import 'package:jetleaf_core/src/pod/scope/scope.dart';
 import 'package:jetleaf_core/src/pod/helpers/object.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 class MockScope extends PodScope {
   final Map<String, ObjectHolder<Object>> objects = {};
@@ -23,6 +24,7 @@ class MockScope extends PodScope {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('ScopedObjectFactory', () {
     test('should create object from scope', () async {
       final scope = MockScope();

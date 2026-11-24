@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import './aot_test_setup.dart' show ensureTestAotRegisteredSync;
 
 /// A model that includes raw bytes (`Uint8List`) and complex nested data
 class Document with EqualsAndHashCode {
@@ -27,6 +28,7 @@ class Folder with EqualsAndHashCode {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('EqualsAndHashCode (Uint8List + complex data types)', () {
     test('Uint8List with identical bytes are equal', () {
       final bytesA = Uint8List.fromList([1, 2, 3, 4, 5]);

@@ -1,8 +1,10 @@
 // test/application_startup_test.dart
 import 'package:jetleaf_core/src/pod/startup/application_startup.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('ApplicationStartup', () {
     test('DefaultApplicationStartup should return DEFAULT_STARTUP_STEP', () {
       final startup = DefaultApplicationStartup();

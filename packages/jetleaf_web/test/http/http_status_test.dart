@@ -1,7 +1,9 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_web/src/http/http_status.dart';
+import '../test_helpers.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('HttpStatus - Predefined Constants', () {
     test('OK has code 200', () {
       expect(HttpStatus.OK.getCode(), 200);

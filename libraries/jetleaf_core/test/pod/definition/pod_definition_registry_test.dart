@@ -3,7 +3,7 @@ import 'package:jetleaf_core/lang.dart';
 import 'package:jetleaf_core/src/pod/definition/pod_definition.dart';
 import 'package:jetleaf_core/src/pod/definition/pod_definition_registry.dart';
 import 'package:test/test.dart';
-import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 
 // Mock implementation for testing
@@ -68,8 +68,8 @@ class MockPodDefinition extends PodDefinition {
 }
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('PodDefinitionRegistry', () {
     late PodDefinitionRegistry registry;
 

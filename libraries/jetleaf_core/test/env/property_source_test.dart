@@ -1,7 +1,9 @@
 import 'package:jetleaf_core/property.dart';
 import 'package:test/test.dart';
+import '../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('MapPropertySource', () {
     test('containsProperty returns true for existing key', () {
       final source = MapPropertySource('test', {'key1': 'value1'});

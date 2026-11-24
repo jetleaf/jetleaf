@@ -2,8 +2,10 @@ import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
 
 import '../dependencies/exceptions.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('ZonedDateTime', () {
     group('Creation and Parsing', () {
       test('should create ZonedDateTime with LocalDateTime and ZoneId', () {

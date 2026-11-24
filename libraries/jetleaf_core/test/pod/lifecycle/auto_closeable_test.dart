@@ -1,6 +1,7 @@
 // test/auto_closeable_test.dart
 import 'package:jetleaf_core/lang.dart';
 import 'package:test/test.dart';
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 class TestAutoCloseable implements Closeable {
   bool closed = false;
@@ -22,6 +23,7 @@ class TestAsyncAutoCloseable implements Closeable {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   group('Closeable', () {
     test('should be an abstract class', () {
       final closeable = TestAutoCloseable();

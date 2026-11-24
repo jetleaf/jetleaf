@@ -2,7 +2,7 @@ import 'package:jetleaf_core/src/core/message/configurable_message_source.dart';
 import 'package:jetleaf_core/src/core/message/message_source_loader.dart';
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
-import '../../lang/meta/test_data.dart' show ensureTestAotRegistered;
+import '../../lang/meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 
 class MockMessageLoader extends MessageSourceLoader {
@@ -26,8 +26,8 @@ class MockMessageLoader extends MessageSourceLoader {
 }
 
 @JetleafTest()
-Future<void> main() async {
-  await ensureTestAotRegistered();
+void main() {
+  ensureTestAotRegisteredSync();
   group('ConfigurableMessageSource', () {
     late ConfigurableMessageSource messageSource;
     final enLocale = Locale('en');

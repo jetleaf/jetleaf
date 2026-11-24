@@ -1,5 +1,6 @@
 import 'package:test/test.dart';
 import 'package:jetleaf_core/lang.dart';
+import '../meta/test_data.dart' show ensureTestAotRegisteredSync;
 
 class Person implements Comparable<Person> {
   final String name;
@@ -15,6 +16,7 @@ class Person implements Comparable<Person> {
 }
 
 void main() {
+  ensureTestAotRegisteredSync();
   final people = [
     Person('Alice', 30),
     Person('Bob', 25),

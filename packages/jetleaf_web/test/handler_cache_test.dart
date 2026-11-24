@@ -13,6 +13,7 @@
 // 🔧 Powered by Hapnium — the Dart backend engine 🍃
 
 import 'package:test/test.dart';
+import './test_helpers.dart' show ensureTestAotRegisteredSync;
 
 /// {@template handler_cache_strategy_test}
 /// Unit tests validating the improved handler cache strategy for
@@ -47,6 +48,7 @@ import 'package:test/test.dart';
 ///
 /// {@endtemplate}
 void main() {
+  ensureTestAotRegisteredSync();
   group('Handler Cache Strategy', () {
     test('composite cache key differentiates by HTTP method and path pattern', () {
       /// Simulating the new cache key structure.
