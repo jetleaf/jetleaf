@@ -18,7 +18,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          # Events created with the default GITHUB_TOKEN do NOT trigger other
+          # workflows. A PAT (or GitHub App token) is required so the tag pushes
+          # below start publish.yml. Store it as the RELEASE_TOKEN secret.
+          token: ${{ secrets.RELEASE_TOKEN }}
           fetch-depth: 0
 
       - name: Configure Git identity
