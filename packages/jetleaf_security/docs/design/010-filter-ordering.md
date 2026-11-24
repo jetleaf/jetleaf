@@ -18,8 +18,8 @@ Security filters are order-sensitive. The current package sorts by magic integer
 `@Order`/`Ordered` plus `AnnotationAwareOrderComparator`, as used by `FilterManager`. Users register custom filters as pods or via the DSL. A lower numeric value runs earlier.
 
 **Two distinct order domains MUST NOT be confused:**
-1. **External** — the `FilterChainProxy` entry point and web's own filters are separate beans discovered by `FilterManager`. `jetleaf_web`'s `CorsFilter` has `getOrder() => Ordered.HIGHEST_PRECEDENCE` and its `CsrfFilter` has `HIGHEST_PRECEDENCE + 1`. The proxy must carry an explicit `@Order` that places it correctly relative to them.
-2. **Internal** — the table below orders `SecurityFilter`s *inside* the proxy. Those are not beans and are not seen by `FilterManager`.
+1. **External** — the `FilterChainProxy` entry point and web's own filters are separate Pods discovered by `FilterManager`. `jetleaf_web`'s `CorsFilter` has `getOrder() => Ordered.HIGHEST_PRECEDENCE` and its `CsrfFilter` has `HIGHEST_PRECEDENCE + 1`. The proxy must carry an explicit `@Order` that places it correctly relative to them.
+2. **Internal** — the table below orders `SecurityFilter`s *inside* the proxy. Those are not Pods and are not seen by `FilterManager`.
 
 If CORS/CSRF are delegated to `jetleaf_web` (record 013), they run in domain 1 and the internal table must not duplicate them.
 

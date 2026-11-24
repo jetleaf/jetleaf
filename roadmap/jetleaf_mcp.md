@@ -17,7 +17,7 @@ By implementing the open **Model Context Protocol (MCP)** specification (JSON-RP
 
 This enables **"vibecoders"** (developers building full production systems using natural language prompts) and enterprise engineering teams to:
 1. **Scaffold complete backend architectures** (Controllers, Pods, Repositories, Entities) with zero manual syntax errors.
-2. **Inspect live server topology** (route tables, loaded beans, memory consumption, actuator health metrics).
+2. **Inspect live server topology** (route tables, loaded pods, memory consumption, actuator health metrics).
 3. **Run autonomous self-healing loops**: When an AI agent modifies code, `jetleaf_mcp` triggers the resident `jl dev` VM, captures compilation errors or failed `@JetleafTest` assertions, feeds structured diagnostics back to the LLM, and lets the agent auto-correct the code until 100% of tests pass.
 
 ### 1.2 Separation of Concerns & Pluggability
@@ -278,7 +278,7 @@ Parses Dart analysis diagnostics and compiler errors in real time, pinpointing e
 MCP Resources allow agents to read dynamic project state as if reading virtual files:
 
 1. `jetleaf://routes`: Exposes the live HTTP route mapping table in Markdown or JSON format.
-2. `jetleaf://pods`: Exposes the live Dependency Injection graph (beans, scopes, circular dependency checks).
+2. `jetleaf://pods`: Exposes the live Dependency Injection graph (pods, scopes, circular dependency checks).
 3. `jetleaf://actuator`: Exposes live health status, JVM/isolate memory allocation, CPU load, and thread counters from `jetleaf_actuator`.
 4. `jetleaf://schema`: Exposes database entity models and SQL/NoSQL schema mappings.
 

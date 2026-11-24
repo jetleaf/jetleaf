@@ -400,7 +400,7 @@ final class AotProxyWriter extends AotSubRegistrarWriter {
       ..writeln('/// - `@Retryable` — transient-failure recovery with backoff')
       ..writeln('/// - `@Cacheable` — method-level result caching')
       ..writeln('/// - `@RateLimit` — sliding-window request throttling')
-      ..writeln('/// - Custom `MethodInterceptor` beans discovered from the context\n')
+      ..writeln('/// - Custom `MethodInterceptor` Pods discovered from the context\n')
       ..writeln('/// Member accesses that are not interceptable are forwarded directly')
       ..writeln('/// to the delegate. Final fields are read-only through the proxy.')
       ..writeln('///')
@@ -446,7 +446,7 @@ final class AotProxyWriter extends AotSubRegistrarWriter {
     buffer.writeln('  /// Returns the Jetleaf runtime [Class] for the underlying type.');
     buffer.writeln('  ///');
     buffer.writeln('  /// Useful for diagnostics and for frameworks that inspect the proxied');
-    buffer.writeln('  /// bean, e.g. to print the fully-qualified type in error messages.');
+    buffer.writeln('  /// Pod, e.g. to print the fully-qualified type in error messages.');
     buffer.writeln('  static Class<$aliasedClass> ${CONST_GetRealClass()}() => Class.fromQualifiedName(\'$classUri.$className\');');
     buffer.writeln();
 

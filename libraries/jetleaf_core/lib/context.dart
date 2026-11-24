@@ -51,7 +51,7 @@
 ///
 /// ### 🔄 Lifecycle Processors
 /// - [Lifecycle] — common interface defining methods for start/stop lifecycle control.
-/// - [LifecycleProcessor] — strategy interface for processing lifecycle beans within the context.
+/// - [LifecycleProcessor] — strategy interface for processing lifecycle pods within the context.
 ///
 /// ### 🔍 Type Filtering
 /// - [TypeFilter] — designator matching classes during classpath scanning.

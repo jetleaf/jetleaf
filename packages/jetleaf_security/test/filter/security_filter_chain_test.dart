@@ -39,7 +39,7 @@ void main() {
       final res = MockServerHttpResponse();
       final next = RecordingFilterChain();
 
-      await chain.doFilter(req, res, next);
+      await FilterChainProxy([chain]).doFilter(req, res, next);
 
       expect(next.called, isTrue);
       expect(res.status, equals(HttpStatus.OK));
@@ -52,7 +52,7 @@ void main() {
       final res = MockServerHttpResponse();
       final next = RecordingFilterChain();
 
-      await chain.doFilter(req, res, next);
+      await FilterChainProxy([chain]).doFilter(req, res, next);
 
       expect(next.called, isFalse);
       expect(res.status, equals(HttpStatus.UNAUTHORIZED));
@@ -71,7 +71,7 @@ void main() {
       final res = MockServerHttpResponse();
       final next = RecordingFilterChain();
 
-      await chain.doFilter(req, res, next);
+      await FilterChainProxy([chain]).doFilter(req, res, next);
 
       expect(next.called, isFalse);
       expect(res.status, equals(HttpStatus.FORBIDDEN));
@@ -94,7 +94,7 @@ void main() {
         },
       );
 
-      await chain.doFilter(req, res, next);
+      await FilterChainProxy([chain]).doFilter(req, res, next);
 
       expect(next.called, isTrue);
       expect(observedPrincipal, equals('alice'));
@@ -113,7 +113,7 @@ void main() {
       final res = MockServerHttpResponse();
       final next = RecordingFilterChain();
 
-      await chain.doFilter(req, res, next);
+      await FilterChainProxy([chain]).doFilter(req, res, next);
 
       expect(next.called, isFalse);
       expect(res.status, equals(HttpStatus.NO_CONTENT));

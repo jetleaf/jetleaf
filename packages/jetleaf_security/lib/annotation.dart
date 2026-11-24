@@ -34,7 +34,7 @@
 /// @EnableWebSecurity()
 /// @EnableMethodSecurity(securedEnabled: true)
 /// class SecurityConfiguration {
-///   // Security beans and policy configuration live here.
+///   // Security Pods and policy configuration live here.
 /// }
 ///
 /// class AccountService {

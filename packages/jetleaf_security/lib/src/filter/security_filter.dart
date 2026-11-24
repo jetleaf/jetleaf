@@ -10,8 +10,8 @@ import 'package:jetleaf_web/jetleaf_web.dart';
 /// which keeps filter sets stable when chains are compared.
 ///
 /// ### Contract and ordering guarantees
-/// - Subclasses supply [order], normally from `SecurityFilterOrders`, and
-///   implement [doFilter].
+/// - Subclasses supply the priority through [getOrder], backed by [order],
+///   normally using `SecurityFilterOrders`, and implement [doFilter].
 /// - Lower [order] values run earlier; a chain sorts its filters by this value
 ///   when constructed.
 /// - Implementations should call `chain.next(request, response)` unless they
@@ -29,13 +29,14 @@ import 'package:jetleaf_web/jetleaf_web.dart';
 /// - `SecurityFilterChain`
 /// - `SecurityFilterOrders`
 /// {@endtemplate}
-abstract class SecurityFilter with EqualsAndHashCode implements Filter {
-  /// Execution priority in the `SecurityFilterChain` (lower runs earlier).
-  ///
-  /// Implementations should return one of the canonical values from
-  /// `SecurityFilterOrders`, or an offset from one when inserting a custom
-  /// filter relative to a built-in one.
+abstract class SecurityFilter with EqualsAndHashCode implements Filter, Ordered {
+  /// Backing value for [getOrder]; see that method for ordering semantics.
   int get order;
+
+  /// Exposes [order] to Jetleaf's `AnnotationAwareOrderComparator`, which is
+  /// used by `FilterManager` to sort the web filter Pods.
+  @override
+  int getOrder() => order;
 
   /// Contributes the runtime type and [order] to equality and hashing.
   ///

@@ -204,7 +204,7 @@ class PathPatternMatcher with EqualsAndHashCode implements RequestMatcher {
 /// - [RequestMatcher]
 /// - `FilterChainProxy`
 /// {@endtemplate}
-class SecurityFilterChain with EqualsAndHashCode implements Filter {
+class SecurityFilterChain with EqualsAndHashCode implements Filter, Ordered {
   /// Matcher determining if this chain applies to an incoming request.
   final RequestMatcher requestMatcher;
 
@@ -216,6 +216,10 @@ class SecurityFilterChain with EqualsAndHashCode implements Filter {
   /// Selection order when several chains are registered in a `FilterChainProxy`.
   /// Lower values are considered first.
   final int order;
+
+  /// Exposes [order] to Jetleaf's `AnnotationAwareOrderComparator`.
+  @override
+  int getOrder() => order;
 
   /// {@macro security_filter_chain}
   SecurityFilterChain({
@@ -257,8 +261,27 @@ class SecurityFilterChain with EqualsAndHashCode implements Filter {
   /// ```dart
   /// await chain.doFilter(request, response, webFilterChain);
   /// ```
+  /// Request attribute set by `FilterChainProxy` before dispatching to the
+  /// selected chain. A chain discovered directly by `FilterManager` must not
+  /// run on its own, otherwise every chain would execute for every request.
+  static const String PROXY_ATTRIBUTE = 'jetleaf.security.chain.proxy';
+
   @override
   Future<void> doFilter(ServerHttpRequest request, ServerHttpResponse response, FilterChain chain) async {
+    // Only the proxy-selected chain may execute. This also prevents the same
+    // chain from running twice when it is discovered as a web Filter Pod.
+    if (!identical(request.getAttribute(PROXY_ATTRIBUTE), this)) {
+      await chain.next(request, response);
+      return;
+    }
+
+    final ranAttribute = '$PROXY_ATTRIBUTE.ran.${identityHashCode(this)}';
+    if (request.getAttribute(ranAttribute) == true) {
+      await chain.next(request, response);
+      return;
+    }
+    request.setAttribute(ranAttribute, true);
+
     if (!matches(request)) {
       await chain.next(request, response);
       return;

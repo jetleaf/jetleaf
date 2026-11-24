@@ -26,6 +26,16 @@ class AdminController with Interceptable {
         _class,
       );
 
+  @GetMapping(path: '/api/admin/user-access')
+  @PreAuthorize("hasRole('USER')")
+  Future<Map<String, Object?>> userAccess() => when(
+        () async => {'grantedByHierarchy': true},
+        this,
+        'userAccess',
+        ExecutableArgument.optional(),
+        _class,
+      );
+
   @GetMapping(path: '/api/admin/audit')
   @RolesAllowed(['ADMIN'])
   Future<Map<String, Object?>> audit() => when(

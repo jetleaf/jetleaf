@@ -1119,7 +1119,7 @@ pubspec.lock
     sb.writeln('```dart');
     sb.writeln('@Configuration()');
     sb.writeln('class AppConfig {');
-    sb.writeln('  @Pod()  // Creates a managed bean');
+    sb.writeln('  @Pod()  // Creates a managed pod');
     sb.writeln('  DatabaseConfig databaseConfig(');
     sb.writeln('    @Value(\'#{database.host:localhost}\') String host,');
     sb.writeln('    @Value(\'#{database.port:5432}\') int port');

@@ -1663,6 +1663,17 @@ abstract class AbstractPodFactory extends AbstractPodProviderFactory implements 
     }
 
     if (type != null && !type.isInstance(pod)) {
+      // A synthetic Class has no resolvable type identity. The AOT generator
+      // emits one for types from packages outside the scanned component set
+      // (for example an interface from a third-party driver). There is nothing
+      // meaningful to convert to: the pod instance was produced by a factory
+      // whose declared return type is that same unresolved type, and it
+      // already satisfies the type at runtime. Attempting conversion here
+      // rejects valid pods with a confusing ConverterNotFoundException.
+      if (type.isSynthetic()) {
+        return pod as T;
+      }
+
       try {
         final convertedPod = _conversionService.convertTo(pod, type, sourceType);
         if (convertedPod == null) {

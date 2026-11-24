@@ -327,7 +327,7 @@ packages/jetleaf_security/
 
 **Deliberate deviations — document each in README's API conventions table:**
 
-`SecurityContextHolder` uses Zone, not `ThreadLocal`; `Filter` is `jetleaf_web.Filter`; `SecurityFilterChain` is contributed via `FilterManager`; `@Pod`/`@AutoConfiguration` replace bean declarations; `RateLimitingFilter` and `JwtTokenProvider` are package-specific additions; `SecurityHeadersFilter` remains the public name but composes `HeaderWriter`s.
+`SecurityContextHolder` uses Zone, not `ThreadLocal`; `Filter` is `jetleaf_web.Filter`; `SecurityFilterChain` is contributed via `FilterManager`; `@Pod`/`@AutoConfiguration` replace Pod declarations; `RateLimitingFilter` and `JwtTokenProvider` are package-specific additions; `SecurityHeadersFilter` remains the public name but composes `HeaderWriter`s.
 
 **Vocabulary rule:** DO NOT rename familiar security concepts into Jetleaf-flavoured ones. No `Identity` for `Authentication`, no `Permission` for `GrantedAuthority`, no `SecurityHttp` for `HttpSecurity`. Code, docs, tests, and examples use the established security vocabulary.
 
@@ -368,7 +368,7 @@ These are real APIs in this repository; the implementing agent must read them be
 
 | Concern | Jetleaf primitive | Location |
 | --- | --- | --- |
-| Bean registration | `@Pod` (factory method), `@Configuration`, `@AutoConfiguration`, `@ConditionalOnMissingPod`, `@Primary`, `@Order`, `@Qualifier` | `libraries/jetleaf_core/lib/src/core/annotations/` (barrel `annotation.dart`) |
+| Pod registration | `@Pod` (factory method), `@Configuration`, `@AutoConfiguration`, `@ConditionalOnMissingPod`, `@Primary`, `@Order`, `@Qualifier` | `libraries/jetleaf_core/lib/src/core/annotations/` (barrel `annotation.dart`) |
 | Container lifecycle | `InitializingPod`, `SmartInitializingSingleton`, `PodPostProcessor`, `PodFactoryAware` | `libraries/jetleaf_core/lib/src/pod/`, `.../context/` |
 | Request/response | `ServerHttpRequest`, `ServerHttpResponse`, `HttpHeaders`, `HttpCookie`, `HttpSession` | `packages/jetleaf_web/lib/src/server/`, `.../http/` |
 | Filters | `Filter`, `FilterChain`, `OncePerRequestFilter`, `FilterManager` | `packages/jetleaf_web/lib/src/server/filter/` |
@@ -391,7 +391,7 @@ These are confirmed facts, not assumptions. Ledger records 009, 010, 013, 017, 0
 1. **Proxy generation is CLI-driven, not `build_runner`.** There is no `build.yaml`. Users run `jl build` or `jl proxy` from `jetleaf_tools`. Eligible stereotypes include `RestController`, `Controller`, `Service`, `Component`, `Configuration`, `Pod`. Output goes to `lib/_jetleaf/proxies/`. **`final`, `sealed` and `mixin class` targets are skipped.**
 2. **No proxy ⇒ no interception, silently.** `DefaultMethodInterceptor.processAfterInitialization()` returns the plain pod when no `$$JLInterfaced$$` subclass exists. There is no runtime fallback. This must be a documented hard requirement and a build-level integration test.
 3. **Parameter names survive AOT generation.** `Parameter.getName()` returns the source lexeme; `ExecutableArgument` carries values only, so map `#param` via `Method.getParameters()` + `getPositionalArguments()`. No `@P` annotation is needed.
-4. **Filter registration is automatic for `Filter` pods.** `FilterManager.onReady()` discovers all `Filter` beans and subtypes. Multiple chains need no manual registry call. Ordering is `AnnotationAwareOrderComparator` (lower = earlier); web's CORS filter is `HIGHEST_PRECEDENCE` and its CSRF filter is `HIGHEST_PRECEDENCE + 1`.
+4. **Filter registration is automatic for `Filter` pods.** `FilterManager.onReady()` discovers all `Filter` Pods and subtypes. Multiple chains need no manual registry call. Ordering is `AnnotationAwareOrderComparator` (lower = earlier); web's CORS filter is `HIGHEST_PRECEDENCE` and its CSRF filter is `HIGHEST_PRECEDENCE + 1`.
 5. **`HttpSession` ids cannot be changed in place.** Fixation protection must create a new session, copy attributes, invalidate the old one, and emit a fresh `JSESSIONID` cookie. `IoRequest.getSession(create:)` ignores the `create` flag.
 
 ---
@@ -511,7 +511,7 @@ to `jetleaf_web` `ServerHttpResponse.setStatus`. Uses `HttpHeaders` for
 
 - **MUST** replace expression-string rules with `AuthorizationManager<RequestAuthorizationContext>` implementations. `AuthorizeHttpRequestsConfigurer` terminals return `AuthorizedUrl`/the configurer for chaining and produce typed rules.
 - **MUST** provide `AuthorityAuthorizationManager`, `AuthenticatedAuthorizationManager`, `RequestMatcherDelegatingAuthorizationManager`, and `AuthorizationManagers.anyOf/allOf`.
-- **MUST** build a `FilterChainProxy`-equivalent `Filter` bean registered with `FilterManager` via `@Pod`, supporting multiple `SecurityFilterChain`s selected by `securityMatcher` and ordered by `@Order`. It clears the security context in `finally`.
+- **MUST** build a `FilterChainProxy`-equivalent `Filter` Pod registered with `FilterManager` via `@Pod`, supporting multiple `SecurityFilterChain`s selected by `securityMatcher` and ordered by `@Order`. It clears the security context in `finally`.
 - **MUST** establish this order; relative placement is exposed through `addFilterBefore`/`addFilterAfter`, not raw numbers alone:
   | order | filter | invariant |
   | --- | --- | --- |
@@ -785,5 +785,8 @@ All six items are decided. The implementing agent may proceed.
 - **Comprehensive example application**: `packages/jetleaf_security/example` now covers three filter chains, JWT access/refresh, DAO/JWT/custom API-key providers, delegating password hashing, `@PreAuthorize`/`@PostAuthorize`/`@Secured`/`@RolesAllowed`, role hierarchy, OAuth2 resource server and OIDC nonce validation with a local JWKS, CORS, headers, rate limiting, and a custom authentication event publisher. `dart test` in the example passes **19 tests** (18 real HTTP tests plus an OAuth2 smoke test).
 - **AOT generator fix**: `libraries/jetleaf_tools/lib/src/aot/aot_field_registry_writer.dart` now emits field setters for `late final` fields, so `@Autowired late final` injections work in AOT builds. The example controllers use real field injection after this fix.
 - **`SecurityContext.setAuthentication`** was added alongside direct assignment.
+- **Framework integration fixes**: `SecurityFilter`/`SecurityFilterChain` implement `Ordered` so `FilterManager` honours their order; the default `filterChainProxy` Pod now discovers every `SecurityFilterChain` pod; a chain executes only when dispatched by the proxy, so chain pods that `FilterManager` also sees as web filters do not run twice; `SecurityExceptionResolver` uses the configured entry point and access-denied handler; authentication events extend `ApplicationEvent` and a bus-backed publisher bridges them to `@EventListener` pods; JWS error messages include the offending algorithm.
+- The example now declares its three chains as plain `@Pod SecurityFilterChain` methods and relies on the framework proxy — no custom proxy or override post-processor.
+- **Production hardening pass**: interceptor conditions guard on the specific method-security interceptor types; a default `RoleHierarchy` Pod is injected into both interceptors and applied to `.access(...)` rules; `AnonymousAuthenticationFilter` is installed but treated as "empty" by the session repository so anonymous visitors never create sessions; `SecurityRequestFirewall` rejects ambiguous paths; CSRF ignore prefixes match on segment boundaries and cookies can carry `Secure`; every truncated error message now interpolates its value. `ExpressionAuthorizationManager` keeps its context factory nullable and builds the default context inside `check()`, so `withRoleHierarchy(...)` cannot retain a stale closure with `null` hierarchy. The example's `admin` user only holds `ROLE_ADMIN` and E2E tests prove `hasRole('USER')` passes through both annotation and `.access(...)` rules.
 - Remaining scope boundary: Pass B items from §2.2 (OAuth2 client flows, SAML, LDAP, remember-me, distributed rate limiting) remain out of scope by design.
 

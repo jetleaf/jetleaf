@@ -79,6 +79,7 @@ export 'src/filter/rate_limiting_filter.dart';
 export 'src/filter/security_context_holder_filter.dart';
 export 'src/filter/security_exception_resolver.dart';
 export 'src/filter/security_filter.dart';
+export 'src/filter/security_request_firewall.dart';
 export 'src/filter/security_filter_chain.dart';
 export 'src/filter/security_headers_filter.dart';
 export 'src/filter/typedefs.dart';

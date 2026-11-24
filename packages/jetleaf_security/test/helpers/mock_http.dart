@@ -53,6 +53,7 @@ class MockServerHttpRequest implements ServerHttpRequest {
   final HttpCookies _cookies;
   final HttpSession? session;
   final String origin;
+  final Map<String, Object> _attributes = {};
 
   MockServerHttpRequest({
     HttpMethod? method,
@@ -91,6 +92,18 @@ class MockServerHttpRequest implements ServerHttpRequest {
 
   @override
   String getOrigin() => origin;
+
+  @override
+  Object? getAttribute(String name) => _attributes[name];
+
+  @override
+  Set<String> getAttributeNames() => _attributes.keys.toSet();
+
+  @override
+  void setAttribute(String name, Object value) => _attributes[name] = value;
+
+  @override
+  void removeAttribute(String name) => _attributes.remove(name);
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);

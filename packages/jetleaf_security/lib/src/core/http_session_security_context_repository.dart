@@ -1,5 +1,6 @@
 import 'package:jetleaf_web/jetleaf_web.dart';
 
+import 'authentication_trust_resolver.dart';
 import 'security_context.dart';
 import 'security_context_repository.dart';
 
@@ -39,15 +40,24 @@ final class HttpSessionSecurityContextRepository implements SecurityContextRepos
   /// Session attribute under which the context is stored.
   final String contextAttributeName;
 
+  /// Resolver used to recognise anonymous authentication as "empty".
+  final AuthenticationTrustResolver trustResolver;
+
   /// {@macro http_session_security_context_repository}
   const HttpSessionSecurityContextRepository({
     this.allowSessionCreation = true,
     this.contextAttributeName = SECURITY_CONTEXT_KEY,
+    this.trustResolver = const AuthenticationTrustResolverImpl(),
   });
 
   @override
   DeferredSecurityContext loadDeferredContext(ServerHttpRequest request) {
     return DeferredSecurityContext(() async {
+      // Do not touch the session accessor unless the client actually presented
+      // a session cookie. Some transports create a session unconditionally.
+      if (request.getCookies().get(HttpSession.JSESSIONID) == null) {
+        return null;
+      }
       final session = request.getSession(false);
       final stored = session?.getAttribute(contextAttributeName);
       return stored is SecurityContext ? stored : null;
@@ -56,7 +66,8 @@ final class HttpSessionSecurityContextRepository implements SecurityContextRepos
 
   @override
   Future<void> saveContext(SecurityContext context, ServerHttpRequest request, ServerHttpResponse response) async {
-    final isEmpty = context.authentication == null;
+    final authentication = context.authentication;
+    final isEmpty = authentication == null || trustResolver.isAnonymous(authentication);
     if (isEmpty && !allowSessionCreation) {
       // No session is needed just to remove an attribute that cannot exist.
       return;

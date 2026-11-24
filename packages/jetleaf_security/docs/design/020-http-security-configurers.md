@@ -9,7 +9,7 @@ The current `HttpSecurity` is a single 272-line builder that emits string expres
 ## Invariant
 1. `HttpSecurity` MUST host ordered `SecurityConfigurer<SecurityFilterChain, HttpSecurity>` implementations with a two-phase `init(builder)` / `configure(chain)` lifecycle.
 2. All terminal DSL methods MUST return a chainable value; the roadmap's §5 example MUST compile verbatim.
-3. `SharedObjects` MUST make `AuthenticationManager`, `SecurityContextRepository`, and other shared beans visible to every configurer through the Jetleaf `ApplicationContext`.
+3. `SharedObjects` MUST make `AuthenticationManager`, `SecurityContextRepository`, and other shared Pods visible to every configurer through the Jetleaf `ApplicationContext`.
 4. Every built object MUST pass through `ObjectPostProcessor` (record 021).
 5. Configurers MUST be overridable by order and by pod replacement; no configurer may be hard-coded into `build()`.
 6. `SessionCreationPolicy` MUST select the repository and session strategy (record 031); it must never be dead configuration.
@@ -18,7 +18,7 @@ The current `HttpSecurity` is a single 272-line builder that emits string expres
 Users write a `SecurityConfigurer`, declare it as a pod with `@Order`, and it is applied. Users override any built-in configurer via `@ConditionalOnMissingPod`.
 
 ## Edge cases
-Two configurers writing the same shared object; `init` phase depending on an object created in another configurer's `configure` phase; building twice; a configurer that throws mid-build; multiple `SecurityFilterChain` beans with different matchers.
+Two configurers writing the same shared object; `init` phase depending on an object created in another configurer's `configure` phase; building twice; a configurer that throws mid-build; multiple `SecurityFilterChain` Pods with different matchers.
 
 ## Jetleaf mapping
 Bridge the builder lifecycle to Jetleaf's container lifecycle (`InitializingPod`, `SmartInitializingSingleton`, `@PostConstruct`). `@Configuration` classes with `@Pod` factory methods register chains. Keep the public names `HttpSecurity`, `AuthorizeHttpRequestsConfigurer`, `CsrfConfigurer`, `SessionManagementConfigurer`, `ExceptionHandlingConfigurer`.

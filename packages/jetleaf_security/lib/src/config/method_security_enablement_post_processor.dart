@@ -4,6 +4,7 @@ import 'package:jetleaf_core/lang.dart' show Class;
 import 'package:jetleaf_core/pod.dart' show ConfigurableListablePodFactory;
 
 import '../annotation/enable_web_security.dart';
+import '../authorization/role_hierarchy.dart';
 import '../filter/security_filter_chain.dart';
 import 'method_security_auto_configuration.dart';
 import 'security_auto_configuration.dart';
@@ -35,6 +36,7 @@ final class MethodSecurityEnablementPodFactoryPostProcessor implements PodFactor
   @override
   Future<void> postProcessFactory(ConfigurableListablePodFactory podFactory) async {
     _removeDefaultChainWhenUserChainExists(podFactory);
+    _removeDefaultHierarchyWhenUserPodExists(podFactory);
 
     final enable = _entryApplication?.getDirectAnnotation<EnableMethodSecurity>();
     if (enable == null) {
@@ -66,6 +68,17 @@ final class MethodSecurityEnablementPodFactoryPostProcessor implements PodFactor
 
     if (hasUserChain && podFactory.containsDefinition(SecurityAutoConfiguration.FILTER_CHAIN)) {
       podFactory.removeDefinition(SecurityAutoConfiguration.FILTER_CHAIN);
+    }
+  }
+
+  void _removeDefaultHierarchyWhenUserPodExists(ConfigurableListablePodFactory podFactory) {
+    final hierarchyType = Class<RoleHierarchy>();
+    final hasUserPod = podFactory.getDefinitionNames().any((name) =>
+      name != SecurityAutoConfiguration.ROLE_HIERARCHY &&
+      podFactory.getDefinition(name).type.isSubclassOf(hierarchyType),
+    );
+    if (hasUserPod && podFactory.containsDefinition(SecurityAutoConfiguration.ROLE_HIERARCHY)) {
+      podFactory.removeDefinition(SecurityAutoConfiguration.ROLE_HIERARCHY);
     }
   }
 

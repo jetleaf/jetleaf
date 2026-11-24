@@ -35,7 +35,7 @@ import 'string_value_resolver.dart';
 /// ### Architecture Example
 /// ```dart
 /// // Initializing a configured factory core ecosystem
-/// final ConfigurablePodFactory factory = ApplicationPodContext().getBeanFactory();
+/// final ConfigurablePodFactory factory = ApplicationPodContext().getPodFactory();
 /// final EmbeddedValueResolver resolver = EmbeddedValueResolver(factory);
 /// 
 /// // Target evaluation containing nested configuration markers

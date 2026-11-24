@@ -16,7 +16,7 @@ import 'package:meta/meta_meta.dart';
 /// ```dart
 /// @EnableWebSecurity(debug: true)
 /// class SecurityConfig {
-///   // security beans and filter configuration
+///   // security Pods and filter configuration
 /// }
 /// ```
 ///

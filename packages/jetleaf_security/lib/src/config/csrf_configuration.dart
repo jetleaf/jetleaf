@@ -37,7 +37,12 @@ class CsrfConfiguration with EqualsAndHashCode {
   final String headerName;
 
   /// Path prefixes exempt from CSRF validation (for example webhook endpoints).
+  /// Matching is segment-aware, so `/api/webhook` does not exempt
+  /// `/api/webhook_secret`.
   final List<String> ignoringRequestPaths;
+
+  /// Whether the CSRF cookie carries the `Secure` attribute.
+  final bool secure;
 
   /// {@macro jetleaf_security_csrf_configuration}
   const CsrfConfiguration({
@@ -45,6 +50,7 @@ class CsrfConfiguration with EqualsAndHashCode {
     this.cookieName = 'XSRF-TOKEN',
     this.headerName = 'X-XSRF-TOKEN',
     this.ignoringRequestPaths = const [],
+    this.secure = false,
   });
 
   /// Disabled CSRF configuration (commonly used for stateless JWT APIs).
@@ -52,10 +58,11 @@ class CsrfConfiguration with EqualsAndHashCode {
   /// Use this for stateless APIs that authenticate with tokens and do not rely
   /// on ambient credentials such as cookies.
   const CsrfConfiguration.disabled()
-      : enabled = false,
-        cookieName = 'XSRF-TOKEN',
-        headerName = 'X-XSRF-TOKEN',
-        ignoringRequestPaths = const [];
+    : enabled = false,
+      cookieName = 'XSRF-TOKEN',
+      headerName = 'X-XSRF-TOKEN',
+      ignoringRequestPaths = const [],
+      secure = false;
 
   /// Contributes the runtime type and every policy field to equality and
   /// hashing.
@@ -69,5 +76,6 @@ class CsrfConfiguration with EqualsAndHashCode {
     cookieName,
     headerName,
     ignoringRequestPaths,
+    secure,
   ];
 }

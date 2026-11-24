@@ -25,10 +25,8 @@ final class DemoUsers {
         SecurityUser(
           username: 'admin',
           password: encoder.encode('password'),
-          authorities: {
-            SimpleGrantedAuthority('ROLE_ADMIN'),
-            SimpleGrantedAuthority('ROLE_USER'),
-          },
+          // Only ROLE_ADMIN is granted; ROLE_USER must come from the hierarchy.
+          authorities: {SimpleGrantedAuthority('ROLE_ADMIN')},
         ),
         SecurityUser(
           username: 'locked',

@@ -1,7 +1,7 @@
 # 030 — Multiple SecurityFilterChains
 
 ## Design reference
-Multiple `SecurityFilterChain` beans selected by `securityMatcher` and ordered via `@Order`.
+Multiple `SecurityFilterChain` Pods selected by `securityMatcher` and ordered via `@Order`.
 
 ## Problem
 One global chain cannot express "public endpoints have permissive rules, admin endpoints have strict rules, actuator has its own rules." The current builder produces exactly one chain with one rule set.

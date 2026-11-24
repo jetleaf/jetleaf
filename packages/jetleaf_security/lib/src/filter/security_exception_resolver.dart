@@ -14,7 +14,19 @@ import '../core/exceptions.dart';
 /// gap so an authorization denial is always a 403 rather than a generic 500.
 /// {@endtemplate}
 final class SecurityExceptionResolver implements ExceptionResolver, PriorityOrdered {
-  const SecurityExceptionResolver();
+  /// Writer used for unauthenticated failures.
+  final AuthenticationEntryPoint entryPoint;
+
+  /// Writer used for authorization denials.
+  final AccessDeniedHandler accessDeniedHandler;
+
+  /// Creates a resolver that delegates to the configured response writers.
+  /// 
+  /// {@macro security_exception_resolver}
+  const SecurityExceptionResolver({
+    this.entryPoint = const BearerAuthenticationEntryPoint(),
+    this.accessDeniedHandler = const JsonAccessDeniedHandler(),
+  });
 
   @override
   int getOrder() => Ordered.HIGHEST_PRECEDENCE - 1;
@@ -28,9 +40,9 @@ final class SecurityExceptionResolver implements ExceptionResolver, PriorityOrde
 
     response.getHeaders().setContentType(MediaType.APPLICATION_JSON);
     if (ex is AuthenticationException) {
-      await const BearerAuthenticationEntryPoint().commence(request, response, ex);
+      await entryPoint.commence(request, response, ex);
     } else if (ex is AccessDeniedException) {
-      await const JsonAccessDeniedHandler().handle(request, response, ex);
+      await accessDeniedHandler.handle(request, response, ex);
     } else {
       return false;
     }

@@ -62,16 +62,16 @@ class Pbkdf2PasswordEncoder implements PasswordEncoder {
     this.maxIterations = 10000000,
   }) {
     if (iterations < 1) {
-      throw IllegalArgumentException('iterations: Must be at least 1 (got )');
+      throw IllegalArgumentException('iterations: Must be at least 1 (got $iterations)');
     }
     if (hashLength < 16) {
-      throw IllegalArgumentException('hashLength: Must be at least 16 (got )');
+      throw IllegalArgumentException('hashLength: Must be at least 16 (got $hashLength)');
     }
     if (saltLength < 8) {
-      throw IllegalArgumentException('saltLength: Must be at least 8 (got )');
+      throw IllegalArgumentException('saltLength: Must be at least 8 (got $saltLength)');
     }
     if (iterations > maxIterations) {
-      throw IllegalArgumentException('iterations: Exceeds maxIterations (got )');
+      throw IllegalArgumentException('iterations: Exceeds maxIterations (got $iterations)');
     }
   }
 

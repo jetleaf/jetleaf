@@ -110,7 +110,7 @@ final class DartJwtEncoder implements JwtEncoder {
     String? keyId,
   }) {
     if (!JwsAlgorithms.all.contains(algorithm)) {
-      throw IllegalArgumentException('algorithm: Unsupported JWS algorithm (got )');
+      throw IllegalArgumentException('algorithm: Unsupported JWS algorithm (got $algorithm)');
     }
     final payload = Map<String, dynamic>.from(claims.toJson());
     if (issuer != null && !payload.containsKey('iss')) {

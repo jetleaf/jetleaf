@@ -87,7 +87,7 @@ abstract final class JwtCrypto {
     JwsAlgorithms.hs256 || JwsAlgorithms.rs256 || JwsAlgorithms.es256 => SHA256Digest(),
     JwsAlgorithms.hs384 || JwsAlgorithms.rs384 || JwsAlgorithms.es384 => SHA384Digest(),
     JwsAlgorithms.hs512 || JwsAlgorithms.rs512 || JwsAlgorithms.es512 => SHA512Digest(),
-    _ => throw IllegalArgumentException('algorithm: Unsupported (got )'),
+    _ => throw IllegalArgumentException('algorithm: Unsupported (got $algorithm)'),
   };
 
   /// Returns the HMAC block size in bytes for [algorithm].
@@ -96,7 +96,7 @@ abstract final class JwtCrypto {
   static int _hmacBlockSize(String algorithm) => switch (algorithm) {
     JwsAlgorithms.hs256 => 64,
     JwsAlgorithms.hs384 || JwsAlgorithms.hs512 => 128,
-    _ => throw IllegalArgumentException('algorithm: Not an HMAC algorithm (got )'),
+    _ => throw IllegalArgumentException('algorithm: Not an HMAC algorithm (got $algorithm)'),
   };
 
   /// {@template jwt_crypto.sign_hmac}
@@ -217,7 +217,7 @@ abstract final class JwtCrypto {
     JwsAlgorithms.es256 => ECCurve_secp256r1(),
     JwsAlgorithms.es384 => ECCurve_secp384r1(),
     JwsAlgorithms.es512 => ECCurve_secp521r1(),
-    _ => throw IllegalArgumentException('algorithm: Not an EC algorithm (got )'),
+    _ => throw IllegalArgumentException('algorithm: Not an EC algorithm (got $algorithm)'),
   };
 
   /// Returns the fixed byte width of one ECDSA component for [algorithm].
@@ -225,7 +225,7 @@ abstract final class JwtCrypto {
     JwsAlgorithms.es256 => 32,
     JwsAlgorithms.es384 => 48,
     JwsAlgorithms.es512 => 66,
-    _ => throw IllegalArgumentException('algorithm: Not an EC algorithm (got )'),
+    _ => throw IllegalArgumentException('algorithm: Not an EC algorithm (got $algorithm)'),
   };
 
   /// Left-pads [value] to exactly [length] big-endian bytes.

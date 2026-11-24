@@ -6,7 +6,7 @@ built on Jetleaf's IoC/AOP/filter infrastructure with a familiar security API.
 The public API uses familiar names and a fluent configuration shape. A developer
 who knows `HttpSecurity`, `ProviderManager`, `@PreAuthorize` and
 `SecurityFilterChain` will recognize the conventions. The internals are
-Jetleaf-native: `@Pod` beans, `Filter`/`MethodInterceptor` contracts, and
+Jetleaf-native: `@Pod` Pods, `Filter`/`MethodInterceptor` contracts, and
 Zone-based context.
 
 > **Status:** This is a rewrite of the package. See
@@ -100,9 +100,27 @@ final chain = HttpSecurity()
   .build();
 ```
 
-`SecurityFilterChain` is a `jetleaf_web` `Filter`. Contribute it as a `@Pod`, or
-wrap several chains in `FilterChainProxy`; `FilterManager` discovers them
-automatically. Use `addFilterBefore` / `addFilterAfter` for custom filters.
+`SecurityFilterChain` is a `jetleaf_web` `Filter` and implements `Ordered`, so
+`FilterManager` honours its order. Contribute one or more chains as `@Pod`s — the
+default `FilterChainProxy` Pod discovers all of them and dispatches to the first
+matching chain. Use `addFilterBefore` / `addFilterAfter` for custom filters.
+
+### 2a. Authentication events
+
+`BusAuthenticationEventPublisher` is registered by default. Supplying it to a
+`ProviderManager` publishes `AuthenticationSuccessEvent` and
+`AuthenticationFailureEvent` onto Jetleaf's `ApplicationEventBus`, so any pod can
+observe them:
+
+```dart
+@Component()
+class LoginAudit {
+  @EventListener()
+  void onSuccess(AuthenticationSuccessEvent event) {
+    print('login: ${event.authentication.name}');
+  }
+}
+```
 
 ### 3. Method security
 
@@ -149,7 +167,7 @@ records those conventions and the reasons behind them.
 
 | Area | Convention | Notes |
 |---|---|---|
-| Wiring | `@Configuration` + `@Pod` | Factory-method pods replace bean declarations |
+| Wiring | `@Configuration` + `@Pod` | Factory-method pods replace Pod declarations |
 | Filter chain | `SecurityFilterChain` / `FilterChainProxy` `@Pod` | Discovered by `FilterManager` |
 | Builder | `HttpSecurity` | Chained terminals; no expression strings for request rules |
 | Authentication | `ProviderManager` / `DaoAuthenticationProvider` | `supports(Authentication)` inspects the token instance, so subclasses are supported |
@@ -176,7 +194,7 @@ records those conventions and the reasons behind them.
 - Zone-based context instead of `ThreadLocal`.
 - `jetleaf_web`'s own `Filter` contract instead of a container-specific filter API.
 - `SecurityFilterChain` contributed to `FilterManager`, not a web container.
-- `@Pod`/`@AutoConfiguration` instead of bean declarations.
+- `@Pod`/`@AutoConfiguration` instead of Pod declarations.
 - No general-purpose expression language — the parser understands a narrow
   security grammar only.
 - Tokenisation is cached but the per-call parser state is not yet materialised

@@ -6,11 +6,13 @@ import '../authentication/session_authentication_strategy.dart';
 import '../authentication/session_fixation_protection_strategy.dart';
 import '../authorization/access_denied_handler.dart';
 import '../authorization/authority_authorization_manager.dart';
+import '../authorization/expression_authorization_manager.dart';
 import '../authorization/authorization_manager.dart';
 import '../core/http_session_security_context_repository.dart';
 import '../core/null_security_context_repository.dart';
 import '../authorization/authentication_entry_point.dart';
 import '../authorization/role_hierarchy.dart';
+import '../filter/anonymous_authentication_filter.dart';
 import '../filter/authentication_filter.dart';
 import '../filter/authorization_filter.dart';
 import '../filter/cors_filter.dart';
@@ -19,6 +21,7 @@ import '../filter/exception_translation_filter.dart';
 import '../filter/filter_orders.dart';
 import '../filter/rate_limiting_filter.dart';
 import '../filter/security_context_holder_filter.dart';
+import '../filter/security_request_firewall.dart';
 import '../filter/security_filter.dart';
 import '../filter/security_filter_chain.dart';
 import '../filter/security_headers_filter.dart';
@@ -280,7 +283,7 @@ class SecurityFilterChainBuilder {
   SecurityFilterChainBuilder addFilterBefore(SecurityFilter filter, Type anchor) {
     final base = SecurityFilterOrders.byType[anchor];
     if (base == null) {
-      throw IllegalArgumentException('anchor: Unknown security filter type (got )');
+      throw IllegalArgumentException('anchor: Unknown security filter type (got $anchor)');
     }
     _customFilters.add(_PositionedFilter(filter, base - 1));
     return this;
@@ -300,7 +303,7 @@ class SecurityFilterChainBuilder {
   SecurityFilterChainBuilder addFilterAfter(SecurityFilter filter, Type anchor) {
     final base = SecurityFilterOrders.byType[anchor];
     if (base == null) {
-      throw IllegalArgumentException('anchor: Unknown security filter type (got )');
+      throw IllegalArgumentException('anchor: Unknown security filter type (got $anchor)');
     }
     _customFilters.add(_PositionedFilter(filter, base + 1));
     return this;
@@ -344,16 +347,25 @@ class SecurityFilterChainBuilder {
         : _authorizationRules
           .map((rule) => AuthorizationRule(
             matcher: rule.matcher,
-            manager: rule.manager is AuthorityAuthorizationManager
-                ? (rule.manager as AuthorityAuthorizationManager<RequestAuthorizationContext>).withHierarchy(_roleHierarchy!)
-                : rule.manager,
+            manager: switch (rule.manager) {
+              AuthorityAuthorizationManager() => (rule.manager as AuthorityAuthorizationManager<RequestAuthorizationContext>).withHierarchy(_roleHierarchy!),
+              ExpressionAuthorizationManager() => (rule.manager as ExpressionAuthorizationManager<RequestAuthorizationContext>).withRoleHierarchy(_roleHierarchy!),
+              _ => rule.manager,
+            },
           ))
           .toList();
 
     final filters = <SecurityFilter>[
-      if (_corsConfig != null) CorsFilter(_corsConfig!),
-      if (_rateLimitConfig != null) RateLimitingFilter(config: _rateLimitConfig!),
-      if (_headersConfig != null) SecurityHeadersFilter(_headersConfig!),
+      SecurityRequestFirewall(),
+      if (_corsConfig case CorsConfiguration config) ...[
+        CorsFilter(config)
+      ],
+      if (_rateLimitConfig case RateLimitConfig config) ...[
+        RateLimitingFilter(config: config)
+      ],
+      if (_headersConfig case SecurityHeadersConfig config) ...[
+        SecurityHeadersFilter(config)
+      ],
       CsrfFilter(
         configuration: _csrfConfig,
         accessDeniedHandler: _accessDeniedHandler,
@@ -367,7 +379,7 @@ class SecurityFilterChainBuilder {
           ? const NullSecurityContextRepository()
           : HttpSessionSecurityContextRepository(allowSessionCreation: _sessionPolicy != SessionCreationPolicy.never),
       ),
-      if (_authenticationManager != null)
+      if (_authenticationManager != null) ...[
         AuthenticationFilter(
           authenticationManager: _authenticationManager!,
           sessionAuthenticationStrategy: _sessionPolicy == SessionCreationPolicy.stateless
@@ -377,7 +389,9 @@ class SecurityFilterChainBuilder {
             BearerTokenAuthenticationConverter(),
             BasicAuthenticationConverter(),
           ],
-        ),
+        )
+      ],
+      AnonymousAuthenticationFilter(),
       ..._customFilters,
       AuthorizationFilter(rules: effectiveRules),
     ];

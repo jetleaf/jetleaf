@@ -76,19 +76,19 @@ class Argon2idPasswordEncoder implements PasswordEncoder {
     this.maxParallelism = 16,
   }) {
     if (saltLength < 8) {
-      throw IllegalArgumentException('saltLength: Must be at least 8 bytes (got )');
+      throw IllegalArgumentException('saltLength: Must be at least 8 bytes (got $saltLength)');
     }
     if (hashLength < 4) {
-      throw IllegalArgumentException('hashLength: Must be at least 4 bytes (got )');
+      throw IllegalArgumentException('hashLength: Must be at least 4 bytes (got $hashLength)');
     }
     if (parallelism < 1) {
-      throw IllegalArgumentException('parallelism: Must be at least 1 (got )');
+      throw IllegalArgumentException('parallelism: Must be at least 1 (got $parallelism)');
     }
     if (memoryKiB < 8 * parallelism) {
-      throw IllegalArgumentException('memoryKiB: Must be at least 8 * parallelism KiB (got )');
+      throw IllegalArgumentException('memoryKiB: Must be at least 8 * parallelism KiB (got $memoryKiB)');
     }
     if (iterations < 1) {
-      throw IllegalArgumentException('iterations: Must be at least 1 (got )');
+      throw IllegalArgumentException('iterations: Must be at least 1 (got $iterations)');
     }
     if (memoryKiB > maxMemoryKiB || iterations > maxIterations || parallelism > maxParallelism) {
       throw IllegalArgumentException('Configured Argon2id parameters exceed the accepted bounds');

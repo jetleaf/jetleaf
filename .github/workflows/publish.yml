@@ -155,7 +155,7 @@ jobs:
           /tmp/publish_pkg.sh "packages/jetleaf_scheduling" "jetleaf_scheduling (Task Scheduling)" "$DRY_RUN"
 
           # 7. jetleaf_validation (Validation engine)
-          /tmp/publish_pkg.sh "packages/jetleaf_validation" "jetleaf_validation (Bean Validation)" "$DRY_RUN"
+          /tmp/publish_pkg.sh "packages/jetleaf_validation" "jetleaf_validation (Pod Validation)" "$DRY_RUN"
 
       # =================================================================
       # Tier 3: Composite / Dependent Packages

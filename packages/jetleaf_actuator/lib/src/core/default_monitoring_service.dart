@@ -54,7 +54,7 @@ final class DefaultMonitoringService extends AbstractMonitoringService implement
   ///
   /// External consumers can retrieve it from the application context using:
   /// ```dart
-  /// context.getBean("jetleaf.monitor.monitoringService")
+  /// context.getPod("jetleaf.monitor.monitoringService")
   /// ```
   static final String POD_NAME = "jetleaf.monitor.monitoringService";
 

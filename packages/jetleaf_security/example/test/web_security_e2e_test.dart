@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:jetleaf/jetleaf.dart';
 import 'package:jetleaf_web/context.dart';
 
+
 import 'package:jetleaf_security_example/_jetleaf/main.dart'
     show registerGeneratedArtifacts;
 import 'package:jetleaf_security_example/main.dart' show SecurityDemoApplication;
@@ -124,6 +125,13 @@ void main() {
       expect(result.$1, 401);
     });
 
+    test('authentication events reach user @EventListener pods', () async {
+      final result = await get('/api/public/events');
+      expect(result.$1, 200);
+      final events = result.$2['events'] as List;
+      expect(events, contains('SUCCESS alice'));
+    });
+
     test('/me resolves the JWT principal', () async {
       final result = await get('/api/auth/me', headers: bearer(alice));
       expect(result.$1, 200);
@@ -180,6 +188,15 @@ void main() {
       expect(asAlice.$1, 403);
       final audit = await get('/api/admin/audit', headers: bearer(admin));
       expect(audit.$1, 200);
+    });
+
+    test('method security honours the injected role hierarchy', () async {
+      final result = await get(
+        '/api/admin/user-access',
+        headers: bearer(admin),
+      );
+      expect(result.$1, 200);
+      expect(result.$2['granted_by_hierarchy'], isTrue);
     });
 
     test('@PreAuthorize binds #orgId and principal.organizationId', () async {

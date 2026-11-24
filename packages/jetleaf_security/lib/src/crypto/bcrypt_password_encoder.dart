@@ -50,10 +50,10 @@ class BCryptPasswordEncoder implements PasswordEncoder {
   BCryptPasswordEncoder({this.strength = 12, this.version = '2b'}) {
     // 2^31 rounds is an effective denial of service on a misconfiguration.
     if (strength < 4 || strength > 16) {
-      throw IllegalArgumentException('strength: Must be between 4 and 16 (got )');
+      throw IllegalArgumentException('strength: Must be between 4 and 16 (got $strength)');
     }
     if (version != '2a' && version != '2b' && version != '2y') {
-      throw IllegalArgumentException('version: Must be 2a, 2b, or 2y (got )');
+      throw IllegalArgumentException('version: Must be 2a, 2b, or 2y (got $version)');
     }
   }
 

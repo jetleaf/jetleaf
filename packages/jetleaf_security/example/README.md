@@ -17,7 +17,7 @@ dart test                      # 18 E2E tests + OAuth2 smoke test
 
 | Area | Where |
 |---|---|
-| Multi-chain `FilterChainProxy` + default-bean pruning | `lib/config/security_config.dart`, `lib/config/filter_chain_override_post_processor.dart` |
+| Three `SecurityFilterChain` pods + default proxy auto-discovery | `lib/config/security_config.dart` |
 | Lambda DSL: CORS, CSRF, headers, rate limiting, exception handling | `lib/config/security_config.dart` |
 | Stateless JWT chain (`/api/**`) | `apiChain` in `security_config.dart` |
 | Session-backed Basic-auth chain (`/session/**`) | `sessionChain` in `security_config.dart` |
@@ -39,7 +39,7 @@ dart test                      # 18 E2E tests + OAuth2 smoke test
 
 - `GET /api/public/health`, `GET /api/public/echo?message=…`
 - `POST /api/auth/login?username=…&password=…`, `POST /api/auth/refresh?token=…`, `GET /api/auth/me`
-- `GET /api/admin/stats`, `GET /api/admin/audit`
+- `GET /api/admin/stats`, `GET /api/admin/audit`, `GET /api/admin/user-access` (role hierarchy)
 - `GET /api/orgs/{orgId}/reports`, `GET /api/orgs/{orgId}/audit`, `GET /api/orgs/reports`
 - `GET /api/service/status` with `X-Api-Key: demo-service-key`
 - `GET /session/profile` with Basic auth

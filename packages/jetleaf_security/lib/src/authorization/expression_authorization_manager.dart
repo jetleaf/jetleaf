@@ -4,6 +4,7 @@ import '../core/authentication.dart';
 import 'authorization_decision.dart';
 import 'authorization_manager.dart';
 import 'expression_parser.dart';
+import 'role_hierarchy.dart';
 
 /// {@template expression_authorization_manager}
 /// Bridges an expression string into the [AuthorizationManager] contract.
@@ -51,7 +52,18 @@ final class ExpressionAuthorizationManager<T> implements AuthorizationManager<T>
   ///
   /// It receives the lazy authentication supplier and the caller's context so
   /// it can expose both to the expression language.
-  final ExpressionContextFactory<T> _contextFactory;
+  final ExpressionContextFactory<T>? _contextFactory;
+
+  /// Optional hierarchy used when evaluating role checks.
+  final RoleHierarchy? roleHierarchy;
+
+  /// Returns a copy of this manager using [hierarchy] for role expansion.
+  ExpressionAuthorizationManager<T> withRoleHierarchy(RoleHierarchy hierarchy) => ExpressionAuthorizationManager<T>(
+    expression,
+    parser: _parser,
+    contextFactory: _contextFactory,
+    roleHierarchy: hierarchy,
+  );
 
   /// {@macro expression_authorization_manager}
   ///
@@ -66,8 +78,9 @@ final class ExpressionAuthorizationManager<T> implements AuthorizationManager<T>
   ExpressionAuthorizationManager(this.expression, {
     SecurityExpressionParser parser = const SecurityExpressionParser(),
     ExpressionContextFactory<T>? contextFactory,
+    this.roleHierarchy,
   })  : _parser = parser,
-        _contextFactory = contextFactory ?? ((authentication, _) => SecurityExpressionContext(authentication: authentication()));
+        _contextFactory = contextFactory;
 
   /// {@template expression_authorization_manager_check}
   /// Evaluates [expression] against the current context.
@@ -98,7 +111,12 @@ final class ExpressionAuthorizationManager<T> implements AuthorizationManager<T>
   /// {@endtemplate}
   @override
   AuthorizationDecision check(AuthenticationSupplier authentication, T context) {
-    final decision = _parser.evaluate(expression, _contextFactory(authentication, context));
+    final evaluationContext = _contextFactory?.call(authentication, context) ??
+        SecurityExpressionContext(
+          authentication: authentication(),
+          roleHierarchy: roleHierarchy,
+        );
+    final decision = _parser.evaluate(expression, evaluationContext);
     return AuthorizationDecision(decision);
   }
 }

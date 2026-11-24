@@ -21,7 +21,7 @@ void main() {
       final response = MockServerHttpResponse();
       final next = RecordingFilterChain();
 
-      await chain.doFilter(request, response, next);
+      await FilterChainProxy([chain]).doFilter(request, response, next);
 
       expect(next.called, isFalse);
       expect(response.status, equals(HttpStatus.FORBIDDEN));

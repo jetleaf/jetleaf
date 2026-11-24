@@ -104,7 +104,7 @@ class CsrfFilter extends SecurityFilter {
     }
 
     final path = request.getRequestURI().path;
-    if (configuration.ignoringRequestPaths.any((p) => path.startsWith(p))) {
+    if (configuration.ignoringRequestPaths.any((prefix) => _pathMatchesPrefix(path, prefix))) {
       await chain.next(request, response);
       return;
     }
@@ -115,9 +115,11 @@ class CsrfFilter extends SecurityFilter {
     if (_safeMethods.contains(method)) {
       if (cookieToken == null || cookieToken.isEmpty) {
         final token = _generateToken();
+        final secure = configuration.secure || request.getUri().scheme == 'https';
         response.getHeaders().add(
           'Set-Cookie',
-          '${configuration.cookieName}=$token; Path=/; SameSite=Lax',
+          '${configuration.cookieName}=$token; Path=/; SameSite=Lax'
+          '${secure ? '; Secure' : ''}',
         );
       }
       await chain.next(request, response);
@@ -147,6 +149,14 @@ class CsrfFilter extends SecurityFilter {
   /// ### Returns
   /// A URL-safe token string suitable for a cookie value or request header.
   /// {@endtemplate}
+  /// Matches a configured ignore prefix on path-segment boundaries so that
+  /// `/api/webhook` never accidentally exempts `/api/webhook_secret`.
+  static bool _pathMatchesPrefix(String path, String prefix) {
+    final normalized = prefix.endsWith('/') ? prefix.substring(0, prefix.length - 1) : prefix;
+    if (normalized.isEmpty) return true;
+    return path == normalized || path == '$normalized/' || path.startsWith('$normalized/');
+  }
+
   String _generateToken() {
     final bytes = List<int>.generate(32, (_) => _random.nextInt(256));
     return base64UrlEncode(bytes).replaceAll('=', '');

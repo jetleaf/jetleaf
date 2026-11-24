@@ -26,8 +26,8 @@
 /// - [SessionManagementConfigurer] — sets the session policy inside the DSL.
 ///
 /// ### 🚀 Auto-configuration
-/// - [SecurityAutoConfiguration] — default web security beans guarded by pod conditions.
-/// - [MethodSecurityAutoConfiguration] — method interceptor beans for annotation-driven checks.
+/// - [SecurityAutoConfiguration] — default web security Pods guarded by pod conditions.
+/// - [MethodSecurityAutoConfiguration] — method interceptor Pods for annotation-driven checks.
 ///
 /// ---
 ///

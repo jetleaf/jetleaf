@@ -1,4 +1,8 @@
-import 'package:jetleaf_core/lang.dart' show EqualsAndHashCode;
+// ignore_for_file: use_super_parameters
+
+import 'package:jetleaf_core/context.dart' show ApplicationEvent, ApplicationEventBus;
+import 'package:jetleaf_core/core.dart' show ApplicationEventBusAware;
+import 'package:jetleaf_core/lang.dart' show EqualsAndHashCode, Generic, PackageNames;
 
 import '../core/authentication.dart';
 import '../core/exceptions.dart';
@@ -35,12 +39,20 @@ import '../core/exceptions.dart';
 /// - [AuthenticationSuccessEvent]
 /// - [AuthenticationFailureEvent]
 /// {@endtemplate}
-sealed class AuthenticationEvent {
+@Generic(AuthenticationEvent)
+sealed class AuthenticationEvent extends ApplicationEvent {
   /// The authentication object whose processing produced this event.
   final Authentication authentication;
 
   /// {@macro authentication_event}
-  const AuthenticationEvent(this.authentication);
+  const AuthenticationEvent(
+    this.authentication, [
+    Object? source,
+    DateTime? timestamp,
+  ]) : super(source ?? authentication, timestamp);
+
+  @override
+  String getPackageName() => PackageNames.SECURITY;
 }
 
 /// {@template authentication_success_event}
@@ -61,9 +73,14 @@ sealed class AuthenticationEvent {
 /// ### See also
 /// - [AuthenticationEventPublisher.publishAuthenticationSuccess]
 /// {@endtemplate}
+@Generic(AuthenticationSuccessEvent)
 final class AuthenticationSuccessEvent extends AuthenticationEvent with EqualsAndHashCode {
   /// {@macro authentication_success_event}
-  const AuthenticationSuccessEvent(super.authentication);
+  const AuthenticationSuccessEvent(
+    Authentication authentication, [
+    Object? source,
+    DateTime? timestamp,
+  ]) : super(authentication, source, timestamp);
 
   /// Contributes the runtime type and [authentication] to equality and hashing.
   ///
@@ -92,12 +109,18 @@ final class AuthenticationSuccessEvent extends AuthenticationEvent with EqualsAn
 /// ### See also
 /// - [AuthenticationEventPublisher.publishAuthenticationFailure]
 /// {@endtemplate}
+@Generic(AuthenticationFailureEvent)
 final class AuthenticationFailureEvent extends AuthenticationEvent with EqualsAndHashCode {
   /// The exception that caused the authentication to fail.
   final AuthenticationException exception;
 
   /// {@macro authentication_failure_event}
-  const AuthenticationFailureEvent(super.authentication, this.exception);
+  const AuthenticationFailureEvent(
+    Authentication authentication,
+    this.exception, [
+    Object? source,
+    DateTime? timestamp,
+  ]) : super(authentication, source, timestamp);
 
   /// Contributes the runtime type, [authentication] and [exception] to equality
   /// and hashing.
@@ -209,4 +232,47 @@ final class NoOpAuthenticationEventPublisher implements AuthenticationEventPubli
 
   @override
   void publishAuthenticationFailure(Authentication authentication, AuthenticationException exception) {}
+}
+
+/// {@template bus_authentication_event_publisher}
+/// An [AuthenticationEventPublisher] that forwards outcomes to Jetleaf's
+/// [ApplicationEventBus].
+///
+/// Registering this publisher as a pod lets application `@EventListener`
+/// methods observe [AuthenticationSuccessEvent] and
+/// [AuthenticationFailureEvent] without coupling to the authentication code.
+/// The bus is injected through [ApplicationEventBusAware] when the publisher is
+/// created by the container.
+///
+/// ### Contract and invariants
+/// - Delivery is fire-and-forget: the publishing methods are synchronous and
+///   never wait for listeners.
+/// - Listener failures are swallowed so observability cannot change the
+///   authentication outcome.
+/// {@endtemplate}
+final class BusAuthenticationEventPublisher implements AuthenticationEventPublisher, ApplicationEventBusAware {
+  /// {@macro bus_authentication_event_publisher}
+  BusAuthenticationEventPublisher({ApplicationEventBus? eventBus})
+      : _eventBus = eventBus;
+
+  ApplicationEventBus? _eventBus;
+
+  @override
+  void setApplicationEventBus(ApplicationEventBus applicationEventBus) => _eventBus = applicationEventBus;
+
+  @override
+  void publishAuthenticationSuccess(Authentication authentication) {
+    _emit(AuthenticationSuccessEvent(authentication, this));
+  }
+
+  @override
+  void publishAuthenticationFailure(Authentication authentication, AuthenticationException exception) {
+    _emit(AuthenticationFailureEvent(authentication, exception, this));
+  }
+
+  void _emit(AuthenticationEvent event) {
+    final bus = _eventBus;
+    if (bus == null) return;
+    bus.onEvent(event).catchError((Object _) {});
+  }
 }

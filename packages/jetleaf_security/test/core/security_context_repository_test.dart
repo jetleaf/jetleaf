@@ -24,7 +24,10 @@ void main() {
 
     test('http session repository saves and loads a context', () async {
       final session = HttpSession.create();
-      final request = MockServerHttpRequest(session: session);
+      final request = MockServerHttpRequest(
+        session: session,
+        cookies: [HttpCookie(HttpSession.JSESSIONID, 'test-session')],
+      );
       final response = MockServerHttpResponse();
       const repository = HttpSessionSecurityContextRepository();
 
@@ -40,7 +43,10 @@ void main() {
 
     test('saving an empty context removes the session attribute', () async {
       final session = HttpSession.create();
-      final request = MockServerHttpRequest(session: session);
+      final request = MockServerHttpRequest(
+        session: session,
+        cookies: [HttpCookie(HttpSession.JSESSIONID, 'test-session')],
+      );
       const repository = HttpSessionSecurityContextRepository();
 
       await repository.saveContext(SecurityContext(auth('alice')), request, MockServerHttpResponse());

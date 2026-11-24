@@ -20,7 +20,7 @@ Users contribute additional `SecurityFilterChain` pods with `@Order`; the entry 
 No matching chain (must deny closed or pass through per explicit policy); two chains matching the same request (first wins); exception thrown inside a chain; async dispatch; context already bound when the proxy runs.
 
 ## Jetleaf mapping (verified)
-`FilterManager.onReady()` auto-discovers **every** `Filter` bean via `getPodsOf(Class<Filter>(null, PackageNames.WEB), allowEagerInit: true)` and matches subtypes, so multiple filters need no manual registration. Follow the exact pattern in `jetleaf_web/lib/src/config/cors_auto_configuration.dart`:
+`FilterManager.onReady()` auto-discovers **every** `Filter` Pod via `getPodsOf(Class<Filter>(null, PackageNames.WEB), allowEagerInit: true)` and matches subtypes, so multiple filters need no manual registration. Follow the exact pattern in `jetleaf_web/lib/src/config/cors_auto_configuration.dart`:
 
 ```dart
 @AutoConfiguration()

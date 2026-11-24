@@ -68,7 +68,7 @@ abstract final class JwtBase64Url {
   /// [ArgumentError] when [value] is negative.
   /// {@endtemplate}
   static String encodeInteger(BigInt value) {
-    if (value.sign < 0) throw IllegalArgumentException('value: Must be unsigned (got )');
+    if (value.sign < 0) throw IllegalArgumentException('value: Must be unsigned (got $value)');
     if (value == BigInt.zero) return encode([0]);
     var hex = value.toRadixString(16);
     if (hex.length.isOdd) hex = '0$hex';

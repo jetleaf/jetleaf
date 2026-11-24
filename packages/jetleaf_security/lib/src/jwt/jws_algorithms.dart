@@ -116,7 +116,7 @@ abstract final class JwsAlgorithms {
     rs256 => '0609608648016503040201',
     rs384 => '0609608648016503040202',
     rs512 => '0609608648016503040203',
-    _ => throw IllegalArgumentException('algorithm: Not an RSA algorithm (got )'),
+    _ => throw IllegalArgumentException('algorithm: Not an RSA algorithm (got $algorithm)'),
   };
 
   /// {@template jws_algorithms.ec_curve}
@@ -143,6 +143,6 @@ abstract final class JwsAlgorithms {
     es256 => 'P-256',
     es384 => 'P-384',
     es512 => 'P-521',
-    _ => throw IllegalArgumentException('algorithm: Not an EC algorithm (got )'),
+    _ => throw IllegalArgumentException('algorithm: Not an EC algorithm (got $algorithm)'),
   };
 }

@@ -31,7 +31,7 @@
 - **Processor & interception hardening**: Fixes across `AutowiredAnnotationPodProcessor`, `CommonAnnotationPodProcessor`, `ConfigurationPropertyPodProcessor`, `AbstractMethodDispatcher`, and `Interceptable`.
 - **`DefaultConversionService.remove()`** restores the built-in converter snapshot instead of clearing the bucket (custom converters removed first; builtins survive `remove()`).
 - **`Iterable` to `String` conversion** emits comma-separated values (Spring semantics) instead of leaking through an arbitrary `toString()`.
-- **`ConfigurationPropertyPodProcessor`** no longer crashes with a null-check exception when the annotation is present via `hasDirectAnnotation` but cannot be constructed at this stage (AOT/JIT visibility gap) — the bean is silently skipped instead of failing.
+- **`ConfigurationPropertyPodProcessor`** no longer crashes with a null-check exception when the annotation is present via `hasDirectAnnotation` but cannot be constructed at this stage (AOT/JIT visibility gap) — the pod is silently skipped instead of failing.
 - **`fromUri`** on `StandardLibraryDeclaration` rejects empty package names (e.g. `''`) and resolves nearest pubspec `name:` for `file://` URIs.
 - **Private VM implementation types** (e.g. `_Map<String, dynamic>`, `_BigIntImpl`, `_RegExp`, `_SimpleUri`) are normalized to their public interface declarations for reflection sites.
 - **Parameterized Collections**: `Class<T>.isArray()` and `Class<T>.isKeyValuePaired()` now recognise parameterized generic targets (`List<T>`, `Set<T>`, `Map<K, V>`, `MapEntry<K, V>`) via both the reified `Type` and the declaration name, in addition to `TypeKind` and type-argument inspection.

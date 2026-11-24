@@ -74,9 +74,12 @@ final class FilterChainProxy extends SecurityFilter {
   Future<void> doFilter(ServerHttpRequest request, ServerHttpResponse response, FilterChain chain) async {
     for (final securityChain in chains) {
       if (!securityChain.matches(request)) continue;
+      request.setAttribute(SecurityFilterChain.PROXY_ATTRIBUTE, securityChain);
+      
       try {
         await securityChain.doFilter(request, response, chain);
       } finally {
+        request.removeAttribute(SecurityFilterChain.PROXY_ATTRIBUTE);
         SecurityContextHolder.clearContext();
       }
       return;

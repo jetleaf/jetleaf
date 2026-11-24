@@ -24,8 +24,7 @@ import 'filter_registry.dart';
 /// reflection.
 ///
 /// Attempts field lookup first, then falls back to a zero-argument method
-/// matching either [property] or its JavaBean-style `get<Property>` getter.
-/// Returns `null` if the property cannot be resolved or reflection fails.
+/// matching either [property]. Returns `null` if the property cannot be resolved or reflection fails.
 /// {@endtemplate}
 Object? _readObjectProperty(Object target, String property) {
   try {
