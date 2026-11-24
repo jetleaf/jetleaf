@@ -124,6 +124,23 @@ jobs:
           EOF
           chmod +x /tmp/publish_pkg.sh
 
+      - name: "Prepare Workspace Ignore Rules for Child Packages"
+        run: |
+          # `dart pub publish` reads .pubignore from the workspace root even when
+          # publishing from a child package directory. The root file excludes
+          # `libraries/` and `packages/` (they are published independently), which
+          # makes the child package's archive empty and fails validation with
+          # "The pubspec is hidden" / missing LICENSE, README and CHANGELOG.
+          # Strip only those two rules for the child-package steps, then restore
+          # the original file before publishing the root package.
+          if [ -f .pubignore ]; then
+            cp .pubignore /tmp/jetleaf_root_pubignore
+            grep -v -x -e 'libraries/' -e 'packages/' /tmp/jetleaf_root_pubignore > .pubignore
+            echo "Prepared workspace .pubignore for child package publishing."
+          else
+            echo "No root .pubignore found; nothing to adjust."
+          fi
+
       # =================================================================
       # Tier 1: Core Runtime (Foundation for all packages, 0 internal dependencies)
       # =================================================================
@@ -177,6 +194,13 @@ jobs:
       # =================================================================
       # Tier 4: Root Framework Package
       # =================================================================
+      - name: "Restore Root Publish Ignore Rules"
+        run: |
+          if [ -f /tmp/jetleaf_root_pubignore ]; then
+            mv /tmp/jetleaf_root_pubignore .pubignore
+            echo "Restored original root .pubignore for the root package publish."
+          fi
+
       - name: "Publish Tier 4: jetleaf (Root Framework)"
         run: |
           /tmp/publish_pkg.sh "." "jetleaf (Root Framework)" "$DRY_RUN"
