@@ -15,9 +15,9 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: 'Dry run (validate without publishing)'
+        description: 'Dry run (branch/dispatch runs are always validation-only; pub.dev requires a tag ref to publish)'
         required: false
-        default: false
+        default: true
         type: boolean
 
 concurrency:
@@ -33,7 +33,9 @@ jobs:
     name: Publish Packages to pub.dev
     runs-on: ubuntu-latest
     env:
-      DRY_RUN: ${{ github.event.inputs.dry_run || 'false' }}
+      # pub.dev only accepts GitHub OIDC tokens whose refType is 'tag'.
+      # Branch pushes and manual dispatches can only validate, never publish.
+      DRY_RUN: ${{ github.ref_type != 'tag' || github.event.inputs.dry_run == 'true' }}
 
     steps:
       - name: Checkout repository
@@ -50,6 +52,14 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Package | Directory | Version | Status |" >> $GITHUB_STEP_SUMMARY
           echo "| :--- | :--- | :--- | :--- |" >> $GITHUB_STEP_SUMMARY
+
+      - name: "Report Publish Mode"
+        run: |
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "::notice::Validation-only mode. pub.dev OIDC publishing requires a workflow triggered by a tag push (current ref: $GITHUB_REF_NAME, type: ${{ github.ref_type }})."
+          else
+            echo "::notice::Publish mode. Publishing from tag $GITHUB_REF_NAME."
+          fi
 
       - name: Resolve Workspace Dependencies
         run: dart pub get
@@ -85,6 +95,22 @@ jobs:
 
           echo "Package: $PKG_NAME"
           echo "Local Version: $PKG_VER"
+
+          # pub.dev checks that the run was triggered by the tag pattern configured
+          # for THIS package. On a tag-triggered publish, only release the package
+          # that the tag belongs to; the others are handled by their own tags.
+          if [ "$DRY_RUN" != "true" ] && [ "${GITHUB_REF_TYPE:-}" = "tag" ]; then
+            if [ "$DIR" = "." ]; then
+              EXPECTED_TAG="v$PKG_VER"
+            else
+              EXPECTED_TAG="$PKG_NAME-v$PKG_VER"
+            fi
+            if [ "${GITHUB_REF_NAME:-}" != "$EXPECTED_TAG" ]; then
+              echo "⏭️ Skipping $PKG_NAME @ $PKG_VER: current tag '${GITHUB_REF_NAME:-none}' does not match its release tag '$EXPECTED_TAG'."
+              echo "| \`$PKG_NAME\` | \`$DIR\` | \`$PKG_VER\` | ⏭️ Skipped (tag mismatch) |" >> $GITHUB_STEP_SUMMARY
+              exit 0
+            fi
+          fi
 
           # Check if this version is already published on pub.dev
           HTTP_RESPONSE=$(curl -s -w "\n%{http_code}" "https://pub.dev/api/packages/$PKG_NAME" || true)
