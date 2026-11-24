@@ -9,6 +9,9 @@ pubspec.lock
 libraries/
 packages/
 
+# Publishing documentation (not part of any package archive)
+publishable.md
+
 # Monorepo tooling and sample applications
 builder/
 sample_projects/
