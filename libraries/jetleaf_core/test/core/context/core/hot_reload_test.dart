@@ -69,6 +69,41 @@ void main() {
       expect(HotReloadDelta.empty.isEmpty(), isTrue);
     });
 
+    test('notifyReload class handles keep their metadata name when the declaration Type is Object', () {
+      // Build-time declarations carry `Object` as a placeholder Type. The
+      // delta must expose the real metadata name, not "Object".
+      final library = StandardLibraryDeclaration(
+        uri: 'package:ghost/ghost.dart',
+        name: 'ghost.dart',
+        isPublic: true,
+        isSynthetic: false,
+        parentPackage: MaterialPackage(
+          name: 'ghost',
+          version: '1.0.0',
+          isRootPackage: false,
+          filePath: null,
+          rootUri: null,
+          dependencies: const [],
+          devDependencies: const [],
+          jetleafDependencies: const [],
+        ),
+      );
+      final declaration = StandardClassDeclaration(
+        name: 'GhostWidget',
+        type: Object,
+        isPublic: true,
+        isSynthetic: false,
+        library: library,
+        qualifiedName: 'package:ghost/ghost.dart.GhostWidget',
+      );
+
+      expect(Class.forType(declaration.getType()).getName(), 'Object');
+
+      final resolved = HotReloadCoordinator.classForDeclaration(declaration);
+      expect(resolved.getName(), 'GhostWidget');
+      expect(resolved.getQualifiedName(), 'package:ghost/ghost.dart.GhostWidget');
+    });
+
     test('RefreshScope annotation uses refresh scope name', () {
       const scope = RefreshScope();
       expect(scope.value, 'refresh');

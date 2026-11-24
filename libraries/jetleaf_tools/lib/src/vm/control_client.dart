@@ -41,8 +41,8 @@ abstract final class JetleafControlClient {
   ///
   /// **Parameters:**
   /// - [root]: project root running `jl dev`.
-  /// - [request]: one protocol message (`runApp`, `runTest`, `status`,
-  ///   `stop` — see `JetleafVM` control channel docs).
+  /// - [request]: one protocol message (`runApp`, `runTest`, `boot`,
+  ///   `reload`, `restart`, `status`, `stop` — see `JetleafVM` control docs).
   ///
   /// **Returns:** the exit code (0 ok, 1 failed).
   static Future<int> sendControlRequest(Directory root, Map<String, Object?> request) async {
@@ -123,6 +123,12 @@ abstract final class JetleafControlClient {
       case 'run_error':
         stderr.writeln('Error: ${event['error']}');
         return 1;
+      case 'reload_response':
+        print('reloaded ${(event['entries'] as List?)?.length ?? 0} vm(s)');
+        return event['ok'] == true ? 0 : 1;
+      case 'restart_response':
+        print('restarted ${(event['entries'] as List?)?.length ?? 0} vm(s)');
+        return event['ok'] == true ? 0 : 1;
       case 'status_response':
         print(_formatStatus(event));
         return 0;

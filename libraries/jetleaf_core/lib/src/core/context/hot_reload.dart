@@ -197,6 +197,25 @@ final class HotReloadCoordinator {
     _restartHandlers.remove(onRestart);
   }
 
+  /// Resolves the reflective [Class] handle for a metadata [declaration].
+  ///
+  /// Declarations produced by the AOT scan carry `Object` as their
+  /// [ClassDeclaration.getType] placeholder because no live [Type] exists at
+  /// build time. Building the handle from the qualified name (or, failing
+  /// that, directly from the declaration) preserves the real class name.
+  ///
+  /// **Parameters:**
+  /// - [declaration]: matched class metadata from [Runtime.getAllClasses].
+  ///
+  /// **Returns:** a [Class] whose name matches [declaration].
+  static Class classForDeclaration(ClassDeclaration declaration) {
+    try {
+      return Class.fromQualifiedName(declaration.getQualifiedName());
+    } on Object {
+      return Class.declared(declaration, ProtectionDomain.current());
+    }
+  }
+
   /// Computes a [HotReloadDelta] from [changedUris] and dispatches it to all
   /// active registered application contexts.
   static Future<void> notifyReload([List<String> changedUris = const []]) async {
@@ -215,9 +234,7 @@ final class HotReloadCoordinator {
       for (final decl in Runtime.getAllClasses()) {
         final libUri = decl.getLibrary().getUri();
         if (changedUris.any((u) => libUri == u || libUri.endsWith(u) || u.endsWith(libUri))) {
-          try {
-            modifiedClasses.add(Class.forType(decl.getType()));
-          } catch (_) {}
+          modifiedClasses.add(classForDeclaration(decl));
         }
       }
     }

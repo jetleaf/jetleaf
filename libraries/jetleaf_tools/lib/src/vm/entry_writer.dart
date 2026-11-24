@@ -205,6 +205,7 @@ ${_parkedMain()}
     await _writeStub(projectRoot, entryKey, '''
 ${_generatedHeader(entryKey, forTests, 'Runner mode: executes ${entryFile.path} inside the prewarmed isolate.')}
 ${_ensureImport()}
+import 'package:jetleaf_core/context.dart' as jlc;
 import '$import' as entry;
 
 ${_ensureFunction(forTests, verbose: verbose)}
@@ -220,6 +221,7 @@ Future<void> main(List<String> args) async {
 }
 
 Future<bool> _jlHandleCommand(Map<String, dynamic> message) async {
+${_reloadCommandBranch()}
   if (message['type'] != 'app') return false;
   final args = ((message['args'] as List?) ?? const [])
       .map((value) => value.toString())
@@ -264,6 +266,7 @@ Future<bool> _jlHandleCommand(Map<String, dynamic> message) async {
       '''
 ${_generatedHeader(entryKey, true, 'Test-driver mode: executes the entry tests with the test engine in this isolate.')}
 import 'dart:async';
+import 'package:jetleaf_core/context.dart' as jlc;
 import 'package:test_api/backend.dart' show Runtime, SuitePlatform;
 import 'package:test_api/scaffolding.dart' show pumpEventQueue;
 import 'package:test_api/src/backend/declarer.dart' show Declarer;
@@ -325,6 +328,7 @@ ${aotImport == null ? '' : '  await aot.registerGeneratedArtifacts();\n'}  final
 }
 
 Future<bool> _jlHandleCommand(Map<String, dynamic> message) async {
+${_reloadCommandBranch()}
   if (message['type'] != 'test') return false;
   final args = ((message['args'] as List?) ?? const [])
       .map((value) => value.toString())
@@ -450,7 +454,34 @@ ${Constant.BANNER_ART.trim()}
       "import 'package:jetleaf_tools/jetleaf_tools.dart' as jl;";
 
   /// Imports used by the parked VM command server.
-  String _commandImports() => "import 'dart:convert';\nimport 'dart:io';";
+  ///
+  /// `jetleaf_core/context.dart` is imported as `jlc` so the generated
+  /// `_jlHandleCommand` can notify `HotReloadCoordinator` without relying on
+  /// the VM-service `evaluate` name resolution of an arbitrary root library.
+  String _commandImports() =>
+      "import 'dart:convert';\n"
+      "import 'dart:io';\n"
+      "import 'package:jetleaf_core/context.dart' as jlc;";
+
+  /// Branch inside the generated `_jlHandleCommand` that dispatches reload and
+  /// restart requests to `HotReloadCoordinator` in the app isolate.
+  ///
+  /// Kept as one fragment so the runner, test-driver, and parked stubs all
+  /// understand the same commands.
+  String _reloadCommandBranch() => '''
+  final type = message['type'];
+  if (type == 'reload') {
+    final uris = ((message['changedUris'] as List?) ?? const [])
+        .map((value) => value.toString())
+        .toList();
+    await jlc.HotReloadCoordinator.notifyReload(uris);
+    return true;
+  }
+  if (type == 'restart') {
+    await jlc.HotReloadCoordinator.notifyRestart();
+    return true;
+  }
+''';
 
   /// Populates the JetLeaf runtime inside the warm isolate.
   ///
@@ -525,7 +556,10 @@ Future<void> main() async {
 
   /// Keeps the resident isolate available for reload-and-run commands.
   String _commandServer() => '''
-Future<bool> _jlHandleCommand(Map<String, dynamic> message) async => false;
+Future<bool> _jlHandleCommand(Map<String, dynamic> message) async {
+${_reloadCommandBranch()}
+  return false;
+}
 
 Future<void> _jlCommandServer() async {
   final server = await ServerSocket.bind(InternetAddress.loopbackIPv4, 0);

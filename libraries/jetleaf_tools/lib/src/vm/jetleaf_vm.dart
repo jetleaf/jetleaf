@@ -22,6 +22,7 @@ import 'package:jetleaf_core/lang.dart';
 import '../utils/utils.dart';
 import 'jetleaf_decorator.dart';
 import 'project_watcher.dart';
+import 'reload_hooks.dart';
 
 part 'discoverable.dart';
 part 'entry_state.dart';
@@ -1496,6 +1497,176 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
 
   // -------------------------------------------------------------- watcher
 
+  /// Incrementally recompiles and reloads [changedUris] into every idle live
+  /// VM, then notifies `HotReloadCoordinator` inside each isolate.
+  ///
+  /// **Parameters:**
+  /// - [changedUris]: absolute URIs to compile; empty means "reload all".
+  /// - [entry]: optional entry key restricting the reload to one VM.
+  ///
+  /// **Returns:** identities of the VMs that were reloaded.
+  Future<List<String>> _reloadLiveEntries({
+    required List<String> changedUris,
+    String? entry,
+  }) async {
+    final uris = changedUris.isEmpty
+        ? _live.keys
+            .map((k) => _rootUriFor(p.join(_root.path, k)).toString())
+            .toList()
+        : changedUris;
+    final reloaded = <String>[];
+    for (final candidate in _live.entries) {
+      if (entry != null && entry.isNotEmpty && candidate.key != entry) continue;
+      final live = candidate.value;
+      if (live.busy) {
+        _log('skipped ${candidate.key} (run in progress)');
+        continue;
+      }
+      final frontend = live.frontend;
+      final service = live.service;
+      if (frontend == null || service == null) continue;
+      try {
+        final compilation = await frontend.compile(uris.map(Uri.parse).toList());
+        final dillOutput = compilation.dillOutput;
+        if (dillOutput == null) continue;
+        frontend.accept();
+        final vmInfo = await service.getVM();
+        final rootLibUri = Uri.file(dillOutput).toString();
+        for (final isolateRef in vmInfo.isolates ?? []) {
+          final id = isolateRef.id;
+          if (id == null) continue;
+          await service.reloadSources(id, pause: false, rootLibUri: rootLibUri);
+        }
+        await _notifyEntry(candidate.key, live, {
+          'type': 'reload',
+          'changedUris': _notificationUris(uris),
+        });
+        reloaded.add(_vmIdentity(candidate.key, live));
+      } catch (e) {
+        _log('reload failed for ${candidate.key}: $e');
+      }
+    }
+    return reloaded;
+  }
+
+  /// Expands compiler URIs into the forms `HotReloadCoordinator` can match.
+  ///
+  /// The compiler uses `org-dartlang-root:///absolute/path` URIs, while the
+  /// generated runtime registry records `package:<name>/<relative>` (for
+  /// `lib/`) or `file:///` (for tests). Sending all three forms lets the
+  /// coordinator build a non-empty `HotReloadDelta`.
+  List<String> _notificationUris(List<String> uris) {
+    final result = <String>{...uris};
+    for (final uri in uris) {
+      final parsed = Uri.tryParse(uri);
+      final path = parsed?.path;
+      if (path == null || path.isEmpty) continue;
+      result.add(Uri.file(path).toString());
+      final libRoot = p.join(_root.path, 'lib');
+      if (p.isWithin(libRoot, path)) {
+        final relative = p.relative(path, from: libRoot);
+        result.add(
+          'package:${_resolvePackageName(_root)}/${relative.replaceAll(r'\', '/')}',
+        );
+      }
+    }
+    return result.toList();
+  }
+
+  /// Notifies the app isolate through the generated entry command channel.
+  ///
+  /// The generated stub handles `reload` / `restart` itself by calling
+  /// `HotReloadCoordinator`, so this does not depend on symbol resolution in
+  /// an arbitrary root library. Best-effort: a parked VM without a live
+  /// command server is simply logged and skipped.
+  Future<void> _notifyEntry(
+    String key,
+    _LiveEntry live,
+    Map<String, Object?> command,
+  ) async {
+    try {
+      await _sendEntryCommand(
+        key,
+        live,
+        command,
+        timeout: const Duration(seconds: 30),
+      );
+    } catch (e) {
+      _log('reload notification skipped for $key: $e');
+    }
+  }
+
+  /// Dispatches an explicit reload request through [ReloadHooks].
+  Future<ReloadOutcome> handleReloadRequest(ReloadRequest request) => ReloadHooks.reload(
+    request,
+    fallback: (req) async {
+      if (_stopping || _warming) {
+        return ReloadOutcome.failure('manager is busy');
+      }
+      _warming = true;
+      try {
+        if (req.trigger == ToolingTrigger.fileChange) {
+          await _rediscover(log: false);
+          await _warmProject(_root);
+        }
+        final reloaded = await _reloadLiveEntries(
+          changedUris: req.changedUris,
+          entry: req.entry,
+        );
+        _writeVmFile();
+        return ReloadOutcome(ok: true, entries: reloaded);
+      } finally {
+        _warming = false;
+      }
+    },
+  );
+
+  /// Dispatches an explicit restart request through [ReloadHooks].
+  ///
+  /// A restart publishes `HotRestartEvent` inside the isolate (closing the
+  /// application context) and then re-runs the entry so the context is
+  /// re-bootstrapped in the same resident VM.
+  Future<ReloadOutcome> handleRestartRequest(RestartRequest request) => ReloadHooks.restart(
+    request,
+    fallback: (req) async {
+      if (_stopping || _warming) {
+        return ReloadOutcome.failure('manager is busy');
+      }
+      final keys = _live.keys
+          .where((k) => req.entry == null || req.entry!.isEmpty || k == req.entry)
+          .toList();
+      if (keys.isEmpty) {
+        return ReloadOutcome.failure('no live entry: ${req.entry ?? ''}');
+      }
+      final restarted = <String>[];
+      for (final key in keys) {
+        final live = _live[key];
+        if (live == null) continue;
+        // The restart notification closes the application context inside the
+        // isolate. Re-run the entry main in that same isolate so the context
+        // is re-bootstrapped without killing and respawning the VM.
+        await _notifyEntry(key, live, {'type': 'restart'});
+        final record = _entries[key];
+        if (record == null) {
+          restarted.add(_vmIdentity(key, live));
+          continue;
+        }
+        final ok = await _sendEntryCommand(
+          key,
+          live,
+          {'type': 'app', 'args': record.args},
+          timeout: const Duration(minutes: 10),
+        );
+        if (!ok) {
+          return ReloadOutcome.failure('restart failed for $key (entry main did not complete)');
+        }
+        restarted.add(_vmIdentity(key, live));
+      }
+      _writeVmFile();
+      return ReloadOutcome(ok: true, entries: restarted);
+    },
+  );
+
   /// Save-time update: re-runs discovery (new files boot lazily on next
   /// run, deleted files are dropped), rewarms the shared cache, then
   /// incrementally recompiles + `reloadSources` every idle live VM.
@@ -1508,81 +1679,35 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
   /// **Returns:** when cache, VMs and state are current again.
   Future<void> _onFilesChanged(List<String> changedPaths) async {
     if (_stopping || _warming) return;
-    _warming = true;
     final displayPaths = changedPaths
       .map((abs) => p.relative(abs, from: _root.path))
       .toList();
-    
-    try {
+
+    _log(
+      'changed ${displayPaths.length} '
+      'file${displayPaths.length == 1 ? '' : 's'}: '
+      '${displayPaths.join(', ')}',
+    );
+    final outcome = await handleReloadRequest(
+      ReloadRequest(
+        trigger: ToolingTrigger.fileChange,
+        changedUris: changedPaths.map((path) => _rootUriFor(path).toString()).toList(),
+      ),
+    );
+    if (!outcome.ok) {
+      _log('Rewarm failed: ${outcome.message ?? 'unknown error'}');
+      return;
+    }
+    if (outcome.entries.isEmpty) {
+      _log('updated, no vms reloaded');
+    } else {
       _log(
-        'changed ${displayPaths.length} '
-        'file${displayPaths.length == 1 ? '' : 's'}: '
-        '${displayPaths.join(', ')}',
+        'updated, reloaded ${outcome.entries.length} '
+        'vm${outcome.entries.length == 1 ? '' : 's'}:',
       );
-      await _rediscover(log: false);
-      await _warmProject(_root);
-      final uris = changedPaths.map(_rootUriFor).toList();
-      final reloaded = <String>[];
-      for (final entry in _live.entries) {
-        final live = entry.value;
-        if (live.busy) {
-          _log('skipped ${entry.key} (run in progress)');
-          continue;
-        }
-        final frontend = live.frontend;
-        final service = live.service;
-        if (frontend == null || service == null) continue;
-        try {
-          final compilation = await frontend.compile(uris);
-          final dillOutput = compilation.dillOutput;
-          if (dillOutput == null) continue;
-          frontend.accept();
-          final vmInfo = await service.getVM();
-          final rootLibUri = Uri.file(dillOutput).toString();
-          for (final isolateRef in vmInfo.isolates ?? []) {
-            final id = isolateRef.id;
-            if (id == null) continue;
-            await service.reloadSources(
-              id,
-              pause: false,
-              rootLibUri: rootLibUri,
-            );
-            try {
-              final isolate = await service.getIsolate(id);
-              final rootLibId = isolate.rootLib?.id;
-              if (rootLibId != null) {
-                final uriLiterals = uris.map((u) => "'${u.toString().replaceAll("'", "\\'")}'").join(', ');
-                await service.evaluate(
-                  id,
-                  rootLibId,
-                  'HotReloadCoordinator.notifyReload([$uriLiterals])',
-                ).timeout(const Duration(seconds: 10));
-              }
-            } catch (_) {
-              // Best-effort: isolate may not import HotReloadCoordinator directly.
-            }
-          }
-          reloaded.add(_vmIdentity(entry.key, live));
-        } catch (e) {
-          _log('reload failed for ${entry.key}: $e');
-        }
+      for (final identity in outcome.entries) {
+        _log('  reloaded vm $identity');
       }
-      if (reloaded.isEmpty) {
-        _log('updated, no vms reloaded');
-      } else {
-        _log(
-          'updated, reloaded ${reloaded.length} '
-          'vm${reloaded.length == 1 ? '' : 's'}:',
-        );
-        for (final identity in reloaded) {
-          _log('  reloaded vm $identity');
-        }
-      }
-      _writeVmFile();
-    } catch (e) {
-      _log('Rewarm failed: $e');
-    } finally {
-      _warming = false;
     }
   }
 
@@ -1640,7 +1765,7 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
   }
 
   /// Dispatches one control request (`runApp`, `runTest`, `boot`,
-  /// `status`, `stop`). Run output streams back through [emit]; every
+  /// `reload`, `restart`, `status`, `stop`). Run output streams back through [emit]; every
   /// branch ends with a terminal `done` frame. A `stop` without `entry`
   /// also terminates the manager.
   ///
@@ -1696,6 +1821,38 @@ final class JetleafVM extends Discoverable implements JetleafDecorator {
             (e) => runEntry(entry, forTests: true, emit: e),
           ),
         });
+        return true;
+      case 'reload':
+        final outcome = await handleReloadRequest(
+          ReloadRequest(
+            trigger: ToolingTrigger.command,
+            entry: message['entry'] as String?,
+            changedUris:
+                (message['changedUris'] as List?)?.cast<String>() ?? const [],
+          ),
+        );
+        emit({
+          'type': 'reload_response',
+          'ok': outcome.ok,
+          'entries': outcome.entries,
+          if (outcome.message != null) 'message': outcome.message,
+        });
+        emit({'type': 'done', 'ok': outcome.ok});
+        return true;
+      case 'restart':
+        final outcome = await handleRestartRequest(
+          RestartRequest(
+            trigger: ToolingTrigger.command,
+            entry: message['entry'] as String?,
+          ),
+        );
+        emit({
+          'type': 'restart_response',
+          'ok': outcome.ok,
+          'entries': outcome.entries,
+          if (outcome.message != null) 'message': outcome.message,
+        });
+        emit({'type': 'done', 'ok': outcome.ok});
         return true;
       case 'status':
         emit({
