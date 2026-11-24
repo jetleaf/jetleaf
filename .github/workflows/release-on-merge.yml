@@ -45,12 +45,14 @@ jobs:
             "libraries/jetleaf_tools"
             "packages/jetson"
             "packages/jtl"
+            "packages/jetleaf_data"
             "packages/jetleaf_resource"
             "packages/jetleaf_retry"
             "packages/jetleaf_scheduling"
             "packages/jetleaf_validation"
             "packages/jetleaf_actuator"
             "packages/jetleaf_web"
+            "packages/jetleaf_security"
             "."
           )
 

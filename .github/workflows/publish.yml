@@ -145,16 +145,19 @@ jobs:
           # 3. jtl (Template language, required by jetleaf_web)
           /tmp/publish_pkg.sh "packages/jtl" "jtl (Template Language)" "$DRY_RUN"
 
-          # 4. jetleaf_resource (Resource management, caching & rate limiting)
+          # 4. jetleaf_data (Database, caching & storage backends, depends on jetleaf_core)
+          /tmp/publish_pkg.sh "packages/jetleaf_data" "jetleaf_data (Data & Storage Module)" "$DRY_RUN"
+
+          # 5. jetleaf_resource (Resource management, caching & rate limiting)
           /tmp/publish_pkg.sh "packages/jetleaf_resource" "jetleaf_resource (Caching & Rate Limiting)" "$DRY_RUN"
 
-          # 5. jetleaf_retry (Resilience & Retry mechanisms)
+          # 6. jetleaf_retry (Resilience & Retry mechanisms)
           /tmp/publish_pkg.sh "packages/jetleaf_retry" "jetleaf_retry (Fault Tolerance & Retry)" "$DRY_RUN"
 
-          # 6. jetleaf_scheduling (Cron & Scheduled tasks)
+          # 7. jetleaf_scheduling (Cron & Scheduled tasks)
           /tmp/publish_pkg.sh "packages/jetleaf_scheduling" "jetleaf_scheduling (Task Scheduling)" "$DRY_RUN"
 
-          # 7. jetleaf_validation (Validation engine)
+          # 8. jetleaf_validation (Validation engine)
           /tmp/publish_pkg.sh "packages/jetleaf_validation" "jetleaf_validation (Pod Validation)" "$DRY_RUN"
 
       # =================================================================
@@ -167,6 +170,9 @@ jobs:
 
           # 2. jetleaf_web (depends on jetleaf_core + jetson + jtl)
           /tmp/publish_pkg.sh "packages/jetleaf_web" "jetleaf_web (HTTP & Web Framework)" "$DRY_RUN"
+
+          # 3. jetleaf_security (depends on jetleaf_core + jetleaf_web)
+          /tmp/publish_pkg.sh "packages/jetleaf_security" "jetleaf_security (Authentication & Authorization)" "$DRY_RUN"
 
       # =================================================================
       # Tier 4: Root Framework Package
