@@ -1,28 +1,40 @@
-# jetleaf_data
+# 💾 Jetleaf Data — Data Access, Repositories & Mapping
 
-**Enterprise Data Access & Object-Relational/Document Mapping for Dart** — the
-Jetleaf persistence layer, architecturally benchmarked against Spring Data.
+[![pub package](https://img.shields.io/badge/version-2.1.0-blue)](https://pub.dev/packages/jetleaf_data)
+[![License: Jetleaf](https://img.shields.io/badge/license-Jetleaf-green)](#license)
+[![Dart SDK](https://img.shields.io/badge/sdk-%3E%3D3.9.0-blue)](https://dart.dev)
 
-- Declarative repositories with **dynamic query derivation** (`findByEmail`,
-  `findByAgeGreaterThanEqualAndActiveTrue`, …)
-- Full CRUD, paging and sorting, batch operations
-- **Dialect-agnostic**: PostgreSQL, MySQL/MariaDB, SQLite, MongoDB, with a
-  registry for custom engines
-- **Optimistic locking** via `@Version`, **auditing** via `@CreatedDate` /
-  `@LastModifiedDate`
-- **Declarative transactions** — `@Transactional` with Spring propagation and
-  isolation semantics, bound to Dart zones
-- **Schema migration** — versioned migrations with checksums + DDL generation
-  from entity metadata
+Enterprise data access and object-relational / document mapping for Dart — the
+Jetleaf persistence layer.
 
-> Package status: `2.1.0` — full feature parity with the design in
-> `roadmap/jetleaf_data.md`, minus live-database integration tests (requires
-> Dockerized PostgreSQL/MongoDB; the driver abstraction and SQL rendering are
-> unit-tested exhaustively instead).
+## 📋 Overview
 
----
+`jetleaf_data` provides a complete persistence toolkit:
 
-## Quick start
+- **Declarative repositories** — derive queries from method names (`findByEmail`, `findByAgeGreaterThanEqualAndActiveTrue`, …)
+- **CRUD, paging and sorting** — with a typed `PageRequest` / `Sort` API
+- **Dialect-agnostic SQL** — PostgreSQL, MySQL/MariaDB, SQLite and MongoDB, plus a registry for custom dialects
+- **Declared queries** — `@Query` with native SQL or lightweight JQL, and `@Modifying` updates
+- **Transactions** — `@Transactional` with propagation and isolation, bound to a Dart zone
+- **Auditing & optimistic locking** — `@CreatedDate`, `@LastModifiedDate`, `@Version`
+- **Migrations** — versioned migrations with checksums, plus DDL generation from entity metadata
+- **Connection pooling** — bounded pools with checkout timeouts and idle validation
+- **Type conversion** — built-in converters and a registry for your own
+
+## 🚀 Quick Start
+
+### Installation
+
+```yaml
+dependencies:
+  jetleaf: ^2.1.0
+  jetleaf_core: ^2.1.0
+  jetleaf_data: ^2.1.0
+```
+
+You also supply a `DatabaseClient` (your driver, or a pool built around one).
+The driver contract is dialect-agnostic, so the same repository code works
+across SQL and document backends.
 
 ### 1. Define an entity
 
@@ -61,20 +73,21 @@ class User {
 }
 ```
 
-### 2. Build a repository
+Entities need a no-argument constructor and exactly one `@Id` field. Run
+`jl build` so the reflection registry knows about them.
+
+### 2. Create a repository
 
 ```dart
-import 'package:jetleaf_data/jetleaf_data.dart';
-
 final factory = RepositoryFactorySupport(
-  client: myDatabaseClient,          // your driver, or a pool (see below)
+  client: myDatabaseClient,          // or a DefaultConnectionPool
   dialect: const PostgreSqlDialect(),
 );
 
 final users = factory.createSimple<User, int>();
 ```
 
-Or directly:
+Or construct one directly:
 
 ```dart
 final repo = SimpleJetleafRepository<User, int>(
@@ -87,96 +100,97 @@ final repo = SimpleJetleafRepository<User, int>(
 ### 3. Use it
 
 ```dart
-await repo.save(User()..email = 'ada@example.com'..firstName = 'Ada');
+await repo.save(User()
+  ..email = 'ada@example.com'
+  ..firstName = 'Ada');
 
 final ada = await repo.findById(1);
-final actives = await repo.findAll();
-final page = await repo.findPage(PageRequest(0, 20, Sort.by([SortOrder.asc('email')])));
+final all = await repo.findAll();
+
+final page = await repo.findPage(
+  PageRequest(0, 20, Sort.by([SortOrder.asc('email')])),
+);
+print(page.getContent());
 ```
 
----
+## 📚 Key Features
 
-## Derived query methods
+### 1. Derived queries
 
-Method names are parsed into a query tree and rendered per dialect:
+Method names are parsed into a query tree and rendered for the active dialect:
 
 ```dart
-final tree = PartTree.parse('findByAgeGreaterThanEqualAndActiveTrue', metadata: usersMetadata);
-await repo.queryList(tree, [36]);
+final tree = PartTree.parse(
+  'findByAgeGreaterThanEqualAndActiveTrue',
+  metadata: usersMetadata,
+);
+final matches = await repo.queryList(tree, [36]);
 ```
 
-Full grammar:
-
 | Feature | Example |
-|---------|---------|
+| :--- | :--- |
 | Subjects | `find…`, `read…`, `get…`, `query…`, `count…`, `exists…`, `delete…`, `remove…` |
 | Distinct | `findDistinctByLastName` |
 | Limit | `findTopByLastName`, `findTop3By…`, `findFirstBy…`, `findTopOrderBy…` |
-| Nested paths | `findByAddressCity` (through `@ManyToOne`/`@OneToOne`) |
+| Nested paths | `findByAddressCity` (through `@ManyToOne` / `@OneToOne`) |
 | And / Or | `findByLastNameAndFirstName`, `findByLastNameOrActiveTrue` (And binds tighter) |
 | Comparison | `Equals`, `Is`, `Not`, `IsNot`, `Like`, `NotLike`, `StartingWith`, `EndingWith`, `Containing`, `NotContaining`, `GreaterThan[Equal]`, `LessThan[Equal]`, `Before`, `After`, `Between`, `In`, `NotIn` |
-| Boolean/Null | `True`, `False`, `IsNull`, `IsNotNull` |
+| Boolean / Null | `True`, `False`, `IsNull`, `IsNotNull` |
 | Case-insensitive | `findByEmailIgnoreCase`, `findByEmailStartingWithIgnoreCase` |
 | Ordering | `findByLastNameOrderByCreatedAtDesc`, `…OrderByFirstNameAscLastNameDesc` |
 
-### `@Query` — declared queries
+### 2. Declared queries
+
+When a method name is not expressive enough, write the query:
 
 ```dart
 @Query('SELECT * FROM users WHERE email_address = :email', nativeQuery: true)
 Future<User?> findByEmailNative(@Param('email') String email);
 
-// JQL — entity references are translated (table + alias substitution)
+// JQL — entity references are translated to tables and aliases.
 @Query('SELECT u FROM User u WHERE u.lastName = :name ORDER BY u.firstName')
 Future<List<User>> findOrdered(@Param('name') String name);
 
 @Modifying()
 @Query('UPDATE User u SET u.active = :active WHERE u.email = :email')
-Future<int> updateActive(@Param('active') bool active, @Param('email') String email);
+Future<int> updateActive(
+  @Param('active') bool active,
+  @Param('email') String email,
+);
 ```
 
-### Dynamic proxies (no codegen)
+JQL is intentionally small: entity names map to tables, `alias.property` maps
+to a quoted column, and bare property names map to quoted columns. Use native
+queries for joins, functions or complex projections.
 
-```dart
-final repo = RepositoryFactorySupport(client: client, dialect: dialect)
-    .createDynamic<dynamic>(TestUserRepository);
-
-await repo.findByEmail('ada@example.com');
-await repo.countByActiveTrue();
-```
-
-Proxy caveats: dynamic proxies route through `noSuchMethod` — Dart cannot
-implement unknown interfaces at runtime, so statically-typed repository
-interfaces should use `jl build`-generated AOT proxies (or subclass
-`SimpleJetleafRepository`, which is what the framework's own repositories do).
-
----
-
-## Dialects
+### 3. Dialects
 
 | Dialect | Placeholders | Identifiers | Auto increment | `RETURNING` |
-|---------|-------------|-------------|----------------|-------------|
+| :--- | :--- | :--- | :--- | :--- |
 | `PostgreSqlDialect` | `$1, $2…` | `"users"` | `BIGSERIAL` | ✅ |
 | `MySqlDialect` | `?` | `` `users` `` | `BIGINT AUTO_INCREMENT` | — |
 | `SqliteDialect` | `?` | `"users"` | `INTEGER PRIMARY KEY AUTOINCREMENT` | ✅ |
 | `MongoDialect` | — (BSON) | — | — | — |
+
+Register your own dialect when you need one:
 
 ```dart
 DialectRegistry.instance.register('cockroachdb', CockroachDbDialect.new);
 final dialect = DialectRegistry.instance.forUrl('jdbc:postgresql://localhost/app');
 ```
 
-DDL for a mapped entity comes from metadata:
+Generate DDL straight from entity metadata:
 
 ```dart
 final schema = SchemaGenerator(dialect);
 print(schema.generateForType(User).statements.join(';\n'));
 ```
 
-## Connections & pooling
+### 4. Connections and pooling
 
 ```dart
 final pool = DefaultConnectionPool(
-  clientFactory: () => myDatabaseClientFactory(),   // your driver
+  clientFactory: () async => myDatabaseClient,
   configuration: const PoolConfiguration(
     maxConnections: 20,
     connectionTimeout: Duration(seconds: 10),
@@ -186,75 +200,95 @@ final pool = DefaultConnectionPool(
 ```
 
 Checkouts beyond capacity wait up to `connectionTimeout`; uncommitted
-transactions are rolled back when a lease returns to the pool; idle
-connections are validated with `SELECT 1` before re-use.
+transactions are rolled back when a lease returns to the pool; idle connections
+are validated with `SELECT 1` before re-use. Pass the pool wherever a
+`DatabaseClient` is expected.
 
-## Transactions
+### 5. Transactions
 
 ```dart
-@Transactional(propagation: Propagation.required, isolation: Isolation.readCommitted)
-Future<Order> placeOrder(Cart cart) => ...;
+@Transactional(
+  propagation: Propagation.required,
+  isolation: Isolation.readCommitted,
+)
+Future<Order> placeOrder(Cart cart) async {
+  // repository calls here join one transaction
+}
 ```
 
-`@Transactional` is intercepted by `TransactionalMethodInterceptor` (auto-registered
-by `DataAutoConfiguration`); the transaction manager resolves at startup:
+`TransactionalMethodInterceptor` is auto-registered by `DataAutoConfiguration`.
+The manager is resolved at startup:
 
-1. an explicit `PlatformTransactionManager` pod if one exists,
-2. else a `DataSourceTransactionManager` built from the available
-   `ConnectionFactory` pod,
-3. else invocations fail fast with a descriptive `TransactionSystemException`.
+1. an explicit `PlatformTransactionManager` pod, if one exists;
+2. otherwise a `DataSourceTransactionManager` built from the available `ConnectionFactory` pod;
+3. otherwise the invocation fails fast with a descriptive `TransactionSystemException`.
 
-Propagation: `required`, `requiresNew`, `mandatory`, `supports`,
-`notSupported`, `never` — the ambient transaction is bound to a forked
-`Zone`, so `requiresNew` truly suspends the outer transaction and
-rollback-only marks propagate from joined participants to the outermost
-owner.
+Propagation values: `required`, `requiresNew`, `mandatory`, `supports`,
+`notSupported`, `never`. The ambient transaction lives in a forked `Zone`, so
+`requiresNew` truly suspends an outer transaction and rollback-only marks
+propagate from joined participants to the outermost owner.
 
 ```dart
 final manager = DataSourceTransactionManager(connectionPool);
 ```
 
-## Migrations
+### 6. Migrations
 
 ```dart
 final runner = MigrationRunner(client, const PostgreSqlDialect());
+
 await runner.migrate([
   SqlMigration(MigrationVersion.parse('V1__create_users'), [createUsersDdl]),
   SqlMigration(MigrationVersion.parse('V2__add_index'), [addIndexDdl]),
 ]);
 ```
 
-- Bookkeeping table `jetleaf_schema_migrations` (version, description,
-  checksum, applied_at)
-- Pending migrations apply in version order, each in a transaction
+- Bookkeeping table `jetleaf_schema_migrations` stores version, description, checksum and `applied_at`
+- Pending migrations run in version order, each inside a transaction
 - Checksum drift aborts the run with `MigrationException`
 - Duplicate versions abort before anything is applied
-- MongoDB supported through the document client contract
+- MongoDB is supported through the document client contract
 
-## Auditing & optimistic locking
+### 7. Auditing and optimistic locking
 
 ```dart
 class User {
-  @Version() int? version;             // incremented on every update
-  @CreatedDate() DateTime? createdAt;  // stamped on insert
-  @LastModifiedDate() DateTime? updatedAt; // stamped on every save
+  @Version() int? version;                  // incremented on every update
+  @CreatedDate() DateTime? createdAt;       // stamped on insert
+  @LastModifiedDate() DateTime? updatedAt;  // stamped on every save
 }
 ```
 
-A concurrent update on a stale entity throws `OptimisticLockException`
-(affected rows == 0 with a version predicate).
+A concurrent update on a stale entity throws `OptimisticLockException` when the
+versioned update affects zero rows.
 
-## Type conversion
+### 8. Type conversion
 
-`bool` ↔ `0/1`, `DateTime` ↔ ISO-8601 / epoch millis, `Enum` ↔ `String`
-(round-trips through the materialized registry), `int` ↔ `double`. Custom
-converters:
+Built-in conversion covers `bool` ↔ `0/1`, `DateTime` ↔ ISO-8601 / epoch
+milliseconds, `Enum` ↔ `String` (through the materialized registry) and
+`int` ↔ `double`. Add your own:
 
 ```dart
 TypeConverterRegistry.instance.register(EncryptedStringConverter());
 ```
 
-## Custom base repositories (spec §8.2)
+### 9. Dynamic and custom repositories
+
+Create a repository from an interface without writing an implementation:
+
+```dart
+final repo = RepositoryFactorySupport(client: client, dialect: dialect)
+    .createDynamic<dynamic>(TestUserRepository);
+
+await repo.findByEmail('ada@example.com');
+await repo.countByActiveTrue();
+```
+
+Dynamic proxies route through `noSuchMethod`, so use `dynamic` call sites,
+`jl build`-generated AOT proxies, or subclass `SimpleJetleafRepository` for a
+statically-typed repository.
+
+Supply your own base implementation when every repository needs shared behavior:
 
 ```dart
 final repo = RepositoryFactorySupport(
@@ -265,46 +299,128 @@ final repo = RepositoryFactorySupport(
 ).createSimple<User, int>();
 ```
 
-## Entity requirements
+## 🎯 Common Patterns
 
-- A **no-argument constructor** (rows are mapped via reflection)
-- The entity class must be known to the reflection registry — run
-  `jl build` (or `jl build --test` for tests), which is what the test suite
-  here does
-- `@Id` on exactly one field
-- Relationship targets must be resolvable (`@OneToOne`/`@ManyToOne` chains
-  for NESTED derived properties, to-one only)
+### Pattern 1: Transactional service
 
-## Testing
+```dart
+@Service()
+class UserService {
+  final SimpleJetleafRepository<User, int> _users;
+
+  UserService(this._users);
+
+  @Transactional()
+  Future<User> register(String email) =>
+      _users.save(User()..email = email);
+}
+```
+
+Method-level interception is provided by `DataAutoConfiguration`; make sure the
+service is a pod and run `jl build`.
+
+### Pattern 2: Paginated listing
+
+```dart
+final page = await users.findPage(
+  PageRequest(2, 25, Sort.by([SortOrder.desc('createdAt')])),
+);
+final rows = page.getContent();
+final total = page.getTotalElements();
+```
+
+### Pattern 3: Per-environment dialect
+
+```dart
+final dialect = DialectRegistry.instance.forUrl(environment['DATABASE_URL']!);
+final factory = RepositoryFactorySupport(client: client, dialect: dialect);
+```
+
+Keep repositories independent of the concrete database by injecting the
+dialect and client as pods.
+
+### Pattern 4: Schema at startup
+
+```dart
+final synchronizer = AutoSchemaSynchronizer(client: client, dialect: dialect);
+await synchronizer.synchronize([User, Order]);
+```
+
+Use migrations for production and schema synchronization for development or
+tests.
+
+## ⚠️ Common Issues
+
+| Issue | Cause | Solution |
+| :--- | :--- | :--- |
+| `NoSuchMethodError` on a repository call | Dynamic proxy used through a statically typed interface | Use `dynamic`, generate AOT proxies with `jl build`, or subclass `SimpleJetleafRepository` |
+| Entity fields are null after loading | Missing no-argument constructor or class unknown to the registry | Add `User();` and run `jl build` (or `jl build --test`) |
+| `OptimisticLockException` on save | Stale `@Version` value | Reload the entity and retry the update |
+| `NoSuchPodDefinitionException` for a transaction manager | No transaction manager or `ConnectionFactory` pod | Declare a `PlatformTransactionManager` / `DataSourceTransactionManager` pod |
+| `@Query` method is treated as a derived query | Missing `@Query` metadata in the registry | Run `jl build` and verify the method annotation is present |
+| `@Query` with `Page` / `Slice` return fails | Not supported | Query a list and build a page from it |
+| Nested derived property does not join | Only to-one associations are supported | Model the path with `@ManyToOne` / `@OneToOne`, or write a native query |
+| Custom dialect not found | Dialect was never registered | Call `DialectRegistry.instance.register(...)` before creating the factory |
+| No database driver available | Only the driver contract ships here | Provide a `DatabaseClient` implementation (see `test/support/fake_database_client.dart` for an example) |
+
+## 📋 Best Practices
+
+### ✅ DO
+
+- Annotate one `@Id` field and keep a no-argument constructor on every entity
+- Run `jl build` after changing entities, repositories or `@Query` methods
+- Use `@Transactional` at the service boundary, not on individual repository calls
+- Inject the dialect and client so the same repository works across environments
+- Version production schema changes and let checksum drift fail loudly
+- Store auditing fields and `@Version` on entities that need history or concurrency safety
+
+### ❌ DON'T
+
+- Put business logic in repository interfaces — use a service pod
+- Rely on implicit joins through collections in derived method names
+- Use native SQL in JQL syntax — set `nativeQuery: true`
+- Reuse a stale entity across transactions and expect the version to match
+- Register the same dialect twice with different implementations
+- Assume auditing writes are batched — they are applied per row
+
+## 🧪 Testing
 
 ```bash
 # generate the reflection registry (required for entity tests)
 dart run jetleaf_tools build --test
 
-dart test                  # everything
+dart test
 dart test test/smoke_test.dart
 ```
 
-The suite fakes the driver (`test/support/fake_database_client.dart`) so no
-database is needed; SQL generation is verified exactly, statement by statement.
+The suite fakes the driver (`test/support/fake_database_client.dart`), so no
+running database is needed; SQL generation is verified statement by statement.
 
-## Known gaps (roadmap vs. shipped)
+## 📦 Dependencies
 
-- **Live driver integrations** (postgres/mysql wire protocols, mongo_dart) —
-  the driver abstraction is complete; concrete driver packages are a follow-up
-  (`jetleaf_data_postgres`, …).
-- **Compile-time AOT proxies** — dynamic proxy works for `dynamic` call
-  sites; AOT proxies land with repository code generation in `jl build`.
-- **Implicit joins for nested derived properties** work for to-one
-  associations only (dot-notation for Mongo, `INNER JOIN` for SQL).
-- **`@Query` with `Page`/`Slice` return** is not supported — derive a page
-  from a list instead.
-- **JQL** is intentionally "JQL-lite": entity names → tables, alias.property →
-  alias."column", bare property names → quoted columns. No joins, no
-  functions, no projections beyond column references.
-- Auditing writes are per-row; no batch `INSERT` SQL assembly.
+- **`jetleaf_core`** — IoC container, annotations and exception types
+- **`meta`** — annotations
+- **`jetleaf_tools`** (dev) — `jl build` / `jl build --test` for reflection metadata
 
-## See also
+## 📄 License
 
-- `roadmap/jetleaf_data.md` — the canonical spec this implements
-- `packages/jetleaf_data/test/` — 261 unit tests; `smoke_test.dart` is the fastest way to see the mapping layer in action
+This package is part of the Jetleaf Framework. See LICENSE in the root directory.
+
+## 🔗 Related Packages
+
+- **`jetleaf`** — Framework bootstrap and lifecycle
+- **`jetleaf_core`** — Dependency injection and pod management
+- **`jetson`** — JSON serialization
+- **`jetleaf_validation`** — Validate entity inputs before persistence
+
+## 📞 Support
+
+For issues, questions, or contributions, visit:
+
+- [GitHub Issues](https://github.com/jetleaf/jetleaf/issues)
+- [Documentation](https://jetleaf.hapnium.com/docs/data)
+- [Community Forum](https://forum.jetleaf.hapnium.com)
+
+---
+
+**Created with ❤️ by [Hapnium](https://hapnium.com)**
